@@ -64,7 +64,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
               if (isEnabled(TaskList)) {
                 Redirect(controllers.routes.TaskListController.show)
               } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve(true))
+                Redirect(controllers.routes.TradingNameResolverController.resolve)
               }
             }
         )

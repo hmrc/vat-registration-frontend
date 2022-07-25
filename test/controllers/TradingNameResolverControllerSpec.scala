@@ -41,8 +41,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
       mockSessionService,
       mockAuthClientConnector,
       vatRegistrationServiceMock,
-      mockApplicantDetailsService,
-      mockBusinessService
+      mockApplicantDetailsService
     )
 
     mockAuthenticated()
@@ -53,7 +52,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     List(Individual, NETP).foreach { partyType =>
       s"redirects to ${controllers.business.routes.MandatoryTradingNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(partyType))
-        val res = Controller.resolve(true)(FakeRequest())
+        val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.MandatoryTradingNameController.show.url)
       }
@@ -62,7 +61,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     List(Partnership, ScotPartnership).foreach { partyType =>
       s"redirects to ${controllers.business.routes.PartnershipNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(Partnership))
-        val res = Controller.resolve(true)(FakeRequest())
+        val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.PartnershipNameController.show.url)
       }
@@ -71,7 +70,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     List(ScotLtdPartnership, LtdPartnership).foreach { partyType =>
       s"redirects to ${controllers.business.routes.PartnershipNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(Partnership))
-        val res = Controller.resolve(true)(FakeRequest())
+        val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.PartnershipNameController.show.url)
       }
@@ -83,7 +82,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
           .thenReturn(Future.successful(Some(testBusinessName)))
 
         mockPartyType(Future.successful(partyType))
-        val res = Controller.resolve(true)(FakeRequest())
+        val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.TradingNameController.show.url)
       }
@@ -95,7 +94,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
           .thenReturn(Future.successful(None))
 
         mockPartyType(Future.successful(partyType))
-        val res = Controller.resolve(true)(FakeRequest())
+        val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.BusinessNameController.show.url)
       }
@@ -104,7 +103,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     "throw an exception for unsupported partyType" in new Setup {
       mockPartyType(Future.successful(AdminDivision))
       intercept[InternalServerException] {
-        await(Controller.resolve(true)(FakeRequest()))
+        await(Controller.resolve(FakeRequest()))
       }
     }
   }

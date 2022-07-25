@@ -21,8 +21,9 @@ import controllers.BaseController
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import forms.IntermediarySupplyForm
 import models.LabourCompliance
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, BusinessService, SessionProfile, SessionService}
+import services._
 import views.html.sicandcompliance.intermediary_supply
 
 import javax.inject.{Inject, Singleton}
@@ -33,6 +34,7 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                                                     val sessionService: SessionService,
                                                     val businessService: BusinessService,
                                                     val applicantDetailsService: ApplicantDetailsService,
+                                                    vatRegistrationService: VatRegistrationService,
                                                     view: intermediary_supply)
                                                    (implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -65,14 +67,17 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                   .getOrElse(LabourCompliance())
                   .copy(intermediaryArrangement = Some(data))
 
-                businessService.updateBusiness(updatedLabourCompliance) map { _ =>
+                businessService.updateBusiness(updatedLabourCompliance).flatMap { _ =>
                   if (isEnabled(TaskList)) {
-                    Redirect(controllers.routes.TaskListController.show.url)
+                    Future.successful(Redirect(controllers.routes.TaskListController.show.url))
                   } else {
                     if (isEnabled(OtherBusinessInvolvement)) {
-                      Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+                      Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show))
                     } else {
-                      Redirect(controllers.routes.TradingNameResolverController.resolve(false))
+                      vatRegistrationService.partyType.map {
+                        case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+                        case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+                      }
                     }
                   }
                 }

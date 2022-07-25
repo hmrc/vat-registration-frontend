@@ -23,7 +23,6 @@ import models.{Business, CurrentProfile}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import services.BusinessService
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 
@@ -32,7 +31,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
 
   def businessDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
-    url = _ => controllers.routes.TradingNameResolverController.resolve(true).url,
+    url = _ => controllers.routes.TradingNameResolverController.resolve.url,
     tagId = "businessDetailsRow",
     checks = scheme => {
       Seq(

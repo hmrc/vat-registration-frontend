@@ -19,32 +19,44 @@ package controllers.business
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, UkCompany}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import models.api.{NETP, NonUkNonEstablished, UkCompany}
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.mocks.{BusinessServiceMock, MockApplicantDetailsService}
+import services.mocks.{BusinessServiceMock, MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.sicandcompliance.intermediary_supply
 
 import scala.concurrent.Future
 
 class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with BusinessServiceMock with MockApplicantDetailsService with FeatureSwitching {
+  with VatRegistrationFixture with BusinessServiceMock with MockApplicantDetailsService with MockVatRegistrationService with FeatureSwitching {
 
   trait Setup {
-    val view = app.injector.instanceOf[intermediary_supply]
+    val view: intermediary_supply = app.injector.instanceOf[intermediary_supply]
     val controller: SupplyWorkersIntermediaryController = new SupplyWorkersIntermediaryController(
       mockAuthClientConnector,
       mockSessionService,
       mockBusinessService,
       mockApplicantDetailsService,
+      vatRegistrationServiceMock,
       view
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
+
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.SupplyWorkersIntermediaryController.show)
+
+    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, selection: Boolean, resolvedLocation: Call): Unit = {
+      featureSwitchFn(OtherBusinessInvolvement)
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        "value" -> selection.toString
+      )) {
+        response =>
+          status(response) mustBe SEE_OTHER
+          redirectLocation(response).getOrElse("") mustBe resolvedLocation.url
+      }
+    }
   }
 
   s"GET ${controllers.business.routes.SupplyWorkersIntermediaryController.show}" should {
@@ -73,71 +85,56 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
   }
 
   s"POST ${controllers.business.routes.SupplyWorkersIntermediaryController.submit}" should {
-    val fakeRequest = FakeRequest(controllers.business.routes.SupplyWorkersIntermediaryController.show)
-
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
+      mockPartyType(Future.successful(UkCompany))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
       }
     }
 
-    "redirect to PartyType resolver with Yes selected for UkCompany" in new Setup {
+    "redirect to Imports or Exports or OBI with Yes selected for UkCompany" in new Setup {
       enable(OtherBusinessInvolvement)
       mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
+      mockPartyType(Future.successful(UkCompany))
 
-      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = true)
+      verifyRedirectLocation(disable, selection = true, controllers.vatapplication.routes.ImportsOrExportsController.show)
+      verifyRedirectLocation(enable, selection = true, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
 
-    "redirect to PartyType resolver with No selected for UkCompany" in new Setup {
+    "redirect to Imports or Exports or OBI with No selected for UkCompany" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
+      mockPartyType(Future.successful(UkCompany))
 
-      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = false)
+      verifyRedirectLocation(disable, selection = false, controllers.vatapplication.routes.ImportsOrExportsController.show)
+      verifyRedirectLocation(enable, selection = false, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
 
-    "redirect to PartyType resolver with Yes selected for Sole Trader" in new Setup {
+    "redirect to Turnover or OBI with Yes selected for NonUkCompany" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
+      mockPartyType(Future.successful(NETP))
 
-      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = true)
+      verifyRedirectLocation(disable, selection = true, controllers.vatapplication.routes.TurnoverEstimateController.show)
+      verifyRedirectLocation(enable, selection = true, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
 
-    "redirect to PartyType resolver with No selected for Sole Trader" in new Setup {
+    "redirect to Turnover or OBI with No selected for NonUkCompany" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
+      mockPartyType(Future.successful(NonUkNonEstablished))
 
-      verifyFeatureSwitchFlow(controller, fakeRequest, partyTypeSelection = false)
+      verifyRedirectLocation(disable, selection = false, controllers.vatapplication.routes.TurnoverEstimateController.show)
+      verifyRedirectLocation(enable, selection = false, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
   }
 
-  private def verifyFeatureSwitchFlow(controller: SupplyWorkersIntermediaryController,
-                                     fakeRequest: FakeRequest[AnyContentAsEmpty.type],
-                                     partyTypeSelection: Boolean): Unit = {
-
-    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
-      featureSwitchFn(OtherBusinessInvolvement)
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "value" -> partyTypeSelection.toString
-      )) {
-        response =>
-          status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe resolvedLocation.url
-      }
-    }
-
-    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve(false))
-    verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
-  }
 }

@@ -16,13 +16,14 @@
 
 package controllers.business
 
-import featureswitch.core.config.{FeatureSwitching, StubIcl}
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
 import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.SicCode
+import models.api.{SicCode, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
+import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -30,7 +31,8 @@ import views.html.sicandcompliance._
 
 import scala.concurrent.Future
 
-class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
+class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching
+  with MockVatRegistrationService {
 
   val mockAboutToConfirmSicView: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
   val mockMainBusinessActivityView: main_business_activity = app.injector.instanceOf[main_business_activity]
@@ -42,6 +44,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       mockBusinessService,
       mockFlatRateService,
       mockICLService,
+      vatRegistrationServiceMock,
       mockAboutToConfirmSicView,
       mockMainBusinessActivityView
     ) {
@@ -54,6 +57,15 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
 
   val validLabourSicCode: SicCode = SicCode("81221001", "BarFoo", "BarFoo")
   val validNoCompliance: SicCode = SicCode("12345678", "fooBar", "FooBar")
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    enable(OtherBusinessInvolvement)
+  }
+  override def afterEach(): Unit = {
+    super.afterEach()
+    disable(OtherBusinessInvolvement)
+  }
 
   "showHaltPage should return a 200" in new Setup {
     callAuthorised(controller.showSicHalt) {
@@ -99,6 +111,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
+        mockPartyType(Future.successful(UkCompany))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -115,6 +128,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
+        mockPartyType(Future.successful(UkCompany))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -131,6 +145,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
+        mockPartyType(Future.successful(UkCompany))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -148,6 +163,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         when(mockBusinessService.needComplianceQuestions(any())).thenReturn(true)
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
+        mockPartyType(Future.successful(UkCompany))
 
         callAuthorised(controller.saveIclCodes) {
           res =>
@@ -183,6 +199,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
 
     "return 400" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
+      mockPartyType(Future.successful(UkCompany))
 
       submitAuthorised(controller.submitMainBusinessActivity, fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
@@ -191,6 +208,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     "return 400 with selected sicCode but no sicCode list in keystore" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockSessionFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
+      mockPartyType(Future.successful(UkCompany))
 
       submitAuthorised(controller.submitMainBusinessActivity,
         fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
@@ -200,6 +218,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
 
     "return 303 with selected sicCode" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
+      mockPartyType(Future.successful(UkCompany))
 
       when(mockBusinessService.updateBusiness(any())(any(), any()))
         .thenReturn(Future.successful(validBusiness))
@@ -214,6 +233,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
 
     "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
       mockSessionFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
+      mockPartyType(Future.successful(UkCompany))
 
       when(mockBusinessService.updateBusiness(any())(any(), any()))
         .thenReturn(Future.successful(validBusiness))

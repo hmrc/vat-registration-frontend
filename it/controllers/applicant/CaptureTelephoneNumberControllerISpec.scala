@@ -100,7 +100,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         enable(TaskList)
         verifyRedirect(controllers.routes.TaskListController.show.url)
         disable(TaskList)
-        verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
+        verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
       }
     }
 
@@ -125,7 +125,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       enable(TaskList)
       verifyRedirect(controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
+      verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
     }
 
     "update S4L and redirect to trading name resolver for a Non UK Company" in new Setup {
@@ -149,7 +149,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       enable(TaskList)
       verifyRedirect(controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
+      verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
     }
 
     "the ApplicantDetails model is complete" should {
@@ -178,7 +178,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         enable(TaskList)
         verifyRedirect(controllers.routes.TaskListController.show.url)
         disable(TaskList)
-        verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
+        verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
       }
 
       "post to the backend and redirect to trading name resolver for a NETP" in new Setup {
@@ -204,7 +204,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         enable(TaskList)
         verifyRedirect(controllers.routes.TaskListController.show.url)
         disable(TaskList)
-        verifyRedirect(controllers.routes.TradingNameResolverController.resolve(true).url)
+        verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
       }
     }
   }

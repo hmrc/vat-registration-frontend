@@ -20,7 +20,6 @@ import fixtures.VatRegistrationFixture
 import models.api.SicCode
 import models.{Business, LabourCompliance}
 import testHelpers.VatRegSpec
-import viewmodels.tasklist._
 
 class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -33,7 +32,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLCannotStart
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
     "be not started if the prerequesites are complete but there are no answers" in {
@@ -45,7 +44,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLNotStarted
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
     "be in progress if the prerequesites are complete and there are some answers" in {
@@ -58,7 +57,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLInProgress
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
     "be completed if the prerequesites are complete and there are all answers" in {
@@ -71,7 +70,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLCompleted
-      row.url mustBe controllers.routes.TradingNameResolverController.resolve(true).url
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
   }
 

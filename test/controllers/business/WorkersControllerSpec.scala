@@ -19,7 +19,7 @@ package controllers.business
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, UkCompany}
+import models.api.{Individual, NonUkNonEstablished, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.{AnyContentAsEmpty, Call}
@@ -45,6 +45,15 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
+
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.WorkersController.show)
+
+    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
+      featureSwitchFn(OtherBusinessInvolvement)
+      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        "numberOfWorkers" -> "5"
+      ))(_ redirectsTo resolvedLocation.url)
+    }
   }
 
   s"GET ${controllers.business.routes.WorkersController.show}" should {
@@ -70,40 +79,29 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   }
 
   s"POST ${controllers.business.routes.WorkersController.submit}" should {
-    val fakeRequest = FakeRequest(controllers.business.routes.WorkersController.show)
-
     "return BAD_REQUEST with Empty data" in new Setup {
+      mockPartyType(Future.successful(UkCompany))
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
       }
     }
-    "redirect to the Party type resolver for UkCompany" in new Setup {
+    "redirect to the Imports of Exports or OBI for UkCompany" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(UkCompany))
-      verifyFeatureSwitchFlow(controller, fakeRequest)
+      mockPartyType(Future.successful(UkCompany))
+
+      verifyRedirectLocation(disable, controllers.vatapplication.routes.ImportsOrExportsController.show)
+      verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
 
-    "redirect to the party type resolver for sole trader" in new Setup {
+    "redirect to the Turnover or OBI for NonUkCompany" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
-      when(mockVatRegistrationService.partyType(any(), any())).thenReturn(Future.successful(Individual))
-      verifyFeatureSwitchFlow(controller, fakeRequest)
+      mockPartyType(Future.successful(NonUkNonEstablished))
+
+      verifyRedirectLocation(disable, controllers.vatapplication.routes.TurnoverEstimateController.show)
+      verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
     }
-  }
-
-  private def verifyFeatureSwitchFlow(controller: WorkersController,
-                                      fakeRequest: FakeRequest[AnyContentAsEmpty.type]): Unit = {
-
-    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
-      featureSwitchFn(OtherBusinessInvolvement)
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "numberOfWorkers" -> "5"
-      ))( _ redirectsTo resolvedLocation.url)
-    }
-
-    verifyRedirectLocation(disable, controllers.routes.TradingNameResolverController.resolve(false))
-    verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
   }
 }
