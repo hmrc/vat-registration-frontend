@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, TaskList}
 import models.api.VatSchemeHeader
 import play.api.i18n.Messages
-import play.twirl.api.Html
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -65,7 +65,7 @@ class ManageRegistrationsBuilder @Inject()(appConfig: FrontendAppConfig,
         TableRow(content = HtmlContent(
           Html(
             s"""<a class="govuk-link" href="${link(registration)}">
-             |    ${registration.applicationReference.getOrElse(messages("manageRegistrations.noReference"))}
+             |    ${HtmlFormat.escape(registration.applicationReference.getOrElse(messages("manageRegistrations.noReference")))}
              |  </a>""".stripMargin
           )
         )),
