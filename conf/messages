@@ -53,6 +53,8 @@ tasklist.aboutTheBusiness.heading       = About the business
 tasklist.aboutTheBusiness.businessDetails = Business details
 tasklist.aboutTheBusiness.businessActivities = Business activities
 tasklist.aboutTheBusiness.otherBusinessInvolvements = Other business involvements
+tasklist.vatRegistration.heading            = VAT registration
+tasklist.vatRegistration.goodsAndServices   = Goods and services
 
 # Ordinal numbers
 ordinals.1 = First

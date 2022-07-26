@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.WarehouseNameForm
 import models.api.vatapplication.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
@@ -58,7 +59,11 @@ class WarehouseNameController @Inject()(val sessionService: SessionService,
           errors => Future.successful(BadRequest(warehouseNameView(errors))),
           success => {
             vatApplicationService.saveVatApplication(WarehouseName(success)).map { _ =>
-              Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+              if (isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show.url)
+              } else {
+                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+              }
             }
           }
         )

@@ -16,8 +16,9 @@
 
 package controllers.vatapplication
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
-import models.api.vatapplication.{OverseasCompliance, VatApplication, StoringWithinUk}
+import models.api.vatapplication.{OverseasCompliance, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -107,6 +108,25 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url)
       }
+    }
+
+    "redirect to the application progress page when the answer is no and TaskList FS enabled" in new Setup {
+      enable(TaskList)
+
+      given()
+        .user.isAuthorised()
+        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
+        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).post(Json.obj("value" -> "false"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+      disable(TaskList)
     }
 
     "return a bad request when the answer is invalid" in new Setup {
