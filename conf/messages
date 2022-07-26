@@ -770,12 +770,14 @@ validation.labourCompliance.intermediarySupply.3pt.missing   = Select yes if {0}
 ## Apply For Eori
 pages.applyForEori.heading                  = Do you need an EORI number?
 pages.applyForEori.p1                       = The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:
-pages.applyForEori.bullet1                  = between the Isle of Man and any other country (including the EU)
+pages.applyForEori.bullet1                  = between Great Britain (England, Scotland and Wales) or the Isle of Man and any other country (including the EU)
 pages.applyForEori.bullet2                  = between Great Britain and Northern Ireland
 pages.applyForEori.bullet3                  = between Great Britain and the Channel Islands
 pages.applyForEori.bullet4                  = between Northern Ireland and countries outside the EU
-pages.applyForEori.p2                       = The business does not need an EORI number if it only moves goods on the island of Ireland or between an EU country and Northern Ireland.
-pages.applyForEori.linkText                 = Find out more about EORI
+pages.applyForEori.p2                       = The business does not need an EORI number if it:
+pages.applyForEori.p2.bullet1               = only moves goods within Ireland or between an EU country and Northern Ireland
+pages.applyForEori.p2.bullet2               = is based in the Channel Islands and moves goods to or from the UK
+pages.applyForEori.linkText                 = Find out more about EORI numbers
 validation.applyForEori.missing             = Select yes if you need an EORI number
 
 ## Applicant Home Address Page
