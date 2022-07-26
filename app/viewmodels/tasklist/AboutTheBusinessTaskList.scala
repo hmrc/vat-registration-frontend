@@ -81,7 +81,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
 
   def otherBusinessInvolvementsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.otherBusinessInvolvements",
-    url = _ => controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url,
+    url = scheme => resolveOtherBusinessInvolvementsUrl(scheme),
     tagId = "otherBusinessInvolvementsRow",
     checks = scheme => {
       val firstQuestionAnswered = Seq(scheme.business.exists(_.otherBusinessInvolvement.isDefined))
@@ -102,6 +102,13 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
     },
     prerequisites = _ => Seq(businessActivitiesRow)
   )
+
+  private def resolveOtherBusinessInvolvementsUrl(vatScheme: VatScheme): String = {
+    vatScheme.otherBusinessInvolvements match {
+      case Some(Nil) | None => controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+      case _ => controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url
+    }
+  }
 
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],

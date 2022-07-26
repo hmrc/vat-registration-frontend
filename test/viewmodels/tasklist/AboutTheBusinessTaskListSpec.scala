@@ -204,7 +204,8 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     }
 
-    "be in progress if the prerequesites are complete and the other business involvements list has items with partial details" in {
+    "be in progress and redirect to other business involvements summary page " +
+      "if the prerequesites are complete and the other business involvements list has items with partial details" in {
       val scheme = emptyVatScheme.copy(
         business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
         otherBusinessInvolvements = Some(List(
@@ -216,10 +217,11 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.otherBusinessInvolvementsRow.build(scheme)
 
       row.status mustBe TLInProgress
-      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+      row.url mustBe controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url
     }
 
-    "be completed if the prerequesites are complete and the other business involvements list has items with required data" in {
+    "be completed and redirect to other business involvements summary page " +
+      "if the prerequesites are complete and the other business involvements list has items with required data" in {
       val scheme = emptyVatScheme.copy(
         business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
         otherBusinessInvolvements = Some(List(
@@ -232,7 +234,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = section.otherBusinessInvolvementsRow.build(scheme)
 
       row.status mustBe TLCompleted
-      row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
+      row.url mustBe controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url
     }
   }
 }
