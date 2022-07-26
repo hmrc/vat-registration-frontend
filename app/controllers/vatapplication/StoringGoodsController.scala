@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.StoringGoodsForm
 import models.api.vatapplication.{StoringOverseas, StoringWithinUk}
 import play.api.mvc.{Action, AnyContent}
@@ -59,7 +60,11 @@ class StoringGoodsController @Inject()(val sessionService: SessionService,
                 case StoringWithinUk =>
                   Redirect(controllers.vatapplication.routes.DispatchFromWarehouseController.show)
                 case StoringOverseas =>
-                  Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                  if (isEnabled(TaskList)) {
+                    Redirect(controllers.routes.TaskListController.show.url)
+                  } else {
+                    Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                  }
               }
             }
         )

@@ -3,9 +3,10 @@ package controllers
 
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
+import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
 import models.api.{EligibilitySubmissionData, Individual, Partnership, UkCompany, VatScheme}
 import models.view.PreviousAddressView
-import models.{ApplicantDetails, Business, PartnerEntity, TransactorDetails}
+import models.{ApplicantDetails, Business, ConditionalValue, NIPTurnover, PartnerEntity, TransactorDetails}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
@@ -58,6 +59,14 @@ class TaskListControllerISpec extends ControllerISpec {
       val businessActivitiesCompletedRow = "Business activities Completed"
       val otherBusinessInvolvementsCannotStartYetRow = "Other business involvements Cannot start yet"
       val otherBusinessInvolvementsNotStartedRow = "Other business involvements Not started"
+    }
+
+    val vatRegistrationSection = new {
+      val heading = "VAT registration"
+
+      val goodsAndServicesCompletedRow = "Goods and services Completed"
+      val goodsAndServicesNotStartedRow = "Goods and services Not started"
+      val goodsAndServicesCannotStartYetRow = "Goods and services Cannot start yet"
     }
   }
 
@@ -293,6 +302,98 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow,
             ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsNotStartedRow
           )
+        )
+      }
+
+      "show vat registration section with correct states" in new Setup {
+        enable(TaskList)
+
+        private def verifyVatRegistrationTaskListSection(position: Int, scheme: VatScheme, heading: String, expectedRows: List[String]) = {
+          implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+          given
+            .user.isAuthorised()
+            .registrationApi.getRegistration(scheme)
+            .registrationApi.getSection[Business](scheme.business)
+            .registrationApi.getSection[VatApplication](scheme.vatApplication)
+            .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+            .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+            .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(url).get)
+          implicit val doc = Jsoup.parse(res.body)
+
+          res.status mustBe OK
+          sectionMustExist(position)(s"$position. $heading", expectedRows)
+        }
+
+        verifyVatRegistrationTaskListSection(
+          6,
+          emptyUkCompanyVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            applicantDetails = Some(validFullApplicantDetails)
+          ),
+          ExpectedMessages.vatRegistrationSection.heading,
+          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow)
+        )
+
+        verifyVatRegistrationTaskListSection(
+          6,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+            )),
+            vatApplication = None
+          ),
+          ExpectedMessages.vatRegistrationSection.heading,
+          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow)
+        )
+
+        verifyVatRegistrationTaskListSection(
+          6,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+            )),
+            vatApplication = Some(fullVatApplication.copy(
+              overseasCompliance = Some(OverseasCompliance(
+                goodsToOverseas = Some(false),
+                storingGoodsForDispatch = Some(StoringOverseas)
+              )),
+              northernIrelandProtocol = Some(NIPTurnover(
+                goodsToEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+              ))
+            ))
+          ),
+          ExpectedMessages.vatRegistrationSection.heading,
+          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow)
+        )
+
+        verifyVatRegistrationTaskListSection(
+          5,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+            )),
+            vatApplication = Some(fullVatApplication.copy(
+              overseasCompliance = Some(OverseasCompliance(
+                goodsToOverseas = Some(false),
+                storingGoodsForDispatch = Some(StoringOverseas)
+              )),
+              northernIrelandProtocol = Some(NIPTurnover(
+                goodsToEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+              ))
+            ))
+          ),
+          ExpectedMessages.vatRegistrationSection.heading,
+          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow)
         )
       }
     }

@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.VatExemptionForm
 import models.NonUk
 import play.api.mvc.{Action, AnyContent}
@@ -62,7 +63,11 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
               case NonUk =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
-                Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
+                }
             }
           }
         )

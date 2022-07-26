@@ -19,9 +19,9 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, BusinessService, SessionService, TransactorDetailsService, VatRegistrationService}
+import services.{ApplicantDetailsService, BusinessService, SessionService, TransactorDetailsService, VatApplicationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import viewmodels.tasklist.{AboutTheBusinessTaskList, AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VerifyBusinessTaskList}
+import viewmodels.tasklist.{AboutTheBusinessTaskList, AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VatRegistrationTaskList, VerifyBusinessTaskList}
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
@@ -36,9 +36,11 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    verifyBusinessTaskList: VerifyBusinessTaskList,
                                    aboutYouTaskList: AboutYouTaskList,
                                    aboutTheBusinessTaskList: AboutTheBusinessTaskList,
+                                   vatRegistrationTaskList: VatRegistrationTaskList,
                                    applicantDetailsService: ApplicantDetailsService,
                                    transactorDetailsService: TransactorDetailsService,
                                    businessService: BusinessService,
+                                   vatApplicationService: VatApplicationService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -52,17 +54,20 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
         applicantDetails <- applicantDetailsService.getApplicantDetails
         transactorDetails <- transactorDetailsService.getTransactorDetails
         business <- businessService.getBusiness
+        vatApplication <- vatApplicationService.getVatApplication
         scheme = vatScheme.copy(
           applicantDetails = Some(applicantDetails),
           transactorDetails = Some(transactorDetails),
-          business = Some(business)
+          business = Some(business),
+          vatApplication = Some(vatApplication)
         ) // Grabbing the data from two sources is temporary, until we've removed S4L
         sections = List(
           Some(registrationReasonSection.build(scheme)),
           if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(scheme)) else None,
           Some(verifyBusinessTaskList.build(scheme)),
           Some(aboutYouTaskList.build(scheme)),
-          Some(aboutTheBusinessTaskList.build(scheme))
+          Some(aboutTheBusinessTaskList.build(scheme)),
+          Some(vatRegistrationTaskList.build(scheme))
         ).flatten
       } yield Ok(view(sections: _*))
     } else {

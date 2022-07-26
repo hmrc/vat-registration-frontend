@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.DispatchFromWarehouseForm
 import models.api.vatapplication.OverseasCompliance
 import play.api.mvc.{Action, AnyContent}
@@ -61,7 +62,11 @@ class DispatchFromWarehouseController @Inject()(val sessionService: SessionServi
               if (success) {
                 Redirect(routes.WarehouseNumberController.show)
               } else {
-                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                }
               }
             }
           }
