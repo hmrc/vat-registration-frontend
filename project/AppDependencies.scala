@@ -22,7 +22,7 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val hmrcMongoVersion = "0.65.0"
+  private val hmrcMongoVersion = "0.68.0"
   private val bootstrapVersion = "5.20.0"
   private val timeVersion = "3.25.0"
   private val partialsVersion = "8.3.0-play-28"
