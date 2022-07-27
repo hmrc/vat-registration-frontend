@@ -18,9 +18,10 @@ package views.vatapplication
 
 import forms.ApplyForEoriForm
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Document, Element}
 import views.VatRegViewSpec
 import views.html.vatapplication.apply_for_eori
+import scala.collection.JavaConverters._
 
 class ApplyForEoriViewSpec extends VatRegViewSpec {
 
@@ -29,12 +30,14 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
 
   object ExpectedContent {
     val p1 = "The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:"
-    val bullet1 = "between the Isle of Man and any other country (including the EU)"
+    val bullet1 = "between Great Britain (England, Scotland and Wales) or the Isle of Man and any other country (including the EU)"
     val bullet2 = "between Great Britain and Northern Ireland"
     val bullet3 = "between Great Britain and the Channel Islands"
     val bullet4 = "between Northern Ireland and countries outside the EU"
-    val p2 = "The business does not need an EORI number if it only moves goods on the island of Ireland or between an EU country and Northern Ireland."
-    val linkText = "Find out more about EORI (opens in new tab)"
+    val p2 = "The business does not need an EORI number if it:"
+    val p2bullet1 = "only moves goods within Ireland or between an EU country and Northern Ireland"
+    val p2bullet2 = "is based in the Channel Islands and moves goods to or from the UK"
+    val linkText = "Find out more about EORI numbers (opens in new tab)"
     val title = "Do you need an EORI number? - Register for VAT - GOV.UK"
     val heading = "Do you need an EORI number?"
     val yes = "Yes"
@@ -45,7 +48,6 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
   "the Apply For Eori page" must {
     "have the correct paragraphs" in new ViewSetup {
       doc.para(1) mustBe Some(ExpectedContent.p1)
-      doc.para(2) mustBe Some(ExpectedContent.p2)
     }
 
     "have the correct bullets" in new ViewSetup {
@@ -56,6 +58,16 @@ class ApplyForEoriViewSpec extends VatRegViewSpec {
           ExpectedContent.bullet3,
           ExpectedContent.bullet4
         )
+    }
+
+    "have the correct inset section" in new ViewSetup {
+      val insetElement: Element = doc.select(Selectors.indent).first()
+
+      insetElement.select("p.govuk-body").text() mustBe ExpectedContent.p2
+      insetElement.select("ul.govuk-list.govuk-list--bullet").select("li").eachText().asScala mustBe List(
+        ExpectedContent.p2bullet1,
+        ExpectedContent.p2bullet2
+      )
     }
 
     "have the correct link text" in new ViewSetup {

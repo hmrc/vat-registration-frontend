@@ -27,10 +27,19 @@
         button: button,
         link: link,
         h1: h1,
-        bullets: bullets
+        bullets: bullets,
+        govukInsetText: GovukInsetText
 )
 
 @(applyForEoriForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@noEORIoption = {
+    @p{ @messages("pages.applyForEori.p2") }
+    @bullets(
+        messages("pages.applyForEori.p2.bullet1"),
+        messages("pages.applyForEori.p2.bullet2")
+    )
+}
 
 @layout(pageTitle = Some(title(applyForEoriForm, messages("pages.applyForEori.heading"))), backLink = true) {
 
@@ -44,7 +53,7 @@
         messages("pages.applyForEori.bullet3"),
         messages("pages.applyForEori.bullet4")
     )
-    @p{ @messages("pages.applyForEori.p2") }
+    @govukInsetText(InsetText(content = HtmlContent(noEORIoption)))
 
     @p{
         @link(
