@@ -4,13 +4,14 @@ package controllers
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
-import models.api.{EligibilitySubmissionData, Individual, Partnership, UkCompany, VatScheme}
+import models.api._
 import models.view.PreviousAddressView
-import models.{ApplicantDetails, Business, ConditionalValue, NIPTurnover, PartnerEntity, TransactorDetails}
+import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
 import play.api.test.Helpers._
+import play.api.libs.json.Json
 
 import scala.collection.JavaConverters._
 
@@ -67,6 +68,9 @@ class TaskListControllerISpec extends ControllerISpec {
       val goodsAndServicesCompletedRow = "Goods and services Completed"
       val goodsAndServicesNotStartedRow = "Goods and services Not started"
       val goodsAndServicesCannotStartYetRow = "Goods and services Cannot start yet"
+      val bankAccountDetailsCannotStartYetRow = "Bank account details Cannot start yet"
+      val bankAccountDetailsNotStartedRow = "Bank account details Not started"
+      val bankAccountDetailsCompletedRow = "Bank account details Completed"
     }
   }
 
@@ -199,13 +203,13 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
           .registrationApi.getSection[ApplicantDetails](
-            Some(validFullApplicantDetails.copy(
-              entity = Some(testPartnership), personalDetails = None,
-              homeAddress = None,
-              previousAddress = Some(PreviousAddressView(false, None)),
-              emailAddress = None, emailVerified = None, telephoneNumber = None
-            ))
-          )
+          Some(validFullApplicantDetails.copy(
+            entity = Some(testPartnership), personalDetails = None,
+            homeAddress = None,
+            previousAddress = Some(PreviousAddressView(false, None)),
+            emailAddress = None, emailVerified = None, telephoneNumber = None
+          ))
+        )
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -320,6 +324,8 @@ class TaskListControllerISpec extends ControllerISpec {
             .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
             .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
 
+          if (scheme.bankAccount.isDefined) given.vatScheme.has("bank-account", Json.toJson(scheme.bankAccount))
+
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
           val res = await(buildClient(url).get)
@@ -335,8 +341,10 @@ class TaskListControllerISpec extends ControllerISpec {
             eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
             applicantDetails = Some(validFullApplicantDetails)
           ),
-          ExpectedMessages.vatRegistrationSection.heading,
-          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow)
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow
+          )
         )
 
         verifyVatRegistrationTaskListSection(
@@ -348,8 +356,10 @@ class TaskListControllerISpec extends ControllerISpec {
             )),
             vatApplication = None
           ),
-          ExpectedMessages.vatRegistrationSection.heading,
-          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow)
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow
+          )
         )
 
         verifyVatRegistrationTaskListSection(
@@ -368,10 +378,15 @@ class TaskListControllerISpec extends ControllerISpec {
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
                 goodsFromEU = Some(ConditionalValue(answer = false, None)),
               ))
+            )),
+            bankAccount = Some(bankAccount.copy(
+              isProvided = true, Some(testUkBankDetails), None, None
             ))
           ),
-          ExpectedMessages.vatRegistrationSection.heading,
-          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow)
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow
+          )
         )
 
         verifyVatRegistrationTaskListSection(
@@ -390,12 +405,63 @@ class TaskListControllerISpec extends ControllerISpec {
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
                 goodsFromEU = Some(ConditionalValue(answer = false, None)),
               ))
+            )),
+            bankAccount = Some(bankAccount.copy(
+              isProvided = false, None, None, Some(BeingSetup)
             ))
           ),
-          ExpectedMessages.vatRegistrationSection.heading,
-          List(ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow)
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow
+          )
         )
       }
+    }
+
+    "show vat registration section with correct state for bank account details flow not started" in new Setup {
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      val scheme = fullVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+        business = Some(businessDetails.copy(
+          hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+        )),
+        vatApplication = Some(fullVatApplication.copy(
+          overseasCompliance = Some(OverseasCompliance(
+            goodsToOverseas = Some(false),
+            storingGoodsForDispatch = Some(StoringOverseas)
+          )),
+          northernIrelandProtocol = Some(NIPTurnover(
+            goodsToEU = Some(ConditionalValue(answer = false, None)),
+            goodsFromEU = Some(ConditionalValue(answer = false, None)),
+          ))
+        )),
+        bankAccount = None
+      )
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[Business](scheme.business)
+        .registrationApi.getSection[VatApplication](scheme.vatApplication)
+        .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .vatScheme.doesNotExistForKey("bank-account")
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}",
+        List(
+          ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+          ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow
+        )
+      )
     }
 
     "the TaskList feature switch is disabled" must {

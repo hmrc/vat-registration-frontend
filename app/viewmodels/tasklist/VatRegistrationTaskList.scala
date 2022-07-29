@@ -56,6 +56,23 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     prerequisites = _ => Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
   )
 
+  def bankAccountDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.vatRegistration.bankAccountDetails",
+    url = _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
+    tagId = "bankAccountDetailsRow",
+    checks = scheme => {
+      Seq(scheme.bankAccount.isDefined)
+        .++ {
+          if (scheme.bankAccount.exists(_.isProvided)) {
+            Seq(scheme.bankAccount.exists(_.details.isDefined))
+          } else {
+            Seq(scheme.bankAccount.exists(_.reason.isDefined))
+          }
+        }
+    },
+    prerequisites = _ => Seq(buildGoodsAndServicesRow)
+  )
+
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
             profile: CurrentProfile,
@@ -65,8 +82,9 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     TaskListSection(
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
-        buildGoodsAndServicesRow.build(vatScheme)
-      )
+        Some(buildGoodsAndServicesRow.build(vatScheme)),
+        if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow.build(vatScheme))
+      ).flatten
     )
   }
 
@@ -75,7 +93,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       case Some(NETP) | Some(NonUkNonEstablished) => Nil
       case _ => {
         Seq(vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.isDefined))
-      }. ++ {
+      }.++ {
         if (vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.contains(true))) {
           Seq(vatScheme.vatApplication.exists(_.eoriRequested.isDefined))
         } else {

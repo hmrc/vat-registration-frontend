@@ -187,6 +187,8 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
 
   val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
 
+  val noUkBankAccount = BankAccount(isProvided = false, None, None, Some(BeingSetup))
+
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
     UkCompany,

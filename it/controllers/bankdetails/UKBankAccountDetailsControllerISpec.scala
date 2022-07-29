@@ -1,6 +1,7 @@
 
 package controllers.bankdetails
 
+import featureswitch.core.config.TaskList
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
@@ -107,6 +108,31 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         res.status mustBe BAD_REQUEST
       }
     }
+
+    "redirect to the application-progress page if Tasklist FS is enabled" in new Setup {
+      enable(TaskList)
+      given
+        .user.isAuthorised()
+        .bankAccountReputation.passes
+        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+        .s4lContainer[BankAccount].clearedByKey
+        .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))))
+        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).post(Json.obj(
+        "accountName" -> testBankName,
+        "accountNumber" -> testAccountNumber,
+        "sortCode" -> "123456"
+      )))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+    }
+
     "bank details are incorrect" must {
       "return BAD_REQUEST" in new Setup {
         given

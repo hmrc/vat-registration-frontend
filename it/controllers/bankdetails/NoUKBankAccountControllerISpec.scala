@@ -16,12 +16,13 @@
 
 package controllers.bankdetails
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{BankAccount, BeingSetup, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
-import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
+import play.mvc.Http.HeaderNames
 
 import scala.concurrent.Future
 
@@ -44,7 +45,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an OK with prepopulated data" in new Setup {
+    "return an OK with pre-populated data" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, Some(BeingSetup)))
@@ -96,6 +97,26 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
       }
+    }
+
+    "redirect to the application-progress page if Tasklist FS is enabled" in new Setup {
+      enable(TaskList)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .s4lContainer[BankAccount].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> "beingSetup"))
+
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+      disable(TaskList)
     }
 
     "return BAD_REQUEST if no valid reason selected" in new Setup {
