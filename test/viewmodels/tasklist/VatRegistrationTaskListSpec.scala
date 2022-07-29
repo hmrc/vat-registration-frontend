@@ -178,4 +178,153 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
       }
     }
   }
+
+  "checks for bank account details row" when {
+    "prerequisite not complete" must {
+      "return TLCannotStart" in {
+        val sectionRow = section.bankAccountDetailsRow.build(emptyVatScheme)
+        sectionRow.status mustBe TLCannotStart
+      }
+    }
+
+    "prerequisite is complete but bank account details hasn't started" must {
+      "return TLNotStarted with correct url" in {
+
+        val scheme = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            overseasCompliance = Some(OverseasCompliance(
+              goodsToOverseas = Some(false),
+              storingGoodsForDispatch = Some(StoringOverseas)
+            )),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None)),
+            ))
+          )),
+          bankAccount = None
+        )
+
+
+        val sectionRow = section.bankAccountDetailsRow.build(scheme)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+    }
+
+    "prerequisite is complete but bank account details flow is still in progress" must {
+      "return TLInProgress if user has bank account but no account details is provided" in {
+        val scheme = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            overseasCompliance = Some(OverseasCompliance(
+              goodsToOverseas = Some(false),
+              storingGoodsForDispatch = Some(StoringOverseas)
+            )),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None)),
+            ))
+          )),
+          bankAccount = Some(validUkBankAccount.copy(
+            isProvided = true,
+            details = None
+          ))
+        )
+
+        val sectionRow = section.bankAccountDetailsRow.build(scheme)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+
+      "return TLInProgress if user doesn't have bank account and no reason is provided" in {
+
+        val scheme = validVatScheme.copy(
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            overseasCompliance = Some(OverseasCompliance(
+              goodsToOverseas = Some(false),
+              storingGoodsForDispatch = Some(StoringOverseas)
+            )),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None)),
+            ))
+          )),
+          bankAccount = Some(validUkBankAccount.copy(
+            isProvided = false,
+            reason = None
+          ))
+        )
+
+        val sectionRow = section.bankAccountDetailsRow.build(scheme)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+    }
+
+    "prerequisite is complete and all bank account details is captured" must {
+      "return TLCompleted if user has bank account and provides account details" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            turnoverEstimate = Some(testTurnover),
+            zeroRatedSupplies = Some(testZeroRatedSupplies),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None)),
+            )),
+            claimVatRefunds = Some(false)
+          )),
+          bankAccount = Some(validUkBankAccount)
+        )
+
+        val sectionRow = section.bankAccountDetailsRow.build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+
+      "return TLCompleted if user doesn't have a bank account and provides reason for no bank account" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            turnoverEstimate = Some(testTurnover),
+            zeroRatedSupplies = Some(testZeroRatedSupplies),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None)),
+            )),
+            claimVatRefunds = Some(false)
+          )),
+          bankAccount = Some(noUkBankAccount)
+        )
+
+        val sectionRow = section.bankAccountDetailsRow.build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+    }
+  }
 }

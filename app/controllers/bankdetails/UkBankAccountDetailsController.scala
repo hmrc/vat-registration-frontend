@@ -18,6 +18,7 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.EnterBankAccountDetailsForm
 import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
 import models.TransferOfAGoingConcern
@@ -33,37 +34,47 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
                                                val sessionService: SessionService,
                                                val vatRegistrationService: VatRegistrationService,
                                                view: enter_company_bank_account_details)
-                                               (implicit appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents) extends BaseController {
+                                              (implicit appConfig: FrontendAppConfig,
+                                               val executionContext: ExecutionContext,
+                                               baseControllerComponents: BaseControllerComponents) extends BaseController {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => implicit profile =>
-      for {
-        bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
-        filledForm = bankDetails.flatMap(_.details).fold(enterBankAccountDetailsForm)(enterBankAccountDetailsForm.fill)
-      } yield Ok(view(filledForm))
+    implicit request =>
+      implicit profile =>
+        for {
+          bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+          filledForm = bankDetails.flatMap(_.details).fold(enterBankAccountDetailsForm)(enterBankAccountDetailsForm.fill)
+        } yield Ok(view(filledForm))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => implicit profile =>
-      enterBankAccountDetailsForm.bindFromRequest.fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors))),
-        accountDetails =>
-          for {
-            accountDetailsValid <- bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails)
-            eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
-          } yield (accountDetailsValid, eligibilityData.registrationReason) match {
-            case (true, TransferOfAGoingConcern) =>
-              Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
-            case (true, _) =>
-              Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
-            case (false, _) =>
-              val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
-              BadRequest(view(invalidDetails))
-          }
-      )
+    implicit request =>
+      implicit profile =>
+        enterBankAccountDetailsForm.bindFromRequest.fold(
+          formWithErrors =>
+            Future.successful(BadRequest(view(formWithErrors))),
+          accountDetails =>
+            for {
+              accountDetailsValid <- bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails)
+              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
+            } yield (accountDetailsValid, eligibilityData.registrationReason) match {
+              case (true, TransferOfAGoingConcern) =>
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                }
+              case (true, _) =>
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
+                }
+              case (false, _) =>
+                val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
+                BadRequest(view(invalidDetails))
+            }
+        )
   }
 
 }

@@ -18,6 +18,7 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.NoUKBankAccountForm
 import models.{BankAccount, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
@@ -58,9 +59,17 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
               eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
             } yield eligibilityData.registrationReason match {
               case TransferOfAGoingConcern =>
-                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                }
               case _ =>
-                Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show.url)
+                } else {
+                  Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
+                }
             }
         )
       }

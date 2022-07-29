@@ -55,6 +55,7 @@ tasklist.aboutTheBusiness.businessActivities = Business activities
 tasklist.aboutTheBusiness.otherBusinessInvolvements = Other business involvements
 tasklist.vatRegistration.heading            = VAT registration
 tasklist.vatRegistration.goodsAndServices   = Goods and services
+tasklist.vatRegistration.bankAccountDetails = Bank account details
 
 # Ordinal numbers
 ordinals.1 = First
