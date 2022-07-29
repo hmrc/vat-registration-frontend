@@ -56,15 +56,6 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
       response mustBe testAttachmentsList
     }
 
-    "return an attachment list if returned type has attachments attribute and backward compatible" in { // Remove this as part of cleanup task
-      stubGet(attachmentUrl, OK, Json.obj("attachments" -> Json.toJson(testAttachmentsList)).toString())
-
-      val response = await(connector.getAttachmentList(testRegId))
-
-      verify(getRequestedFor(urlEqualTo(attachmentUrl)))
-      response mustBe testAttachmentsList
-    }
-
     "return an empty attachment list" in {
       stubGet(attachmentUrl, OK, Json.toJson(testEmptyAttachmentsList).toString())
 
