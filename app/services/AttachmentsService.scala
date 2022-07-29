@@ -16,22 +16,25 @@
 
 package services
 
-import connectors.AttachmentsConnector
+import connectors.{AttachmentsConnector, RegistrationApiConnector}
 import models.api.{AttachmentMethod, AttachmentType, Attachments}
-import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnector)
-                                  (implicit ec: ExecutionContext) {
+class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnector,
+                                   registrationApiConnector: RegistrationApiConnector
+                                  )(implicit ec: ExecutionContext) {
 
-  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[Attachments] =
+  def getAttachmentDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[Attachments]] =
+    registrationApiConnector.getSection[Attachments](regId)
+
+  def storeAttachmentDetails(regId: String, method: AttachmentMethod)(implicit hc: HeaderCarrier): Future[Attachments] =
+    registrationApiConnector.replaceSection[Attachments](regId, Attachments(method = Some(method)))
+
+  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
     attachmentsConnector.getAttachmentList(regId)
-
-  def storeAttachmentDetails(regId: String, method: AttachmentMethod)(implicit hc: HeaderCarrier): Future[JsValue] =
-    attachmentsConnector.storeAttachmentDetails(regId, method)
 
   def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
     attachmentsConnector.getIncompleteAttachments(regId)

@@ -13,15 +13,13 @@ import play.api.test.Helpers._
 class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
   val url = "/attachment-method"
-  val emptyAttachmentList = Attachments(None, List())
-  val fullAttachmentList = Attachments(Some(Post), List(IdentityEvidence))
+  val fullAttachmentList = Attachments(Some(Post))
 
   "GET /register-for-vat/attachment-method" when {
     "the backend contains no attachment information" must {
       "return OK and render the page with a blank form" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.has("attachments", Json.toJson(emptyAttachmentList))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -37,7 +35,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "return OK and render the page with the Post option selected" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.has("attachments", Json.toJson(fullAttachmentList))
+          .registrationApi.getSection[Attachments](Some(fullAttachmentList))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,7 +51,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "return OK and render the page with the Email option selected" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.has("attachments", Json.toJson(fullAttachmentList.copy(method = Some(EmailMethod))))
+          .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(EmailMethod))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -70,7 +68,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         enable(UploadDocuments)
         given
           .user.isAuthorised()
-          .vatScheme.has("attachments", Json.toJson(fullAttachmentList.copy(method = Some(Attached))))
+          .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(Attached))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -91,7 +89,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         enable(UploadDocuments)
         given
           .user.isAuthorised()
-          .vatScheme.storesAttachments(Attachments(Some(Attached), List()))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
           .vatScheme.deleteAttachments
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -109,7 +107,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "store the answer and redirect to the next page" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.storesAttachments(Attachments(Some(Post), List()))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -125,7 +123,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "store the answer and redirect to the next page" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.storesAttachments(Attachments(Some(Post), List()))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(EmailMethod)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -154,7 +152,8 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "return BAD_REQUEST" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.storesAttachments(Attachments(Some(Other), List()))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(Other)))
+
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

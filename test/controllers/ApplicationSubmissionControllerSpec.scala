@@ -50,7 +50,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         .thenReturn(Future.successful("123412341234"))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(None, List())))
+        .thenReturn(Future.successful(List()))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = None))))
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
@@ -62,7 +65,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(None, List(IdentityEvidence))))
+        .thenReturn(Future.successful(List(IdentityEvidence)))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = None))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))
@@ -77,7 +83,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(Some(Other), List(IdentityEvidence))))
+        .thenReturn(Future.successful(List(IdentityEvidence)))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = Some(Other)))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))
@@ -92,7 +101,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(Some(Attached), List(IdentityEvidence))))
+        .thenReturn(Future.successful(List(IdentityEvidence)))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = Some(Attached)))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))
@@ -107,7 +119,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(Some(Post), List(IdentityEvidence))))
+        .thenReturn(Future.successful(List(IdentityEvidence)))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))
@@ -122,7 +137,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(Some(EmailMethod), List(IdentityEvidence))))
+        .thenReturn(Future.successful(List(IdentityEvidence)))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = Some(EmailMethod)))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))
@@ -137,7 +155,10 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockWithCurrentProfile(Some(currentProfile))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(Attachments(Some(Post), List(VAT51))))
+        .thenReturn(Future.successful(List(VAT51)))
+
+      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
         .thenReturn(Future.successful("123412341234"))

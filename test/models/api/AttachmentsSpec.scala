@@ -21,14 +21,11 @@ import testHelpers.VatRegSpec
 
 class AttachmentsSpec extends VatRegSpec {
 
-  val minimalModel = Attachments(method = None, attachments = List(IdentityEvidence))
-  val validMinimalJson = Json.obj("attachments" -> Json.arr("identityEvidence"))
+  val minimalModel = Attachments(method = None)
+  val validMinimalJson = Json.obj()
 
-  val fullModel = Attachments(method = Some(Post), attachments = List(IdentityEvidence))
-  val validFullJson = Json.obj(
-    "attachments" -> Json.arr("identityEvidence"),
-    "method" -> "3"
-  )
+  val fullModel = Attachments(method = Some(Post))
+  val validFullJson = Json.obj("method" -> "3")
 
   "the attachments model" must {
     "deserialize from minimal valid json" in {

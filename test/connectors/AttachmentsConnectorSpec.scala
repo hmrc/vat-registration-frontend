@@ -32,14 +32,6 @@ class AttachmentsConnectorSpec extends VatRegSpec {
 
   val testEmptyAttachmentList: List[AttachmentType] = List[AttachmentType]()
 
-  val testAttachments: Attachments = Attachments(None, testAttachmentList)
-
-  val testEmptyAttachments: Attachments = Attachments(None, testEmptyAttachmentList)
-
-  val testIncompleteAttachments: Attachments = Attachments(None, testAttachmentList)
-
-  val testEmptyIncompleteAttachments: Attachments = Attachments(None, testEmptyAttachmentList)
-
   val testStoreAttachmentsOtherResponseJson: JsObject = Json.obj(
     "method" -> Some(Other).toString,
   )
@@ -52,19 +44,19 @@ class AttachmentsConnectorSpec extends VatRegSpec {
 
   "getAttachments" should {
     "return a list of attachments" in {
-      mockHttpGET(appConfig.attachmentsApiUrl(testRegId), HttpResponse(OK, Json.toJson(testAttachments).toString))
+      mockHttpGET(appConfig.attachmentsApiUrl(testRegId), HttpResponse(OK, Json.toJson(testAttachmentList).toString))
 
       val result = connector.getAttachmentList(testRegId)
 
-      await(result) mustBe testAttachments
+      await(result) mustBe testAttachmentList
     }
 
     "return an empty list of attachments" in {
-      mockHttpGET(appConfig.attachmentsApiUrl(testRegId), HttpResponse(OK, Json.toJson(Attachments(None, List[AttachmentType]())).toString()))
+      mockHttpGET(appConfig.attachmentsApiUrl(testRegId), HttpResponse(OK, Json.toJson(testEmptyAttachmentList).toString()))
 
       val result = connector.getAttachmentList(testRegId)
 
-      await(result) mustBe testEmptyAttachments
+      await(result) mustBe testEmptyAttachmentList
     }
 
     "throw an exception" in {
@@ -73,32 +65,6 @@ class AttachmentsConnectorSpec extends VatRegSpec {
       val result = connector.getAttachmentList(testRegId)
 
       intercept[InternalServerException](await(result)).message mustBe "[AttachmentsConnector][getAttachmentList] unexpected status from backend: 500"
-    }
-  }
-
-  "storeAttachmentDetails" should {
-    "return OK when method is Other" in {
-      mockHttpPUT(appConfig.attachmentsApiUrl(testRegId), testStoreAttachmentsOtherResponseJson)
-
-      val result = connector.storeAttachmentDetails(testRegId, Other)
-
-      await(result) mustBe testStoreAttachmentsOtherResponseJson
-    }
-
-    "return OK when method is Attached" in {
-      mockHttpPUT(appConfig.attachmentsApiUrl(testRegId), testStoreAttachmentsOtherResponseJson)
-
-      val result = connector.storeAttachmentDetails(testRegId, Attached)
-
-      await(result) mustBe testStoreAttachmentsOtherResponseJson
-    }
-
-    "return OK when method is Post" in {
-   mockHttpPUT(appConfig.attachmentsApiUrl(testRegId), testStoreAttachmentsOtherResponseJson)
-
-      val result = connector.storeAttachmentDetails(testRegId, Post)
-
-      await(result) mustBe testStoreAttachmentsOtherResponseJson
     }
   }
 

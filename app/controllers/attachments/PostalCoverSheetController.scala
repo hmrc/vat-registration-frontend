@@ -46,7 +46,7 @@ class PostalCoverSheetController @Inject()(view: PostalCoverSheet,
     implicit request =>
       implicit profile =>
         for {
-          attachmentsList <- attachmentsService.getAttachmentList(profile.registrationId)
+          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
           acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
           prefix = acknowledgementRef.take(prefixLength)
           groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
@@ -62,6 +62,6 @@ class PostalCoverSheetController @Inject()(view: PostalCoverSheet,
           } else {
             Future.successful(None)
           }
-        } yield Ok(view(formattedRef, attachmentsList.attachments, applicantName, transactorName))
+        } yield Ok(view(formattedRef, attachments, applicantName, transactorName))
   }
 }

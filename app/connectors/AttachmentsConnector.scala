@@ -17,9 +17,8 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.api.{AttachmentMethod, AttachmentType, Attachments}
+import models.api.AttachmentType
 import play.api.http.Status._
-import play.api.libs.json.{Format, JsValue, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
@@ -28,22 +27,19 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AttachmentsConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
-  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[Attachments] = {
+  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
     implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
 
     httpClient.GET[HttpResponse](config.attachmentsApiUrl(regId)).map { result =>
       result.status match {
-        case OK => result.json.validate[Attachments].get
+        case OK =>
+          result.json.validate[List[AttachmentType]].orElse(
+            (result.json \ "attachments").validate[List[AttachmentType]] // Remove this as part of cleanup task
+          ).getOrElse(throw new InternalServerException("[AttachmentsConnector][getAttachmentList] failed to parse attachment list response"))
         case status => throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
       }
     }
   }
-
-  def storeAttachmentDetails(regId: String, attachmentMethod: AttachmentMethod)(implicit hc: HeaderCarrier): Future[JsValue] =
-    httpClient.PUT[JsValue, JsValue] (
-      url = config.attachmentsApiUrl(regId),
-      body = Json.obj("method" -> Json.toJson(attachmentMethod))
-    )
 
   def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
     implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw

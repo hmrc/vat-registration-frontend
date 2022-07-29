@@ -42,7 +42,7 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
     implicit request =>
       implicit profile =>
         for {
-          attachmentInfo <- attachmentsService.getAttachmentList(profile.registrationId)
+          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
           isTransactor <- vatRegistrationService.isTransactor
           applicantName <- if (isTransactor) {
             applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
@@ -54,7 +54,7 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
           } else {
             Future.successful(None)
           }
-        } yield Ok(multipleDocumentsRequiredPage(attachmentInfo.attachments, applicantName, transactorName))
+        } yield Ok(multipleDocumentsRequiredPage(attachments, applicantName, transactorName))
   }
 
 }

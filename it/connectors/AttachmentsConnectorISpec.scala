@@ -30,9 +30,9 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
   val connector: AttachmentsConnector = app.injector.instanceOf[AttachmentsConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-  val testAttachmentsList: Attachments = Attachments(None, List[AttachmentType](IdentityEvidence, TaxRepresentativeAuthorisation, OtherAttachments))
+  val testAttachmentsList: List[AttachmentType] = List[AttachmentType](IdentityEvidence, TaxRepresentativeAuthorisation, OtherAttachments)
 
-  val testEmptyAttachmentsList: Attachments = Attachments(None, List[AttachmentType]())
+  val testEmptyAttachmentsList: List[AttachmentType] = List[AttachmentType]()
 
   val attachmentUrl = "/vatreg/1/attachments"
 
@@ -48,7 +48,16 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
 
   "getAttachmentList" must {
     "return an attachment list" in {
-      stubGet(attachmentUrl, OK, Json.toJson(Attachments(None, List[AttachmentType](IdentityEvidence, TaxRepresentativeAuthorisation, OtherAttachments))).toString())
+      stubGet(attachmentUrl, OK, Json.toJson(testAttachmentsList).toString())
+
+      val response = await(connector.getAttachmentList(testRegId))
+
+      verify(getRequestedFor(urlEqualTo(attachmentUrl)))
+      response mustBe testAttachmentsList
+    }
+
+    "return an attachment list if returned type has attachments attribute and backward compatible" in { // Remove this as part of cleanup task
+      stubGet(attachmentUrl, OK, Json.obj("attachments" -> Json.toJson(testAttachmentsList)).toString())
 
       val response = await(connector.getAttachmentList(testRegId))
 
@@ -57,50 +66,12 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
     }
 
     "return an empty attachment list" in {
-      stubGet(attachmentUrl, OK, Json.toJson(Attachments(None, List[AttachmentType]())).toString())
+      stubGet(attachmentUrl, OK, Json.toJson(testEmptyAttachmentsList).toString())
 
       val response = await(connector.getAttachmentList(testRegId))
 
       verify(getRequestedFor(urlEqualTo(attachmentUrl)))
       response mustBe testEmptyAttachmentsList
-    }
-  }
-
-  "storeAttachmentDetails" must {
-    "return a Response with the Other method" in {
-      stubPut(attachmentUrl, OK, testStoreAttachmentsOtherResponseJson.toString())
-      val requestBody = Json.obj(
-        "method" -> "1"
-      )
-
-      val response = await(connector.storeAttachmentDetails(testRegId, Other))
-
-      verify(putRequestedFor(urlEqualTo(attachmentUrl)).withRequestBody(equalToJson(requestBody.toString)))
-      response mustBe testStoreAttachmentsOtherResponseJson
-    }
-
-    "return a Response with the Attached method" in {
-      stubPut(attachmentUrl, OK, testStoreAttachmentsAttachedResponseJson.toString())
-      val requestBody = Json.obj(
-        "method" -> "2"
-      )
-
-      val response = await(connector.storeAttachmentDetails(testRegId, Attached))
-
-      verify(putRequestedFor(urlEqualTo(attachmentUrl)).withRequestBody(equalToJson(requestBody.toString)))
-      response mustBe testStoreAttachmentsAttachedResponseJson
-    }
-
-    "return a Response with the Post method" in {
-      stubPut(attachmentUrl, OK, testStoreAttachmentsPostResponseJson.toString())
-      val requestBody = Json.obj(
-        "method" -> "3"
-      )
-
-      val response = await(connector.storeAttachmentDetails(testRegId, Post))
-
-      verify(putRequestedFor(urlEqualTo(attachmentUrl)).withRequestBody(equalToJson(requestBody.toString)))
-      response mustBe testStoreAttachmentsPostResponseJson
     }
   }
 }

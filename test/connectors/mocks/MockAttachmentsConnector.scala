@@ -17,13 +17,12 @@
 package connectors.mocks
 
 import connectors.AttachmentsConnector
-import models.api.{AttachmentMethod, AttachmentType, Attachments}
+import models.api.AttachmentType
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.JsValue
 
 import scala.concurrent.Future
 
@@ -32,15 +31,9 @@ trait MockAttachmentsConnector extends MockitoSugar {
 
   val mockAttachmentsConnector = mock[AttachmentsConnector]
 
-  def mockGetAttachmentsList(regId: String)(response: Future[Attachments]): OngoingStubbing[Future[Attachments]] =
+  def mockGetAttachmentsList(regId: String)(response: Future[List[AttachmentType]]): OngoingStubbing[Future[List[AttachmentType]]] =
     when(mockAttachmentsConnector.getAttachmentList(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
       .thenReturn(response)
-
-  def mockStoreAttachmentDetails(regId: String, method: AttachmentMethod)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
-    when(mockAttachmentsConnector.storeAttachmentDetails(
-      ArgumentMatchers.eq(regId),
-      ArgumentMatchers.eq(method)
-    )(ArgumentMatchers.any())).thenReturn(response)
 
   def mockGetIncompleteAttachments(regId: String)(response: Future[List[AttachmentType]]): OngoingStubbing[Future[List[AttachmentType]]] =
     when(mockAttachmentsConnector.getIncompleteAttachments(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
