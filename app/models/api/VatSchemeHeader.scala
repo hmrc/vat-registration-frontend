@@ -25,20 +25,17 @@ import java.time.LocalDate
 case class VatSchemeHeader(registrationId: String,
                            status: VatRegStatus.Value,
                            applicationReference: Option[String] = None,
-                           createdDate: Option[LocalDate] = None,
+                           createdDate: LocalDate,
                            requiresAttachments: Boolean)
 
 case object VatSchemeHeader {
-
-  val reads: Reads[VatSchemeHeader] = (
+  val vatSchemeReads: Reads[VatSchemeHeader] = (
     (__ \ "registrationId").read[String] and
-    (__ \ "status").read[VatRegStatus.Value] and
-    (__ \ "applicationReference").readNullable[String] and
-    (__ \ "createdDate").readNullable[LocalDate] and
-    (__ \ "attachments").readNullable[JsValue].fmap(block => block.isDefined)
-  )(VatSchemeHeader.apply _)
+      (__ \ "status").read[VatRegStatus.Value] and
+      (__ \ "applicationReference").readNullable[String] and
+      (__ \ "createdDate").read[LocalDate] and
+      (__ \ "attachments").readNullable[JsValue].fmap(block => block.isDefined)
+    )(VatSchemeHeader.apply _)
 
-  val writes = Json.format[VatSchemeHeader]
-
-  implicit val format: Format[VatSchemeHeader] = Format[VatSchemeHeader](reads, writes)
+  implicit val format: Format[VatSchemeHeader] = Json.format[VatSchemeHeader]
 }

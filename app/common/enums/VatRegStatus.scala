@@ -16,6 +16,7 @@
 
 package common.enums
 
+import models.ApiKey
 import play.api.libs.json.{Format, Reads, Writes}
 
 object VatRegStatus extends Enumeration {
@@ -26,5 +27,6 @@ object VatRegStatus extends Enumeration {
   val failedRetryable = Value
   val duplicateSubmission = Value
 
+  implicit val apiKey: ApiKey[VatRegStatus.Value] = ApiKey[VatRegStatus.Value]("status")
   implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)
 }

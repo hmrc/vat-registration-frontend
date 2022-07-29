@@ -7,13 +7,11 @@ import models.api.vatapplication.VatApplication
 import models.{FRSDateChoice, FlatRateScheme, Start}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import support.RegistrationsApiStubs
 
 import java.time.LocalDate
 
-class StartDateControllerISpec extends ControllerISpec with RegistrationsApiStubs {
+class StartDateControllerISpec extends ControllerISpec {
 
   override def beforeEach(): Unit = {
     super.beforeEach()

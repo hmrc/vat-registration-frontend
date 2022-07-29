@@ -88,7 +88,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
   def startNewJourney: Action[AnyContent] = isAuthenticated { implicit request =>
     for {
       scheme <- vatRegistrationService.createRegistrationFootprint
-      _ <- journeyService.buildCurrentProfile(scheme.id)
+      _ <- journeyService.buildCurrentProfile(scheme.registrationId)
     } yield if (isEnabled(MultipleRegistrations)) {
       Redirect(routes.ApplicationReferenceController.show)
     } else {
@@ -102,7 +102,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
       case Some(regId: String) =>
         for {
           _ <- journeyService.buildCurrentProfile(regId)
-          optHeader <- vatRegistrationService.getVatSchemeJson(regId).map(_.validate[VatSchemeHeader].asOpt)
+          optHeader <- vatRegistrationService.getVatSchemeJson(regId).map(_.validate[VatSchemeHeader](VatSchemeHeader.vatSchemeReads).asOpt)
           header = optHeader.getOrElse(throw new InternalServerException(s"[continueJourney] couldn't parse vat scheme header for regId: $regId"))
           trafficManagementResponse <- trafficManagementService.checkTrafficManagement(regId) // Used to check if user is OTRS so should always be enabled
         } yield (header.status, trafficManagementResponse) match {

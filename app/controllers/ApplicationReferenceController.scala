@@ -17,9 +17,11 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
+import connectors.RegistrationApiConnector.applicationReferenceKey
 import forms.ApplicationReferenceForm
+import models.ApiKey
 import play.api.mvc.{Action, AnyContent}
-import services.{SaveAndRetrieveService, SessionProfile, SessionService, VatRegistrationService}
+import services.{SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.ApplicationReference
 
@@ -30,7 +32,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
                                                val sessionService: SessionService,
                                                vatRegistrationService: VatRegistrationService,
-                                               saveAndRetrieveService: SaveAndRetrieveService,
                                                view: ApplicationReference,
                                                form: ApplicationReferenceForm)
                                               (implicit val executionContext: ExecutionContext,
@@ -38,10 +39,10 @@ class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
                                                appConfig: FrontendAppConfig) extends BaseController with SessionProfile {
 
 
-
   def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
-    vatRegistrationService.getVatScheme
-      .map(_.applicationReference)
+    implicit val key: ApiKey[String] = applicationReferenceKey
+
+    vatRegistrationService.getSection[String](profile.registrationId)
       .map {
         case Some(appRef) => Ok(view(form().fill(appRef)))
         case _ => Ok(view(form()))
@@ -52,12 +53,13 @@ class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
     form().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),
-      appRef =>
+      appRef => {
+        implicit val key: ApiKey[String] = applicationReferenceKey
+
         for {
-          vatScheme <- vatRegistrationService.getVatScheme
-          _ <- vatRegistrationService.upsertVatScheme(vatScheme.copy(applicationReference = Some(appRef)))
-          _ <- saveAndRetrieveService.savePartialVatScheme(profile.registrationId)
+          _ <- vatRegistrationService.upsertSection[String](profile.registrationId, appRef)
         } yield Redirect(routes.HonestyDeclarationController.show)
+      }
     )
   }
 

@@ -23,7 +23,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
-          .vatRegistration.honestyDeclaration(testRegId, "true")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -40,7 +39,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
-          .vatRegistration.honestyDeclaration(testRegId, "true")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,7 +55,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
-          .vatRegistration.honestyDeclaration(testRegId, "true")
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -74,7 +71,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
-        .vatRegistration.honestyDeclaration(testRegId, "true")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -16,12 +16,13 @@
 
 package controllers.attachments
 
+import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
-import models.{ApplicantDetails, TransactorDetails}
-import play.api.libs.json.{Format, JsString, Json}
+import models.{ApiKey, ApplicantDetails, TransactorDetails}
+import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
@@ -34,11 +35,12 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
 
   s"GET $url" must {
     "return an OK" in new Setup {
+      implicit val key: ApiKey[String] = acknowledgementReferenceKey
       given()
         .user.isAuthorised()
-        .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
         .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection(Some(testAckRef))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,13 +52,14 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
 
     "return an OK for a transactor" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      implicit val key: ApiKey[String] = acknowledgementReferenceKey
       given()
         .user.isAuthorised()
-        .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
         .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection(Some(testAckRef))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

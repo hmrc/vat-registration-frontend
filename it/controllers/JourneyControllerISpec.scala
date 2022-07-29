@@ -18,21 +18,19 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
+import controllers.transactor.{routes => transactorRoutes}
 import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList}
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
 import models.api.trafficmanagement.{OTRS, VatReg}
+import models.api.{EligibilitySubmissionData, VatSchemeHeader}
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.RegistrationsApiStubs
-import controllers.transactor.{routes => transactorRoutes}
 
 import java.time.LocalDate
 
-class JourneyControllerISpec extends ControllerISpec
-  with RegistrationsApiStubs {
+class JourneyControllerISpec extends ControllerISpec {
 
   lazy val controller: JourneyController = app.injector.instanceOf(classOf[JourneyController])
   lazy val appConfig: FrontendAppConfig = app.injector.instanceOf(classOf[FrontendAppConfig])
@@ -50,19 +48,28 @@ class JourneyControllerISpec extends ControllerISpec
   def initJourneyUrl(regId: String): String =
     routes.JourneyController.initJourney(regId).url
 
-  val vatSchemeJson: JsValue = Json.toJson(fullVatScheme)
-  val vatSchemeJson2: JsValue = Json.toJson(fullVatScheme.copy(id = "2"))
+  val vatSchemeHeader: VatSchemeHeader = VatSchemeHeader(
+    registrationId = "1",
+    createdDate = testCreatedDate,
+    status = VatRegStatus.draft,
+    requiresAttachments = false
+  )
+  val vatSchemeHeader2: VatSchemeHeader = VatSchemeHeader(
+    registrationId = "2",
+    createdDate = testCreatedDate,
+    status = VatRegStatus.draft,
+    requiresAttachments = false
+  )
 
   s"GET $showUrl" when {
     "SaveAndContinueLater FS is disabled" must {
       s"return a redirect to $newJourneyUrl" when {
         "user is authenticated and authorised to access the app without profile" in new Setup {
           disable(SaveAndContinueLater)
-
           given()
             .user.isAuthorised()
             .vatRegistrationFootprint.exists()
-            .vatScheme.regStatus(VatRegStatus.draft)
+            .registrationApi.getSection(Some(VatRegStatus.draft))
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -93,8 +100,7 @@ class JourneyControllerISpec extends ControllerISpec
 
           given()
             .user.isAuthorised()
-
-          registrationsApi.GET.respondsWith(OK, Some(Json.arr()))
+            .registrationApi.getAllRegistrations(Nil)
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -111,9 +117,8 @@ class JourneyControllerISpec extends ControllerISpec
             .user.isAuthorised()
             .audit.writesAudit()
             .audit.writesAuditMerged()
-            .vatScheme.regStatus(VatRegStatus.draft)
-
-          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson)))
+            .registrationApi.getSection(Some(VatRegStatus.draft))
+            .registrationApi.getAllRegistrations(List(vatSchemeHeader))
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -127,9 +132,8 @@ class JourneyControllerISpec extends ControllerISpec
 
           given()
             .user.isAuthorised()
-            .vatScheme.regStatus(VatRegStatus.draft)
-
-          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson2, vatSchemeJson)))
+            .registrationApi.getSection(Some(VatRegStatus.draft), regId = vatSchemeHeader2.registrationId)
+            .registrationApi.getAllRegistrations(List(vatSchemeHeader, vatSchemeHeader2))
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -146,9 +150,8 @@ class JourneyControllerISpec extends ControllerISpec
 
           given()
             .user.isAuthorised()
-            .vatScheme.regStatus(VatRegStatus.draft)
-
-          registrationsApi.GET.respondsWith(OK, Some(Json.arr(vatSchemeJson2, vatSchemeJson)))
+            .registrationApi.getSection(Some(VatRegStatus.draft))
+            .registrationApi.getAllRegistrations(List(vatSchemeHeader, vatSchemeHeader2))
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -162,9 +165,9 @@ class JourneyControllerISpec extends ControllerISpec
           enable(SaveAndContinueLater)
           enable(MultipleRegistrations)
 
-          given().user.isAuthorised()
-
-          registrationsApi.GET.respondsWith(OK, Some(Json.arr()))
+          given()
+            .user.isAuthorised()
+            .registrationApi.getAllRegistrations(Nil)
 
           val res: WSResponse = await(buildClient(showUrl).get())
 
@@ -223,7 +226,7 @@ class JourneyControllerISpec extends ControllerISpec
           given()
             .user.isAuthorised()
             .vatRegistrationFootprint.exists()
-            .vatScheme.regStatus(VatRegStatus.draft)
+            .registrationApi.getSection(Some(VatRegStatus.draft))
 
           val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
@@ -240,7 +243,7 @@ class JourneyControllerISpec extends ControllerISpec
           given()
             .user.isAuthorised()
             .vatRegistrationFootprint.exists()
-            .vatScheme.regStatus(VatRegStatus.draft)
+            .registrationApi.getSection(Some(VatRegStatus.draft))
 
           val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
@@ -257,7 +260,7 @@ class JourneyControllerISpec extends ControllerISpec
         enable(MultipleRegistrations)
         given()
           .user.isAuthorised()
-          .vatScheme.regStatus(VatRegStatus.submitted)
+          .registrationApi.getSection(Some(VatRegStatus.submitted))
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme.copy(status = VatRegStatus.submitted)))
           .trafficManagement.passes(VatReg)
 
@@ -274,7 +277,7 @@ class JourneyControllerISpec extends ControllerISpec
         enable(MultipleRegistrations)
         given()
           .user.isAuthorised()
-          .vatScheme.regStatus(VatRegStatus.draft)
+          .registrationApi.getSection(Some(VatRegStatus.draft))
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
           .trafficManagement.passes(VatReg)
 
@@ -292,7 +295,7 @@ class JourneyControllerISpec extends ControllerISpec
         enable(TaskList)
         given()
           .user.isAuthorised()
-          .vatScheme.regStatus(VatRegStatus.draft)
+          .registrationApi.getSection(Some(VatRegStatus.draft))
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
           .trafficManagement.passes(VatReg)
 
@@ -332,11 +335,10 @@ class JourneyControllerISpec extends ControllerISpec
             enable(MultipleRegistrations)
             given()
               .user.isAuthorised()
-              .vatScheme.regStatus(VatRegStatus.draft)
+              .registrationApi.getSection(Some(VatRegStatus.draft))
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.passes(VatReg)
 
-            //.as[JsObject] ++ Json.obj("attachments" -> Json.obj())
             insertCurrentProfileIntoDb(currentProfile, sessionId)
 
             val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
@@ -350,7 +352,7 @@ class JourneyControllerISpec extends ControllerISpec
             enable(MultipleRegistrations)
             given()
               .user.isAuthorised()
-              .vatScheme.regStatus(VatRegStatus.draft)
+              .registrationApi.getSection(Some(VatRegStatus.draft))
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.fails
 
@@ -369,7 +371,7 @@ class JourneyControllerISpec extends ControllerISpec
             disable(MultipleRegistrations)
             given()
               .user.isAuthorised()
-              .vatScheme.regStatus(VatRegStatus.draft)
+              .registrationApi.getSection(Some(VatRegStatus.draft))
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.passes(VatReg)
 
@@ -386,7 +388,7 @@ class JourneyControllerISpec extends ControllerISpec
             disable(MultipleRegistrations)
             given()
               .user.isAuthorised()
-              .vatScheme.regStatus(VatRegStatus.draft)
+              .registrationApi.getSection(Some(VatRegStatus.draft))
               .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.fails
 
@@ -404,7 +406,7 @@ class JourneyControllerISpec extends ControllerISpec
       "redirect to OTRS" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.regStatus(VatRegStatus.draft)
+          .registrationApi.getSection(Some(VatRegStatus.draft))
           .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
           .trafficManagement.passes(OTRS)
 
@@ -426,11 +428,9 @@ class JourneyControllerISpec extends ControllerISpec
             given()
               .user.isAuthorised()
               .trafficManagement.passes()
-              .vatScheme.regStatus(VatRegStatus.draft)
+              .registrationApi.getSection(Some(VatRegStatus.draft))
+              .registrationApi.getSection(Some(testEligibilitySubmissionData))
               .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
-
-            sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-              .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData)))
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -445,11 +445,9 @@ class JourneyControllerISpec extends ControllerISpec
               given()
                 .user.isAuthorised()
                 .trafficManagement.passes()
-                .vatScheme.regStatus(VatRegStatus.draft)
+                .registrationApi.getSection(Some(VatRegStatus.draft))
+                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
-
-              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -464,11 +462,9 @@ class JourneyControllerISpec extends ControllerISpec
               given()
                 .user.isAuthorised(arn = Some(testArn))
                 .trafficManagement.passes()
-                .vatScheme.regStatus(VatRegStatus.draft)
+                .registrationApi.getSection(Some(VatRegStatus.draft))
+                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
-
-              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -481,11 +477,9 @@ class JourneyControllerISpec extends ControllerISpec
               given()
                 .user.isAuthorised(arn = Some(testArn))
                 .trafficManagement.passes()
-                .vatScheme.regStatus(VatRegStatus.draft)
+                .registrationApi.getSection(Some(VatRegStatus.draft))
+                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
-
-              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -499,11 +493,9 @@ class JourneyControllerISpec extends ControllerISpec
               given()
                 .user.isAuthorised(arn = Some(testArn))
                 .trafficManagement.passes()
-                .vatScheme.regStatus(VatRegStatus.draft)
+                .registrationApi.getSection(Some(VatRegStatus.draft))
+                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
                 .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
-
-              sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-                .GET.respondsWith(OK, Some(Json.toJson(testEligibilitySubmissionData.copy(isTransactor = true))))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -520,9 +512,7 @@ class JourneyControllerISpec extends ControllerISpec
         given()
           .user.isAuthorised()
           .trafficManagement.passes()
-
-        sectionsApi(testRegId, EligibilitySubmissionData.apiKey.key)
-          .GET.respondsWith(NOT_FOUND, None)
+          .registrationApi.getSection[EligibilitySubmissionData](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

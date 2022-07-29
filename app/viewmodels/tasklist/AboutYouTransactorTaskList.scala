@@ -54,7 +54,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
         )
       }
     },
-    prerequisites = scheme => Seq(registrationReasonTaskList.registrationReasonRow(scheme.id))
+    prerequisites = scheme => Seq(registrationReasonTaskList.registrationReasonRow(scheme.registrationId))
   )
 
   def transactorAddressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {

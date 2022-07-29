@@ -22,7 +22,7 @@ import models.api._
 import models.api.vatapplication._
 import models.external._
 import models.view._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 import java.time.LocalDate
 
@@ -140,24 +140,28 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val emptyUkCompanyVatScheme: VatScheme = VatScheme(
     testRegId,
+    createdDate = testCreatedDate,
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(testEligibilitySubmissionData)
   )
 
   val emptyVatSchemeNetp: VatScheme = VatScheme(
     testRegId,
+    createdDate = testCreatedDate,
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
   )
 
   val emptyVatSchemeNonUkCompany: VatScheme = VatScheme(
     testRegId,
+    createdDate = testCreatedDate,
     status = VatRegStatus.draft,
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
   )
 
   val fullVatScheme = VatScheme(
-    id = "1",
+    registrationId = "1",
+    createdDate = testCreatedDate,
     status = VatRegStatus.draft,
     applicantDetails = Some(validFullApplicantDetails),
     business = Some(businessDetails),
@@ -176,7 +180,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   val vatRegIncorporated = VatScheme(
-    id = "1",
+    registrationId = "1",
+    createdDate = testCreatedDate,
     status = VatRegStatus.draft,
     applicantDetails = None,
     business = Some(businessDetails),
@@ -184,7 +189,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     bankAccount = Some(bankAccount),
     eligibilitySubmissionData = Some(testEligibilitySubmissionData)
   )
-  val fullEligibilityDataJson = Json.parse(
+  val fullEligibilityDataJson: JsObject = Json.parse(
     """
       |{ "sections": [
       |            {
@@ -215,7 +220,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       |            }
       |          ]
       |         }
-                                           """.stripMargin)
+    """.stripMargin).as[JsObject]
 
   val testCrn = "testCrn"
   val testChrn = "testChrn"

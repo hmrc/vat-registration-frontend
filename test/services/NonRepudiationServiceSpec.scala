@@ -16,40 +16,28 @@
 
 package services
 
-import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
-import connectors.mocks.MockNonRepudiationConnector
+import connectors.mocks.MockRegistrationApiConnector
 import play.twirl.api.Html
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.InternalServerException
 import utils.MockBase64Util
-
-import scala.concurrent.Future
 
 class NonRepudiationServiceSpec extends VatRegSpec
   with MockBase64Util
-  with MockNonRepudiationConnector {
+  with MockRegistrationApiConnector {
 
-  val testHtml  = Html("<html></html>")
+  val testHtml: Html = Html("<html></html>")
   val testBase64 = "PGh0bWw+PC9odG1sPg=="
 
-  object Service extends NonRepudiationService(mockBase64Util, mockNonRepuidiationConnector)
+  object Service extends NonRepudiationService(mockBase64Util, mockRegistrationApiConnector)
 
   "storeEncodedUserAnswers" must {
-    "Return StoreNrsPayloadSuccess" in {
+    "Return the stored string" in {
       mockEncodeBase64(testHtml.toString())(testBase64)
-      mockStoreEncodedUserAnswers(testRegId, testBase64)(Future.successful(StoreNrsPayloadSuccess))
+      mockReplaceSection(testRegId, testBase64)
 
       val res = await(Service.storeEncodedUserAnswers(testRegId, testHtml))
 
-      res mustBe StoreNrsPayloadSuccess
-    }
-    "throw an exception if the store fails" in {
-      mockEncodeBase64(testHtml.toString())(testBase64)
-      mockStoreEncodedUserAnswers(testRegId, testBase64)(Future.failed(new InternalServerException("")))
-
-      intercept[InternalServerException] {
-        await(Service.storeEncodedUserAnswers(testRegId, testHtml))
-      }
+      res mustBe testBase64
     }
   }
 

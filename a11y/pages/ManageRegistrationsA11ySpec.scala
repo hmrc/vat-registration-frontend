@@ -17,21 +17,21 @@ class ManageRegistrationsA11ySpec extends A11ySpec {
       registrationId = testRegId,
       status = VatRegStatus.draft,
       applicationReference = Some("reference 1"),
-      createdDate = Some(LocalDate.now),
+      createdDate = LocalDate.now,
       requiresAttachments = false
     ),
     VatSchemeHeader(
       registrationId = testRegId + "2",
       status = VatRegStatus.draft,
       applicationReference = Some("reference 2"),
-      createdDate = Some(LocalDate.now),
+      createdDate = LocalDate.now,
       requiresAttachments = true
     ),
     VatSchemeHeader(
       registrationId = testRegId + "3",
       status = VatRegStatus.submitted,
       applicationReference = Some("reference 1"),
-      createdDate = Some(LocalDate.now),
+      createdDate = LocalDate.now,
       requiresAttachments = false
     )
   )

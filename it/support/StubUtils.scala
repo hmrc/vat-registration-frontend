@@ -21,9 +21,8 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
-import models.api.vatapplication.VatApplication
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
-import models.api.{AttachmentType, Attachments, SicCode, VatScheme}
+import models.api._
 import models.external.upscan.UpscanDetails
 import models.{ApiKey, S4LKey}
 import play.api.http.Status._
@@ -245,56 +244,10 @@ trait StubUtils {
   }
 
   case class VatRegistrationStub()(implicit builder: PreconditionBuilder) {
-    def status(url: String, status: String): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(url))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "status":"$status"
-               |}
-             """.stripMargin
-          ))
-      )
-      builder
-    }
-
     def submit(url: String, status: Int): PreconditionBuilder = {
       stubFor(
         put(urlPathEqualTo(url))
           .willReturn(aResponse.withStatus(status))
-      )
-      builder
-    }
-
-    def acknowledgementReference(regId: String, ackRef: String): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(s"/vatreg/$regId/acknowledgement-reference"))
-          .willReturn(ok(Json.toJson(ackRef).toString()))
-      )
-      builder
-    }
-
-    def storesNrsPayload(regId: String): PreconditionBuilder = {
-      stubFor(
-        patch(urlPathEqualTo(s"/vatreg/$regId/nrs-payload"))
-          .willReturn(ok())
-      )
-      builder
-    }
-
-    def honestyDeclaration(regId: String, honestyDeclaration: String): PreconditionBuilder = {
-      stubFor(
-        patch(urlPathEqualTo(s"/vatreg/$regId/honesty-declaration"))
-          .willReturn(ok(honestyDeclaration))
-      )
-      builder
-    }
-
-    def insertScheme(body: String): PreconditionBuilder = {
-      stubFor(
-        post(urlPathEqualTo("/vatreg/insert-s4l-scheme"))
-          .willReturn(ok().withBody(body))
       )
       builder
     }
@@ -461,34 +414,21 @@ trait StubUtils {
           .willReturn(aResponse().withStatus(200).withBody("fooBar")))
       builder
     }
-
-    def regStatus(status: VatRegStatus.Value): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo("/vatreg/1/status"))
-          .willReturn(ok(
-            Json.toJson(status).toString()
-          ))
-      )
-
-      builder
-    }
-
   }
 
   case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) extends JsonUtilities {
 
-    def exists(status: VatRegStatus.Value = VatRegStatus.draft, withDate: Boolean = false): PreconditionBuilder = {
+    def exists(status: VatRegStatus.Value = VatRegStatus.draft): PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/vatreg/new"))
           .willReturn(ok(
             Json.stringify(Json.obj(
               "registrationId" -> "1",
-              "status" -> status.toString
-            ) ++ {
-              if (withDate) Json.obj("createdDate" -> "2021-01-01") else Json.obj()
-            }
-            ))))
-
+              "status" -> status.toString,
+              "createdDate" -> "2021-01-01"
+            ))
+          ))
+      )
       builder
     }
 
@@ -717,6 +657,13 @@ trait StubUtils {
       builder
     }
 
+    def getAllRegistrations(list: List[VatSchemeHeader])(implicit format: Format[VatScheme] = VatScheme.format): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/registrations"))
+        .willReturn(ok(Json.stringify(Json.toJson(list))))
+      )
+      builder
+    }
+
     def getSection[T: ApiKey](optSection: Option[T], regId: String = "1", idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
       val url = idx match {
         case Some(index) => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$index"
@@ -763,6 +710,19 @@ trait StubUtils {
       stubFor(
         put(urlPathEqualTo(url))
           .withRequestBody(equalToJson(Json.toJson[T](data).toString()))
+          .willReturn(ok(
+            Json.toJson[T](data).toString()
+          )))
+      builder
+    }
+
+    def replaceSectionWithoutCheckingData[T: ApiKey](data: T, regId: String = "1", idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
+      val url = idx match {
+        case Some(index) => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$index"
+        case None => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"
+      }
+      stubFor(
+        put(urlPathEqualTo(url))
           .willReturn(ok(
             Json.toJson[T](data).toString()
           )))

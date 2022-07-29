@@ -5,29 +5,27 @@ import common.enums.VatRegStatus
 import itutil.ControllerISpec
 import models.api.VatSchemeHeader
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import support.RegistrationsApiStubs
 
-class ManageRegistrationsControllerISpec extends ControllerISpec with RegistrationsApiStubs {
+class ManageRegistrationsControllerISpec extends ControllerISpec {
 
   val url = "/manage-registrations"
 
-  def vatSchemeHeaderJson(regId: String, status: VatRegStatus.Value) = Json.toJson(VatSchemeHeader(
+  def vatSchemeHeader(regId: String, status: VatRegStatus.Value): VatSchemeHeader = VatSchemeHeader(
     registrationId = regId,
     status = status,
     applicationReference = Some(s"Application for $regId"),
-    createdDate = Some(testCreatedDate),
+    createdDate = testCreatedDate,
     requiresAttachments = false
-  ))
+  )
 
   "GET /manage-registrations" must {
     "return OK and present a list of only draft or submitted registrations" in new Setup {
-      given.user.isAuthorised()
-
-      registrationsApi.GET.respondsWith(OK, Some(Json.arr(
-        vatSchemeHeaderJson(testRegId, VatRegStatus.submitted),
-        vatSchemeHeaderJson("2", VatRegStatus.draft))
+      given
+        .user.isAuthorised()
+        .registrationApi.getAllRegistrations(List(
+        vatSchemeHeader(testRegId, VatRegStatus.submitted),
+        vatSchemeHeader("2", VatRegStatus.draft)
       ))
 
       val res = await(buildClient(url).get)

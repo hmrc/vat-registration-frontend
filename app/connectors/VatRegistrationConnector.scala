@@ -75,40 +75,9 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
-    http.GET[String](s"$vatRegUrl/vatreg/$regId/acknowledgement-reference")
-      .recover {
-        case e: Exception => throw logResponse(e, "getAckRef")
-      }
-  }
-
-  def getTaxableThreshold(date: LocalDate)(implicit hc: HeaderCarrier): Future[TaxableThreshold] = {
-    http.GET[TaxableThreshold](s"$vatRegUrl/vatreg/threshold/$date") recover {
-      case e => throw logResponse(e, "getTaxableThreshold")
-    }
-  }
-
-  def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsObject] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${cp.registrationId}/eligibility-data") map {
-      _.json.as[JsObject]
-    } recover {
-      case e => throw logResponse(e, "getEligibilityData")
-    }
-  }
-
   def upsertPpob(regId: String, address: Address)(implicit hc: HeaderCarrier, rds: HttpReads[Address]): Future[Address] = {
     http.PATCH[Address, Address](s"$vatRegUrl/vatreg/$regId/ppob", address).recover {
       case e: Exception => throw logResponse(e, "upsertPpob")
-    }
-  }
-
-  def deleteVatScheme(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[HttpResponse]): Future[Boolean] = {
-    http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/registrations/$regId").map(_.status == OK)
-  }
-
-  def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
-    http.GET[VatRegStatus.Value](s"$vatRegUrl/vatreg/$regId/status") recover {
-      case e: Exception => throw logResponse(e, "getStatus")
     }
   }
 
@@ -149,14 +118,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getSicAndCompliance(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[JsValue]] = {
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/${profile.registrationId}/sicAndComp").map { res =>
-      if (res.status.equals(OK)) Some(res.json) else None
-    }.recover {
-      case e: Exception => throw logResponse(e, "getSicAndCompliance")
-    }
-  }
-
   def getBankAccount(regId: String)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] = {
     http.GET[BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account") map (Some(_)) recover {
       case _: NotFoundException => None
@@ -168,17 +129,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
                       (implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
       case e: Exception => throw logResponse(e, "patchBankAccount")
-    }
-  }
-
-  def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    val js = Json.obj("honestyDeclaration" -> honestyDeclaration)
-    http.PATCH[JsObject, HttpResponse](s"$vatRegUrl/vatreg/$regId/honesty-declaration", js)
-  }
-
-  def upsertVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    http.POST(s"$vatRegUrl/vatreg/insert-s4l-scheme", partialVatScheme).map {
-      response => response.json
     }
   }
 }

@@ -17,12 +17,10 @@
 package controllers
 
 import common.enums.VatRegStatus
-import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import connectors._
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
-import models.api.vatapplication.VatApplication
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -61,7 +59,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
         when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
         when(mockSummaryService.getSummaryData(any(), any(), any()))
           .thenReturn(Future.successful(Accordion()))
-        mockStoreEncodedUserAnswers(regId)(Future.successful(StoreNrsPayloadSuccess))
+        mockStoreEncodedUserAnswers(regId)(Future.successful(""))
 
         callAuthorised(testSummaryController.show)(status(_) mustBe OK)
       }

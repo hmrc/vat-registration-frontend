@@ -43,7 +43,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
         "return SEE_OTHER" in new Setup {
           given
             .user.isAuthorised()
-            .vatScheme.contains(VatScheme(currentProfile.registrationId, status = VatRegStatus.draft))
+            .vatScheme.contains(VatScheme(currentProfile.registrationId, createdDate = testCreatedDate, status = VatRegStatus.draft))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -38,7 +38,7 @@ class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationR
       scheme => Seq(scheme.applicantDetails.exists(_.entity.isDefined)),
     prerequisites = scheme =>
       Seq(
-        Some(registrationReasonTaskList.registrationReasonRow(scheme.id)),
+        Some(registrationReasonTaskList.registrationReasonRow(scheme.registrationId)),
         if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.transactorPersonalDetailsRow) else None
       ).flatten
   )

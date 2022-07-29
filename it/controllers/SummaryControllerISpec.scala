@@ -16,28 +16,27 @@
 
 package controllers
 
+import connectors.RegistrationApiConnector.nrsSubmissionPayloadKey
 import itutil.ControllerISpec
-import models.Business
+import models.{ApiKey, Business}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import support.RegistrationsApiStubs
 
 import scala.concurrent.Future
 
-class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs {
+class SummaryControllerISpec extends ControllerISpec {
 
   "GET Summary page" should {
     "display the summary page correctly" in new Setup {
+      implicit val key: ApiKey[String] = nrsSubmissionPayloadKey
+      val nrsSubmissionPayload = "nrsSubmissionPayload"
       given()
         .user.isAuthorised()
         .s4lContainer[Business].cleared
-        .vatRegistration.storesNrsPayload(testRegId)
-        .vatScheme.has("eligibility-data", fullEligibilityDataJson)
-
-      specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(fullVatScheme)))
+        .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
+        .registrationApi.getRegistration(fullVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -51,15 +50,15 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
     }
 
     "display the summary page correctly for a NETP" in new Setup {
+      implicit val key: ApiKey[String] = nrsSubmissionPayloadKey
+      val nrsSubmissionPayload = "nrsSubmissionPayload"
       given()
         .user.isAuthorised()
         .s4lContainer[Business].cleared
-        .vatRegistration.storesNrsPayload(testRegId)
-        .vatScheme.has("eligibility-data", fullEligibilityDataJson)
+        .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
+        .registrationApi.getRegistration(fullNetpVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      specificRegistrationApi(testRegId).GET.respondsWith(OK, Some(Json.toJson(fullNetpVatScheme)))
 
       val response: Future[WSResponse] = buildClient("/check-confirm-answers").get()
       whenReady(response) { res =>
@@ -77,7 +76,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
         given()
           .user.isAuthorised()
           .vatScheme.contains(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", OK)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", OK)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -94,7 +93,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
         given()
           .user.isAuthorised()
           .vatScheme.contains(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", CONFLICT)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", CONFLICT)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -111,7 +110,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
         given()
           .user.isAuthorised()
           .vatScheme.contains(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", TOO_MANY_REQUESTS)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", TOO_MANY_REQUESTS)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -128,7 +127,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
         given()
           .user.isAuthorised()
           .vatScheme.contains(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", BAD_REQUEST)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", BAD_REQUEST)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
@@ -145,7 +144,7 @@ class SummaryControllerISpec extends ControllerISpec with RegistrationsApiStubs 
         given()
           .user.isAuthorised()
           .vatScheme.contains(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.id}/submit-registration", INTERNAL_SERVER_ERROR)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", INTERNAL_SERVER_ERROR)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 

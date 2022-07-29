@@ -57,7 +57,7 @@ class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegist
 
   "submit" must {
     s"redirect to Part Of Organisation Page if user is transactor" in {
-      mockSubmitHonestyDeclaration(regId, honestyDeclaration = true)(Future.successful(HttpResponse(OK, "")))
+      mockUpsertSection(regId, data = true)(Future.successful(true))
 
       val res = TestController.submit(testPostRequest)
 

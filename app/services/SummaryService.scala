@@ -35,8 +35,7 @@ class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,
   def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[Accordion] = {
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      eligibilityJson <- vatRegistrationService.getEligibilityData
-      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme, eligibilityJson)(messages)
+      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme)(messages)
     } yield accordion
   }
 
