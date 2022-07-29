@@ -17,6 +17,13 @@
 package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
+import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
+import models.api.{NETP, PartyType, UkCompany, VatScheme}
+import models.{ConditionalValue, NIPTurnover, NonUk}
+import testHelpers.VatRegSpec
+import uk.gov.hmrc.http.InternalServerException
+
+import java.time.LocalDate
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk}
 import models.api.{NETP, NonUkNonEstablished, PartyType, UkCompany, VatScheme}
 import models.{ConditionalValue, NIPTurnover}
@@ -24,6 +31,18 @@ import testHelpers.VatRegSpec
 
 class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture {
   val section: VatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
+
+  val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
+    overseasCompliance = Some(OverseasCompliance(
+      goodsToOverseas = Some(false),
+      storingGoodsForDispatch = Some(StoringOverseas)
+    )),
+    northernIrelandProtocol = Some(NIPTurnover(
+      goodsToEU = Some(ConditionalValue(answer = false, None)),
+      goodsFromEU = Some(ConditionalValue(answer = false, None)),
+    )),
+    startDate = None
+  )
 
   "checks for goods and services row" when {
     "prerequisite not complete" must {
@@ -102,16 +121,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             otherBusinessInvolvement = Some(false),
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
-          vatApplication = Some(validVatApplication.copy(
-            overseasCompliance = Some(OverseasCompliance(
-              goodsToOverseas = Some(false),
-              storingGoodsForDispatch = Some(StoringOverseas)
-            )),
-            northernIrelandProtocol = Some(NIPTurnover(
-              goodsToEU = Some(ConditionalValue(answer = false, None)),
-              goodsFromEU = Some(ConditionalValue(answer = false, None)),
-            ))
-          ))
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection)
         )
 
         val sectionRow = section.buildGoodsAndServicesRow.build(scheme)
@@ -175,6 +185,80 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
         )
 
         verifyInProgressSectionRow(scheme)
+      }
+    }
+  }
+
+  "checks for vat registration date tasklist row" when {
+
+    "rendering registration date row" must {
+
+      "resolve to None if registration reason available but not eligible for registration date flow" in {
+        section.resolveVATRegistrationRow(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = NonUk))
+        )) mustBe None
+      }
+
+      "resolve to registration date row if registration reason available and eligible for registration date flow" in {
+        section.resolveVATRegistrationRow(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+        )).map(_.url) mustBe Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
+      }
+
+      "throw InternalServerException if no registration reason available" in {
+        intercept[InternalServerException] {
+          section.resolveVATRegistrationRow(emptyVatScheme) mustBe None
+        }
+      }
+    }
+
+    "prerequisite not complete" must {
+      "return TLCannotStart" in {
+        val sectionRow = section.buildRegistrationDateRow.build(emptyVatScheme)
+        sectionRow.status mustBe TLCannotStart
+      }
+    }
+
+    "prerequisite is complete but registration date flow hasn't started" must {
+      "return TLNotStarted with correct url" in {
+        val schema = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(true),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          otherBusinessInvolvements = Some(List(
+            otherBusinessInvolvementWithVrn,
+            otherBusinessInvolvementWithUtr,
+            otherBusinessInvolvementWithoutVrnUtr
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection)
+        )
+
+        val sectionRow = section.buildRegistrationDateRow.build(schema)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url
+      }
+    }
+
+    "prerequisite is complete and vat registration date captured" must {
+      "return TLCompleted" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          ))
+        )
+
+        val sectionRow = section.buildRegistrationDateRow.build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url
       }
     }
   }

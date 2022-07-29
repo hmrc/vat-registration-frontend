@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.VoluntaryStartDateNoChoiceForm
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, TimeService, VatApplicationService}
@@ -54,7 +55,11 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
         Future.successful(BadRequest(view(formWithErrors, timeService.today.format(exampleDateFormatter)))),
       startDate =>
         vatApplicationService.saveVatApplication(startDate).map { _ =>
-          Redirect(routes.ReturnsController.returnsFrequencyPage)
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show.url)
+          } else {
+            Redirect(routes.ReturnsController.returnsFrequencyPage)
+          }
         }
     )
   }

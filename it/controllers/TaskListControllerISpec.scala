@@ -13,6 +13,7 @@ import play.api.libs.json.Format
 import play.api.test.Helpers._
 import play.api.libs.json.Json
 
+import java.time.LocalDate
 import scala.collection.JavaConverters._
 
 class TaskListControllerISpec extends ControllerISpec {
@@ -68,9 +69,14 @@ class TaskListControllerISpec extends ControllerISpec {
       val goodsAndServicesCompletedRow = "Goods and services Completed"
       val goodsAndServicesNotStartedRow = "Goods and services Not started"
       val goodsAndServicesCannotStartYetRow = "Goods and services Cannot start yet"
+
       val bankAccountDetailsCannotStartYetRow = "Bank account details Cannot start yet"
       val bankAccountDetailsNotStartedRow = "Bank account details Not started"
       val bankAccountDetailsCompletedRow = "Bank account details Completed"
+
+      val registrationDateCompletedRow = "Registration date Completed"
+      val registrationDateNotStartedRow = "Registration date Not started"
+      val registrationDateCannotStartYetRow = "Registration date Cannot start yet"
     }
   }
 
@@ -203,13 +209,13 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
           .registrationApi.getSection[ApplicantDetails](
-          Some(validFullApplicantDetails.copy(
-            entity = Some(testPartnership), personalDetails = None,
-            homeAddress = None,
-            previousAddress = Some(PreviousAddressView(false, None)),
-            emailAddress = None, emailVerified = None, telephoneNumber = None
-          ))
-        )
+            Some(validFullApplicantDetails.copy(
+              entity = Some(testPartnership), personalDetails = None,
+              homeAddress = None,
+              previousAddress = Some(PreviousAddressView(false, None)),
+              emailAddress = None, emailVerified = None, telephoneNumber = None
+            ))
+          )
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -341,9 +347,11 @@ class TaskListControllerISpec extends ControllerISpec {
             eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
             applicantDetails = Some(validFullApplicantDetails)
           ),
-          ExpectedMessages.vatRegistrationSection.heading, List(
+          ExpectedMessages.vatRegistrationSection.heading,
+          List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow,
-            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow
           )
         )
 
@@ -354,11 +362,13 @@ class TaskListControllerISpec extends ControllerISpec {
             business = Some(businessDetails.copy(
               hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
             )),
-            vatApplication = None
+            vatApplication = None,
+            bankAccount = None
           ),
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow,
-            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow
           )
         )
 
@@ -385,7 +395,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ),
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
-            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
+            ExpectedMessages.vatRegistrationSection.registrationDateNotStartedRow
           )
         )
 
@@ -404,7 +415,8 @@ class TaskListControllerISpec extends ControllerISpec {
               northernIrelandProtocol = Some(NIPTurnover(
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
                 goodsFromEU = Some(ConditionalValue(answer = false, None)),
-              ))
+              )),
+              startDate = Some(LocalDate.of(2017, 10, 10))
             )),
             bankAccount = Some(bankAccount.copy(
               isProvided = false, None, None, Some(BeingSetup)
@@ -412,7 +424,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ),
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
-            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
+            ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow
           )
         )
       }
@@ -459,7 +472,8 @@ class TaskListControllerISpec extends ControllerISpec {
       sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}",
         List(
           ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
-          ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow
+          ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow,
+          ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow
         )
       )
     }
@@ -468,13 +482,10 @@ class TaskListControllerISpec extends ControllerISpec {
       "return NOT FOUND" in new Setup {
         disable(TaskList)
 
-        given
-          .user.isAuthorised()
-
+        given.user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = await(buildClient(url).get)
-
         res.status mustBe NOT_FOUND
       }
     }

@@ -18,7 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaxRepPage
+import featureswitch.core.config.{TaskList, TaxRepPage}
 import forms._
 import models._
 import models.api.vatapplication.{Annual, Monthly, QuarterlyStagger}
@@ -154,7 +154,11 @@ class ReturnsController @Inject()(val sessionService: SessionService,
               Future.successful(BadRequest(voluntaryStartDateIncorpPage(errors, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, dynamicDate)))
             },
             success => vatApplicationService.saveVoluntaryStartDate(success._1, success._2, incorpDate).map(_ =>
-              Redirect(routes.ReturnsController.returnsFrequencyPage)
+              if (isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show.url)
+              } else {
+                Redirect(routes.ReturnsController.returnsFrequencyPage)
+              }
             )
           )
         }
@@ -183,18 +187,22 @@ class ReturnsController @Inject()(val sessionService: SessionService,
                 Future.successful(BadRequest(mandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y))))
               },
               {
-                case (DateSelection.specific_date, Some(startDate)) =>
-                  vatApplicationService.saveVatApplication(startDate).map(_ =>
-                    Redirect(routes.ReturnsController.returnsFrequencyPage)
-                  )
-                case (DateSelection.calculated_date, _) =>
-                  vatApplicationService.saveVatApplication(calcDate).map(_ =>
-                    Redirect(routes.ReturnsController.returnsFrequencyPage)
-                  )
+                case (DateSelection.specific_date, Some(startDate)) => handleMandatoryStartDate(startDate)
+                case (DateSelection.calculated_date, _) => handleMandatoryStartDate(calcDate)
               }
             )
           }
         )
+  }
+
+  private def handleMandatoryStartDate(startDate: LocalDate)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile) = {
+    vatApplicationService.saveVatApplication(startDate).map(_ =>
+      if (isEnabled(TaskList)) {
+        Redirect(controllers.routes.TaskListController.show.url)
+      } else {
+        Redirect(routes.ReturnsController.returnsFrequencyPage)
+      }
+    )
   }
 
   private def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = for {
