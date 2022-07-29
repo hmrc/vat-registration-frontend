@@ -39,9 +39,9 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
     implicit request =>
       implicit profile =>
         for {
-          attachmentInfo <- attachmentsService.getAttachmentList(profile.registrationId)
+          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
           isTransactor <- vatRegistrationService.isTransactor
-          redirect = attachmentInfo.attachments match {
+          redirect = attachments match {
             case Nil =>
               Redirect(controllers.routes.SummaryController.show)
             case list if isTransactor && list.forall(List(IdentityEvidence, TransactorIdentityEvidence).contains(_)) =>

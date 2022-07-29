@@ -16,12 +16,14 @@
 
 package models.api
 
+import models.ApiKey
 import play.api.libs.json._
 
 
-case class Attachments(method: Option[AttachmentMethod], attachments: List[AttachmentType])
+case class Attachments(method: Option[AttachmentMethod] = None)
 
 object Attachments {
+  implicit val apiKey: ApiKey[Attachments] = ApiKey("attachments")
   implicit val format: Format[Attachments] = Json.format[Attachments]
 }
 

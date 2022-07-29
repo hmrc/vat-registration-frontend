@@ -37,7 +37,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
       given()
         .user.isAuthorised()
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
-        .vatScheme.has("attachments", Json.toJson(Attachments(Some(EmailMethod), List[AttachmentType](IdentityEvidence, VAT2))))
+        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -53,7 +53,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
       given()
         .user.isAuthorised()
         .vatScheme.has("acknowledgement-reference", JsString(s"$testAckRef"))
-        .vatScheme.has("attachments", Json.toJson(Attachments(Some(EmailMethod), List[AttachmentType](IdentityEvidence, VAT2))))
+        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))

@@ -16,21 +16,20 @@
 
 package services
 
-import connectors.mocks.MockAttachmentsConnector
+import connectors.mocks.{MockAttachmentsConnector, MockRegistrationApiConnector}
 import models.api.{AttachmentType, Attachments, IdentityEvidence, Post}
-import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
 
-class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector {
+class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector with MockRegistrationApiConnector {
 
-  object Service extends AttachmentsService(mockAttachmentsConnector)
+  object Service extends AttachmentsService(mockAttachmentsConnector, mockRegistrationApiConnector)
 
   "getAttachmentList" when {
-    "the backend doesn't contain any attachment details" should {
+    "the backend doesn't contain any attachments" should {
       "proxy through the response from the connector" in {
-        val emptyAttachmentList = Attachments(None, List())
+        val emptyAttachmentList = List()
         mockGetAttachmentsList(testRegId)(Future.successful(emptyAttachmentList))
 
         val res = await(Service.getAttachmentList(testRegId))
@@ -38,9 +37,10 @@ class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector {
         res mustBe emptyAttachmentList
       }
     }
-    "the backend contains full attachment details" should {
+    "the backend contains attachments" should {
       "proxy through the response from the connector" in {
-        val fullAttachmentList = Attachments(Some(Post), List(IdentityEvidence))
+        val fullAttachmentList = List(IdentityEvidence)
+
         mockGetAttachmentsList(testRegId)(Future.successful(fullAttachmentList))
 
         val res = await(Service.getAttachmentList(testRegId))
@@ -52,14 +52,11 @@ class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector {
 
   "storeAttachmentDetails" should {
     "send the given value and proxy the response from the connector" in {
-      val fullAttachmentList = Attachments(Some(Post), List(IdentityEvidence))
-      val responseJson = Json.toJson(fullAttachmentList)
-
-      mockStoreAttachmentDetails(testRegId, Post)(Future.successful(responseJson))
+      val updatedAttachments = Attachments(method = Some(Post))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
 
       val res = await(Service.storeAttachmentDetails(testRegId, Post))
-
-      res mustBe responseJson
+      res mustBe updatedAttachments
     }
   }
 
@@ -79,6 +76,27 @@ class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector {
         val res = await(Service.getIncompleteAttachments(testRegId))
 
         res mustBe fullAttachmentList
+      }
+    }
+  }
+
+  "getAttachmentDetails" when {
+    "the backend doesn't contain any attachment details" should {
+      "proxy through the response from the connector" in {
+        mockGetSection[Attachments](testRegId, Some(Attachments()))
+
+        val res = await(Service.getAttachmentDetails(testRegId))
+
+        res.flatMap(_.method) mustBe None
+      }
+    }
+    "the backend contains full attachment details" should {
+      "proxy through the response from the connector" in {
+        mockGetSection[Attachments](testRegId, Some(Attachments(method = Some(Post))))
+
+        val res = await(Service.getAttachmentDetails(testRegId))
+
+        res.flatMap(_.method) mustBe Some(Post)
       }
     }
   }
