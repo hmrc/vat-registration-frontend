@@ -43,14 +43,18 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
   val testBankName = "testName"
-  val testSortCode = "12-34-56"
+  val testSortCode = "123456"
   val testAccountNumber = "12345678"
-  val testUkBankDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode)
+  val testUkBankDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
   val bankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None, None)
+  val emptyBankAccount = BankAccount(isProvided = true, None, None, None)
+  val bankAccountNotProvidedNoReason = BankAccount(isProvided = false, None, None, None)
+  val bankAccountNotProvided = BankAccount(isProvided = false, None, None, Some(BeingSetup))
   val testBic = "BIC"
   val testIban = "IBAN"
   val testOverseasBankAccountDetails: OverseasBankDetails = OverseasBankDetails(testBankName, testBic, testIban)
   val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
+  val testOverseasBankAccountFrs = BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None)
   val testTurnover = 30000
   val fullVatApplication: VatApplication = VatApplication(
     tradeVatGoodsOutsideUk = Some(false),

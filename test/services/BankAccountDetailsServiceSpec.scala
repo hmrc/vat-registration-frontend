@@ -16,6 +16,7 @@
 
 package services
 
+import connectors.mocks.MockRegistrationApiConnector
 import models.{BankAccount, BankAccountDetails, BeingSetup, OverseasBankDetails, S4LKey}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -25,13 +26,13 @@ import uk.gov.hmrc.http.HttpResponse
 
 import scala.concurrent.Future
 
-class BankAccountDetailsServiceSpec extends VatSpec {
+class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
   val mockBankAccountRepService: BankAccountReputationService = mock[BankAccountReputationService]
 
   trait Setup {
     val service: BankAccountDetailsService = new BankAccountDetailsService(
-      mockVatRegistrationConnector,
+      mockRegistrationApiConnector,
       mockS4LService,
       mockBankAccountRepService
     )
@@ -48,11 +49,9 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
-      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
-        .thenReturn(Future.successful(Some(bankAccount)))
+      mockGetSection[BankAccount](testRegId, Some(bankAccount))
 
-      when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(bankAccount))(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+      mockReplaceSection[BankAccount](testRegId, bankAccount)
 
       val result: BankAccount = await(service.saveHasCompanyBankAccount(hasBankAccount))
 
@@ -69,8 +68,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockS4LService.save(eqTo(incompleteBankAccount))(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
-      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
-        .thenReturn(Future.successful(None))
+      mockGetSection[BankAccount](testRegId, None)
 
       await(service.saveHasCompanyBankAccount(hasBankAccount)) mustBe incompleteBankAccount
     }
@@ -122,8 +120,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
-        .thenReturn(Future.successful(Some(bankAccount)))
+      mockGetSection[BankAccount](testRegId, Some(bankAccount))
 
       val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
 
@@ -134,8 +131,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGet(eqTo(bankAccountS4LKey), any(), any(), any()))
         .thenReturn(Future.successful(None))
 
-      when(mockVatRegistrationConnector.getBankAccount(eqTo(currentProfile.registrationId))(any()))
-        .thenReturn(Future.successful(None))
+      mockGetSection[BankAccount](testRegId, None)
 
       val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
 
@@ -148,8 +144,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
     "return a BankAccount and save to the backend and save4later if it is full" in new Setup {
       val fullBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
 
-      when(mockVatRegistrationConnector.patchBankAccount(eqTo(currentProfile.registrationId), eqTo(fullBankAccount))(any()))
-        .thenReturn(Future.successful(HttpResponse(200)))
+      mockReplaceSection[BankAccount](testRegId, fullBankAccount)
 
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -158,7 +153,7 @@ class BankAccountDetailsServiceSpec extends VatSpec {
       result mustBe fullBankAccount
 
       verify(mockS4LService, never()).save(eqTo(fullBankAccount))(any(), any(), any(), any())
-      verify(mockVatRegistrationConnector, times(1)).patchBankAccount(any(), any())(any())
+      verify(mockRegistrationApiConnector, times(1)).replaceSection[BankAccount](eqTo(currentProfile.registrationId), any[BankAccount](), any())(any(), any(), any())
     }
 
     "return a BankAccount and save to save 4 later if it is incomplete" in new Setup {

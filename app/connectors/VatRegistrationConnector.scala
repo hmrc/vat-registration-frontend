@@ -94,19 +94,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
     }
   }
 
-  def getBankAccount(regId: String)(implicit hc: HeaderCarrier): Future[Option[BankAccount]] = {
-    http.GET[BankAccount](s"$vatRegUrl/vatreg/$regId/bank-account") map (Some(_)) recover {
-      case _: NotFoundException => None
-      case e: Exception => throw logResponse(e, "getBankAccount")
-    }
-  }
-
-  def patchBankAccount(regId: String, bankAccount: BankAccount)
-                      (implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.PATCH[BankAccount, HttpResponse](s"$vatRegUrl/vatreg/$regId/bank-account", bankAccount) recover {
-      case e: Exception => throw logResponse(e, "patchBankAccount")
-    }
-  }
 }
 
 sealed trait DESResponse

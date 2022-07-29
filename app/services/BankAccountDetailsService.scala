@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.VatRegistrationConnector
+import connectors.RegistrationApiConnector
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.{BankAccount, BankAccountDetails, CurrentProfile, OverseasBankDetails}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -25,14 +25,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationConnector,
+class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiConnector,
                                           val s4LService: S4LService,
                                           val bankAccountRepService: BankAccountReputationService) {
 
   def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Option[BankAccount]] = {
     s4LService.fetchAndGet[BankAccount].flatMap {
       case Some(bankAccount) => Future.successful(Some(bankAccount))
-      case None => vatRegConnector.getBankAccount(profile.registrationId)
+      case None => regApiConnector.getSection[BankAccount](profile.registrationId)
     }
   }
 
@@ -81,7 +81,7 @@ class BankAccountDetailsService @Inject()(val vatRegConnector: VatRegistrationCo
     bankAccountBlockCompleted(bankAccount) fold(
       incomplete => s4LService.save[BankAccount](incomplete).map(_ => incomplete),
       complete => for {
-        _ <- vatRegConnector.patchBankAccount(profile.registrationId, complete)
+        _ <- regApiConnector.replaceSection[BankAccount](profile.registrationId, complete)
         _ <- s4LService.clearKey[BankAccount]
       } yield complete
     )

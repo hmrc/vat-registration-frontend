@@ -67,7 +67,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
         .s4lContainer[BankAccount].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
@@ -85,7 +85,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
         .s4lContainer[BankAccount].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -104,7 +104,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
         .s4lContainer[BankAccount].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 

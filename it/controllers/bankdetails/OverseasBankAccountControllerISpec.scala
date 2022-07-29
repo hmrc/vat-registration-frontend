@@ -55,7 +55,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
+        .registrationApi.replaceSection[BankAccount](testOverseasBankAccountFrs)
         .s4lContainer[BankAccount].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

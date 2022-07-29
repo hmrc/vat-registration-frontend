@@ -70,7 +70,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4l.isEmpty()
-        .vatScheme.has("bank-account", Json.toJson(BankAccount(true, None, None, None)))
+        .registrationApi.getSection[BankAccount](Some(emptyBankAccount))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -97,7 +97,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4l.isEmpty()
-        .vatScheme.has("bank-account", Json.toJson(BankAccount(false, None, None, None)))
+        .registrationApi.getSection[BankAccount](Some(bankAccountNotProvidedNoReason))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

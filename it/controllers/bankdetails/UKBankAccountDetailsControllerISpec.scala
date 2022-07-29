@@ -19,9 +19,8 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .s4lContainer[BankAccount].isEmpty
+        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -32,9 +31,8 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     "return OK with a pre-populated form from S4L" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(bankAccount)))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .s4lContainer[BankAccount].contains(bankAccount)
+        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -49,9 +47,8 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     "return OK with a pre-populated form from the backend" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
-        .s4l.isEmpty()
-        .vatScheme.has("bank-account", Json.toJson(bankAccount))
+        .s4lContainer[BankAccount].isEmpty
+        .registrationApi.getSection[BankAccount](Some(bankAccount))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -71,10 +68,9 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.passes
-          .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+          .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
           .s4lContainer[BankAccount].clearedByKey
-          .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))))
-          .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))
+          .registrationApi.replaceSection[BankAccount](bankAccount)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -82,7 +78,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         val res = await(buildClient(url).post(Json.obj(
           "accountName" -> testBankName,
           "accountNumber" -> testAccountNumber,
-          "sortCode" -> "123456"
+          "sortCode" -> testSortCode
         )))
 
         res.status mustBe SEE_OTHER
@@ -94,7 +90,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.fails
-          .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+          .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -102,7 +98,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         val res = await(buildClient(url).post(Json.obj(
           "accountName" -> testBankName,
           "accountNumber" -> testAccountNumber,
-          "sortCode" -> "123456"
+          "sortCode" -> testSortCode
         )))
 
         res.status mustBe BAD_REQUEST
@@ -114,10 +110,9 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       given
         .user.isAuthorised()
         .bankAccountReputation.passes
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+        .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
         .s4lContainer[BankAccount].clearedByKey
-        .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))))
-        .vatScheme.isUpdatedWith[BankAccount](BankAccount(isProvided = true, details = Some(testUkBankDetails), None, None))
+        .registrationApi.replaceSection[BankAccount](bankAccount)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -125,7 +120,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       val res = await(buildClient(url).post(Json.obj(
         "accountName" -> testBankName,
         "accountNumber" -> testAccountNumber,
-        "sortCode" -> "123456"
+        "sortCode" -> testSortCode
       )))
 
       res.status mustBe SEE_OTHER
@@ -138,7 +133,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.fails
-          .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(isProvided = true, None, None, None))))
+          .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
