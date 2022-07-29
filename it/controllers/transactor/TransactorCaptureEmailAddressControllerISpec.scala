@@ -116,6 +116,27 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.transactor.routes.TransactorEmailAddressVerifiedController.show.url)
       }
+      "Update S4L redirect to 'Email Confirmation Code Max Attempts Exceeded' page when the user has already verified" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised()
+          .s4lContainer[TransactorDetails].contains(TransactorDetails())
+          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(email = Some(testEmail)))
+          .s4lContainer[TransactorDetails].isUpdatedWith(
+          TransactorDetails().copy(email = Some(testEmail), emailVerified = Some(true))
+        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
+
+        val res: WSResponse = await(buildClient("/your-email-address").post(Map("email-address" -> Seq(testEmail))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
+      }
     }
     "TransactorDetails is complete" should {
       "Post the block to the backend and redirect to the Transactor Capture Email Passcode page" in new Setup {

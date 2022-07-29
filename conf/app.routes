@@ -296,8 +296,11 @@ GET         /problem-vat-application                                  controller
 GET         /already-submitted                                        controllers.errors.ErrorController.alreadySubmitted
 POST        /already-submitted                                        controllers.errors.ErrorController.alreadySubmittedSignOut
 
-## Email max attempts error page
+## Email max passcode attempts error page
 GET         /error/passcode-too-many-attempts                         controllers.errors.EmailPasscodesMaxAttemptsExceededController.show
+
+## Email max confirmation code attempts error page
+GET         /error/maximum-code-requests                              controllers.errors.EmailConfirmationCodeMaxAttemptsExceededController.show
 
 ## Email passcode not found
 GET         /error/passcode-not-found                                 controllers.errors.EmailPasscodeNotFoundController.show(redirectUrl: String)

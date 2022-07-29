@@ -62,6 +62,8 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_pas
               }
             case RequestEmailPasscodeSuccessful =>
               Future.successful(Ok(view(email, TransactorEmailPasscodeForm.form, isTransactor = true, isNewPasscode = true)))
+            case MaxEmailsExceeded =>
+              Future.successful(Redirect(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show))
           }
         }
   }

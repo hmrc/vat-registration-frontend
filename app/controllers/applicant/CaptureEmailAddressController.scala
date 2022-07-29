@@ -19,7 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EmailAddressForm
-import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, RequestEmailPasscodeSuccessful}
+import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, MaxEmailsExceeded, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -73,6 +73,8 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
                       }
                     case RequestEmailPasscodeSuccessful =>
                       Future.successful(Redirect(routes.CaptureEmailPasscodeController.show))
+                    case MaxEmailsExceeded =>
+                      Future.successful(Redirect(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show))
                   }
                 }
             } yield {
