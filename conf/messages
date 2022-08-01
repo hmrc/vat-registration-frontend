@@ -380,6 +380,11 @@ page.MaxPasscodeAttemptsExceeded.p1                = This is because you have en
 page.MaxPasscodeAttemptsExceeded.p2                = To start again you need to
 page.MaxPasscodeAttemptsExceeded.link              = sign out
 
+##Max Confirmation Code Attempts Exceeded
+page.MaxConfirmationCodeAttemptsExceeded.heading           = You have reached the maximum number of confirmation code requests
+page.MaxConfirmationCodeAttemptsExceeded.p                 = We cannot send another code to {0}. If it is not in your inbox, spam or junk folder, you can
+page.MaxConfirmationCodeAttemptsExceeded.link              = provide another email address
+
 ## Unable to confirm identity page
 pages.cantconfirmidentity.title         = We won’t be able to confirm your identity
 pages.cantconfirmidentity.heading       = We won’t be able to confirm your identity

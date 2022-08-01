@@ -120,6 +120,29 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(controllers.applicant.routes.EmailAddressVerifiedController.show.url)
       }
 
+      "Update S4L redirect to 'Email confirmation code max attempt exceeded' page when the user has already verified" in new Setup {
+        disable(StubEmailVerification)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .registrationApi.getSection[ApplicantDetails](None)
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
+          .s4lContainer[ApplicantDetails].isUpdatedWith(
+          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
+        )
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
+
+        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
+      }
+
       "Update S4L redirect to Capture Telephone Number page when the user is a transactor" in new Setup {
         disable(StubEmailVerification)
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)

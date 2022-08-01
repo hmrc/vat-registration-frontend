@@ -19,7 +19,7 @@ package controllers.transactor
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.TransactorEmailAddressForm
-import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeSuccessful}
+import models.external.{AlreadyVerifiedEmailAddress, MaxEmailsExceeded, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
 import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
@@ -63,6 +63,8 @@ class TransactorCaptureEmailAddressController @Inject()(view: capture_email_addr
                   }
                 case RequestEmailPasscodeSuccessful =>
                   Future.successful(Redirect(routes.TransactorCaptureEmailPasscodeController.show))
+                case MaxEmailsExceeded =>
+                  Future.successful(Redirect(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show))
               }
             }
         )
