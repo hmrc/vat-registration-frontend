@@ -32,10 +32,7 @@ class AttachmentsConnector @Inject()(httpClient: HttpClient, config: FrontendApp
 
     httpClient.GET[HttpResponse](config.attachmentsApiUrl(regId)).map { result =>
       result.status match {
-        case OK =>
-          result.json.validate[List[AttachmentType]].orElse(
-            (result.json \ "attachments").validate[List[AttachmentType]] // Remove this as part of cleanup task
-          ).getOrElse(throw new InternalServerException("[AttachmentsConnector][getAttachmentList] failed to parse attachment list response"))
+        case OK => result.json.as[List[AttachmentType]]
         case status => throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
       }
     }
