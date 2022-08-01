@@ -14,10 +14,12 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(None, None, None, None, None)
 
   s"GET $url" must {
-    "Return OK when there is no value for 'goodsToOverseas' in the backend" in {
+    "Return OK when there is no value for 'goodsToOverseas' in the backend" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).get()
 
@@ -27,10 +29,12 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
       }
     }
 
-    "Return OK with prepop when there is a value for 'goodsToOverseas' in the backend" in {
+    "Return OK with prepop when there is a value for 'goodsToOverseas' in the backend" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).get()
 
@@ -42,11 +46,13 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the send goods to EU page when the answer is yes" in {
+    "redirect to the send goods to EU page when the answer is yes" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[VatApplication].isUpdatedWith(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).post(Json.obj("value" -> "true"))
 
@@ -56,11 +62,13 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the storing goods page when the answer is no" in {
+    "redirect to the storing goods page when the answer is no" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
         .s4lContainer[VatApplication].isUpdatedWith(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient(url).post(Json.obj("value" -> "false"))
 

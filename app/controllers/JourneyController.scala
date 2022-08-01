@@ -104,7 +104,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
           _ <- journeyService.buildCurrentProfile(regId)
           optHeader <- vatRegistrationService.getVatSchemeJson(regId).map(_.validate[VatSchemeHeader](VatSchemeHeader.vatSchemeReads).asOpt)
           header = optHeader.getOrElse(throw new InternalServerException(s"[continueJourney] couldn't parse vat scheme header for regId: $regId"))
-          trafficManagementResponse <- trafficManagementService.checkTrafficManagement(regId) // Used to check if user is OTRS so should always be enabled
+          trafficManagementResponse <- if (isEnabled(TrafficManagementPredicate)) trafficManagementService.checkTrafficManagement(regId) else Future.successful(PassedVatReg)
         } yield (header.status, trafficManagementResponse) match {
           case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)
           case (VatRegStatus.submitted, _) => Redirect(routes.ApplicationSubmissionController.show)
