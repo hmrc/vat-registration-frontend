@@ -17,15 +17,15 @@
 package services
 
 import common.enums.VatRegStatus
+import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import connectors._
 import models._
 import models.api._
-import play.api.libs.json.{Format, JsObject, JsValue}
+import play.api.libs.json.{Format, JsValue}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,7 +41,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration(profile.registrationId)
 
-  // TODO update structure of VatScheme so that all header information (IDs, creation date, status) can be accessed using the Sections API
   def upsertVatScheme(vatScheme: VatScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.upsertRegistration(profile.registrationId, vatScheme)
 
@@ -59,36 +58,24 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   def getVatSchemeJson(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] =
     vatRegConnector.getRegistrationJson(regId)
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = vatRegConnector.getAckRef(regId)
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
+    implicit val key: ApiKey[String] = acknowledgementReferenceKey
 
-  def getTaxableThreshold(date: LocalDate = LocalDate.now())(implicit hc: HeaderCarrier): Future[String] = {
-    vatRegConnector.getTaxableThreshold(date) map { taxableThreshold =>
-      "%,d".format(taxableThreshold.threshold.toInt)
-    }
+    getSection[String](regId).map(_.getOrElse(throw new InternalServerException("Missing Acknowledgement Reference")))
   }
-
-  def deleteVatScheme(registrationId: String)(implicit hc: HeaderCarrier): Future[Boolean] =
-    vatRegConnector.deleteVatScheme(registrationId)
 
   def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[VatScheme] = {
     logger.info("[createRegistrationFootprint] Creating registration footprint")
     vatRegConnector.createNewRegistration
   }
 
-  def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = vatRegConnector.getStatus(regId)
-
-  def getEligibilityData(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[JsObject] = vatRegConnector.getEligibilityData
+  def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
+    getSection[VatRegStatus.Value](regId).map(_.getOrElse(throw new InternalServerException("Missing Vat Registration Status")))
+  }
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[DESResponse] = {
     vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
   }
-
-  def submitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    vatRegConnector.submitHonestyDeclaration(regId, honestyDeclaration)
-  }
-
-  def storePartialVatScheme(regId: String, partialVatScheme: JsValue)(implicit hc: HeaderCarrier): Future[JsValue] =
-    vatRegConnector.upsertVatScheme(regId, partialVatScheme)
 
   def getEligibilitySubmissionData(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[EligibilitySubmissionData] =
     registrationApiConnector.getSection[EligibilitySubmissionData](profile.registrationId).map(optData =>

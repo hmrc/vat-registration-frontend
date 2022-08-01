@@ -74,14 +74,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
 
   "getAckRef" should {
     "retrieve Acknowledgement Reference (id) from the backend" in new Setup {
-      when(mockVatRegistrationConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
-        .thenReturn(Future.successful("testRefNo"))
+      mockGetSection[String](testRegId, Some("testRefNo"))
 
       await(service.getAckRef(testRegId)) mustBe "testRefNo"
     }
     "retrieve no Acknowledgement Reference if there's none in the backend" in new Setup {
-      when(mockVatRegistrationConnector.getAckRef(ArgumentMatchers.eq(testRegId))(any()))
-        .thenReturn(Future.failed(new InternalServerException("")))
+      mockGetSection[String](testRegId, None)
 
       intercept[InternalServerException](await(service.getAckRef(testRegId)))
     }
@@ -116,14 +114,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
     }
   }
 
-  "deleteVatScheme" should {
-    "return a success response when the delete VatScheme is successful" in new Setup {
-      when(mockVatRegistrationConnector.deleteVatScheme(any())(any(), any())).thenReturn(Future.successful(true))
-
-      await(service.deleteVatScheme(testRegId)) mustBe true
-    }
-  }
-
   "submitRegistration" should {
     "return a Success DES response" in new Setup {
       when(mockVatRegistrationConnector.submitRegistration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testRequest.headers.toSimpleMap))(any[HeaderCarrier]))
@@ -131,38 +121,5 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
 
       await(service.submitRegistration) mustBe Success
     }
-  }
-
-  "getTaxableThreshold" must {
-    val taxableThreshold = TaxableThreshold("50000", LocalDate.of(2018, 1, 1).toString)
-
-    "return a taxable threshold" in new Setup {
-      when(mockVatRegistrationConnector.getTaxableThreshold(any())(any())) thenReturn Future.successful(taxableThreshold)
-      await(service.getTaxableThreshold(LocalDate.now)) mustBe formattedThreshold
-    }
-  }
-  "getEligibilityData" should {
-    "return a JsObject" in new Setup {
-      val json = Json.obj("foo" -> "bar")
-      when(mockVatRegistrationConnector.getEligibilityData) thenReturn Future.successful(json)
-
-      await(service.getEligibilityData) mustBe json
-
-    }
-    "return an exception if the vat reg connector returns an exception" in new Setup {
-      when(mockVatRegistrationConnector.getEligibilityData) thenReturn Future.failed(new Exception(""))
-
-      intercept[Exception](await(service.getEligibilityData))
-    }
-  }
-  "submitHonestyDeclaration" should {
-    "return a HttpResponse" in new Setup {
-      val httpResponse = Json.obj("honestyDeclartion" -> true)
-      val successfulResponse = HttpResponse(200, "{}")
-      when(mockVatRegistrationConnector.submitHonestyDeclaration(ArgumentMatchers.eq(testRegId), ArgumentMatchers.eq(testHonestyDeclaration))(any())) thenReturn Future.successful(successfulResponse)
-
-      await(service.submitHonestyDeclaration(testRegId, testHonestyDeclaration)) mustBe successfulResponse
-    }
-
   }
 }

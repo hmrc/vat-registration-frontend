@@ -42,7 +42,7 @@ class RegistrationReasonTaskList @Inject()(appConfig: FrontendAppConfig) {
             appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.eligibility.heading"),
-      rows = Seq(registrationReasonRow(vatScheme.id).build(vatScheme))
+      rows = Seq(registrationReasonRow(vatScheme.registrationId).build(vatScheme))
     )
 
 }

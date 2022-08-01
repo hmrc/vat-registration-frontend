@@ -15,10 +15,13 @@
  */
 
 package controllers
+
 import config.FrontendAppConfig
+import connectors.RegistrationApiConnector.honestyDeclarationKey
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
+import models.ApiKey
 import play.api.http.HeaderNames
 import play.api.http.Status.SEE_OTHER
 import play.api.libs.ws.WSResponse
@@ -29,7 +32,7 @@ import scala.concurrent.Future
 class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
 
   val url: String = controllers.routes.HonestyDeclarationController.show.url
-  val appConfig = app.injector.instanceOf[FrontendAppConfig]
+  val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val userId = "user-id-12345"
 
   s"GET $url" must {
@@ -48,9 +51,10 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
 
   s"POST $url" must {
     "redirect to Eligibility" in new Setup {
+      implicit val key: ApiKey[Boolean] = honestyDeclarationKey
       given()
         .user.isAuthorised()
-        .vatRegistration.honestyDeclaration(testRegId, "true")
+        .registrationApi.replaceSection(true, testRegId)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

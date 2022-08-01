@@ -16,6 +16,7 @@
 
 package connectors
 
+import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import models._
 import play.api.http.Status._
@@ -91,4 +92,11 @@ class RegistrationApiConnector @Inject()(val http: HttpClient,
       case None => url
     }
   }
+}
+
+object RegistrationApiConnector {
+  val honestyDeclarationKey: ApiKey[Boolean] = ApiKey[Boolean]("confirm-information-declaration")
+  val applicationReferenceKey: ApiKey[String] = ApiKey[String]("application-reference")
+  val nrsSubmissionPayloadKey: ApiKey[String] = ApiKey[String]("nrs-submission-payload")
+  val acknowledgementReferenceKey: ApiKey[String] = ApiKey[String]("acknowledgement-reference")
 }

@@ -46,7 +46,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       when(mockAttachmentsService.getAttachmentList(any())(any()))
@@ -70,7 +70,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = None))))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>
@@ -88,7 +88,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = Some(Other)))))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>
@@ -106,7 +106,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = Some(Attached)))))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>
@@ -124,7 +124,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>
@@ -142,7 +142,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = Some(EmailMethod)))))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>
@@ -160,7 +160,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.id))(any()))
+      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
       callAuthorised(testController.show) { res =>

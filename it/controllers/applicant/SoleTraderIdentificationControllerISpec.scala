@@ -176,7 +176,8 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].clearedByKey
         .vatScheme.contains(
-        VatScheme(id = currentProfile.registrationId,
+        VatScheme(registrationId = currentProfile.registrationId,
+          createdDate = testCreatedDate,
           status = VatRegStatus.draft,
           eligibilitySubmissionData = Some(testEligibilitySubmissionData)
         )

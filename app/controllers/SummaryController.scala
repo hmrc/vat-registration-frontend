@@ -42,15 +42,13 @@ class SummaryController @Inject()(val sessionService: SessionService,
                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with ApplicativeSyntax {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        for {
-          accordion <- summaryService.getSummaryData
-          _ <- s4LService.clear
-          html = summaryPage(accordion)
-          _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
-        } yield Ok(html)
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+    for {
+      accordion <- summaryService.getSummaryData
+      _ <- s4LService.clear
+      html = summaryPage(accordion)
+      _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
+    } yield Ok(html)
   }
 
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {

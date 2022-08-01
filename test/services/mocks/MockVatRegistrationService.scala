@@ -16,7 +16,7 @@
 
 package services.mocks
 
-import models.CurrentProfile
+import models.{ApiKey, CurrentProfile}
 import models.api.{PartyType, VatScheme}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -24,7 +24,7 @@ import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.JsValue
+import play.api.libs.json.{Format, JsValue}
 import services.VatRegistrationService
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
@@ -46,17 +46,15 @@ trait MockVatRegistrationService extends MockitoSugar {
       ArgumentMatchers.eq(regId)
     )(any[HeaderCarrier])) thenReturn response
 
-  def mockSaveVatScheme(regId: String, partialVatScheme: JsValue)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
-    when(vatRegistrationServiceMock.storePartialVatScheme(
+  def mockUpsertSection[T](regId: String, data: T)(response: Future[T]): OngoingStubbing[Future[T]] =
+    when(vatRegistrationServiceMock.upsertSection(
       ArgumentMatchers.eq(regId),
-      ArgumentMatchers.eq(partialVatScheme)
-    )(any[HeaderCarrier])) thenReturn response
-
-  def mockSubmitHonestyDeclaration(regId: String, honestyDeclaration: Boolean)(response: Future[HttpResponse]): OngoingStubbing[Future[HttpResponse]] =
-    when(vatRegistrationServiceMock.submitHonestyDeclaration(
-      ArgumentMatchers.eq(regId),
-      ArgumentMatchers.eq(honestyDeclaration)
-    )(any[HeaderCarrier])) thenReturn response
+      ArgumentMatchers.eq(data)
+    )(
+      any[HeaderCarrier],
+      any[Format[T]],
+      any[ApiKey[T]]
+    )) thenReturn response
 
   def mockPartyType(response: Future[PartyType]): OngoingStubbing[Future[PartyType]] =
     when(vatRegistrationServiceMock.partyType(

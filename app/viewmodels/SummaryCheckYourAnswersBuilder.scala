@@ -19,18 +19,16 @@ package viewmodels
 import featureswitch.core.config.FeatureSwitching
 import models.api._
 import play.api.i18n.Messages
-import play.api.libs.json.JsValue
-import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
+import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.{Accordion, Section}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.collection.immutable.ListMap
 
 @Singleton
-class SummaryCheckYourAnswersBuilder @Inject()(govukSummaryList: GovukSummaryList,
-                                               eligibilitySummaryBuilder: EligibilitySummaryBuilder,
+class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: EligibilitySummaryBuilder,
                                                grsSummaryBuilder: GrsSummaryBuilder,
                                                transactorDetailsSummaryBuilder: TransactorDetailsSummaryBuilder,
                                                applicantDetailsSummaryBuilder: ApplicantDetailsSummaryBuilder,
@@ -38,11 +36,11 @@ class SummaryCheckYourAnswersBuilder @Inject()(govukSummaryList: GovukSummaryLis
                                                otherBusinessInvolvementSummaryBuilder: OtherBusinessInvolvementSummaryBuilder,
                                                registrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder) extends FeatureSwitching {
 
-  def generateSummaryAccordion(vatScheme: VatScheme, eligibilityJson: JsValue)(implicit messages: Messages): Accordion = {
+  def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages): Accordion = {
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
 
     val summaryMap = ListMap(
-      messages(s"cya.heading.eligibility") -> eligibilitySummaryBuilder.build(eligibilityJson, vatScheme.id),
+      messages(s"cya.heading.eligibility") -> eligibilitySummaryBuilder.build(vatScheme.eligibilityData.getOrElse(throw new InternalServerException("Missing eligibility json")), vatScheme.registrationId),
       messages(s"cya.heading.transactor") -> transactorDetailsSummaryBuilder.build(vatScheme),
       messages(s"cya.heading.verifyBusiness") -> grsSummaryBuilder.build(vatScheme),
       (if (isTransactor) messages(s"cya.heading.applicant.transactor") else messages(s"cya.heading.applicant.self")) -> applicantDetailsSummaryBuilder.build(vatScheme),

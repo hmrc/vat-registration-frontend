@@ -32,7 +32,7 @@ class ManageRegistrationsViewSpec extends VatRegViewSpec with VatRegistrationFix
     registrationId = testRegId,
     status = VatRegStatus.draft,
     applicationReference = Some(testApplicationReference),
-    createdDate = Some(testDate),
+    createdDate = testDate,
     requiresAttachments = false
   )
 

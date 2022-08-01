@@ -21,19 +21,29 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{VatScheme, VatSchemeHeader}
 import play.api.test.Helpers._
-import support.{APIStub, AppAndStubs, CanGet, RegistrationsApiStubs}
+import support.AppAndStubs
 import uk.gov.hmrc.http.Upstream5xxResponse
-import play.api.libs.json.Json
 
 class VatRegistrationConnectorISpec extends IntegrationSpecBase
   with AppAndStubs
-  with ITRegistrationFixtures
-  with RegistrationsApiStubs {
+  with ITRegistrationFixtures {
 
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
-  val registrationsStub = new APIStub("/vatreg/registrations") with CanGet
-  val testRegistrationsResponse = Json.arr(Json.toJson(fullVatScheme), Json.toJson(fullVatScheme.copy(id = "2")))
+  val testRegistrationsResponse = List(
+    VatSchemeHeader(
+      registrationId = "1",
+      createdDate = testCreatedDate,
+      status = VatRegStatus.draft,
+      requiresAttachments = false
+    ),
+    VatSchemeHeader(
+      registrationId = "2",
+      createdDate = testCreatedDate,
+      status = VatRegStatus.draft,
+      requiresAttachments = false
+    )
+  )
 
   override def additionalConfig: Map[String, String] =
     Map(
@@ -46,13 +56,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
         given()
           .vatRegistrationFootprint.exists()
 
-        await(vatregConnector.createNewRegistration) mustBe VatScheme(id = "1", status = VatRegStatus.draft)
-      }
-      "a registration with a createdDate is already present in the backend" in {
-        given()
-          .vatRegistrationFootprint.exists(withDate = true)
-
-        await(vatregConnector.createNewRegistration) mustBe VatScheme(id = "1", status = VatRegStatus.draft, createdDate = Some(testCreatedDate))
+        await(vatregConnector.createNewRegistration) mustBe VatScheme(registrationId = "1", status = VatRegStatus.draft, createdDate = testCreatedDate)
       }
     }
 
@@ -69,7 +73,6 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
   }
 
   "submitRegistration" should {
-
     "return success response and not submit to the backend for an allowed regId" in {
       given().vatRegistration.submit("/vatreg/99/submit-registration", OK)
       val res = vatregConnector.submitRegistration("99", Map("testHeaderKey" -> "testHeaderValue"))(hc)
@@ -77,43 +80,31 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
     }
   }
 
-  "getAckRef" should {
-    "return an acknowledgement reference" in {
-      val testAckRef = "testAckRef"
-      given().vatRegistration.acknowledgementReference("99", testAckRef)
-      val res = vatregConnector.getAckRef("99")(hc)
-      await(res) mustBe testAckRef
-    }
-  }
-
-  "submitHonestyDeclaration" should {
-    "return an OK status code" in {
-      val testHonestyDeclaration = "testHonestyDeclaration"
-      given().vatRegistration.honestyDeclaration("99", testHonestyDeclaration)
-      val res = vatregConnector.submitHonestyDeclaration("99", true)(hc)
-      await(res).status mustBe OK
-    }
-  }
-
   "getAllRegistrations" should {
     "return OK with a list of registrations" in {
-      registrationsStub.GET.respondsWith(OK, Some(testRegistrationsResponse))
+      given().registrationApi.getAllRegistrations(testRegistrationsResponse)
 
       val res = await(vatregConnector.getAllRegistrations)
 
-      res mustBe List(VatSchemeHeader(testRegId, VatRegStatus.draft, requiresAttachments = false), VatSchemeHeader("2", VatRegStatus.draft, requiresAttachments = false))
+      res mustBe List(
+        VatSchemeHeader(testRegId, VatRegStatus.draft, createdDate = testCreatedDate, requiresAttachments = false),
+        VatSchemeHeader("2", VatRegStatus.draft, createdDate = testCreatedDate, requiresAttachments = false)
+      )
     }
-    "return OK with a registration that has an application reference and start date" in {
+    "return OK with a registration that has an application reference" in {
       val testAppRef = "testAppRef"
-
-      registrationsStub.GET.respondsWith(OK, Some(Json.arr(Json.toJson(fullVatScheme.copy(
+      given().registrationApi.getAllRegistrations(List(VatSchemeHeader(
+        registrationId = "1",
+        createdDate = testCreatedDate,
+        status = VatRegStatus.draft,
         applicationReference = Some(testAppRef),
-        createdDate = Some(testCreatedDate)
-      )))))
+        requiresAttachments = false
+      )))
 
       val res = await(vatregConnector.getAllRegistrations)
 
-      res mustBe List(VatSchemeHeader(testRegId, VatRegStatus.draft, Some(testAppRef), Some(testCreatedDate), requiresAttachments = false))
+      res mustBe List(
+        VatSchemeHeader(testRegId, VatRegStatus.draft, Some(testAppRef), testCreatedDate, requiresAttachments = false))
     }
   }
 

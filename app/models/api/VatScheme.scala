@@ -24,19 +24,20 @@ import play.api.libs.json._
 
 import java.time.LocalDate
 
-case class VatScheme(id: String,
-                     applicantDetails: Option[ApplicantDetails] = None,
+case class VatScheme(registrationId: String,
+                     createdDate: LocalDate,
+                     status: VatRegStatus.Value,
+                     applicationReference: Option[String] = None,
+                     eligibilityData: Option[JsObject] = None,
+                     eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      transactorDetails: Option[TransactorDetails] = None,
+                     applicantDetails: Option[ApplicantDetails] = None,
+                     partners: Option[List[PartnerEntity]] = None,
+                     business: Option[Business] = None,
+                     otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None,
                      vatApplication: Option[VatApplication] = None,
                      bankAccount: Option[BankAccount] = None,
-                     flatRateScheme: Option[FlatRateScheme] = None,
-                     status: VatRegStatus.Value,
-                     eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
-                     partners: Option[List[PartnerEntity]] = None,
-                     createdDate: Option[LocalDate] = None,
-                     applicationReference: Option[String] = None,
-                     otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None,
-                     business: Option[Business] = None) {
+                     flatRateScheme: Option[FlatRateScheme] = None) {
 
   def partyType: Option[PartyType] = eligibilitySubmissionData.map(_.partyType)
 
@@ -48,51 +49,54 @@ object VatScheme {
     (__ \ "eligibilitySubmissionData" \ "partyType").readNullable[PartyType].flatMap {
       case Some(partyType) => (
         (__ \ "registrationId").read[String] and
-          (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
-          (__ \ "transactorDetails").readNullable[TransactorDetails] and
-          (__ \ "vatApplication").readNullable[VatApplication] and
-          (__ \ "bankAccount").readNullable[BankAccount] and
-          (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
-          (__ \ "status").read[VatRegStatus.Value] and
-          (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
-          (__ \ "partners").readNullable[List[PartnerEntity]] and
-          (__ \ "createdDate").readNullable[LocalDate] and
-          (__ \ "applicationReference").readNullable[String] and
-          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
-          (__ \ "business").readNullable[Business]
-        ) (VatScheme.apply _)
+        (__ \ "createdDate").read[LocalDate] and
+        (__ \ "status").read[VatRegStatus.Value] and
+        (__ \ "applicationReference").readNullable[String] and
+        (__ \ "eligibilityData").readNullable[JsObject] and
+        (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
+        (__ \ "transactorDetails").readNullable[TransactorDetails] and
+        (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
+        (__ \ "partners").readNullable[List[PartnerEntity]] and
+        (__ \ "business").readNullable[Business] and
+        (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
+        (__ \ "vatApplication").readNullable[VatApplication] and
+        (__ \ "bankAccount").readNullable[BankAccount] and
+        (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat)
+      ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
-          Reads.pure(None) and
-          Reads.pure(None) and
-          Reads.pure(None) and
-          Reads.pure(None) and
-          Reads.pure(None) and
-          (__ \ "status").read[VatRegStatus.Value] and
-          Reads.pure(None) and
-          Reads.pure(None) and
-          (__ \ "createdDate").readNullable[LocalDate] and
-          (__ \ "applicationReference").readNullable[String] and
-          (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
-          Reads.pure(None)
-        ) (VatScheme.apply _)
+        (__ \ "createdDate").read[LocalDate] and
+        (__ \ "status").read[VatRegStatus.Value] and
+        (__ \ "applicationReference").readNullable[String] and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None) and
+        Reads.pure(None)
+      ) (VatScheme.apply _)
     }
 
   val writes: Writes[VatScheme] = (
     (__ \ "registrationId").write[String] and
-      (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
-      (__ \ "transactorDetails").writeNullable[TransactorDetails] and
-      (__ \ "vatApplication").writeNullable[VatApplication] and
-      (__ \ "bankAccount").writeNullable[BankAccount] and
-      (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
-      (__ \ "status").write[VatRegStatus.Value] and
-      (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
-      (__ \ "partners").writeNullable[List[PartnerEntity]] and
-      (__ \ "createdDate").writeNullable[LocalDate] and
-      (__ \ "applicationReference").writeNullable[String] and
-      (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]] and
-      (__ \ "business").writeNullable[Business]
-    ) (unlift(VatScheme.unapply))
+    (__ \ "createdDate").write[LocalDate] and
+    (__ \ "status").write[VatRegStatus.Value] and
+    (__ \ "applicationReference").writeNullable[String] and
+    (__ \ "eligibilityData").writeNullable[JsObject] and
+    (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
+    (__ \ "transactorDetails").writeNullable[TransactorDetails] and
+    (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
+    (__ \ "partners").writeNullable[List[PartnerEntity]] and
+    (__ \ "business").writeNullable[Business] and
+    (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]] and
+    (__ \ "vatApplication").writeNullable[VatApplication] and
+    (__ \ "bankAccount").writeNullable[BankAccount] and
+    (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat)
+  ) (unlift(VatScheme.unapply))
 
   implicit val format: Format[VatScheme] = Format(reads, writes)
 

@@ -17,6 +17,8 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import connectors.RegistrationApiConnector.honestyDeclarationKey
+import models.ApiKey
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
 import views.html.honesty_declaration
@@ -40,13 +42,11 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
         Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit)))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
-    implicit request =>
-      implicit profile =>
-        for {
-          _ <- vatRegistrationService.submitHonestyDeclaration(regId = profile.registrationId, honestyDeclaration = true)
-        } yield {
-          Redirect(appConfig.eligibilityStartUrl(profile.registrationId))
-        }
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
+    implicit val key: ApiKey[Boolean] = honestyDeclarationKey
+
+    for {
+      _ <- vatRegistrationService.upsertSection(regId = profile.registrationId, data = true)
+    } yield Redirect(appConfig.eligibilityStartUrl(profile.registrationId))
   }
 }

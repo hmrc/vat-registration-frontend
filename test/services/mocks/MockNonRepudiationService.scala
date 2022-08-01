@@ -16,7 +16,6 @@
 
 package services.mocks
 
-import connectors.NonRepudiationConnector.StoreNrsPayloadSuccess
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
@@ -31,10 +30,10 @@ import scala.concurrent.Future
 trait MockNonRepudiationService extends MockitoSugar {
   self: Suite =>
 
-  val mockNonRepuidiationService = mock[NonRepudiationService]
+  val mockNonRepuidiationService: NonRepudiationService = mock[NonRepudiationService]
 
   def mockStoreEncodedUserAnswers(regId: String)
-                                 (response: Future[StoreNrsPayloadSuccess.type]): OngoingStubbing[Future[StoreNrsPayloadSuccess.type]] =
+                                 (response: Future[String]): OngoingStubbing[Future[String]] =
     when(mockNonRepuidiationService.storeEncodedUserAnswers(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.any[Html]

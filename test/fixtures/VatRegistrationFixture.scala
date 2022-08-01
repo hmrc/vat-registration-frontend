@@ -162,7 +162,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
       |}
     """.stripMargin).as[JsObject]
 
-  val emptyVatScheme = VatScheme(testRegId, status = VatRegStatus.draft)
+  val emptyVatScheme = VatScheme(testRegId, testDate, status = VatRegStatus.draft)
 
   val validNipCompliance = NIPTurnover(
     goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
@@ -274,7 +274,8 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     stillTrading = None)
 
   val validVatScheme = VatScheme(
-    id = testRegId,
+    registrationId = testRegId,
+    createdDate = testDate,
     business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
@@ -284,10 +285,9 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
-  val vatSchemeWithDate = validVatScheme.copy(createdDate = Some(testDate))
-
   val validSoleTraderVatScheme = VatScheme(
-    id = testRegId,
+    registrationId = testRegId,
+    createdDate = testDate,
     business = Some(validBusiness),
     applicantDetails = Some(completeApplicantDetails),
     flatRateScheme = Some(validFlatRate),
