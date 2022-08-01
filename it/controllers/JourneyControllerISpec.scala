@@ -18,8 +18,8 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
+import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList, TrafficManagementPredicate}
 import controllers.transactor.{routes => transactorRoutes}
-import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList}
 import itutil.ControllerISpec
 import models.api.trafficmanagement.{OTRS, VatReg}
 import models.api.{EligibilitySubmissionData, VatSchemeHeader}
@@ -404,6 +404,7 @@ class JourneyControllerISpec extends ControllerISpec {
     }
     "the channel for traffic management is OTRS" must {
       "redirect to OTRS" in new Setup {
+        enable(TrafficManagementPredicate)
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
@@ -416,6 +417,26 @@ class JourneyControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(appConfig.otrsRoute)
+        disable(TrafficManagementPredicate)
+      }
+    }
+    "the Traffic Management FS is disabled" must {
+      "pass all users as VatReg users" in new Setup {
+        enable(TrafficManagementPredicate)
+
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection(Some(VatRegStatus.draft))
+          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+
+        disable(TrafficManagementPredicate)
       }
     }
   }

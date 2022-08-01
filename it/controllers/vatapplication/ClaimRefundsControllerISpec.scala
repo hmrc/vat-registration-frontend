@@ -18,10 +18,12 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
   val testSmallTurnoverApplication: VatApplication = VatApplication(turnoverEstimate = Some(testSmallTurnover), appliedForExemption = Some(true), zeroRatedSupplies = Some(testZeroRated))
 
   "GET /claim-vat-refunds" must {
-    "Return OK when there is no value for 'claim refunds' in the backend" in {
+    "Return OK when there is no value for 'claim refunds' in the backend" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication())
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -29,10 +31,12 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         result.status mustBe OK
       }
     }
-    "Return OK when there is a value for 'claim refunds' in the backend" in {
+    "Return OK when there is a value for 'claim refunds' in the backend" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(claimVatRefunds = Some(true)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -44,13 +48,15 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
   "POST /claim-vat-refunds" when {
     "user is not eligible for exemption" must {
-      "redirect to the bank account details page when the user is TOGC/COLE" in {
+      "redirect to the bank account details page when the user is TOGC/COLE" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
         val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
         whenReady(res) { result =>
@@ -59,13 +65,15 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
-      "redirect to the bank account details page when the user is non-NETP" in {
+      "redirect to the bank account details page when the user is non-NETP" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
         val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
         whenReady(res) { result =>
@@ -74,12 +82,14 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
-      "redirect to send goods overseas page when the user is NETP" in {
+      "redirect to send goods overseas page when the user is NETP" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -89,12 +99,14 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
-      "redirect to send goods overseas page when the user is NonUkNoNEstablished" in {
+      "redirect to send goods overseas page when the user is NonUkNoNEstablished" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -106,12 +118,14 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     }
 
     "user is eligible for exemption" must {
-      "redirect to Vat Exemption page when the user answers Yes" in {
+      "redirect to Vat Exemption page when the user answers Yes" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testSmallTurnoverApplication)
           .s4lContainer[VatApplication].isUpdatedWith(testSmallTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
 
@@ -121,12 +135,14 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
-      "follow normal logic and clear down stored exemption answer when the user answers No" in {
+      "follow normal logic and clear down stored exemption answer when the user answers No" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testSmallTurnoverApplication)
           .s4lContainer[VatApplication].isUpdatedWith(testSmallTurnoverApplication.copy(claimVatRefunds = Some(true), appliedForExemption = None))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "false"))
 
@@ -136,8 +152,10 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
-      "return BAD_REQUEST if no option was selected" in {
+      "return BAD_REQUEST if no option was selected" in new Setup {
         given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient("/claim-vat-refunds").post("")
 
