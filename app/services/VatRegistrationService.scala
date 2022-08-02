@@ -26,6 +26,7 @@ import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,7 +46,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
     vatRegConnector.upsertRegistration(profile.registrationId, vatScheme)
 
   def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
-    vatRegConnector.getAllRegistrations
+    vatRegConnector.getAllRegistrations.map(_.filter(_.createdDate.isAfter(LocalDate.MIN.plusDays(1)))) //Sanity check to guard against broken schemes
 
   def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[Option[T]] =
     registrationApiConnector.getSection[T](regId)
