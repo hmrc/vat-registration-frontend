@@ -330,7 +330,7 @@ class TaskListControllerISpec extends ControllerISpec {
             .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
             .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
 
-          if (scheme.bankAccount.isDefined) given.vatScheme.has("bank-account", Json.toJson(scheme.bankAccount))
+          if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
