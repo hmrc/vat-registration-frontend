@@ -45,7 +45,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an OK with pre-populated data" in new Setup {
+    "return an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, Some(BeingSetup)))

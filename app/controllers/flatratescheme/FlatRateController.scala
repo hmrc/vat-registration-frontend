@@ -32,12 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FlatRateController @Inject()(val flatRateService: FlatRateService,
-                                   val vatRegistrationService: VatRegistrationService,
                                    val authConnector: AuthClientConnector,
                                    val sessionService: SessionService,
-                                   val configConnector: ConfigConnector,
-                                   val timeService: TimeService,
-                                   val businessService: BusinessService,
                                    annual_costs_inclusive: annual_costs_inclusive,
                                    annual_costs_limited: annual_costs_limited,
                                    frs_register_for: frs_register_for,

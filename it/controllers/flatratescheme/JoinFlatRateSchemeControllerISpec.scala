@@ -56,7 +56,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
-        .vatScheme.doesNotHave("flat-rate-scheme")
         .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -73,7 +72,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsS4LData.copy(joinFrs = None))
-        .vatScheme.doesNotHave("flat-rate-scheme")
         .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -90,7 +88,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
-        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -106,7 +104,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
-        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .registrationApi.getSection(Some(vatApplicationWithBigTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -123,7 +121,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
-        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
         registrationReason = GroupRegistration
@@ -142,7 +140,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
-        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .registrationApi.getSection(Some(vatApplicationWithoutTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -160,9 +158,9 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the next FRS page if the user answers Yes" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("flat-rate-scheme", Json.toJson(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData)
-        .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(true))))
+        .registrationApi.replaceSection[FlatRateScheme](frsS4LData.copy(joinFrs = Some(true)))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .registrationApi.getSection(Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -174,12 +172,12 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)
       }
     }
-    "redirect to the next FRS page if the user answers No" in new Setup {
+    "redirect to the documents page if the user answers No" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.doesNotHave("flat-rate-scheme")
+        .registrationApi.getSection[FlatRateScheme](None)(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .s4lContainer[FlatRateScheme].clearedByKey
-        .vatScheme.isUpdatedWith("flat-rate-scheme", Json.toJson(frsS4LData.copy(joinFrs = Some(false))))
+        .registrationApi.replaceSection[FlatRateScheme](FlatRateScheme(Some(false)))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .registrationApi.getSection(Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

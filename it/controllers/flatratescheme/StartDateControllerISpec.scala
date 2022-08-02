@@ -68,7 +68,6 @@ class StartDateControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
-        .vatScheme.doesNotHave("flat-rate-scheme")
         .registrationApi.getSection(Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -86,7 +85,6 @@ class StartDateControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
         .s4lContainer[FlatRateScheme].contains(frsS4LData)
-        .vatScheme.doesNotHave("flat-rate-scheme")
         .registrationApi.getSection(Some(vatApplicationWithStartDate))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -108,7 +106,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .vatScheme.doesNotHave("flat-rate-scheme")
           .registrationApi.getSection(Some(vatApplicationWithStartDate))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -128,7 +125,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .vatScheme.doesNotHave("flat-rate-scheme")
           .registrationApi.getSection(Some(vatApplication))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -148,7 +144,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .vatScheme.doesNotHave("flat-rate-scheme")
           .registrationApi.getSection(Some(vatApplicationWithStartDate))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -172,7 +167,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .vatScheme.doesNotHave("flat-rate-scheme")
           .registrationApi.getSection(Some(vatApplicationWithStartDate))
           .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData.copy(frsStart = Some(Start(Some(oneDayBeforeEdrDate)))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
@@ -195,7 +189,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].isEmpty
           .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .vatScheme.doesNotHave("flat-rate-scheme")
           .registrationApi.getSection[VatApplication](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
           threshold = voluntaryThreshold,

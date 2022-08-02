@@ -45,7 +45,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].contains(frsData)
-        .vatScheme.doesNotHave("flat-rate-scheme")
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -61,7 +60,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
-        .vatScheme.has("flat-rate-scheme", Json.toJson(fullFrsData)(FlatRateScheme.apiFormat))
+        .registrationApi.getSection[FlatRateScheme](Some(fullFrsData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,7 +76,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[FlatRateScheme].isEmpty
-        .vatScheme.has("flat-rate-scheme", Json.toJson(frsData.copy(estimateTotalSales = None)))
+        .registrationApi.getSection[FlatRateScheme](None)(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

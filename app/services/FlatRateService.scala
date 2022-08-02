@@ -17,9 +17,10 @@
 package services
 
 import com.google.inject.Inject
-import connectors.{ConfigConnector, VatRegistrationConnector}
+import connectors.{ConfigConnector, RegistrationApiConnector}
 import models._
 import models.api.SicCode
+import play.api.libs.json.Format
 import services.FlatRateService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -32,14 +33,15 @@ class FlatRateService @Inject()(val s4LService: S4LService,
                                 val businessService: BusinessService,
                                 vatApplicationService: VatApplicationService,
                                 val configConnector: ConfigConnector,
-                                val vatRegConnector: VatRegistrationConnector)(implicit ec: ExecutionContext) {
+                                registrationApiConnector: RegistrationApiConnector)(implicit ec: ExecutionContext) {
 
   def applyPercentRoundUp(l: Long): Long = Math.ceil(l * relevantGoodsPercent).toLong
 
   def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     s4LService.fetchAndGet[FlatRateScheme] flatMap {
       case None | Some(FlatRateScheme(None, None, None, None, None, None, None, None, None)) =>
-        vatRegConnector.getFlatRate(profile.registrationId) map {
+        implicit val format: Format[FlatRateScheme] = FlatRateScheme.apiFormat
+        registrationApiConnector.getSection[FlatRateScheme](profile.registrationId) map {
           case Some(flatRateScheme) => flatRateScheme
           case None => FlatRateScheme()
         }
@@ -64,10 +66,13 @@ class FlatRateService @Inject()(val s4LService: S4LService,
   def submitFlatRate(data: FlatRateScheme)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
     handleView(data).fold(
       incomplete => s4LService.save[FlatRateScheme](incomplete).map(_ => incomplete),
-      complete => for {
-        _ <- vatRegConnector.upsertFlatRate(profile.registrationId, complete)
-        _ <- s4LService.clearKey[FlatRateScheme]
-      } yield complete
+      complete => {
+        implicit val format: Format[FlatRateScheme] = FlatRateScheme.apiFormat
+        for {
+          _ <- registrationApiConnector.replaceSection[FlatRateScheme](profile.registrationId, complete)
+          _ <- s4LService.clearKey[FlatRateScheme]
+        } yield complete
+      }
     )
   }
 
@@ -152,7 +157,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def clearFrs(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
     s4LService.save(FlatRateScheme()) flatMap (_ =>
-      vatRegConnector.clearFlatRate(cp.registrationId).map(_ => true))
+      registrationApiConnector.deleteSection[FlatRateScheme](cp.registrationId).map(_ => true))
   }
 
   def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
