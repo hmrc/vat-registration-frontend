@@ -16,13 +16,13 @@
 
 package services
 
+import connectors.mocks.MockRegistrationApiConnector
 import models._
 import models.api.SicCode
 import models.api.vatapplication.VatApplication
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import testHelpers.VatSpec
-import uk.gov.hmrc.http.HttpResponse
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ class FlatRateServiceSpec extends VatSpec {
       mockBusinessService,
       movkVatApplicationService,
       mockConfigConnector,
-      mockVatRegistrationConnector
+      mockRegistrationApiConnector
     )
   }
 
@@ -64,7 +64,7 @@ class FlatRateServiceSpec extends VatSpec {
 
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockVatRegistrationConnector.getFlatRate(any())(any()))
+      when(mockRegistrationApiConnector.getSection[FlatRateScheme](any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(Some(frSch)))
 
       await(service.getFlatRate) mustBe frSch
@@ -73,7 +73,7 @@ class FlatRateServiceSpec extends VatSpec {
     "return an empty backend model if the S4L is not there and neither is the backend" in new Setup() {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(None))
-      when(mockVatRegistrationConnector.getFlatRate(any())(any()))
+      when(mockRegistrationApiConnector.getSection[FlatRateScheme](any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
 
       await(service.getFlatRate) mustBe FlatRateScheme()
@@ -144,8 +144,8 @@ class FlatRateServiceSpec extends VatSpec {
     }
 
     "if the S4L model is complete, save to the backend and clear S4L" in new Setup() {
-      when(mockVatRegistrationConnector.upsertFlatRate(any(), any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200, "")))
+      when(mockRegistrationApiConnector.replaceSection[FlatRateScheme](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(frs1KReg))
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
@@ -157,7 +157,7 @@ class FlatRateServiceSpec extends VatSpec {
     "save joining the FRS" in new Setup() {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(FlatRateScheme())))
-      when(mockVatRegistrationConnector.getFlatRate(any())(any()))
+      when(mockRegistrationApiConnector.getSection[FlatRateScheme](any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
@@ -166,18 +166,20 @@ class FlatRateServiceSpec extends VatSpec {
     }
 
     "save not joining the FRS (and save to backend)" in new Setup() {
+      val expectedFRS: FlatRateScheme = FlatRateScheme(joinFrs = Some(false))
+
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(FlatRateScheme())))
-      when(mockVatRegistrationConnector.getFlatRate(any())(any()))
+      when(mockRegistrationApiConnector.getSection[FlatRateScheme](any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(None))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockVatRegistrationConnector.upsertFlatRate(any(), any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200, "")))
+      when(mockRegistrationApiConnector.replaceSection[FlatRateScheme](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(expectedFRS))
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
 
-      await(service.saveJoiningFRS(answer = false)) mustBe FlatRateScheme(joinFrs = Some(false))
+      await(service.saveJoiningFRS(answer = false)) mustBe expectedFRS
     }
   }
 
@@ -263,13 +265,14 @@ class FlatRateServiceSpec extends VatSpec {
 
     "save that they do not wish to register (clearing the start date, saving to the backend), keeping category and percentage" in new Setup() {
       val data: FlatRateScheme = incompleteS4l.copy(overBusinessGoods = Some(false), useThisRate = Some(true), frsStart = Some(Start(Some(LocalDate.of(2017, 10, 10)))))
+      val expectedFRS: FlatRateScheme = data.copy(joinFrs = Some(false), useThisRate = Some(false), categoryOfBusiness = Some(testCategory), percent = Some(testPercent), frsStart = None)
 
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(data)))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockVatRegistrationConnector.upsertFlatRate(any(), any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200, "")))
+      when(mockRegistrationApiConnector.replaceSection[FlatRateScheme](any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(expectedFRS))
       when(mockS4LService.clearKey(any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
       when(mockBusinessService.getBusiness(any(), any()))
@@ -277,8 +280,8 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
       when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
 
-      await(service.saveRegister(answer = false)) mustBe
-        data.copy(joinFrs = Some(false), useThisRate = Some(false), categoryOfBusiness = Some(testCategory), percent = Some(testPercent), frsStart = None)
+
+      await(service.saveRegister(answer = false)) mustBe expectedFRS
     }
   }
 
@@ -342,18 +345,7 @@ class FlatRateServiceSpec extends VatSpec {
       }
 
       "user selects No, sets joinFRS to false, model is now complete" in new Setup {
-        when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(incompleteS4l.copy(overBusinessGoods = Some(false), categoryOfBusiness = Some("frsId"), percent = None))))
-        when(mockConfigConnector.getSicCodeFRSCategory(any()))
-          .thenReturn("frsId")
-        when(mockConfigConnector.getBusinessTypeDetails(any()))
-          .thenReturn(("test", defaultFlatRate))
-        when(mockVatRegistrationConnector.upsertFlatRate(any(), any())(any()))
-          .thenReturn(Future.successful(HttpResponse(200, "")))
-        when(mockS4LService.clearKey(any(), any(), any()))
-          .thenReturn(Future.successful(dummyCacheMap))
-
-        await(service.saveUseFlatRate(answer = false)) mustBe incompleteS4l.copy(
+        val expectedFRS: FlatRateScheme = incompleteS4l.copy(
           joinFrs = Some(false),
           overBusinessGoods = Some(false),
           useThisRate = Some(false),
@@ -361,6 +353,19 @@ class FlatRateServiceSpec extends VatSpec {
           percent = Some(defaultFlatRate),
           limitedCostTrader = Some(false)
         )
+
+        when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
+          .thenReturn(Future.successful(Some(incompleteS4l.copy(overBusinessGoods = Some(false), categoryOfBusiness = Some("frsId"), percent = None))))
+        when(mockConfigConnector.getSicCodeFRSCategory(any()))
+          .thenReturn("frsId")
+        when(mockConfigConnector.getBusinessTypeDetails(any()))
+          .thenReturn(("test", defaultFlatRate))
+        when(mockRegistrationApiConnector.replaceSection[FlatRateScheme](any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(expectedFRS))
+        when(mockS4LService.clearKey(any(), any(), any()))
+          .thenReturn(Future.successful(dummyCacheMap))
+
+        await(service.saveUseFlatRate(answer = false)) mustBe expectedFRS
       }
     }
   }
@@ -506,8 +511,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
       when(mockS4LService.save[FlatRateScheme](any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockVatRegistrationConnector.clearFlatRate(any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200, "")))
+      when(mockRegistrationApiConnector.deleteSection[FlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(true))
 
       await(service.resetFRSForSAC(newSicCode)) mustBe newSicCode
     }
@@ -516,12 +521,12 @@ class FlatRateServiceSpec extends VatSpec {
     "reset Flat Rate Scheme and return true" in new Setup {
       when(mockS4LService.save[FlatRateScheme](any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockVatRegistrationConnector.clearFlatRate(any())(any()))
-        .thenReturn(Future.successful(HttpResponse(200, "")))
+      when(mockRegistrationApiConnector.deleteSection[FlatRateScheme](any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(true))
 
       await(service.clearFrs) mustBe true
       verify(mockS4LService, times(1)).save(any())(any(), any(), any(), any())
-      verify(mockVatRegistrationConnector, times(1)).clearFlatRate(any())(any())
+      verify(mockRegistrationApiConnector, times(1)).deleteSection[FlatRateScheme](any(), any())(any(), any(), any())
     }
   }
 

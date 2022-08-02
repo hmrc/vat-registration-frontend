@@ -17,7 +17,7 @@
 package testHelpers
 
 import connectors._
-import connectors.mocks.{AuthMock, HttpClientMock, MockS4lConnector, SessionServiceMock}
+import connectors.mocks.{AuthMock, HttpClientMock, MockRegistrationApiConnector, MockS4lConnector, SessionServiceMock}
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.cache.SyncCacheApi
@@ -38,7 +38,8 @@ trait VatMocks
     with HttpClientMock
     with BusinessServiceMock
     with IncorpIdServiceMock
-    with PersonalDetailsValidationServiceMock {
+    with PersonalDetailsValidationServiceMock
+    with MockRegistrationApiConnector {
   this: MockitoSugar =>
 
   implicit lazy val mockAudit = mock[Audit]
@@ -99,7 +100,8 @@ trait VatMocks
       mockTimeService,
       mockTrafficManagementService,
       mockBankHolidayConnector,
-      mockCache
+      mockCache,
+      mockRegistrationApiConnector
     )
   }
 }

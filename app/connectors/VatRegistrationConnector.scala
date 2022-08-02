@@ -16,7 +16,6 @@
 
 package connectors
 
-import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import models._
 import models.api._
@@ -24,7 +23,6 @@ import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -93,28 +91,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       case UpstreamErrorResponse(_, TOO_MANY_REQUESTS, _, _) => SubmissionInProgress
       case ex: BadRequestException => SubmissionFailed
       case ex => SubmissionFailedRetryable
-    }
-  }
-
-  def getFlatRate(regId: String)(implicit hc: HeaderCarrier): Future[Option[FlatRateScheme]] = {
-    implicit val frmt: Format[FlatRateScheme] = FlatRateScheme.apiFormat
-    http.GET[HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme") map { res =>
-      if (res.status.equals(OK)) Some(res.json.as[FlatRateScheme]) else None
-    } recover {
-      case e: Exception => throw logResponse(e, "getFlatRate")
-    }
-  }
-
-  def upsertFlatRate(regId: String, flatRate: FlatRateScheme)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    implicit val frmt: Format[FlatRateScheme] = FlatRateScheme.apiFormat
-    http.PATCH[FlatRateScheme, HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme", flatRate) recover {
-      case e: Exception => throw logResponse(e, "upsertFlatRate")
-    }
-  }
-
-  def clearFlatRate(regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.DELETE[HttpResponse](s"$vatRegUrl/vatreg/$regId/flat-rate-scheme") recover {
-      case e: Exception => throw logResponse(e, "deleteFlatRate")
     }
   }
 
