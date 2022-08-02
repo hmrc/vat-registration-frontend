@@ -19,9 +19,10 @@ package viewmodels.tasklist
 import config.FrontendAppConfig
 import models.api.vatapplication.{OverseasCompliance, StoringWithinUk}
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
-import models.{CurrentProfile, NonUk}
+import models._
 import play.api.i18n.Messages
 import play.api.mvc.Request
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 
@@ -73,6 +74,14 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     prerequisites = _ => Seq(buildGoodsAndServicesRow)
   )
 
+  def buildRegistrationDateRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.vatRegistration.registrationDate",
+    url = _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
+    tagId = "vatRegistrationDateRow",
+    checks = scheme => Seq(scheme.vatApplication.exists(_.startDate.isDefined)),
+    prerequisites = _ => Seq(bankAccountDetailsRow)
+  )
+
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
             profile: CurrentProfile,
@@ -83,9 +92,21 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
         Some(buildGoodsAndServicesRow.build(vatScheme)),
-        if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow.build(vatScheme))
+        if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow.build(vatScheme)),
+        resolveVATRegistrationRow(vatScheme)
       ).flatten
     )
+  }
+
+  private[tasklist] def resolveVATRegistrationRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+    vatScheme.eligibilitySubmissionData.map(_.registrationReason) match {
+      case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) =>
+        Some(buildRegistrationDateRow.build(vatScheme))
+      case Some(_) =>
+        None
+      case None =>
+        throw new InternalServerException("[VatRegistrationTaskList]Failed to get registration reason while building vat registration row tasklist row")
+    }
   }
 
   private def checkImportsAndExports(vatScheme: VatScheme) = {
@@ -107,9 +128,9 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     Seq(
       overseasCompliance.goodsToOverseas.isDefined,
       overseasCompliance.storingGoodsForDispatch.isDefined
-    ). ++ {
+    ).++ {
       if (overseasCompliance.goodsToOverseas.contains(true)) Seq(overseasCompliance.goodsToEu.isDefined) else Nil
-    }. ++ {
+    }.++ {
       if (overseasCompliance.storingGoodsForDispatch.contains(StoringWithinUk)) {
         Seq(overseasCompliance.usingWarehouse.isDefined).++ {
           if (overseasCompliance.usingWarehouse.contains(true)) {
