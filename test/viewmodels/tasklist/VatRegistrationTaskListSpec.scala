@@ -16,20 +16,17 @@
 
 package viewmodels.tasklist
 
+import featureswitch.core.config.{FeatureSwitching, TaxRepPage}
 import fixtures.VatRegistrationFixture
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
-import models.api.{NETP, PartyType, UkCompany, VatScheme}
-import models.{ConditionalValue, NIPTurnover, NonUk}
+import models.api._
+import models.{ConditionalValue, NIPTurnover, NonUk, TransferOfAGoingConcern}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
 import java.time.LocalDate
-import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk}
-import models.api.{NETP, NonUkNonEstablished, PartyType, UkCompany, VatScheme}
-import models.{ConditionalValue, NIPTurnover}
-import testHelpers.VatRegSpec
 
-class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
   val section: VatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
 
   val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
@@ -194,20 +191,20 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "rendering registration date row" must {
 
       "resolve to None if registration reason available but not eligible for registration date flow" in {
-        section.resolveVATRegistrationRow(emptyVatScheme.copy(
+        section.resolveVATRegistrationDateRow(emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = NonUk))
         )) mustBe None
       }
 
       "resolve to registration date row if registration reason available and eligible for registration date flow" in {
-        section.resolveVATRegistrationRow(emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData)
-        )).map(_.url) mustBe Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
+        val scheme = emptyVatScheme.copy(eligibilitySubmissionData = Some(validEligibilitySubmissionData))
+        section.resolveVATRegistrationDateRow(scheme).map(_.build(scheme).url) mustBe
+          Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
       }
 
       "throw InternalServerException if no registration reason available" in {
         intercept[InternalServerException] {
-          section.resolveVATRegistrationRow(emptyVatScheme) mustBe None
+          section.resolveVATRegistrationDateRow(emptyVatScheme) mustBe None
         }
       }
     }
@@ -408,6 +405,139 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
         val sectionRow = section.bankAccountDetailsRow.build(scheme)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+    }
+  }
+
+  "checks for vat returns tasklist row" when {
+    val vatApplicationWithNoReturns = completedVatApplicationWithGoodsAndServicesSection.copy(
+      returnsFrequency = None, staggerStart = None
+    )
+
+    "prerequisite not complete" must {
+      "return TLCannotStart" in {
+        val sectionRow = section.buildVatReturnsRow.build(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+        ))
+        sectionRow.status mustBe TLCannotStart
+      }
+    }
+
+    "prerequisite is complete but vat returns flow hasn't started" must {
+
+      "return TLNotStarted with correct url" in {
+        val schema = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(true),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          otherBusinessInvolvements = Some(List(
+            otherBusinessInvolvementWithVrn,
+            otherBusinessInvolvementWithUtr,
+            otherBusinessInvolvementWithoutVrnUtr
+          )),
+          vatApplication = Some(vatApplicationWithNoReturns.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          ))
+        )
+
+        val sectionRow = section.buildVatReturnsRow.build(schema)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+      }
+    }
+
+    "prerequisite is complete, for TOGC with no requirement for start date, but vat returns flow hasn't started" must {
+      "return TLNotStarted with correct url" in {
+        val schema = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(true),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          otherBusinessInvolvements = Some(List(
+            otherBusinessInvolvementWithVrn,
+            otherBusinessInvolvementWithUtr,
+            otherBusinessInvolvementWithoutVrnUtr
+          )),
+          vatApplication = Some(vatApplicationWithNoReturns)
+        )
+
+        val sectionRow = section.buildVatReturnsRow.build(schema)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+      }
+    }
+
+    "goods and service prerequisite is complete, for NonUK with no bank details or start date, but vat returns flow hasn't started" must {
+      "return TLNotStarted with correct url" in {
+        val schema = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            registrationReason = NonUk, partyType = NETP
+          )),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(true),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          otherBusinessInvolvements = Some(List(
+            otherBusinessInvolvementWithVrn,
+            otherBusinessInvolvementWithUtr,
+            otherBusinessInvolvementWithoutVrnUtr
+          )),
+          vatApplication = Some(vatApplicationWithNoReturns),
+          bankAccount = None
+        )
+
+        val sectionRow = section.buildVatReturnsRow.build(schema)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+      }
+    }
+
+    "prerequisite is complete and all vat returns data captured except tax rep when TaxRep FS enabled" must {
+      "return TLInProgress" in {
+        enable(TaxRepPage)
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          ))
+        )
+
+        val sectionRow = section.buildVatReturnsRow.build(scheme)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+
+        disable(TaxRepPage)
+      }
+    }
+
+    "prerequisite is complete and all vat returns data captured" must {
+      "return TLCompleted" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          ))
+        )
+
+        val sectionRow = section.buildVatReturnsRow.build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
       }
     }
   }

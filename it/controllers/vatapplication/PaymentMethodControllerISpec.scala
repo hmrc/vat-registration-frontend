@@ -16,7 +16,7 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaxRepPage
+import featureswitch.core.config.{TaskList, TaxRepPage}
 import forms.PaymentMethodForm._
 import itutil.ControllerISpec
 import models.api.vatapplication._
@@ -95,36 +95,50 @@ class PaymentMethodControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "return a redirect to the Join Flat Rate page and update S4L" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
+      private def verifyRedirect(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
+          .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
+          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))
+        val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))
 
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
     "return a redirect to the Join Flat Rate page and update backend with full model" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testFullVatApplication)
-        .s4lContainer[VatApplication].clearedByKey
-        .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
+      private def verifyRedirect(redirectUrl: String) = {
+        given()
+          .user.isAuthorised()
+          .s4lContainer[VatApplication].contains(testFullVatApplication)
+          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> chaps))
+        val response: Future[WSResponse] = buildClient(url).post(Map("value" -> chaps))
 
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+        }
       }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
     "return a redirect to the Tax Representative page if the feature switch is on" in new Setup {

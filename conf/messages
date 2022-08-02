@@ -57,6 +57,7 @@ tasklist.vatRegistration.heading            = VAT registration
 tasklist.vatRegistration.goodsAndServices   = Goods and services
 tasklist.vatRegistration.bankAccountDetails = Bank account details
 tasklist.vatRegistration.registrationDate   = Registration date
+tasklist.vatRegistration.vatReturns         = VAT returns
 
 # Ordinal numbers
 ordinals.1 = First

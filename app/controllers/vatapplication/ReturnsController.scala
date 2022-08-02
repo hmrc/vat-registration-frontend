@@ -67,7 +67,11 @@ class ReturnsController @Inject()(val sessionService: SessionService,
             if (isEnabled(TaxRepPage)) {
               Future.successful(Redirect(controllers.vatapplication.routes.TaxRepController.show))
             } else {
-              Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+              if (isEnabled(TaskList)) {
+                Future.successful(Redirect(controllers.routes.TaskListController.show))
+              } else {
+                Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+              }
             }
           }
         )
@@ -108,7 +112,11 @@ class ReturnsController @Inject()(val sessionService: SessionService,
               case Monthly => if (isEnabled(TaxRepPage)) {
                 Redirect(controllers.vatapplication.routes.TaxRepController.show)
               } else {
-                Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+                if (isEnabled(TaskList)) {
+                  Redirect(controllers.routes.TaskListController.show)
+                } else {
+                  Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+                }
               }
               case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
               case _ => Redirect(routes.ReturnsController.accountPeriodsPage)
