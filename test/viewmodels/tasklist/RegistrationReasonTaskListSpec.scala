@@ -18,7 +18,6 @@ package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
 import testHelpers.VatRegSpec
-import viewmodels.tasklist.RegistrationReasonTaskList
 
 class RegistrationReasonTaskListSpec extends VatRegSpec with VatRegistrationFixture {
 
@@ -40,7 +39,7 @@ class RegistrationReasonTaskListSpec extends VatRegSpec with VatRegistrationFixt
 
   "registrationReasonRow prerequisites" must {
     "return true" in {
-      section.registrationReasonRow(testRegId).prerequisites(emptyVatScheme).forall(_.isComplete(emptyVatScheme)) mustBe true
+      section.registrationReasonRow(testRegId).prerequisitesMet(emptyVatScheme) mustBe true
     }
   }
 

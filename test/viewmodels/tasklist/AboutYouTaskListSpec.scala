@@ -612,10 +612,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
     "address details available from prerequisite but contact details capture hasn't started" must {
       "return TLNotStarted" in {
         val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = LtdPartnership,
-            isTransactor = false
-          )),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
@@ -637,10 +634,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
     "address details available from prerequisite but contact details still in progress" must {
       "return TLInProgress" in {
         val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = Partnership,
-            isTransactor = false
-          )),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
@@ -664,10 +658,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
       "return TLCompleted" in {
 
         val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = LtdPartnership,
-            isTransactor = false
-          )),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
           applicantDetails = Some(completeApplicantDetails)
         )
 

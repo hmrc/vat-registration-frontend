@@ -18,7 +18,6 @@ package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
 import play.api.i18n.{Lang, Messages}
-import viewmodels.tasklist._
 import views.VatRegViewSpec
 import views.html.components.TaskListRow
 
@@ -83,6 +82,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
         }
       }
     }
+
     "prerequisites haven't been met" must {
       "return CANNOT START" in {
         val testVatScheme = emptyVatScheme
@@ -92,6 +92,14 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
         res mustBe TaskListSectionRow(rowMessageKey, testUrl, rowAriaLabel, TLCannotStart)
       }
     }
-  }
 
+    "current prerequisite met but chained prerequisite hasn't been met" must {
+      "return CANNOT START" in {
+        val chainedPrerequisite = testPrerequisite(checksPass = true).copy(prerequisites = _ => Seq(testPrerequisite(checksPass = false)))
+        val result = testPrerequisite(checksPass = true).copy(prerequisites = _ => Seq(chainedPrerequisite)).build(emptyVatScheme)
+
+        result.status mustBe TLCannotStart
+      }
+    }
+  }
 }
