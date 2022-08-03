@@ -77,6 +77,11 @@ class TaskListControllerISpec extends ControllerISpec {
       val registrationDateCompletedRow = "Registration date Completed"
       val registrationDateNotStartedRow = "Registration date Not started"
       val registrationDateCannotStartYetRow = "Registration date Cannot start yet"
+
+      val vatReturnsCompletedRow = "VAT returns Completed"
+      val vatReturnsNotStartedRow = "VAT returns Not started"
+      val vatReturnsInProgress = "VAT returns In progress"
+      val vatReturnsCannotStartYetRow = "VAT returns Cannot start yet"
     }
   }
 
@@ -351,7 +356,8 @@ class TaskListControllerISpec extends ControllerISpec {
           List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
-            ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
           )
         )
 
@@ -368,7 +374,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
-            ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
           )
         )
 
@@ -396,7 +403,40 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
-            ExpectedMessages.vatRegistrationSection.registrationDateNotStartedRow
+            ExpectedMessages.vatRegistrationSection.registrationDateNotStartedRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
+          )
+        )
+
+        verifyVatRegistrationTaskListSection(
+          6,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
+              isTransactor = true, registrationReason = NonUk
+            )),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+            )),
+            vatApplication = Some(fullVatApplication.copy(
+              overseasCompliance = Some(OverseasCompliance(
+                goodsToOverseas = Some(false),
+                storingGoodsForDispatch = Some(StoringOverseas)
+              )),
+              northernIrelandProtocol = Some(NIPTurnover(
+                goodsToEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+              )),
+              returnsFrequency = None,
+              staggerStart = None
+            )),
+            bankAccount = Some(bankAccount.copy(
+              isProvided = true, Some(testUkBankDetails), None, None
+            ))
+          ),
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsNotStartedRow
           )
         )
 
@@ -416,7 +456,9 @@ class TaskListControllerISpec extends ControllerISpec {
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
                 goodsFromEU = Some(ConditionalValue(answer = false, None)),
               )),
-              startDate = Some(LocalDate.of(2017, 10, 10))
+              startDate = Some(LocalDate.of(2017, 10, 10)),
+              returnsFrequency = None,
+              staggerStart = None
             )),
             bankAccount = Some(bankAccount.copy(
               isProvided = false, None, None, Some(BeingSetup)
@@ -425,7 +467,66 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
-            ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow
+            ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsNotStartedRow
+          )
+        )
+
+        verifyVatRegistrationTaskListSection(
+          5,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+            )),
+            vatApplication = Some(fullVatApplication.copy(
+              overseasCompliance = Some(OverseasCompliance(
+                goodsToOverseas = Some(false),
+                storingGoodsForDispatch = Some(StoringOverseas)
+              )),
+              northernIrelandProtocol = Some(NIPTurnover(
+                goodsToEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+              )),
+              startDate = Some(LocalDate.of(2017, 10, 10)),
+              staggerStart = None
+            )),
+            bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetup)))
+          ),
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
+            ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsInProgress
+          )
+        )
+
+        verifyVatRegistrationTaskListSection(
+          5,
+          fullVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+            business = Some(businessDetails.copy(
+              hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+            )),
+            vatApplication = Some(fullVatApplication.copy(
+              overseasCompliance = Some(OverseasCompliance(
+                goodsToOverseas = Some(false),
+                storingGoodsForDispatch = Some(StoringOverseas)
+              )),
+              northernIrelandProtocol = Some(NIPTurnover(
+                goodsToEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+              )),
+              startDate = Some(LocalDate.of(2017, 10, 10)),
+              hasTaxRepresentative = Some(false)
+            )),
+            bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetup)))
+          ),
+          ExpectedMessages.vatRegistrationSection.heading, List(
+            ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+            ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
+            ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
+            ExpectedMessages.vatRegistrationSection.vatReturnsCompletedRow,
           )
         )
       }
@@ -473,7 +574,8 @@ class TaskListControllerISpec extends ControllerISpec {
         List(
           ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
           ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow,
-          ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow
+          ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
+          ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
         )
       )
     }

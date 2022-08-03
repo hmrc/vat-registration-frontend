@@ -2,6 +2,7 @@
 
 package controllers.vatapplication
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import play.api.libs.json.Json
@@ -20,8 +21,7 @@ class TaxRepControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(url).get()
-      whenReady(response) { res =>
+      whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
       }
     }
@@ -33,8 +33,7 @@ class TaxRepControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(url).get()
-      whenReady(response) { res =>
+      whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
       }
     }
@@ -46,8 +45,7 @@ class TaxRepControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(url).get()
-      whenReady(response) { res =>
+      whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
       }
     }
@@ -55,31 +53,45 @@ class TaxRepControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to Join Flat Rate Scheme page if yes is selected" in new Setup {
-      given
-        .user.isAuthorised()
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(VatApplication.s4lKey.key, Json.stringify(Json.toJson(VatApplication(hasTaxRepresentative = Some(true)))))
+      private def verifyRedirect(redirectUrl: String) = {
+        given
+          .user.isAuthorised()
+          .s4l.isEmpty()
+          .s4l.isUpdatedWith(VatApplication.s4lKey.key, Json.stringify(Json.toJson(VatApplication(hasTaxRepresentative = Some(true)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj("value" -> "true")))
+        val res = await(buildClient(url).post(Json.obj("value" -> "true")))
 
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
     "redirect to Join Flat Rate Scheme page if no is selected" in new Setup {
-      given
-        .user.isAuthorised()
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(VatApplication.s4lKey.key, Json.stringify(Json.toJson(VatApplication(hasTaxRepresentative = Some(false)))))
+      private def verifyRedirect(redirectUrl: String) = {
+        given
+          .user.isAuthorised()
+          .s4l.isEmpty()
+          .s4l.isUpdatedWith(VatApplication.s4lKey.key, Json.stringify(Json.toJson(VatApplication(hasTaxRepresentative = Some(false)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj("value" -> "false")))
+        val res = await(buildClient(url).post(Json.obj("value" -> "false")))
 
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      }
+
+      enable(TaskList)
+      verifyRedirect(controllers.routes.TaskListController.show.url)
+      disable(TaskList)
+      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

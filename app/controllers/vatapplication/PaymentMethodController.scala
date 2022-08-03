@@ -18,7 +18,7 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaxRepPage
+import featureswitch.core.config.{TaskList, TaxRepPage}
 import forms.PaymentMethodForm
 import models.api.vatapplication.AASDetails
 import play.api.mvc.{Action, AnyContent}
@@ -58,7 +58,11 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
             if (isEnabled(TaxRepPage)) {
               Redirect(controllers.vatapplication.routes.TaxRepController.show)
             } else {
-              Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+              if (isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show)
+              } else {
+                Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+              }
             }
           }
         )

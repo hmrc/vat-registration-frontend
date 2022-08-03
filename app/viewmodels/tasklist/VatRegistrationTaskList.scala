@@ -17,9 +17,10 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import models.api.vatapplication.{OverseasCompliance, StoringWithinUk}
-import models.api.{NETP, NonUkNonEstablished, VatScheme}
+import featureswitch.core.config.{FeatureSwitching, TaxRepPage}
 import models._
+import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
+import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import uk.gov.hmrc.http.InternalServerException
@@ -27,7 +28,7 @@ import uk.gov.hmrc.http.InternalServerException
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) {
+class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) extends FeatureSwitching {
 
   def buildGoodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
@@ -82,6 +83,19 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     prerequisites = _ => Seq(bankAccountDetailsRow)
   )
 
+  def buildVatReturnsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.vatRegistration.vatReturns",
+    url = _ => controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url,
+    tagId = "vatReturnsRow",
+    checks = scheme => scheme.vatApplication.fold(Seq(false))(checkVatReturns),
+    prerequisites = scheme => Seq(
+      List(
+        resolveVATRegistrationDateRow(scheme),
+        resolveBankDetailsRow(scheme)
+      ).flatten.headOption.getOrElse(buildGoodsAndServicesRow)
+    )
+  )
+
   def build(vatScheme: VatScheme)
            (implicit request: Request[_],
             profile: CurrentProfile,
@@ -92,16 +106,21 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
         Some(buildGoodsAndServicesRow.build(vatScheme)),
-        if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow.build(vatScheme)),
-        resolveVATRegistrationRow(vatScheme)
+        resolveBankDetailsRow(vatScheme).map(_.build(vatScheme)),
+        resolveVATRegistrationDateRow(vatScheme).map(_.build(vatScheme)),
+        Some(buildVatReturnsRow.build(vatScheme))
       ).flatten
     )
   }
 
-  private[tasklist] def resolveVATRegistrationRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+  private def resolveBankDetailsRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+    if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow)
+  }
+
+  private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
     vatScheme.eligibilitySubmissionData.map(_.registrationReason) match {
       case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) =>
-        Some(buildRegistrationDateRow.build(vatScheme))
+        Some(buildRegistrationDateRow)
       case Some(_) =>
         None
       case None =>
@@ -147,4 +166,20 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       }
     }
   }
+
+  private def checkVatReturns(vatApplication: VatApplication) = {
+    Seq(
+      Some(vatApplication.returnsFrequency.isDefined),
+      Some(vatApplication.staggerStart.isDefined),
+      vatApplication.staggerStart.flatMap {
+        case _: AnnualStagger => Some(
+          vatApplication.annualAccountingDetails.exists(aasDetails =>
+            aasDetails.paymentMethod.isDefined && aasDetails.paymentFrequency.isDefined
+          )
+        )
+        case _ => None
+      },
+      if (isEnabled(TaxRepPage)) Some(vatApplication.hasTaxRepresentative.isDefined) else None
+    )
+  }.flatten
 }
