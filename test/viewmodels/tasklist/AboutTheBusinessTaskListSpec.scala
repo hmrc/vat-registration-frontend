@@ -153,17 +153,21 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
   }
 
   "The other business involvements row" must {
-    "be cannot start if the prerequesites are not complete" in {
-      val scheme = emptyVatScheme
-
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+    "be cannot start if the prerequisites are not complete" in {
+      val row = section.otherBusinessInvolvementsRow.build(emptyVatScheme)
 
       row.status mustBe TLCannotStart
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     }
 
-    "be not started if the prerequesites are complete but 'Is involved in other business' question is not answered" in {
-      val scheme = emptyVatScheme.copy(business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = None)))
+    "be not started if the prerequisites are complete but 'Is involved in other business' question is not answered" in {
+      val scheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          businessActivities = Some(List(sicCode)),
+          otherBusinessInvolvement = None
+        ))
+      )
 
       val row = section.otherBusinessInvolvementsRow.build(scheme)
 
@@ -171,8 +175,14 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     }
 
-    "be completed if the prerequesites are complete and 'Is involved in other business' question is answered as 'No'" in {
-      val scheme = emptyVatScheme.copy(business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false))))
+    "be completed if the prerequisites are complete and 'Is involved in other business' question is answered as 'No'" in {
+      val scheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          businessActivities = Some(List(sicCode)),
+          otherBusinessInvolvement = Some(false)
+        ))
+      )
 
       val row = section.otherBusinessInvolvementsRow.build(scheme)
 
@@ -180,9 +190,13 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     }
 
-    "be in progress if the prerequesites are complete and the other business involvements list is empty" in {
-      val scheme = emptyVatScheme.copy(
-        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+    "be in progress if the prerequisites are complete and the other business involvements list is empty" in {
+      val scheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          businessActivities = Some(List(sicCode)),
+          otherBusinessInvolvement = Some(true)
+        )),
         otherBusinessInvolvements = Some(List.empty)
       )
 
@@ -192,9 +206,13 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     }
 
-    "be in progress if the prerequesites are complete and the other business involvements list is None" in {
-      val scheme = emptyVatScheme.copy(
-        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+    "be in progress if the prerequisites are complete and the other business involvements list is None" in {
+      val scheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          businessActivities = Some(List(sicCode)),
+          otherBusinessInvolvement = Some(true)
+        )),
         otherBusinessInvolvements = None
       )
 
@@ -205,9 +223,13 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "be in progress and redirect to other business involvements summary page " +
-      "if the prerequesites are complete and the other business involvements list has items with partial details" in {
-      val scheme = emptyVatScheme.copy(
-        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+      "if the prerequisites are complete and the other business involvements list has items with partial details" in {
+      val scheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          businessActivities = Some(List(sicCode)),
+          otherBusinessInvolvement = Some(true)
+        )),
         otherBusinessInvolvements = Some(List(
           otherBusinessInvolvementWithPartialData,
           otherBusinessInvolvementWithVrn
@@ -221,9 +243,13 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "be completed and redirect to other business involvements summary page " +
-      "if the prerequesites are complete and the other business involvements list has items with required data" in {
-      val scheme = emptyVatScheme.copy(
-        business = Some(validBusiness.copy(hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(true))),
+      "if the prerequisites are complete and the other business involvements list has items with required data" in {
+      val scheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          businessActivities = Some(List(sicCode)),
+          otherBusinessInvolvement = Some(true)
+        )),
         otherBusinessInvolvements = Some(List(
           otherBusinessInvolvementWithVrn,
           otherBusinessInvolvementWithUtr,

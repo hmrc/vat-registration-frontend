@@ -45,13 +45,13 @@ class VerifyBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture 
     "the prerequisites are complete" must {
       "return true" in {
         val scheme = emptyVatScheme.copy(eligibilitySubmissionData = Some(validEligibilitySubmissionData))
-        section.businessInfoRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+        section.businessInfoRow.prerequisitesMet(scheme) mustBe true
       }
     }
     "the prerequisites aren't complete" must {
       "return false" in {
         val scheme = emptyVatScheme
-        section.businessInfoRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe false
+        section.businessInfoRow.prerequisitesMet(scheme) mustBe false
       }
     }
     "the user is an agent or transactor" must {
@@ -62,7 +62,7 @@ class VerifyBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture 
           transactorDetails = Some(validTransactorDetails)
         )
 
-        section.businessInfoRow.prerequisites(scheme).forall(_.isComplete(scheme)) mustBe true
+        section.businessInfoRow.prerequisitesMet(scheme) mustBe true
       }
     }
   }

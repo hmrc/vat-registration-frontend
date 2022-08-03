@@ -18,6 +18,8 @@ package viewmodels.tasklist
 
 import models.api.VatScheme
 
+import scala.annotation.tailrec
+
 case class TaskListRowBuilder(messageKey: VatScheme => String,
                               url: VatScheme => String,
                               tagId: String,
@@ -26,11 +28,22 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
 
   def isComplete(vatScheme: VatScheme): Boolean = checks(vatScheme).forall(_ == true)
 
+  def prerequisitesMet(vatScheme: VatScheme): Boolean = {
+    @tailrec
+    def checkCompleteness(rows: Seq[TaskListRowBuilder], result: Boolean = true): Boolean = {
+      rows match {
+        case Nil => result
+        case row :: tail => checkCompleteness(tail ++ row.prerequisites(vatScheme), result && row.isComplete(vatScheme))
+      }
+    }
+
+    checkCompleteness(prerequisites(vatScheme))
+  }
+
   def build(vatScheme: VatScheme): TaskListSectionRow = {
-    def prerequisitesMet: Boolean = prerequisites(vatScheme).forall(_.isComplete(vatScheme))
     def partiallyCompleted: Boolean = !isComplete(vatScheme) && checks(vatScheme).contains(true)
 
-    val status = if (prerequisitesMet) {
+    val status = if (prerequisitesMet(vatScheme)) {
       if (isComplete(vatScheme)) {
         TLCompleted
       } else {
@@ -46,7 +59,4 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
 
     TaskListSectionRow(messageKey(vatScheme), url(vatScheme), tagId, status)
   }
-
 }
-
-
