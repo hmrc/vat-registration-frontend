@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
-import views.html.errors.{AlreadySubmittedKickout, SubmissionFailed, SubmissionRetryableView}
+import views.html.errors.{AlreadySubmittedKickout, SubmissionFailed, SubmissionRetryableView, ContactView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,8 @@ class ErrorController @Inject()(val authConnector: AuthClientConnector,
                                 val sessionService: SessionService,
                                 submissionFailedView: SubmissionFailed,
                                 submissionRetryableView: SubmissionRetryableView,
-                                alreadySubmittedView: AlreadySubmittedKickout)
+                                alreadySubmittedView: AlreadySubmittedKickout,
+                                contactView: ContactView)
                                (implicit appConfig: FrontendAppConfig,
                                 val executionContext: ExecutionContext,
                                 baseControllerComponents: BaseControllerComponents)
@@ -50,5 +51,9 @@ class ErrorController @Inject()(val authConnector: AuthClientConnector,
 
   def alreadySubmittedSignOut: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.signOut))
+  }
+
+  def contact: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
+    implicit request => _ => Future.successful(Ok(contactView()))
   }
 }

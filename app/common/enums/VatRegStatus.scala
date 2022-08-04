@@ -26,6 +26,7 @@ object VatRegStatus extends Enumeration {
   val failed = Value
   val failedRetryable = Value
   val duplicateSubmission = Value
+  val contact = Value
 
   implicit val apiKey: ApiKey[VatRegStatus.Value] = ApiKey[VatRegStatus.Value]("status")
   implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)

@@ -35,9 +35,10 @@ class ManageRegistrationsController @Inject()(val authConnector: AuthConnector,
                                               bcc: BaseControllerComponents,
                                               appConfig: FrontendAppConfig) extends BaseController {
 
+
   def show: Action[AnyContent] = isAuthenticated { implicit reequest =>
     vatRegistrationService.getAllRegistrations.map { registrations =>
-      Ok(view(registrations.filter(reg => reg.status == VatRegStatus.draft || reg.status == VatRegStatus.submitted)))
+      Ok(view(registrations.filter(reg => reg.status == VatRegStatus.draft || reg.status == VatRegStatus.submitted || reg.status == VatRegStatus.contact)))
     }
   }
 

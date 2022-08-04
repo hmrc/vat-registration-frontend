@@ -395,6 +395,13 @@ pages.cantconfirmidentity.body.two      = If you have the company’s name and r
 pages.cantconfirmidentity.body.link     = using another HMRC service
 pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
 
+## Contact OSH Page
+contact.title                           = Sorry this service is unavailable
+contact.heading                         = Sorry this service is unavailable
+contact.p                               = Sorry the system is unavailable. Please try again later or contact the
+contact.oshLink                         = HM Revenue & Customs Online Service Helpdesk
+
+
 ## Start Date Page
 pages.startDate.heading                               = What do you want the business’s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
@@ -1593,3 +1600,4 @@ taxRep.heading                                       = Do you want to appoint a 
 taxRep.para1                                          = You can appoint a tax representative to deal with VAT matters on behalf of the business.
 taxRep.para2                                         = They will be the point of contact for VAT and they can be made responsible for any of the business’s VAT debts.
 validation.taxRep.error                              = Select yes if you would like to appoint a UK Tax Representative for the business
+

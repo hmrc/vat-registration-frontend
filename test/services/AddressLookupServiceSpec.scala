@@ -19,7 +19,6 @@ package services
 import common.enums.AddressLookupJourneyIdentifier
 import config.{AddressLookupConfiguration, FrontendAppConfig}
 import fixtures.AddressLookupConstants
-import models.api.Address
 import models.external.addresslookup.AddressLookupConfigurationModel
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -32,6 +31,7 @@ import scala.concurrent.Future
 class AddressLookupServiceSpec extends VatRegSpec {
 
   implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
+  implicit val messagesApi = app.injector.instanceOf[MessagesApi]
 
   object Config extends AddressLookupConfiguration {
     override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call, useUkMode: Boolean): AddressLookupConfigurationModel =
@@ -40,13 +40,11 @@ class AddressLookupServiceSpec extends VatRegSpec {
 
   object Service extends AddressLookupService(mockAddressLookupConnector, Config)
 
-  val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages = messagesApi.preferred(Seq(Lang("en")))
 
   "getByAddressId" should {
     "return an ScrsAddress" when {
       "given an id" in {
-
         when(mockAddressLookupConnector.getAddress(ArgumentMatchers.any())(ArgumentMatchers.any()))
           .thenReturn(Future.successful(testAddress))
 

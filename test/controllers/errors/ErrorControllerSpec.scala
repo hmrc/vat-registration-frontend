@@ -17,14 +17,19 @@
 package controllers.errors
 
 import fixtures.VatRegistrationFixture
+import play.api.i18n.MessagesApi
+import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.errors.{AlreadySubmittedKickout, SubmissionFailed, SubmissionRetryableView}
+import views.html.errors.{AlreadySubmittedKickout, ContactView, SubmissionFailed, SubmissionRetryableView}
 
 class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val mockSubmissionFailedView = app.injector.instanceOf[SubmissionFailed]
   val mockSubmissionRetryableView = app.injector.instanceOf[SubmissionRetryableView]
   val mockAlreadySubmittedView = app.injector.instanceOf[AlreadySubmittedKickout]
+  val contactView = app.injector.instanceOf[ContactView]
+
+  val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   trait Setup {
     val testErrorController: ErrorController = new ErrorController(
@@ -32,7 +37,8 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       mockSessionService,
       mockSubmissionFailedView,
       mockSubmissionRetryableView,
-      mockAlreadySubmittedView
+      mockAlreadySubmittedView,
+      contactView
     )
 
     mockAuthenticated()
@@ -69,6 +75,15 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
         result =>
           status(result) mustBe SEE_OTHER
           header(LOCATION, result) mustBe Some(controllers.callbacks.routes.SignInOutController.signOut.url)
+      }
+    }
+    "return the Contact view" in new Setup {
+      callAuthorised(testErrorController.contact, useBasicAuth = true) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) mustBe contactView()(FakeRequest(), appConfig, messages).body
       }
     }
   }

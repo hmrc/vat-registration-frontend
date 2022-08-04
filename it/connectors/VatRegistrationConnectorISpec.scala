@@ -74,9 +74,17 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
 
   "submitRegistration" should {
     "return success response and not submit to the backend for an allowed regId" in {
-      given().vatRegistration.submit("/vatreg/99/submit-registration", OK)
-      val res = vatregConnector.submitRegistration("99", Map("testHeaderKey" -> "testHeaderValue"))(hc)
+      given().vatRegistration.submit(s"/vatreg/$testRegId/submit-registration", OK)
+      val res = vatregConnector.submitRegistration(testRegId, Map("testHeaderKey" -> "testHeaderValue"))(hc)
       await(res) mustBe Success
+    }
+    "redirect to the contact page when the registration cannot be processed" in {
+      given()
+        .vatRegistration.submit(s"/vatreg/$testRegId/submit-registration", UNPROCESSABLE_ENTITY)
+
+      val res = await(vatregConnector.submitRegistration(testRegId, Map("testHeaderKey" -> "testHeaderValue"))(hc))
+      
+      res mustBe Contact
     }
   }
 

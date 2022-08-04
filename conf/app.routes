@@ -295,6 +295,7 @@ GET         /submission-failure                                       controller
 GET         /problem-vat-application                                  controllers.errors.ErrorController.submissionFailed
 GET         /already-submitted                                        controllers.errors.ErrorController.alreadySubmitted
 POST        /already-submitted                                        controllers.errors.ErrorController.alreadySubmittedSignOut
+GET         /contact-helpdesk                                         controllers.errors.ErrorController.contact
 
 ## Email max passcode attempts error page
 GET         /error/passcode-too-many-attempts                         controllers.errors.EmailPasscodesMaxAttemptsExceededController.show

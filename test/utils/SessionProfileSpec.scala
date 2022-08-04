@@ -56,6 +56,11 @@ class SessionProfileSpec extends VatRegSpec {
         val result = sessionProfile.withCurrentProfile() { _ => testFunc }
         status(result) mustBe OK
       }
+      "the status is contact" in new Setup {
+        mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile.copy(vatRegistrationStatus = VatRegStatus.contact)))
+        val result = sessionProfile.withCurrentProfile() { _ => testFunc }
+        status(result) mustBe OK
+      }
       "the ct status does not equal a status 06" in new Setup {
         mockSessionFetchAndGet[CurrentProfile]("CurrentProfile", Some(validProfile))
         val result = sessionProfile.withCurrentProfile() { _ => testFunc }

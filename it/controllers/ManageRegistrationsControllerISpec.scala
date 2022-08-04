@@ -20,18 +20,19 @@ class ManageRegistrationsControllerISpec extends ControllerISpec {
   )
 
   "GET /manage-registrations" must {
-    "return OK and present a list of only draft or submitted registrations" in new Setup {
+    "return OK and present a list of only draft, submitted or contact registrations" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getAllRegistrations(List(
-        vatSchemeHeader(testRegId, VatRegStatus.submitted),
-        vatSchemeHeader("2", VatRegStatus.draft)
-      ))
+          vatSchemeHeader(testRegId, VatRegStatus.submitted),
+          vatSchemeHeader("2", VatRegStatus.draft),
+          vatSchemeHeader("3", VatRegStatus.contact)
+        ))
 
       val res = await(buildClient(url).get)
 
       res.status mustBe OK
-      Jsoup.parse(res.body).select("tr a").text mustBe s"Application for $testRegId Application for 2"
+      Jsoup.parse(res.body).select("tr a").text mustBe s"Application for $testRegId Application for 2 Application for 3"
     }
   }
 

@@ -74,6 +74,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       }
     }.recover {
       case UpstreamErrorResponse(_, CONFLICT, _, _) => AlreadySubmitted
+      case UpstreamErrorResponse(_, UNPROCESSABLE_ENTITY, _, _) => Contact
       case UpstreamErrorResponse(_, TOO_MANY_REQUESTS, _, _) => SubmissionInProgress
       case ex: BadRequestException => SubmissionFailed
       case ex => SubmissionFailedRetryable
@@ -88,3 +89,5 @@ object SubmissionFailed extends DESResponse
 object SubmissionFailedRetryable extends DESResponse
 object AlreadySubmitted extends DESResponse
 object SubmissionInProgress extends DESResponse
+
+object Contact extends DESResponse

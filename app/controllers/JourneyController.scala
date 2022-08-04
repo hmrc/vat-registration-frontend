@@ -49,7 +49,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
         }
       } else {
         vatRegistrationService.getAllRegistrations.map(_.lastOption).flatMap {
-          case Some(header) if header.status == VatRegStatus.draft =>
+          case Some(header) if header.status == VatRegStatus.draft | header.status == VatRegStatus.contact =>
             journeyService.buildCurrentProfile(header.registrationId).map { _ =>
               Ok(view(StartNewApplicationForm.form))
             }.recover { //This handles the rare case where build current profile status check is applied to an old unparsable VatScheme

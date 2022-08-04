@@ -57,7 +57,7 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     httpClient.GET(appConfig.retrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
-          (response.json.validate[PersonalDetails](PersonalDetails.soleTraderIdentificationReads),
+          (response.json.validate[PersonalDetails](PersonalDetails.soleTraderIdentificationReads(appConfig)),
             response.json.validate[SoleTraderIdEntity](SoleTraderIdEntity.apiFormat)) match {
             case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
               (transactorDetails, optSoleTrader)
@@ -89,7 +89,7 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
     httpClient.GET(appConfig.retrieveSoleTraderIdentificationResultUrl(journeyId)) map { response =>
       response.status match {
         case OK =>
-          response.json.validate[PersonalDetails](PersonalDetails.soleTraderIdentificationReads) match {
+          response.json.validate[PersonalDetails](PersonalDetails.soleTraderIdentificationReads(appConfig)) match {
             case JsSuccess(individual, _) =>
               individual
             case JsError(errors) =>
