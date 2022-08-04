@@ -59,7 +59,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].isEmpty
-          .vatScheme.contains(vatScheme)
+          .registrationApi.getRegistration(vatScheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 

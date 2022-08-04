@@ -287,7 +287,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       private def verifyCallbackHandler(redirectUrl: String) = {
         given()
           .user.isAuthorised()
-          .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
+          .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertIntoDb(sessionId, Map(
@@ -314,7 +314,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       private def verifyCallbackHandler(redirectUrl: String) = {
         given()
           .user.isAuthorised()
-          .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
+          .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertIntoDb(sessionId, Map(
@@ -340,7 +340,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       private def verifyCallbackHandler(redirectUrl: String) = {
         given()
           .user.isAuthorised()
-          .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
+          .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertIntoDb(sessionId, Map(
@@ -365,7 +365,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
+        .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
       insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))

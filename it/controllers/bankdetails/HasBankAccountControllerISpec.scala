@@ -17,9 +17,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with a blank form if the vat scheme doesn't contain bank details" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -30,9 +30,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return SEE_OTHER when the party type is NETP" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -43,9 +43,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return SEE_OTHER when the party type is Non UK Company" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
+        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -56,7 +56,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with 'Yes' pre-populated from S4L" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
+        .s4lContainer[BankAccount].contains(BankAccount(true, None, None, None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -69,7 +69,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with 'Yes' pre-populated from the backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.isEmpty()
+        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[BankAccount](Some(emptyBankAccount))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -83,7 +83,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated from S4L" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
+        .s4lContainer[BankAccount].contains(BankAccount(false, None, None, None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -96,7 +96,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated from the backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.isEmpty()
+        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[BankAccount](Some(bankAccountNotProvidedNoReason))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -113,9 +113,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "redirect to the UK bank page if the user has a bank account" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .s4lContainer[BankAccount].isEmpty
+        .s4lContainer[BankAccount].isUpdatedWith(BankAccount(true, None, None, None))
+        .registrationApi.getSection[BankAccount](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -128,10 +128,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "redirect to the Overseas bank page if the user is a NETP" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(true, None, None, None))))
-        .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .s4lContainer[BankAccount].isEmpty
+        .s4lContainer[BankAccount].isUpdatedWith(BankAccount(true, None, None, None))
+        .registrationApi.getSection[BankAccount](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -144,10 +143,9 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "redirect to the reason for no bank account page if the user doesn't have a bank account" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.has("honesty-declaration", Json.obj("honestyDeclaration" -> true))
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(BankAccount.s4lKey.key, Json.stringify(Json.toJson(BankAccount(false, None, None, None))))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .s4lContainer[BankAccount].isEmpty
+        .s4lContainer[BankAccount].isUpdatedWith(BankAccount(false, None, None, None))
+        .registrationApi.getSection[BankAccount](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

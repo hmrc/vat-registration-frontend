@@ -146,7 +146,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           given()
             .user.isAuthorised()
             .s4lContainer[VatApplication].contains(testVatApplication)
-            .vatScheme.isUpdatedWith(testVatApplication.copy(
+            .registrationApi.replaceSection(testVatApplication.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
           ))
 

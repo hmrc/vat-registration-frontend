@@ -25,7 +25,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -42,7 +42,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(testDetails)
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,7 +65,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -81,7 +81,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

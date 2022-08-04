@@ -69,7 +69,6 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder with SicAnd
     given()
       .user.isAuthorised()
       .s4lContainer[Business].contains(fullModel)
-      .vatScheme.has("sicAndComp", Json.parse(simplifiedSicJson))
       .icl.setup()
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -85,7 +84,6 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder with SicAnd
     given()
       .user.isAuthorised()
       .s4lContainer[Business].contains(fullModel)
-      .vatScheme.doesNotHave("sicAndComp")
       .icl.setup()
 
     insertIntoDb(sessionId, sicCodeMapping)

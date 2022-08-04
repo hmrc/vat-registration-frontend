@@ -21,7 +21,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       "return OK when the TransactorDetails block is empty" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -33,7 +33,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       "return OK and pre-populate when the TransactorDetails block contains an address" in new Setup {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
           .s4lContainer[TransactorDetails].contains(TransactorDetails(address = Some(testShortForeignAddress)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -78,8 +78,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       private def verifyRedirect(redirectUrl: String) = {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
-          .vatScheme.doesNotExistForKey("transactor-details")
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
           .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 
@@ -104,8 +104,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       private def verifyRedirect(redirectUrl: String) = {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyUkCompanyVatScheme)
-          .vatScheme.doesNotExistForKey("transactor-details")
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+          .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].contains(TransactorDetails())
           .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 
@@ -133,8 +133,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
-        .vatScheme.doesNotExistForKey("transactor-details")
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 
@@ -154,8 +154,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if country is missing" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
-        .vatScheme.doesNotExistForKey("transactor-details")
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 
@@ -175,8 +175,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     "return BAD_REQUEST if country is UK and postcode is missing" in new Setup {
       given
         .user.isAuthorised()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
-        .vatScheme.doesNotExistForKey("transactor-details")
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[TransactorDetails](None)
         .s4lContainer[TransactorDetails].contains(TransactorDetails())
         .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 

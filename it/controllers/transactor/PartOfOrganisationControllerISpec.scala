@@ -41,7 +41,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -59,7 +59,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .vatScheme.contains(emptyUkCompanyVatScheme)
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

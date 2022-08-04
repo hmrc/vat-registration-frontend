@@ -21,17 +21,15 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
-import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.api._
+import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.external.upscan.UpscanDetails
-import models.{ApiKey, S4LKey}
+import models.{ApiKey, PartnerEntity, S4LKey}
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import play.api.test.Helpers.OK
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-import utils.JsonUtilities
 
 import java.time.LocalDate
 
@@ -46,19 +44,11 @@ trait StubUtils {
     def address(id: String, line1: String, line2: String, country: String, postcode: String) =
       AddressStub(id, line1, line2, country, postcode)
 
-    def postRequest(data: Map[String, String])(implicit requestHolder: RequestHolder): PreconditionBuilder = {
-      val requestWithBody = FakeRequest("POST", "/").withFormUrlEncodedBody(data.toArray: _*)
-      requestHolder.request = requestWithBody
-      this
-    }
-
     def user = UserStub()
 
     def alfeJourney = JourneyStub()
 
-    def vatRegistrationFootprint = VatRegistrationFootprintStub()
-
-    def vatScheme = VatSchemeStub()
+    def partnerApi = PartnerStub()
 
     def vatRegistration = VatRegistrationStub()
 
@@ -66,11 +56,9 @@ trait StubUtils {
 
     def bankAccountReputation = BankAccountReputationServiceStub()
 
-    def s4lContainer[C: S4LKey]: ViewModelStub[C] = new ViewModelStub[C]()
+    def s4lContainer[T: S4LKey]: S4lContainer[T] = new S4lContainer[T]()
 
     def audit = AuditStub()
-
-    def s4l = S4L()
 
     def trafficManagement = TrafficManagementStub()
 
@@ -138,7 +126,7 @@ trait StubUtils {
     }
 
 
-    def stubS4LGet[C, T](t: T)(implicit key: S4LKey[C], fmt: Writes[T]): MappingBuilder = {
+    def stubS4LGet[T](t: T)(implicit key: S4LKey[T], fmt: Writes[T]): MappingBuilder = {
       val s4lData = Json.toJson(t)
       val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
 
@@ -180,49 +168,14 @@ trait StubUtils {
       delete(urlPathMatching("/save4later/vat-registration-frontend/1")).willReturn(ok(""))
   }
 
-  case class S4L(scenario: String = "S4L Scenario")(implicit builder: PreconditionBuilder) {
-    def contains(key: String, data: String, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = S4LStub.stubS4LGetNoAux(key, data).inScenario(scenario)
-      val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
+  class S4lContainer[T]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[T]) {
 
-      stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
+    def contains(t: T)(implicit fmt: Writes[T]): PreconditionBuilder = {
+      stubFor(S4LStub.stubS4LGet[T](t))
       builder
     }
 
-    def isUpdatedWith(key: String, data: String, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioPUT = S4LStub.stubS4LPut(key, data).inScenario(scenario)
-      val mappingBuilderPUT = currentState.fold(mappingBuilderScenarioPUT)(mappingBuilderScenarioPUT.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderPUT)(mappingBuilderPUT.willSetStateTo))
-      builder
-    }
-
-    def isEmpty(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioGET = S4LStub.stubS4LGetNothing().inScenario(scenario)
-      val mappingBuilderGET = currentState.fold(mappingBuilderScenarioGET)(mappingBuilderScenarioGET.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderGET)(mappingBuilderGET.willSetStateTo))
-      builder
-    }
-
-    def cleared(currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      val mappingBuilderScenarioDELETE = S4LStub.stubS4LClear().inScenario(scenario)
-      val mappingBuilderDELETE = currentState.fold(mappingBuilderScenarioDELETE)(mappingBuilderScenarioDELETE.whenScenarioStateIs)
-
-      stubFor(nextState.fold(mappingBuilderDELETE)(mappingBuilderDELETE.willSetStateTo))
-      builder
-    }
-  }
-
-  @deprecated("please change the types on this once all refactoring has been completed, both should be same type instead of C & T")
-  class ViewModelStub[C]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[C]) {
-
-    def contains[T](t: T)(implicit fmt: Writes[T]): PreconditionBuilder = {
-      stubFor(S4LStub.stubS4LGet[C, T](t))
-      builder
-    }
-
-    def isUpdatedWith(t: C)(implicit key: S4LKey[C], fmt: Writes[C]): PreconditionBuilder = {
+    def isUpdatedWith(t: T)(implicit key: S4LKey[T], fmt: Writes[T]): PreconditionBuilder = {
       stubFor(S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()))
       builder
     }
@@ -237,7 +190,7 @@ trait StubUtils {
       builder
     }
 
-    def clearedByKey(implicit key: S4LKey[C]): PreconditionBuilder = {
+    def clearedByKey(implicit key: S4LKey[T]): PreconditionBuilder = {
       stubFor(S4LStub.stubS4LPut(key.key, Json.obj().toString()))
       builder
     }
@@ -286,89 +239,7 @@ trait StubUtils {
     }
   }
 
-  case class CurrentProfile()(implicit builder: PreconditionBuilder, requestHolder: RequestHolder) {
-    def setup(status: VatRegStatus.Value = VatRegStatus.draft, currentState: Option[String] = None, nextState: Option[String] = None): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(s"/incorporation-information/000-431-TEST/company-profile"))
-          .willReturn(ok(
-            s"""{ "company_name": "testingCompanyName" }"""
-          )))
-
-      stubFor(get(urlPathEqualTo("/vatreg/1/status")).willReturn(ok(
-        s"""{"status": "${status.toString}"}"""
-      )))
-
-      stubFor(
-        get(urlPathEqualTo("/vatreg/incorporation-information/000-431-TEST"))
-          .willReturn(ok(
-            s"""
-               |{
-               |  "statusEvent": {
-               |    "crn": "90000001",
-               |    "incorporationDate": "2016-08-05",
-               |    "status": "accepted"
-               |  },
-               |  "subscription": {
-               |    "callbackUrl": "http://localhost:9896/callbackUrl",
-               |    "regime": "vat",
-               |    "subscriber": "scrs",
-               |    "transactionId": "000-431-TEST"
-               |  }
-               |}
-             """.stripMargin
-          )))
-
-      builder
-    }
-  }
-
-  case class VatSchemeStub()(implicit builder: PreconditionBuilder) {
-
-    def isBlank: PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo("/vatreg/registrations/1"))
-          .willReturn(ok(
-            s"""{ "registrationId" : "1" , "status" : "draft"}"""
-          )))
-      builder
-    }
-
-    def doesNotExistForKey(blockKey: String): PreconditionBuilder = {
-      stubFor(
-        get(urlPathEqualTo(s"/vatreg/1/$blockKey"))
-          .willReturn(notFound()))
-      builder
-    }
-
-    def isNotUpdatedWith[T](t: T, statusCode: Int = 500)(implicit tFmt: Format[T]) = {
-      stubFor(
-        patch(urlPathMatching(s"/vatreg/1/.*"))
-          .willReturn(aResponse().withStatus(statusCode).withBody(tFmt.writes(t).toString())))
-      builder
-    }
-
-    def isUpdatedWith[T](t: T)(implicit tFmt: Writes[T]) = {
-      stubFor(
-        patch(urlPathMatching(s"/vatreg/1/.*"))
-          .willReturn(aResponse().withStatus(202).withBody(tFmt.writes(t).toString())))
-      builder
-    }
-
-    def storesAttachments(data: Attachments)(implicit writes: Writes[Attachments]) = {
-      stubFor(
-        put(urlPathMatching(s"/vatreg/1/attachments"))
-          .willReturn(aResponse().withStatus(OK).withBody(writes.writes(data).toString())))
-      builder
-    }
-
-    def deleteAttachments(implicit writes: Writes[Attachments]) = {
-      stubFor(
-        delete(urlPathMatching(s"/vatreg/1/upscan-file-details"))
-          .willReturn(aResponse().withStatus(NO_CONTENT))
-      )
-      builder
-    }
-
+  case class PartnerStub()(implicit builder: PreconditionBuilder) {
     def isUpdatedWithPartner[T](t: T)(implicit tFmt: Format[T]): PreconditionBuilder = {
       stubFor(
         put(urlPathMatching(s"/vatreg/1/partners/.*"))
@@ -376,67 +247,8 @@ trait StubUtils {
       builder
     }
 
-    def contains(vatReg: VatScheme): PreconditionBuilder = {
-      stubFor(get(urlPathEqualTo("/vatreg/1/get-scheme")).willReturn(ok(Json.toJson(vatReg).toString)))
-      builder
-    }
-
-    def contains(json: JsValue): PreconditionBuilder = {
-      stubFor(get(urlPathEqualTo("/vatreg/1/get-scheme")).willReturn(ok(json.toString())))
-      builder
-    }
-
-    def has(key: String, data: JsValue): PreconditionBuilder = {
-      stubFor(get(urlPathEqualTo(s"/vatreg/1/$key")).willReturn(ok(data.toString())))
-      builder
-    }
-
-    def doesNotHave(blockKey: String): PreconditionBuilder = {
-      stubFor(get(urlPathEqualTo(s"/vatreg/1/$blockKey")).willReturn(noContent()))
-      builder
-    }
-
-    def deleted: PreconditionBuilder = {
-      stubFor(delete(urlPathEqualTo("/vatreg/1/delete-scheme")).willReturn(ok("")))
-      builder
-    }
-
-    def patched(block: String, json: JsValue) = {
-      stubFor(
-        patch(urlPathMatching(s"/vatreg/1/$block"))
-          .willReturn(aResponse().withStatus(202).withBody(json.toString)))
-      builder
-    }
-
-    def isSubmittedSuccessfully(regId: String = "1"): PreconditionBuilder = {
-      stubFor(
-        put(urlPathMatching(s"/vatreg/$regId/submit-registration"))
-          .willReturn(aResponse().withStatus(200).withBody("fooBar")))
-      builder
-    }
-  }
-
-  case class VatRegistrationFootprintStub()(implicit builder: PreconditionBuilder) extends JsonUtilities {
-
-    def exists(status: VatRegStatus.Value = VatRegStatus.draft): PreconditionBuilder = {
-      stubFor(
-        post(urlPathEqualTo("/vatreg/new"))
-          .willReturn(ok(
-            Json.stringify(Json.obj(
-              "registrationId" -> "1",
-              "status" -> status.toString,
-              "createdDate" -> "2021-01-01"
-            ))
-          ))
-      )
-      builder
-    }
-
-    def fails: PreconditionBuilder = {
-      stubFor(
-        post(urlPathEqualTo("/vatreg/new"))
-          .willReturn(serverError()))
-
+    def hasPartners(data: List[PartnerEntity]): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/1/partners")).willReturn(ok(Json.stringify(Json.toJson(data)))))
       builder
     }
   }
@@ -650,14 +462,44 @@ trait StubUtils {
   }
 
   case class RegistrationApiStub()(implicit builder: PreconditionBuilder) {
-    def getRegistration(vatScheme: VatScheme, regId: String = "1")(implicit format: Format[VatScheme] = VatScheme.format): PreconditionBuilder = {
-      stubFor(get(urlPathEqualTo(s"/vatreg/registrations/$regId"))
+
+    def registrationCreated(status: VatRegStatus.Value = VatRegStatus.draft): PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo("/vatreg/registrations"))
+          .willReturn(ok(
+            Json.stringify(Json.obj(
+              "registrationId" -> "1",
+              "status" -> status.toString,
+              "createdDate" -> "2021-01-01"
+            ))
+          ))
+      )
+      builder
+    }
+
+    def registrationCreationFailed: PreconditionBuilder = {
+      stubFor(
+        post(urlPathEqualTo("/vatreg/registrations"))
+          .willReturn(serverError()))
+
+      builder
+    }
+
+    def getRegistration(vatScheme: VatScheme)(implicit format: Format[VatScheme]): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/registrations/${vatScheme.registrationId}"))
         .willReturn(ok(Json.stringify(Json.toJson(vatScheme)))
         ))
       builder
     }
 
-    def getAllRegistrations(list: List[VatSchemeHeader])(implicit format: Format[VatScheme] = VatScheme.format): PreconditionBuilder = {
+    def getRegistration(vatScheme: JsValue, regId: String = "1"): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/registrations/$regId"))
+        .willReturn(ok(Json.stringify(vatScheme))
+        ))
+      builder
+    }
+
+    def getAllRegistrations(list: List[VatSchemeHeader]): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/registrations"))
         .willReturn(ok(Json.stringify(Json.toJson(list))))
       )
@@ -796,9 +638,24 @@ trait StubUtils {
       )
       builder
     }
+
+    def deleteAttachments(regId: String = "1")(implicit writes: Writes[Attachments]): PreconditionBuilder = {
+      stubFor(
+        delete(urlPathMatching(s"/vatreg/$regId/upscan-file-details"))
+          .willReturn(aResponse().withStatus(NO_CONTENT))
+      )
+      builder
+    }
   }
 
   case class AttachmentsApiStub()(implicit builder: PreconditionBuilder) {
+    def getAttachments(attachments: List[AttachmentType], regId: String = "1")(implicit format: Format[Attachments]): PreconditionBuilder = {
+      stubFor(get(urlPathEqualTo(s"/vatreg/$regId/attachments"))
+        .willReturn(ok(Json.stringify(Json.toJson[List[AttachmentType]](attachments)))
+        ))
+      builder
+    }
+
     def getIncompleteAttachments(attachments: List[AttachmentType], regId: String = "1")(implicit format: Format[Attachments]): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/$regId/incomplete-attachments"))
         .willReturn(ok(Json.stringify(Json.toJson[List[AttachmentType]](attachments)))

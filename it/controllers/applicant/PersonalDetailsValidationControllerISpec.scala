@@ -33,7 +33,7 @@ class PersonalDetailsValidationControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

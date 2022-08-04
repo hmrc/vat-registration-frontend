@@ -54,7 +54,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
     "work without problems" when {
       "a registration is already present in the backend" in {
         given()
-          .vatRegistrationFootprint.exists()
+          .registrationApi.registrationCreated()
 
         await(vatregConnector.createNewRegistration) mustBe VatScheme(registrationId = "1", status = VatRegStatus.draft, createdDate = testCreatedDate)
       }
@@ -63,7 +63,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
     "throw an upstream 5xx exception" when {
       "remote service fails to handle the request" in {
         given()
-          .vatRegistrationFootprint.fails
+          .registrationApi.registrationCreationFailed
 
         intercept[Upstream5xxResponse] {
           await(vatregConnector.createNewRegistration)

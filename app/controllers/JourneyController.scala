@@ -18,14 +18,12 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList, TrafficManagementPredicate}
+import controllers.transactor.{routes => transactorRoutes}
+import featureswitch.core.config._
 import forms.StartNewApplicationForm
 import play.api.mvc._
-import services.{SessionService, _}
+import services._
 import views.html.start_new_application
-import controllers.transactor.{routes => transactorRoutes}
-import models.api.VatSchemeHeader
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +34,6 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
                                   val authConnector: AuthClientConnector,
                                   val sessionService: SessionService,
                                   val trafficManagementService: TrafficManagementService,
-                                  val saveAndRetrieveService: SaveAndRetrieveService,
                                   view: start_new_application)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
@@ -102,8 +99,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
       case Some(regId: String) =>
         for {
           _ <- journeyService.buildCurrentProfile(regId)
-          optHeader <- vatRegistrationService.getVatSchemeJson(regId).map(_.validate[VatSchemeHeader](VatSchemeHeader.vatSchemeReads).asOpt)
-          header = optHeader.getOrElse(throw new InternalServerException(s"[continueJourney] couldn't parse vat scheme header for regId: $regId"))
+          header <- vatRegistrationService.getVatSchemeHeader(regId)
           trafficManagementResponse <- if (isEnabled(TrafficManagementPredicate)) trafficManagementService.checkTrafficManagement(regId) else Future.successful(PassedVatReg)
         } yield (header.status, trafficManagementResponse) match {
           case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)

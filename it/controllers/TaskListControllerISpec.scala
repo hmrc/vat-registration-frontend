@@ -393,7 +393,7 @@ class TaskListControllerISpec extends ControllerISpec {
               )),
               northernIrelandProtocol = Some(NIPTurnover(
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
-                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None))
               ))
             )),
             bankAccount = Some(bankAccount.copy(
@@ -454,7 +454,7 @@ class TaskListControllerISpec extends ControllerISpec {
               )),
               northernIrelandProtocol = Some(NIPTurnover(
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
-                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None))
               )),
               startDate = Some(LocalDate.of(2017, 10, 10)),
               returnsFrequency = None,
@@ -547,7 +547,7 @@ class TaskListControllerISpec extends ControllerISpec {
           )),
           northernIrelandProtocol = Some(NIPTurnover(
             goodsToEU = Some(ConditionalValue(answer = false, None)),
-            goodsFromEU = Some(ConditionalValue(answer = false, None)),
+            goodsFromEU = Some(ConditionalValue(answer = false, None))
           ))
         )),
         bankAccount = None
@@ -561,8 +561,8 @@ class TaskListControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-        .s4l.contains(BankAccount.s4lKey.key, Json.stringify(Json.obj()))
-        .vatScheme.doesNotExistForKey("bank-account")
+        .s4lContainer[BankAccount].isEmpty
+        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

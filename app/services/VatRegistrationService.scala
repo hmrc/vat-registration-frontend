@@ -21,7 +21,7 @@ import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import connectors._
 import models._
 import models.api._
-import play.api.libs.json.{Format, JsValue}
+import play.api.libs.json.{Format, Reads}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -40,7 +40,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
   // -- New Registrations API methods --
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
-    vatRegConnector.getRegistration(profile.registrationId)
+    vatRegConnector.getRegistration[VatScheme](profile.registrationId)
 
   def upsertVatScheme(vatScheme: VatScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.upsertRegistration(profile.registrationId, vatScheme)
@@ -56,8 +56,10 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   // -- End new Registrations API methods --
 
-  def getVatSchemeJson(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] =
-    vatRegConnector.getRegistrationJson(regId)
+  def getVatSchemeHeader(regId: String)(implicit hc: HeaderCarrier): Future[VatSchemeHeader] = {
+    implicit val reads: Reads[VatSchemeHeader] = VatSchemeHeader.vatSchemeReads
+    vatRegConnector.getRegistration[VatSchemeHeader](regId)
+  }
 
   def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
     implicit val key: ApiKey[String] = acknowledgementReferenceKey

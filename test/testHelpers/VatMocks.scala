@@ -71,7 +71,6 @@ trait VatMocks
   val mockTimeService = mock[TimeService]
   lazy val mockICLService = mock[ICLService]
   val mockAuditConnector = mock[AuditConnector]
-  implicit lazy val mockSaveAndRetrieveService = mock[SaveAndRetrieveService]
   lazy val mockBankHolidayConnector: BankHolidaysConnector = mock[BankHolidaysConnector]
   lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
 

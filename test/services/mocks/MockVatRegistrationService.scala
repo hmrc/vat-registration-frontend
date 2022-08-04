@@ -16,17 +16,17 @@
 
 package services.mocks
 
+import models.api.{PartyType, VatScheme, VatSchemeHeader}
 import models.{ApiKey, CurrentProfile}
-import models.api.{PartyType, VatScheme}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{Format, JsValue}
+import play.api.libs.json.Format
 import services.VatRegistrationService
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -41,8 +41,8 @@ trait MockVatRegistrationService extends MockitoSugar {
       any[HeaderCarrier]
     )) thenReturn response
 
-  def mockGetVatSchemeJson(regId: String)(response: Future[JsValue]): OngoingStubbing[Future[JsValue]] =
-    when(vatRegistrationServiceMock.getVatSchemeJson(
+  def mockGetVatSchemeJson(regId: String)(response: Future[VatSchemeHeader]): OngoingStubbing[Future[VatSchemeHeader]] =
+    when(vatRegistrationServiceMock.getVatSchemeHeader(
       ArgumentMatchers.eq(regId)
     )(any[HeaderCarrier])) thenReturn response
 

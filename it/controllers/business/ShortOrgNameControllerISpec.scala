@@ -69,8 +69,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Business].contains(businessDetails)
-        .registrationApi.getSection[Business](None)
-        .vatScheme.isUpdatedWith(businessDetails.copy(shortOrgName = Some(testShortOrgName)))
+        .registrationApi.replaceSection(businessDetails.copy(shortOrgName = Some(testShortOrgName)))
         .s4lContainer[Business].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

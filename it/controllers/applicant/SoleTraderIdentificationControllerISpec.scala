@@ -175,7 +175,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.contains(
+        .registrationApi.getRegistration(
         VatScheme(registrationId = currentProfile.registrationId,
           createdDate = testCreatedDate,
           status = VatRegStatus.draft,
@@ -198,7 +198,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided when the applicant is a Sole Trader" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
 
         insertIntoDb(sessionId, Map(
           leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
@@ -216,7 +216,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided when the applicant is a NETP" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
 
         insertIntoDb(sessionId, Map(
           leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
@@ -235,7 +235,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
       "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
 
         insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -257,7 +257,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
+        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -280,7 +280,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -304,7 +304,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.replaceSection(validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
+        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -327,7 +327,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -351,7 +351,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .vatScheme.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)

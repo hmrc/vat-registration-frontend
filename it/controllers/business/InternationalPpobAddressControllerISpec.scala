@@ -178,7 +178,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       def assertMissingPostcode(country: String): Assertion = {
         given
           .user.isAuthorised()
-          .vatScheme.contains(emptyVatSchemeNetp)
+          .registrationApi.getRegistration(emptyVatSchemeNetp)
           .registrationApi.getSection[Business](None, testRegId)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

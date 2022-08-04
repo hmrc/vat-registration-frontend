@@ -54,8 +54,9 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "redirect to business website capture page if yes is chosen" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(hasWebsite = Some(true)))))
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](None)
+        .s4lContainer[Business].isUpdatedWith(Business(hasWebsite = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,8 +69,9 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "redirect to contact preference capture page if no is chosen" in new Setup {
       given
         .user.isAuthorised()
-        .s4l.isEmpty()
-        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(hasWebsite = Some(false)))))
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](None)
+        .s4lContainer[Business].isUpdatedWith(Business(hasWebsite = Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

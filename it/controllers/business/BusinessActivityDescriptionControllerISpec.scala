@@ -29,7 +29,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Business].contains(businessDetails)
-        .vatScheme.isUpdatedWith[Business](businessDetails.copy(businessDescription = Some("foo")))
+        .registrationApi.replaceSection[Business](businessDetails.copy(businessDescription = Some("foo")))
         .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

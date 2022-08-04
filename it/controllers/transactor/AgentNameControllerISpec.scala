@@ -69,7 +69,7 @@ class AgentNameControllerISpec extends ControllerISpec {
             .s4lContainer[TransactorDetails].isUpdatedWith(firstUpdateDetails)
             .s4lContainer[TransactorDetails].isUpdatedWith(secondUpdateDetails)
             .registrationApi.getSection[TransactorDetails](None)
-            .vatScheme.contains(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
+            .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -97,7 +97,7 @@ class AgentNameControllerISpec extends ControllerISpec {
             .s4lContainer[TransactorDetails].isUpdatedWith(firstUpdateDetails)
             .s4lContainer[TransactorDetails].isUpdatedWith(secondUpdateDetails)
             .registrationApi.getSection[TransactorDetails](None)
-            .vatScheme.contains(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
+            .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -114,7 +114,7 @@ class AgentNameControllerISpec extends ControllerISpec {
           .user.isAuthorised(arn = Some(testArn))
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
-          .vatScheme.contains(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
