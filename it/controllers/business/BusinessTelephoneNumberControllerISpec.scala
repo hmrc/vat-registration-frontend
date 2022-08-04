@@ -49,10 +49,8 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
       given()
         .user.isAuthorised()
-        .registrationApi.replaceSection[Business](Business(telephoneNumber = Some("123456789")))
-        .s4l.cleared()
-        .s4l.contains(Business.s4lKey.key, Json.stringify(Json.toJson(Business())))
-        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(telephoneNumber = Some("123456789")))))
+        .s4lContainer[Business].contains(Business())
+        .s4lContainer[Business].isUpdatedWith(Business(telephoneNumber = Some("123456789")))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -67,9 +65,7 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
       given()
         .user.isAuthorised()
-        .s4l.cleared()
-        .s4l.contains(Business.s4lKey.key, Json.stringify(Json.toJson(Business())))
-        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(Business(telephoneNumber = Some("123456789")))))
+        .s4lContainer[Business].contains(Business())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

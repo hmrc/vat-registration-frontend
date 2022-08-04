@@ -17,7 +17,6 @@
 package connectors
 
 import config.FrontendAppConfig
-import models._
 import models.api._
 import play.api.http.Status._
 import play.api.libs.json._
@@ -26,7 +25,6 @@ import uk.gov.hmrc.http._
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-// scalastyle:off
 @Singleton
 class VatRegistrationConnector @Inject()(val http: HttpClient,
                                          val config: FrontendAppConfig)
@@ -36,7 +34,7 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   lazy val vatRegElUrl: String = config.servicesConfig.baseUrl("vat-registration-eligibility-frontend")
 
   def createNewRegistration(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] = {
-    http.POSTEmpty[VatScheme](s"$vatRegUrl/vatreg/new").recover {
+    http.POSTEmpty[VatScheme](s"$vatRegUrl/vatreg/registrations").recover {
       case e => throw logResponse(e, "createNewRegistration")
     }
   }
@@ -55,8 +53,8 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
       }
     }
 
-  def getRegistration(regId: String)(implicit hc: HeaderCarrier, reads: HttpReads[VatScheme]): Future[VatScheme] = {
-    http.GET[VatScheme](s"$vatRegUrl/vatreg/registrations/$regId").recover {
+  def getRegistration[T](regId: String)(implicit hc: HeaderCarrier, reads: HttpReads[T]): Future[T] = {
+    http.GET[T](s"$vatRegUrl/vatreg/registrations/$regId").recover {
       case e => throw logResponse(e, "getRegistration")
     }
   }
@@ -64,18 +62,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClient,
   def upsertRegistration(regId: String, vatScheme: VatScheme)(implicit hc: HeaderCarrier, writes: Writes[VatScheme]): Future[VatScheme] = {
     http.PUT[VatScheme, VatScheme](url = s"$vatRegUrl/vatreg/registrations/$regId", body = vatScheme).recover {
       case e => throw logResponse(e, "upsertRegistration")
-    }
-  }
-
-  def getRegistrationJson(regId: String)(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[JsValue] = {
-    http.GET[JsValue](s"$vatRegUrl/vatreg/$regId/get-scheme").recover {
-      case e => throw logResponse(e, "getRegistrationJson")
-    }
-  }
-
-  def upsertPpob(regId: String, address: Address)(implicit hc: HeaderCarrier, rds: HttpReads[Address]): Future[Address] = {
-    http.PATCH[Address, Address](s"$vatRegUrl/vatreg/$regId/ppob", address).recover {
-      case e: Exception => throw logResponse(e, "upsertPpob")
     }
   }
 

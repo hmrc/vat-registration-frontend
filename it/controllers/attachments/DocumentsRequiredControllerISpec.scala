@@ -17,7 +17,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to documents required page when identity evidence is required" in {
       given()
         .user.isAuthorised()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence)))
+        .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
@@ -33,7 +33,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](VAT2)))
+        .attachmentsApi.getAttachments(List[AttachmentType](VAT2))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
@@ -49,7 +49,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](VAT51)))
+        .attachmentsApi.getAttachments(List[AttachmentType](VAT51))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
@@ -65,7 +65,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](VAT5L)))
+        .attachmentsApi.getAttachments(List[AttachmentType](VAT5L))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
@@ -81,7 +81,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](TaxRepresentativeAuthorisation)))
+        .attachmentsApi.getAttachments(List[AttachmentType](TaxRepresentativeAuthorisation))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
@@ -97,7 +97,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](VAT5L, VAT2)))
+        .attachmentsApi.getAttachments(List[AttachmentType](VAT5L, VAT2))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()
@@ -114,7 +114,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.has("attachments", Json.toJson(List[AttachmentType](TransactorIdentityEvidence)))
+          .attachmentsApi.getAttachments(List[AttachmentType](TransactorIdentityEvidence))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         val res = buildClient(resolveUrl).get()
@@ -130,7 +130,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence)))
+          .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         val res = buildClient(resolveUrl).get()
@@ -146,7 +146,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .audit.writesAudit()
           .audit.writesAuditMerged()
-          .vatScheme.has("attachments", Json.toJson(List[AttachmentType](TransactorIdentityEvidence, IdentityEvidence)))
+          .attachmentsApi.getAttachments(List[AttachmentType](TransactorIdentityEvidence, IdentityEvidence))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         val res = buildClient(resolveUrl).get()
@@ -161,7 +161,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
     "return a redirect to summary page when no attachments are given" in {
       given()
         .user.isAuthorised()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType]()))
+        .attachmentsApi.getAttachments(List[AttachmentType]())
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient(resolveUrl).get()

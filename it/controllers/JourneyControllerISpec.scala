@@ -68,7 +68,7 @@ class JourneyControllerISpec extends ControllerISpec {
           disable(SaveAndContinueLater)
           given()
             .user.isAuthorised()
-            .vatRegistrationFootprint.exists()
+            .registrationApi.registrationCreated()
             .registrationApi.getSection(Some(VatRegStatus.draft))
 
           val res: WSResponse = await(buildClient(showUrl).get())
@@ -183,8 +183,6 @@ class JourneyControllerISpec extends ControllerISpec {
       "redirect to the new journey url" in new Setup {
         given()
           .user.isAuthorised()
-          .trafficManagement.isCleared
-          .vatScheme.deleted
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> true)))
@@ -225,7 +223,7 @@ class JourneyControllerISpec extends ControllerISpec {
 
           given()
             .user.isAuthorised()
-            .vatRegistrationFootprint.exists()
+            .registrationApi.registrationCreated()
             .registrationApi.getSection(Some(VatRegStatus.draft))
 
           val res: WSResponse = await(buildClient(newJourneyUrl).get())
@@ -242,7 +240,7 @@ class JourneyControllerISpec extends ControllerISpec {
 
           given()
             .user.isAuthorised()
-            .vatRegistrationFootprint.exists()
+            .registrationApi.registrationCreated()
             .registrationApi.getSection(Some(VatRegStatus.draft))
 
           val res: WSResponse = await(buildClient(newJourneyUrl).get())
@@ -261,7 +259,7 @@ class JourneyControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.submitted))
-          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme.copy(status = VatRegStatus.submitted)))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(status = VatRegStatus.submitted)))
           .trafficManagement.passes(VatReg)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -278,7 +276,7 @@ class JourneyControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
-          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
           .trafficManagement.passes(VatReg)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -296,7 +294,7 @@ class JourneyControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
-          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
           .trafficManagement.passes(VatReg)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -336,7 +334,7 @@ class JourneyControllerISpec extends ControllerISpec {
             given()
               .user.isAuthorised()
               .registrationApi.getSection(Some(VatRegStatus.draft))
-              .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.passes(VatReg)
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -353,7 +351,7 @@ class JourneyControllerISpec extends ControllerISpec {
             given()
               .user.isAuthorised()
               .registrationApi.getSection(Some(VatRegStatus.draft))
-              .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.fails
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -372,7 +370,7 @@ class JourneyControllerISpec extends ControllerISpec {
             given()
               .user.isAuthorised()
               .registrationApi.getSection(Some(VatRegStatus.draft))
-              .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.passes(VatReg)
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -389,7 +387,7 @@ class JourneyControllerISpec extends ControllerISpec {
             given()
               .user.isAuthorised()
               .registrationApi.getSection(Some(VatRegStatus.draft))
-              .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
               .trafficManagement.fails
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -408,7 +406,7 @@ class JourneyControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
-          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
           .trafficManagement.passes(OTRS)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -427,7 +425,7 @@ class JourneyControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
-          .vatScheme.contains(Json.toJson(emptyUkCompanyVatScheme))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -448,10 +446,8 @@ class JourneyControllerISpec extends ControllerISpec {
           "redirect to the business identification resolver" in new Setup {
             given()
               .user.isAuthorised()
-              .trafficManagement.passes()
               .registrationApi.getSection(Some(VatRegStatus.draft))
               .registrationApi.getSection(Some(testEligibilitySubmissionData))
-              .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
             insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -465,10 +461,8 @@ class JourneyControllerISpec extends ControllerISpec {
             "redirect to the Part of An Organisation page" in new Setup {
               given()
                 .user.isAuthorised()
-                .trafficManagement.passes()
                 .registrationApi.getSection(Some(VatRegStatus.draft))
                 .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -482,10 +476,8 @@ class JourneyControllerISpec extends ControllerISpec {
               enable(FullAgentJourney)
               given()
                 .user.isAuthorised(arn = Some(testArn))
-                .trafficManagement.passes()
                 .registrationApi.getSection(Some(VatRegStatus.draft))
                 .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -497,10 +489,8 @@ class JourneyControllerISpec extends ControllerISpec {
               enable(TaskList)
               given()
                 .user.isAuthorised(arn = Some(testArn))
-                .trafficManagement.passes()
                 .registrationApi.getSection(Some(VatRegStatus.draft))
                 .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -513,10 +503,8 @@ class JourneyControllerISpec extends ControllerISpec {
               disable(TaskList)
               given()
                 .user.isAuthorised(arn = Some(testArn))
-                .trafficManagement.passes()
                 .registrationApi.getSection(Some(VatRegStatus.draft))
                 .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-                .s4l.isUpdatedWith("CurrentProfile", Json.stringify(Json.toJson(currentProfile)))
 
               insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -532,7 +520,6 @@ class JourneyControllerISpec extends ControllerISpec {
       "redirect to the start of the journey" in new Setup {
         given()
           .user.isAuthorised()
-          .trafficManagement.passes()
           .registrationApi.getSection[EligibilitySubmissionData](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

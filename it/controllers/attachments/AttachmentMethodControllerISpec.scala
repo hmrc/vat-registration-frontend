@@ -90,7 +90,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
-          .vatScheme.deleteAttachments
+          .upscanApi.deleteAttachments()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -22,7 +22,7 @@ import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import models.{ApiKey, ApplicantDetails, TransactorDetails}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
       implicit val key: ApiKey[String] = acknowledgementReferenceKey
       given()
         .user.isAuthorised()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
+        .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence, VAT2))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection(Some(testAckRef))
 
@@ -55,7 +55,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
       implicit val key: ApiKey[String] = acknowledgementReferenceKey
       given()
         .user.isAuthorised()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
+        .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence, VAT2))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))

@@ -76,23 +76,23 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
   "Calling getRegistration" should {
     "return the correct VatResponse when the microservice returns a Vat Registration model" in new Setup {
       mockHttpGET[VatScheme]("tst-url", validVatScheme)
-      connector.getRegistration("tstID") returns validVatScheme
+      connector.getRegistration[VatScheme]("tstID") returns validVatScheme
     }
     "return the correct VatResponse when the microservice returns a Vat Registration model with a created date" in new Setup {
       mockHttpGET[VatScheme]("tst-url", validVatScheme)
-      connector.getRegistration("tstID") returns validVatScheme
+      connector.getRegistration[VatScheme]("tstID") returns validVatScheme
     }
     "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
       mockHttpFailedGET[VatScheme]("tst-url", forbidden)
-      connector.getRegistration("tstID") failedWith forbidden
+      connector.getRegistration[VatScheme]("tstID") failedWith forbidden
     }
     "return the correct VatResponse when a Not Found response is returned by the microservice" in new Setup {
       mockHttpFailedGET[VatScheme]("tst-url", notFound)
-      connector.getRegistration("not_found_tstID") failedWith notFound
+      connector.getRegistration[VatScheme]("not_found_tstID") failedWith notFound
     }
     "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
       mockHttpFailedGET[VatScheme]("test-url", internalServiceException)
-      connector.getRegistration("tstID") failedWith internalServiceException
+      connector.getRegistration[VatScheme]("tstID") failedWith internalServiceException
     }
   }
 
@@ -104,49 +104,6 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return NOT_FOUND if the registration doesn't exist" in new Setup {
       mockHttpFailedPUT[VatScheme, VatScheme]("tst-url", notFound)
       connector.upsertRegistration("not_found_tstID", validVatScheme) failedWith notFound
-    }
-  }
-
-  "Calling getRegistrationJson" should {
-    "return the correct VatResponse when the microservice returns a Vat Registration model" in new Setup {
-      mockHttpGET[JsValue]("tst-url", Json.toJson(validVatScheme))
-      connector.getRegistrationJson("tstID") returns Json.toJson(validVatScheme)
-    }
-    "return the correct VatResponse when the microservice returns a Vat Registration model with a created date" in new Setup {
-      mockHttpGET[JsValue]("tst-url", Json.toJson(validVatScheme))
-      connector.getRegistrationJson("tstID") returns Json.toJson(validVatScheme)
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedGET[JsValue]("tst-url", forbidden)
-      connector.getRegistrationJson("tstID") failedWith forbidden
-    }
-    "return the correct VatResponse when a Not Found response is returned by the microservice" in new Setup {
-      mockHttpFailedGET[JsValue]("tst-url", notFound)
-      connector.getRegistrationJson("not_found_tstID") failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedGET[JsValue]("test-url", internalServiceException)
-      connector.getRegistrationJson("tstID") failedWith internalServiceException
-    }
-  }
-
-  "Calling upsertPpob" should {
-
-    "return the correct VatResponse when the microservice completes and returns a upsertPpob model" in new Setup {
-      mockHttpPATCH[Address, Address]("tst-url", testAddress)
-      connector.upsertPpob("tstID", testAddress) returns testAddress
-    }
-    "return the correct VatResponse when a Forbidden response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[Address, Address]("tst-url", forbidden)
-      connector.upsertPpob("tstID", testAddress) failedWith forbidden
-    }
-    "return a Not Found VatResponse when the microservice returns a NotFound response (No VatRegistration in database)" in new Setup {
-      mockHttpFailedPATCH[Address, Address]("tst-url", notFound)
-      connector.upsertPpob("tstID", testAddress) failedWith notFound
-    }
-    "return the correct VatResponse when an Internal Server Error response is returned by the microservice" in new Setup {
-      mockHttpFailedPATCH[Address, Address]("tst-url", internalServiceException)
-      connector.upsertPpob("tstID", testAddress) failedWith internalServiceException
     }
   }
 

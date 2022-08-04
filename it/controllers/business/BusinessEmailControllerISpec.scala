@@ -90,9 +90,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     "Return BAD_REQUEST if invalid email provided" in new Setup {
       given()
         .user.isAuthorised()
-        .s4l.cleared()
         .s4lContainer[Business].contains(businessDetails.copy(email = None))
-        .s4l.isUpdatedWith(Business.s4lKey.key, Json.stringify(Json.toJson(businessDetails.copy(email = Some(invalidBusinessEmail)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

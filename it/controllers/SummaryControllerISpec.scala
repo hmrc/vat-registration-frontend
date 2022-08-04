@@ -75,7 +75,7 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission succeeds" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", OK)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
@@ -92,7 +92,7 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission is already submitted" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", CONFLICT)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
@@ -109,7 +109,7 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission is already in progress" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", TOO_MANY_REQUESTS)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
@@ -126,7 +126,7 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission failed with a bad request" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", BAD_REQUEST)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
@@ -143,7 +143,7 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission fails with a 500 series status" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", INTERNAL_SERVER_ERROR)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)

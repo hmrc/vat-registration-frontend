@@ -47,7 +47,7 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
           .s4lContainer[VatApplication].isUpdatedWith(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
-          .vatScheme.contains(emptyVatSchemeNetp)
+          .registrationApi.getRegistration(emptyVatSchemeNetp)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

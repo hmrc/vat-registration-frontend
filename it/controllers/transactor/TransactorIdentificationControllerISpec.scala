@@ -38,7 +38,7 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(individualJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -59,7 +59,6 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
         enable(TaskList)
         given()
           .user.isAuthorised()
-          .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
@@ -81,7 +80,6 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
         disable(TaskList)
         given()
           .user.isAuthorised()
-          .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())
@@ -102,7 +100,6 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
         disable(TaskList)
         given()
           .user.isAuthorised()
-          .vatScheme.has("transactor-details", Json.toJson(TransactorDetails()))
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
           .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails())

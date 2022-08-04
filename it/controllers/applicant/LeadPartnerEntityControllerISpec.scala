@@ -37,7 +37,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "display the page with pre-pop" in new Setup {
       given()
         .user.isAuthorised()
-        .vatScheme.has("partners", Json.toJson(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))))
+        .partnerApi.hasPartners(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

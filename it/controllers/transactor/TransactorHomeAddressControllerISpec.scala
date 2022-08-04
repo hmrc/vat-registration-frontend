@@ -42,7 +42,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].contains(s4lData)
         .alfeJourney.initialisedSuccessfully()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

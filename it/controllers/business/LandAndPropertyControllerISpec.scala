@@ -34,7 +34,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
-        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.getSection[Business](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,7 +68,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(hasLandAndProperty = Some(true)))
-        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.getSection[Business](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

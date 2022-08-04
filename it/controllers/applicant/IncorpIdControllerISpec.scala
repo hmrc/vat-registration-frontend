@@ -360,7 +360,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .vatScheme.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+          .partnerApi.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -387,7 +387,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .vatScheme.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+          .partnerApi.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -408,7 +408,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .vatScheme.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+          .partnerApi.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

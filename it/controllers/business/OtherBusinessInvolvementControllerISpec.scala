@@ -37,7 +37,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
-        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.getSection[Business](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -110,7 +110,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
-        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.getSection[Business](None)
         .registrationApi.deleteSection[OtherBusinessInvolvement]()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -146,7 +146,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
-        .vatScheme.doesNotHave("sicAndComp")
+        .registrationApi.getSection[Business](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

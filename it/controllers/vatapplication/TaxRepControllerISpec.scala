@@ -56,8 +56,9 @@ class TaxRepControllerISpec extends ControllerISpec {
       private def verifyRedirect(redirectUrl: String) = {
         given
           .user.isAuthorised()
-          .s4l.isEmpty()
-          .s4l.isUpdatedWith(VatApplication.s4lKey.key, Json.stringify(Json.toJson(VatApplication(hasTaxRepresentative = Some(true)))))
+          .registrationApi.getSection[VatApplication](None)
+          .s4lContainer[VatApplication].isEmpty
+          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,8 +78,9 @@ class TaxRepControllerISpec extends ControllerISpec {
       private def verifyRedirect(redirectUrl: String) = {
         given
           .user.isAuthorised()
-          .s4l.isEmpty()
-          .s4l.isUpdatedWith(VatApplication.s4lKey.key, Json.stringify(Json.toJson(VatApplication(hasTaxRepresentative = Some(false)))))
+          .registrationApi.getSection[VatApplication](None)
+          .s4lContainer[VatApplication].isEmpty
+          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(false)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

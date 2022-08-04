@@ -18,24 +18,21 @@ package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc.{Action, AnyContent}
-import services.{SaveAndRetrieveService, SessionService}
+import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SaveAndRetrieveController @Inject()(val authConnector: AuthConnector,
-                                          val sessionService: SessionService,
-                                          saveAndRetrieveService: SaveAndRetrieveService)
+                                          val sessionService: SessionService)
                                          (implicit val executionContext: ExecutionContext,
                                           bcc: BaseControllerComponents,
                                           appConfig: FrontendAppConfig) extends BaseController {
 
   def save: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
-    saveAndRetrieveService.savePartialVatScheme(profile.registrationId).map { _ =>
-      Redirect(controllers.routes.ApplicationProgressSavedController.show.url)
-    }
+    Future.successful(Redirect(controllers.routes.ApplicationProgressSavedController.show.url))
   }
 
 }

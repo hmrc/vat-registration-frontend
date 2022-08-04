@@ -47,7 +47,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .alfeJourney.initialisedSuccessfully()
-        .vatScheme.contains(emptyUkCompanyVatScheme)
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

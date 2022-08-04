@@ -17,7 +17,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
+        .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence, VAT2))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -35,7 +35,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .vatScheme.has("attachments", Json.toJson(List[AttachmentType](IdentityEvidence, VAT2)))
+        .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence, VAT2))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
