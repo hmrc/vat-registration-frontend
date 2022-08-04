@@ -16,6 +16,7 @@
 
 package models
 
+import config.FrontendAppConfig
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -27,11 +28,13 @@ case class PersonalDetails(firstName: String,
                            trn: Option[String] = None,
                            identifiersMatch: Boolean,
                            dateOfBirth: Option[LocalDate] = None,
-                           arn: Option[String] = None) {
+                           arn: Option[String] = None,
+                           score: Option[Int] = None) {
   def fullName: String = firstName + " " + lastName
 }
 
 object PersonalDetails { //TODO remove all defaults here when PDV is removed
+
   val pdvFormat: OFormat[PersonalDetails] = (
     (__ \ "firstName").format[String] and
     (__ \ "lastName").format[String] and
@@ -39,17 +42,19 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "trn").formatNullable[String] and
     (__ \ "identifiersMatch").formatWithDefault[Boolean](true) and
     (__ \ "dateOfBirth").formatNullable[LocalDate] and
-    OFormat[Option[String]](_ => JsSuccess(None), (_: Option[String]) => Json.obj())
-    )(PersonalDetails.apply, unlift(PersonalDetails.unapply))
+    OFormat[Option[String]](_ => JsSuccess(None), (_: Option[String]) => Json.obj()) and
+    OFormat[Option[Int]](_ => JsSuccess(None), (_: Option[Int]) => Json.obj())
+  )(PersonalDetails.apply, unlift(PersonalDetails.unapply))
 
-  val soleTraderIdentificationReads: Reads[PersonalDetails] = (
+  def soleTraderIdentificationReads(appConfig: FrontendAppConfig): Reads[PersonalDetails] = (
     (__ \ "fullName" \ "firstName").read[String] and
     (__ \ "fullName" \ "lastName").read[String] and
     (__ \ "nino").readNullable[String] and
     (__ \ "trn").readNullable[String] and
     (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
     (__ \ "dateOfBirth").readNullable[LocalDate] and
-    Reads.pure(None)
+    Reads.pure(None) and
+    (__ \ "reputation" \ appConfig.scoreKey).readNullable[Int]
   )(PersonalDetails.apply _)
 
   val apiReads: Reads[PersonalDetails] = (
@@ -59,7 +64,8 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "trn").readNullable[String] and
     (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
     (__ \ "dateOfBirth").readNullable[LocalDate] and
-    (__ \ "arn").readNullable[String]
+    (__ \ "arn").readNullable[String] and
+    (__ \ "score").readNullable[Int]
   )(PersonalDetails.apply _)
 
   val apiWrites: Writes[PersonalDetails] = (
@@ -69,7 +75,8 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "trn").writeNullable[String] and
     (__ \ "identifiersMatch").write[Boolean] and
     (__ \ "dateOfBirth").writeNullable[LocalDate] and
-    (__ \ "arn").writeNullable[String]
+    (__ \ "arn").writeNullable[String] and
+    (__ \ "score").writeNullable[Int]
   )(unlift(PersonalDetails.unapply))
 
   implicit val apiFormat: Format[PersonalDetails] = Format(apiReads, apiWrites)

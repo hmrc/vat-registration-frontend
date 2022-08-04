@@ -17,19 +17,15 @@
 package testHelpers
 
 import connectors._
-import connectors.mocks.{AuthMock, HttpClientMock, MockRegistrationApiConnector, MockS4lConnector, SessionServiceMock}
+import connectors.mocks._
 import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.cache.SyncCacheApi
-import play.api.i18n.MessagesApi
-import repositories.SessionRepository
 import services._
 import services.mocks.{BusinessServiceMock, IncorpIdServiceMock, PersonalDetailsValidationServiceMock}
-import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.CascadeUpsert
 
 trait VatMocks
   extends MockS4lConnector
@@ -43,13 +39,9 @@ trait VatMocks
   this: MockitoSugar =>
 
   implicit lazy val mockAudit = mock[Audit]
-  implicit lazy val mockSessionRepository = mock[SessionRepository]
-  implicit lazy val mockCascadeUpsert = mock[CascadeUpsert]
-  implicit lazy val mockSessionCache = mock[SessionCache]
   implicit lazy val mockS4LService = mock[S4LService]
   implicit lazy val mockServicesConfig = mock[ServicesConfig]
 
-  implicit lazy val mockMessagesAPI: MessagesApi = mock[MessagesApi]
   //Connectors
   implicit lazy val mockVatRegistrationConnector = mock[VatRegistrationConnector]
   implicit lazy val mockConfigConnector = mock[ConfigConnector]
@@ -57,7 +49,6 @@ trait VatMocks
   implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockICLConnector = mock[ICLConnector]
   //Services
-  implicit lazy val mockCurrentProfileService = mock[JourneyService]
   implicit lazy val mockAddressLookupService = mock[AddressLookupService]
   implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
   implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
@@ -71,7 +62,6 @@ trait VatMocks
   val mockTimeService = mock[TimeService]
   lazy val mockICLService = mock[ICLService]
   val mockAuditConnector = mock[AuditConnector]
-  lazy val mockBankHolidayConnector: BankHolidaysConnector = mock[BankHolidaysConnector]
   lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
 
   def resetMocks() {
@@ -80,26 +70,19 @@ trait VatMocks
       mockS4LConnector,
       mockS4LService,
       mockSessionService,
-      mockSessionCache,
-      mockSessionRepository,
-      mockCascadeUpsert,
       mockAudit,
       mockVatRegistrationService,
       mockVatRegistrationConnector,
       mockConfigConnector,
       mockAddressLookupConnector,
-      mockCurrentProfileService,
       movkVatApplicationService,
       mockAttachmentsService,
       mockApplicantDetailsServiceOld,
       mockFlatRateService,
-      mockMessagesAPI,
       mockSummaryService,
       mockAuthClientConnector,
       mockTimeService,
       mockTrafficManagementService,
-      mockBankHolidayConnector,
-      mockCache,
       mockRegistrationApiConnector
     )
   }

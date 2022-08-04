@@ -85,6 +85,10 @@ class SummaryController @Inject()(val sessionService: SessionService,
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)).map {
           _ => Redirect(controllers.errors.routes.ErrorController.submissionRetryable)
         }
+      case Contact =>
+        sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.contact)).map {
+          _ => Redirect(controllers.errors.routes.ErrorController.contact)
+        }
     }
   }
 }

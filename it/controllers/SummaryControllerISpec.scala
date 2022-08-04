@@ -155,5 +155,22 @@ class SummaryControllerISpec extends ControllerISpec {
         }
       }
     }
+
+    "redirect to the contact OSH page" when {
+      "the submission fails with a 500 series status" in new Setup {
+        given()
+          .user.isAuthorised()
+          .vatScheme.contains(fullVatScheme)
+          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", UNPROCESSABLE_ENTITY)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.contact.url)
+        }
+      }
+    }
   }
 }

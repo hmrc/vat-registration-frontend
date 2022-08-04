@@ -143,6 +143,9 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
         "businessVerification" -> Json.obj(
           "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
         ),
+        "reputation" -> Json.obj(
+          "score" -> 1
+        ),
         "registration" -> Json.obj(
           "registrationStatus" -> testRegistration,
           "registeredBusinessPartnerId" -> testSafeId
@@ -152,7 +155,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
       val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testPersonalDetails, testSoleTrader)
+      res mustBe(testPersonalDetails.copy(score = Some(1)), testSoleTrader)
     }
 
     "return transactor details for NETP when STI returns OK" in new Setup {

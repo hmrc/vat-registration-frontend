@@ -38,7 +38,7 @@ trait SessionProfile {
       ) {
         profile =>
           profile.vatRegistrationStatus match {
-            case VatRegStatus.draft => f(profile)
+            case VatRegStatus.draft | VatRegStatus.contact => f(profile)
             case VatRegStatus.submitted if checkStatus => Future.successful(Redirect(routes.ApplicationSubmissionController.show))
             case VatRegStatus.failedRetryable if checkStatus => Future.successful(Redirect(controllers.errors.routes.ErrorController.submissionRetryable))
             case VatRegStatus.failed if checkStatus => Future.successful(Redirect(controllers.errors.routes.ErrorController.submissionFailed))

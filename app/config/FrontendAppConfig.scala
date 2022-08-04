@@ -73,6 +73,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
   lazy val feedbackUrl = s"$feedbackFrontendUrl/feedback/vat-registration"
   lazy val contactFrontendUrl: String = loadConfig("microservice.services.contact-frontend.url")
+  lazy val oshLink: String = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
   lazy val analyticsToken = loadConfig(s"google-analytics.token")
   lazy val analyticsHost = loadConfig(s"google-analytics.host")
   lazy val reportAProblemPartialUrl = s"$contactFrontendUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
@@ -103,6 +104,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   private def loadStringConfigBase64(key: String): String = {
     new String(Base64.getDecoder.decode(servicesConfig.getString(key)), Charset.forName("UTF-8"))
   }
+
+  lazy val scoreKey = servicesConfig.getString("constants.score")
 
   lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 

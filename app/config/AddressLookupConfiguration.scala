@@ -17,13 +17,13 @@
 package config
 
 import common.enums.AddressLookupJourneyIdentifier
-
-import javax.inject.Inject
 import models.external.addresslookup._
-import models.external.addresslookup.messages.{AddressMessagesModel, InternationalAddressMessagesModel}
+import models.external.addresslookup.messages.AddressMessagesModel
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+
+import javax.inject.Inject
 
 class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig, messages: MessagesApi) {
 
