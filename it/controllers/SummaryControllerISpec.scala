@@ -160,7 +160,7 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission fails with a 500 series status" in new Setup {
         given()
           .user.isAuthorised()
-          .vatScheme.contains(fullVatScheme)
+          .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", UNPROCESSABLE_ENTITY)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
