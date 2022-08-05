@@ -82,6 +82,9 @@ class TaskListControllerISpec extends ControllerISpec {
       val vatReturnsNotStartedRow = "VAT returns Not started"
       val vatReturnsInProgress = "VAT returns In progress"
       val vatReturnsCannotStartYetRow = "VAT returns Cannot start yet"
+
+      val frsCannotStartYetRow = "Flat Rate Scheme Cannot start yet"
+      val frsCompletedRow = "Flat Rate Scheme Completed"
     }
   }
 
@@ -331,6 +334,7 @@ class TaskListControllerISpec extends ControllerISpec {
             .registrationApi.getRegistration(scheme)
             .registrationApi.getSection[Business](scheme.business)
             .registrationApi.getSection[VatApplication](scheme.vatApplication)
+            .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
             .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
             .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
             .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
@@ -357,7 +361,8 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
             ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
-            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
           )
         )
 
@@ -375,7 +380,8 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
             ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
-            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
           )
         )
 
@@ -404,7 +410,8 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
             ExpectedMessages.vatRegistrationSection.registrationDateNotStartedRow,
-            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
+            ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+            ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
           )
         )
 
@@ -436,7 +443,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
-            ExpectedMessages.vatRegistrationSection.vatReturnsNotStartedRow
+            ExpectedMessages.vatRegistrationSection.vatReturnsNotStartedRow,
+            ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
           )
         )
 
@@ -468,7 +476,8 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
             ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
-            ExpectedMessages.vatRegistrationSection.vatReturnsNotStartedRow
+            ExpectedMessages.vatRegistrationSection.vatReturnsNotStartedRow,
+            ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
           )
         )
 
@@ -497,7 +506,8 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
             ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
-            ExpectedMessages.vatRegistrationSection.vatReturnsInProgress
+            ExpectedMessages.vatRegistrationSection.vatReturnsInProgress,
+            ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
           )
         )
 
@@ -527,6 +537,7 @@ class TaskListControllerISpec extends ControllerISpec {
             ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
             ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
             ExpectedMessages.vatRegistrationSection.vatReturnsCompletedRow,
+            ExpectedMessages.vatRegistrationSection.frsCompletedRow
           )
         )
       }
@@ -558,6 +569,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
         .registrationApi.getSection[VatApplication](scheme.vatApplication)
+        .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
         .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
@@ -575,7 +587,8 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
           ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow,
           ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow
+          ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+          ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
         )
       )
     }

@@ -18,11 +18,12 @@ package controllers.flatratescheme
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.GroupRegistration
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, VatApplicationService, SessionProfile, SessionService, VatRegistrationService}
+import services.{FlatRateService, SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
 import views.html.flatratescheme.frs_join
 
@@ -69,8 +70,10 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
           joiningFRS => flatRateService.saveJoiningFRS(joiningFRS.answer) map { _ =>
             if (joiningFRS.answer) {
               Redirect(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage)
+            } else if(isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show)
             } else {
-              Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+                Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
             }
           }
         )

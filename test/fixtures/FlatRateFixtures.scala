@@ -35,7 +35,8 @@ trait FlatRateFixtures {
     Some(true),
     frsDate,
     Some("frsId"),
-    Some(flatRatePercentage)
+    Some(flatRatePercentage),
+    Some(false)
   )
 
   val defaultFlatRate: BigDecimal = 16.5

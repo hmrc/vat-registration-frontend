@@ -19,7 +19,7 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, BankAccountDetailsService, BusinessService, SessionService, TransactorDetailsService, VatApplicationService, VatRegistrationService}
+import services.{ApplicantDetailsService, BankAccountDetailsService, BusinessService, FlatRateService, SessionService, TransactorDetailsService, VatApplicationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.tasklist.{AboutTheBusinessTaskList, AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VatRegistrationTaskList, VerifyBusinessTaskList}
 import views.html.TaskList
@@ -42,6 +42,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    businessService: BusinessService,
                                    vatApplicationService: VatApplicationService,
                                    bankAccountDetailsService: BankAccountDetailsService,
+                                   flatRateService: FlatRateService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -57,12 +58,14 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
         business <- businessService.getBusiness
         vatApplication <- vatApplicationService.getVatApplication
         bankAccountDetails <- bankAccountDetailsService.fetchBankAccountDetails
+        flatRateScheme <- flatRateService.getFlatRate
         scheme = vatScheme.copy(
           applicantDetails = Some(applicantDetails),
           transactorDetails = Some(transactorDetails),
           business = Some(business),
           vatApplication = Some(vatApplication),
-          bankAccount = bankAccountDetails
+          bankAccount = bankAccountDetails,
+          flatRateScheme = Some(flatRateScheme)
         ) // Grabbing the data from two sources is temporary, until we've removed S4L
         sections = List(
           Some(registrationReasonSection.build(scheme)),

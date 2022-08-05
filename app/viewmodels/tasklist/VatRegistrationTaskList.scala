@@ -30,7 +30,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) extends FeatureSwitching {
 
-  def buildGoodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def goodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
     url = scheme => {
       scheme.partyType match {
@@ -72,10 +72,10 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
           }
         }
     },
-    prerequisites = _ => Seq(buildGoodsAndServicesRow)
+    prerequisites = _ => Seq(goodsAndServicesRow)
   )
 
-  def buildRegistrationDateRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def registrationDateRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.registrationDate",
     url = _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
     tagId = "vatRegistrationDateRow",
@@ -83,7 +83,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     prerequisites = _ => Seq(bankAccountDetailsRow)
   )
 
-  def buildVatReturnsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def vatReturnsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
     url = _ => controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url,
     tagId = "vatReturnsRow",
@@ -92,8 +92,26 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       List(
         resolveVATRegistrationDateRow(scheme),
         resolveBankDetailsRow(scheme)
-      ).flatten.headOption.getOrElse(buildGoodsAndServicesRow)
+      ).flatten.headOption.getOrElse(goodsAndServicesRow)
     )
+  )
+
+  def flatRateSchemeRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.vatRegistration.flatRateScheme",
+    url = _ => controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url,
+    tagId = "flatRateScheme",
+    checks = scheme => {
+      scheme.flatRateScheme match {
+        case Some(FlatRateScheme(Some(true), Some(true), Some(_), Some(true), Some(true), Some(_), Some(_), Some(_), Some(_))) => List(true)
+        case Some(FlatRateScheme(Some(true), Some(true), Some(_), Some(false), Some(true), Some(_), _, Some(_), Some(_))) => List(true)
+        case Some(FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(_), _, Some(_), Some(_))) => List(true)
+        case Some(FlatRateScheme(Some(true), Some(false), _, _, Some(false), _, _, _, _)) => List(true)
+        case Some(FlatRateScheme(Some(true), _, _, _, _, _, _, _, _)) => List(true, false)
+        case Some(FlatRateScheme(Some(false), _, _, _, _, _, _, _, _)) => List(true)
+        case None | Some(FlatRateScheme(None, None, None, None, None, None, None, None, None)) => List(false)
+      }
+    },
+    prerequisites = _ => Seq(vatReturnsRow)
   )
 
   def build(vatScheme: VatScheme)
@@ -105,11 +123,12 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     TaskListSection(
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
-        Some(buildGoodsAndServicesRow.build(vatScheme)),
+        Some(goodsAndServicesRow.build(vatScheme)),
         resolveBankDetailsRow(vatScheme).map(_.build(vatScheme)),
         resolveVATRegistrationDateRow(vatScheme).map(_.build(vatScheme)),
-        Some(buildVatReturnsRow.build(vatScheme))
-      ).flatten
+        Some(vatReturnsRow.build(vatScheme)),
+        resolveFlatRateSchemeRow(vatScheme)
+    ).flatten
     )
   }
 
@@ -117,10 +136,20 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow)
   }
 
+  private[tasklist] def resolveFlatRateSchemeRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+    if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).exists(_ > 150000L) ||
+      vatScheme.eligibilitySubmissionData.map(_.registrationReason).exists(GroupRegistration.equals)
+    ) {
+      None
+    } else {
+      Some(flatRateSchemeRow.build(vatScheme))
+    }
+  }
+
   private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
     vatScheme.eligibilitySubmissionData.map(_.registrationReason) match {
       case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) =>
-        Some(buildRegistrationDateRow)
+        Some(registrationDateRow)
       case Some(_) =>
         None
       case None =>
