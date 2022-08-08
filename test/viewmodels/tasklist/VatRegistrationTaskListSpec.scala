@@ -18,9 +18,9 @@ package viewmodels.tasklist
 
 import featureswitch.core.config.{FeatureSwitching, TaxRepPage}
 import fixtures.VatRegistrationFixture
-import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
 import models.api._
-import models.{ConditionalValue, NIPTurnover, NonUk, TransferOfAGoingConcern}
+import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
+import models._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
@@ -44,7 +44,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
   "checks for goods and services row" when {
     "prerequisite not complete" must {
       "return TLCannotStart" in {
-        val sectionRow = section.buildGoodsAndServicesRow.build(emptyVatScheme)
+        val sectionRow = section.goodsAndServicesRow.build(emptyVatScheme)
         sectionRow.status mustBe TLCannotStart
       }
     }
@@ -67,7 +67,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             vatApplication = None
           )
 
-          val sectionRow = section.buildGoodsAndServicesRow.build(schema)
+          val sectionRow = section.goodsAndServicesRow.build(schema)
           sectionRow.status mustBe TLNotStarted
           sectionRow.url mustBe expectedUrl
         }
@@ -102,7 +102,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             ))
           )
 
-          val sectionRow = section.buildGoodsAndServicesRow.build(scheme)
+          val sectionRow = section.goodsAndServicesRow.build(scheme)
           sectionRow.status mustBe TLCompleted
           sectionRow.url mustBe controllers.vatapplication.routes.TurnoverEstimateController.show.url
         }
@@ -121,7 +121,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection)
         )
 
-        val sectionRow = section.buildGoodsAndServicesRow.build(scheme)
+        val sectionRow = section.goodsAndServicesRow.build(scheme)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.vatapplication.routes.ImportsOrExportsController.show.url
       }
@@ -129,7 +129,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
     "prerequisite is complete but goods and services details partially submitted" must {
       def verifyInProgressSectionRow(scheme: VatScheme) = {
-        val sectionRow = section.buildGoodsAndServicesRow.build(scheme)
+        val sectionRow = section.goodsAndServicesRow.build(scheme)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.vatapplication.routes.ImportsOrExportsController.show.url
       }
@@ -211,7 +211,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
     "prerequisite not complete" must {
       "return TLCannotStart" in {
-        val sectionRow = section.buildRegistrationDateRow.build(emptyVatScheme)
+        val sectionRow = section.registrationDateRow.build(emptyVatScheme)
         sectionRow.status mustBe TLCannotStart
       }
     }
@@ -233,7 +233,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection)
         )
 
-        val sectionRow = section.buildRegistrationDateRow.build(schema)
+        val sectionRow = section.registrationDateRow.build(schema)
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url
       }
@@ -253,7 +253,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           ))
         )
 
-        val sectionRow = section.buildRegistrationDateRow.build(scheme)
+        val sectionRow = section.registrationDateRow.build(scheme)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url
       }
@@ -416,7 +416,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
     "prerequisite not complete" must {
       "return TLCannotStart" in {
-        val sectionRow = section.buildVatReturnsRow.build(emptyVatScheme.copy(
+        val sectionRow = section.vatReturnsRow.build(emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData)
         ))
         sectionRow.status mustBe TLCannotStart
@@ -443,7 +443,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           ))
         )
 
-        val sectionRow = section.buildVatReturnsRow.build(schema)
+        val sectionRow = section.vatReturnsRow.build(schema)
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
       }
@@ -466,7 +466,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           vatApplication = Some(vatApplicationWithNoReturns)
         )
 
-        val sectionRow = section.buildVatReturnsRow.build(schema)
+        val sectionRow = section.vatReturnsRow.build(schema)
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
       }
@@ -492,7 +492,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           bankAccount = None
         )
 
-        val sectionRow = section.buildVatReturnsRow.build(schema)
+        val sectionRow = section.vatReturnsRow.build(schema)
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
       }
@@ -513,7 +513,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           ))
         )
 
-        val sectionRow = section.buildVatReturnsRow.build(scheme)
+        val sectionRow = section.vatReturnsRow.build(scheme)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
 
@@ -535,9 +535,128 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           ))
         )
 
-        val sectionRow = section.buildVatReturnsRow.build(scheme)
+        val sectionRow = section.vatReturnsRow.build(scheme)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+      }
+    }
+  }
+
+  "checks for flat rate scheme row" when {
+    "rendering the row " must {
+      "resolve to None if turnover estimate exceeds the limit" in {
+        section.resolveFlatRateSchemeRow(
+          validVatScheme.copy(
+            vatApplication = Some(validVatApplication.copy(turnoverEstimate = Some(BigDecimal(150001))))
+          )
+        ) mustBe None
+      }
+      "resolve to None if registration reason is group registration" in {
+        section.resolveFlatRateSchemeRow(
+          validVatScheme.copy(
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration))
+          )
+        ) mustBe None
+      }
+      "resolve to flat rate scheme row if turnover estimate is within the limit and registration reason is other than group registration" in {
+        val scheme = validVatScheme.copy(
+          vatApplication = Some(validVatApplication.copy(turnoverEstimate = Some(BigDecimal(149999)))),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = ForwardLook))
+        )
+        section.resolveFlatRateSchemeRow(scheme).map(_.url) mustBe
+          Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+      }
+    }
+    "prerequisite not complete" must {
+      "return task list cannot start" in {
+        val sectionRow = section.flatRateSchemeRow.build(emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData)
+        ))
+        sectionRow.status mustBe TLCannotStart
+      }
+    }
+
+    "prerequisite is complete but flat rate scheme flow hasn't started with its value None" must {
+      "return task list not started with correct url" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          )),
+          flatRateScheme = None
+        )
+
+        val sectionRow = section.flatRateSchemeRow.build(scheme)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url
+      }
+    }
+
+    "prerequisite is complete but flat rate scheme flow hasn't started having an empty collection of data" must {
+      "return list not started with correct url" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          )),
+          flatRateScheme = Some(FlatRateScheme(None, None, None, None, None, None, None, None, None))
+        )
+
+        val sectionRow = section.flatRateSchemeRow.build(scheme)
+        sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url
+      }
+    }
+
+    "prerequisite is complete but flat rate scheme has partial data" must {
+      "return task list in progress" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          )),
+          flatRateScheme = Some(FlatRateScheme(joinFrs = Some(true)))
+        )
+
+        val sectionRow = section.flatRateSchemeRow.build(scheme)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url
+      }
+    }
+
+    "prerequisite is complete and all flat rate scheme data captured" must {
+      "return task list completed" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          )),
+          flatRateScheme = Some(validFlatRate)
+        )
+
+        val sectionRow = section.flatRateSchemeRow.build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url
       }
     }
   }

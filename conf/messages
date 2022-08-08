@@ -58,6 +58,7 @@ tasklist.vatRegistration.goodsAndServices   = Goods and services
 tasklist.vatRegistration.bankAccountDetails = Bank account details
 tasklist.vatRegistration.registrationDate   = Registration date
 tasklist.vatRegistration.vatReturns         = VAT returns
+tasklist.vatRegistration.flatRateScheme     = Flat Rate Scheme
 
 # Ordinal numbers
 ordinals.1 = First

@@ -16,6 +16,7 @@
 
 package controllers.flatratescheme
 
+import featureswitch.core.config.TaskList
 import fixtures.FlatRateFixtures
 import models.FRSDateChoice
 import org.mockito.ArgumentMatchers.any
@@ -147,28 +148,6 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
           status(result) mustBe BAD_REQUEST
         }
       }
-    }
-    "Redirect to the next page" when {
-      "VAT Registration Date selected" in new Setup {
-        when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
-        when(mockFlatRateService.fetchVatStartDate(any(), any()))
-          .thenReturn(Future.successful(None))
-
-        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
-          .thenReturn(Future.successful(LocalDate.of(2017, 3, 18).plusMonths(2)))
-
-        when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
-          .thenReturn(Future.successful(validFlatRate))
-
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
-          "frsStartDateRadio" -> FRSDateChoice.VATDate
-        )
-
-        submitAuthorised(controller.submit, request) { result =>
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
-        }
-      }
       "a valid different date is posted" in new Setup {
         val minDate = LocalDate.of(2017, 3, 1)
         val maxDate = minDate.plusMonths(2)
@@ -193,6 +172,50 @@ class StartDateControllerSpec extends ControllerSpec with FlatRateFixtures {
         submitAuthorised(controller.submit, request) { result =>
           status(result) mustBe BAD_REQUEST
         }
+      }
+    }
+    "Redirect to the next page" when {
+      "VAT Registration Date selected" in new Setup {
+        when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
+        when(mockFlatRateService.fetchVatStartDate(any(), any()))
+          .thenReturn(Future.successful(None))
+
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
+          .thenReturn(Future.successful(LocalDate.of(2017, 3, 18).plusMonths(2)))
+
+        when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
+          .thenReturn(Future.successful(validFlatRate))
+
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
+          "frsStartDateRadio" -> FRSDateChoice.VATDate
+        )
+
+        submitAuthorised(controller.submit, request) { result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
+        }
+      }
+      "VAT Registration Date selected and task list feature switch is on" in new Setup {
+        enable(TaskList)
+        when(mockTimeService.today).thenReturn(LocalDate.of(2017, 3, 21))
+        when(mockFlatRateService.fetchVatStartDate(any(), any()))
+          .thenReturn(Future.successful(None))
+
+        when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
+          .thenReturn(Future.successful(LocalDate.of(2017, 3, 18).plusMonths(2)))
+
+        when(mockFlatRateService.saveStartDate(any(), any())(any(), any()))
+          .thenReturn(Future.successful(validFlatRate))
+
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
+          "frsStartDateRadio" -> FRSDateChoice.VATDate
+        )
+
+        submitAuthorised(controller.submit, request) { result =>
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some("/register-for-vat/application-progress")
+        }
+        disable(TaskList)
       }
     }
   }

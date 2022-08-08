@@ -18,10 +18,11 @@ package controllers.flatratescheme
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import forms.FRSStartDateForm
 import models.CurrentProfile
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, VatApplicationService, SessionService, TimeService}
+import services.{FlatRateService, SessionService, TimeService, VatApplicationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.time.workingdays.BankHolidaySet
@@ -70,7 +71,11 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
         answers => {
           val (choice, optDate) = answers
           flatRateService.saveStartDate(choice, optDate) map { _ =>
-            Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+            if(isEnabled(TaskList)) {
+              Redirect(controllers.routes.TaskListController.show)
+            } else {
+              Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+            }
           }
         }
       )
