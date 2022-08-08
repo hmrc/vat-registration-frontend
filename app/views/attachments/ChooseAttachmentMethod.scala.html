@@ -44,16 +44,11 @@
             legend = messages("attachmentMethod.title"),
             legendAsHeading = false,
             classes = "govuk-visually-hidden",
-            items = uploadDocuments ++ Seq(
+            items = digitalAttachmentOption ++ Seq(
                 RadioItem(
                     content = Text(messages("attachmentMethod.options.post")),
                     value = Some("3"),
                     checked = attachmentMethodForm("value").value.contains("3")
-                ),
-                RadioItem(
-                    content = Text(messages("attachmentMethod.options.email")),
-                    value = Some("email"),
-                    checked = attachmentMethodForm("value").value.contains("email")
                 )
             )
         )
@@ -63,7 +58,7 @@
 
 }
 
-@uploadDocuments = @{
+@digitalAttachmentOption = @{
     if(appConfig.isEnabled(UploadDocuments)) {
         Seq(
             RadioItem(
@@ -73,6 +68,12 @@
             )
         )
     } else {
-        Nil
+        Seq(
+            RadioItem(
+                content = Text(messages("attachmentMethod.options.email")),
+                value = Some("email"),
+                checked = attachmentMethodForm("value").value.contains("email")
+            )
+        )
     }
 }
