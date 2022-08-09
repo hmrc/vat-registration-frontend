@@ -45,7 +45,7 @@ class TaxRepController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         vatApplicationService.getVatApplication map { vatApplication =>
           vatApplication.hasTaxRepresentative match {
-            case Some(true) => Ok(taxRepPage(TaxRepForm.form.fill(true)))
+            case Some(answer) => Ok(taxRepPage(TaxRepForm.form.fill(answer)))
             case _ => Ok(taxRepPage(TaxRepForm.form))
           }
         }
