@@ -5,6 +5,7 @@ package controllers.vatapplication
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
+import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -35,6 +36,9 @@ class TaxRepControllerISpec extends ControllerISpec {
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
+        val document = Jsoup.parse(res.body)
+        document.select("input[value=true]").hasAttr("checked") mustBe true
+        document.select("input[value=false]").hasAttr("checked") mustBe false
       }
     }
 
@@ -47,6 +51,9 @@ class TaxRepControllerISpec extends ControllerISpec {
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
+        val document = Jsoup.parse(res.body)
+        document.select("input[value=true]").hasAttr("checked") mustBe false
+        document.select("input[value=false]").hasAttr("checked") mustBe true
       }
     }
   }
