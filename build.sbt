@@ -18,11 +18,9 @@ import play.sbt.PlayImport.PlayKeys
 import sbt.Keys._
 import sbt._
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, integrationTestSettings, scalaSettings}
-import uk.gov.hmrc.{SbtArtifactory, SbtAutoBuildPlugin}
+import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.SbtBobbyPlugin.BobbyKeys.bobbyRulesURL
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "vat-registration-frontend"
@@ -30,18 +28,21 @@ val appName = "vat-registration-frontend"
 val silencerVersion = "1.7.0"
 
 lazy val scoverageSettings = Seq(
-  ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;controllers.test.*;models.api.*;views.*;forms.test.*;config.*;poc.view.*;poc.config.*;.*(AuthService|BuildInfo|Routes).*",
-  ScoverageKeys.coverageMinimum := 80,
-  ScoverageKeys.coverageFailOnMinimum := false,
+  ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;connectors.test.*;controllers.test.*;featureswitch.*;models.test.*;utils.*;models.api.*;views.test.*;forms.test.*;config.*;poc.view.*;poc.config.*;.*(AuthService|BuildInfo|Routes).*",
+  ScoverageKeys.coverageMinimumStmtTotal := 90,
+  ScoverageKeys.coverageFailOnMinimum := true,
   ScoverageKeys.coverageHighlighting := true
 )
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory): _*)
+  .enablePlugins(Seq(PlayScala, SbtDistributablesPlugin): _*)
   .configs(IntegrationTest)
   .settings(defaultSettings(), scalaSettings, scoverageSettings, publishingSettings)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(majorVersion := 0)
+  .settings(
+    isPublicArtefact := true
+  )
   .settings(
     bobbyRulesURL := Some(new URL("https://webstore.tax.service.gov.uk/bobby-config/deprecated-dependencies.json"))
   )
