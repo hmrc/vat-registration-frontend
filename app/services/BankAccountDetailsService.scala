@@ -17,8 +17,8 @@
 package services
 
 import connectors.RegistrationApiConnector
+import models._
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
-import models.{BankAccount, BankAccountDetails, CurrentProfile, OverseasBankDetails}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -26,21 +26,26 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiConnector,
-                                          val s4LService: S4LService,
                                           val bankAccountRepService: BankAccountReputationService) {
 
   def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Option[BankAccount]] = {
-    s4LService.fetchAndGet[BankAccount].flatMap {
-      case Some(bankAccount) => Future.successful(Some(bankAccount))
-      case None => regApiConnector.getSection[BankAccount](profile.registrationId)
-    }
+    regApiConnector.getSection[BankAccount](profile.registrationId)
+  }
+
+  def saveBankAccountDetails(bankAccount: BankAccount)
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
+    regApiConnector.replaceSection[BankAccount](profile.registrationId, bankAccount)
   }
 
   def saveHasCompanyBankAccount(hasBankAccount: Boolean)
                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
     val bankAccount = fetchBankAccountDetails map {
-      case Some(bankAccountDetails) => bankAccountDetails.copy(isProvided = hasBankAccount)
-      case None => BankAccount(hasBankAccount, None, None, None)
+      case Some(BankAccount(oldHasBankAccount, _, _, _)) if oldHasBankAccount != hasBankAccount =>
+        BankAccount(hasBankAccount, None, None, None)
+      case Some(bankAccountDetails) =>
+        bankAccountDetails.copy(isProvided = hasBankAccount)
+      case None =>
+        BankAccount(hasBankAccount, None, None, None)
     }
 
     bankAccount flatMap saveBankAccountDetails
@@ -63,27 +68,23 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
 
   def saveEnteredOverseasBankAccountDetails(accountDetails: OverseasBankDetails)
                                            (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
-    val bankAccount = BankAccount(isProvided = true, None, Some(accountDetails), None)
+    val bankAccount = BankAccount(
+      isProvided = true,
+      None,
+      Some(accountDetails),
+      None
+    )
     saveBankAccountDetails(bankAccount) map (_ => true)
   }
 
-  private[services] def bankAccountBlockCompleted(bankAccount: BankAccount): Completion[BankAccount] = {
-    bankAccount match {
-      case BankAccount(true, Some(_), None, None) => Complete(bankAccount)
-      case BankAccount(true, _, Some(_), _) => Complete(bankAccount.copy(details = None, reason = None))
-      case BankAccount(false, _, _, Some(_)) => Complete(bankAccount.copy(details = None, overseasDetails = None))
-      case _ => Incomplete(bankAccount)
-    }
-  }
-
-  def saveBankAccountDetails(bankAccount: BankAccount)
-                            (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
-    bankAccountBlockCompleted(bankAccount) fold(
-      incomplete => s4LService.save[BankAccount](incomplete).map(_ => incomplete),
-      complete => for {
-        _ <- regApiConnector.replaceSection[BankAccount](profile.registrationId, complete)
-        _ <- s4LService.clearKey[BankAccount]
-      } yield complete
+  def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
+                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
+    val bankAccount = BankAccount(
+      isProvided = false,
+      details = None,
+      overseasDetails = None,
+      reason = Some(reason)
     )
+    saveBankAccountDetails(bankAccount)
   }
 }

@@ -44,7 +44,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     OtherBusinessInvolvement,
     UploadDocuments,
     TaskList,
-    TaxRepPage
+    TaxRepPage,
+    NewNoBankReasons
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -152,4 +153,9 @@ case object TaskList extends FeatureSwitch {
 case object TaxRepPage extends FeatureSwitch {
   override val configName: String = "feature-switch.tax-rep"
   override val displayName: String = "Enable Tax Rep Page"
+}
+
+case object NewNoBankReasons extends FeatureSwitch {
+  override val configName: String = "feature-switch.new-no-bank-reasons"
+  override val displayName: String = "New bank account not provided reasons"
 }

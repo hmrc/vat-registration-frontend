@@ -103,8 +103,8 @@ GET         /companys-bank-account                                    controller
 POST        /companys-bank-account                                    controllers.bankdetails.HasBankAccountController.submit
 
 ## NO UK BANK ACCOUNT
-GET         /bank-account-not-set-up                                  controllers.bankdetails.NoUKBankAccountController.show
-POST        /bank-account-not-set-up                                  controllers.bankdetails.NoUKBankAccountController.submit
+GET         /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.show
+POST        /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.submit
 
 ## OVERSEAS BANK ACCOUNT
 GET         /bank-details-overseas                                    controllers.bankdetails.OverseasBankAccountController.show

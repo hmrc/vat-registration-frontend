@@ -16,33 +16,39 @@
 
 package models
 
-import play.api.libs.json.{Format, JsError, JsString, JsSuccess, Reads, Writes}
+import play.api.libs.json._
 
 sealed trait NoUKBankAccount
 
-case object BeingSetup extends NoUKBankAccount
-
+case object BeingSetupOrNameChange extends NoUKBankAccount
 case object OverseasAccount extends NoUKBankAccount
-
 case object NameChange extends NoUKBankAccount
+case object AccountNotInBusinessName extends NoUKBankAccount
+case object DontWantToProvide extends NoUKBankAccount
 
 object NoUKBankAccount {
 
   val beingSetup: String = "BeingSetup"
   val overseasAccount: String = "OverseasAccount"
   val nameChange: String = "NameChange"
+  val accountNotInBusinessName: String = "AccountNotInBusinessName"
+  val dontWantToProvide: String = "DontWantToProvide"
 
   implicit val reads: Reads[NoUKBankAccount] = Reads[NoUKBankAccount] {
-    case JsString(`beingSetup`) => JsSuccess(BeingSetup)
+    case JsString(`beingSetup`) => JsSuccess(BeingSetupOrNameChange)
     case JsString(`overseasAccount`) => JsSuccess(OverseasAccount)
     case JsString(`nameChange`) => JsSuccess(NameChange)
+    case JsString(`accountNotInBusinessName`) => JsSuccess(AccountNotInBusinessName)
+    case JsString(`dontWantToProvide`) => JsSuccess(DontWantToProvide)
     case _ => JsError("Could not parse reason for no UK bank account")
   }
 
   implicit val writes: Writes[NoUKBankAccount] = Writes[NoUKBankAccount] {
-    case BeingSetup => JsString(beingSetup)
+    case BeingSetupOrNameChange => JsString(beingSetup)
     case OverseasAccount => JsString(overseasAccount)
     case NameChange => JsString(nameChange)
+    case AccountNotInBusinessName => JsString(accountNotInBusinessName)
+    case DontWantToProvide => JsString(dontWantToProvide)
   }
 
   implicit val format: Format[NoUKBankAccount] = Format(reads, writes)

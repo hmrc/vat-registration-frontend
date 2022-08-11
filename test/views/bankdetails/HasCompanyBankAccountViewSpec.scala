@@ -27,7 +27,7 @@ class HasCompanyBankAccountViewSpec extends VatRegViewSpec {
   implicit val doc: Document = Jsoup.parse(view(HasCompanyBankAccountForm.form).body)
   lazy val view: has_company_bank_account = app.injector.instanceOf[has_company_bank_account]
 
-  val heading = "Does the business have a bank or building society account?"
+  val heading = "Are you able to provide bank or building society account details for the business?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para = "The account does not have to be a dedicated business account but must be separate from a personal account. We will use this account for VAT repayments."
   val yes = "Yes"
