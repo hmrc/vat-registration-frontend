@@ -30,6 +30,10 @@ import javax.inject.{Inject, Singleton}
 class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
                                  aboutYouTransactorTaskList: AboutYouTransactorTaskList) extends FeatureSwitching {
 
+  private def buildMessageKey(suffix: String, vatScheme: VatScheme) = {
+    if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) s"tasklist.aboutBusinessContact.$suffix" else s"tasklist.aboutYou.$suffix"
+  }
+
   private def isIndividualType(scheme: VatScheme): Boolean =
     Seq(Individual, NETP).exists(scheme.partyType.contains)
 
@@ -40,7 +44,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
 
   // scalastyle:off
   def personalDetailsRow(implicit profile: CurrentProfile) = TaskListRowBuilder(
-    messageKey = _ => "tasklist.aboutYou.personalDetails",
+    messageKey = scheme => buildMessageKey("personalDetails", scheme),
     url = scheme => {
       if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
         controllers.applicant.routes.FormerNameController.show.url
@@ -97,7 +101,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
 
   def addressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = _ => "tasklist.aboutYou.addressDetails",
+      messageKey = scheme => buildMessageKey("addressDetails", scheme),
       url = vatScheme => resolveAddressRowUrl(vatScheme),
       tagId = "addressDetailsRow",
       checks = addressDetailsChecks,
@@ -107,7 +111,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
 
   def contactDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = _ => "tasklist.aboutYou.contactDetails",
+      messageKey = scheme => buildMessageKey("contactDetails", scheme),
       url = _ => controllers.applicant.routes.CaptureEmailAddressController.show.url,
       tagId = "contactDetailsRow",
       checks = scheme => {
@@ -163,7 +167,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
             messages: Messages,
             appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
-      heading = if(vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) messages("tasklist.aboutBusinessContact.heading") else messages("tasklist.aboutYou.heading"),
+      heading = buildMessageKey("heading", vatScheme),
       rows = Seq(
         buildLeadPartnerRow(vatScheme),
         Some(personalDetailsRow.build(vatScheme)),

@@ -28,8 +28,8 @@ import javax.inject.Inject
 
 class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) extends FeatureSwitching {
 
-  def transactorPersonalDetailsRow(implicit profile: CurrentProfile) = TaskListRowBuilder(
-    messageKey = _ => "tasklist.aboutYou.personalDetails",
+  def transactorPersonalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+    messageKey = _ => "tasklist.aboutYou.transactor.personalDetails",
     url = _ => {
       if (profile.agentReferenceNumber.isDefined && isEnabled(FullAgentJourney)) {
         controllers.transactor.routes.AgentNameController.show.url
@@ -59,7 +59,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
 
   def transactorAddressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = _ => "tasklist.aboutYou.addressDetails",
+      messageKey = _ => "tasklist.aboutYou.transactor.addressDetails",
       url = vatScheme => resolveAddressRowUrl(vatScheme),
       tagId = "addressDetailsRow",
       checks = scheme => {
@@ -75,7 +75,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
 
   def transactorContactDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = _ => "tasklist.aboutYou.contactDetails",
+      messageKey = _ => "tasklist.aboutYou.transactor.contactDetails",
       url = _ => controllers.transactor.routes.TelephoneNumberController.show.url,
       tagId = "contactDetailsRow",
       checks = scheme => {
@@ -104,13 +104,18 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
            (implicit request: Request[_],
             profile: CurrentProfile,
             messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection =
+            appConfig: FrontendAppConfig): TaskListSection = {
+
+    val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
+    val isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
+
     TaskListSection(
       heading = messages("tasklist.aboutYou.heading"),
       rows = Seq(
-        transactorPersonalDetailsRow.build(vatScheme),
-        transactorAddressDetailsRow.build(vatScheme),
-        transactorContactDetailsRow.build(vatScheme)
-      )
+        Some(transactorPersonalDetailsRow.build(vatScheme)),
+        if (isAgent) None else Some(transactorAddressDetailsRow.build(vatScheme)),
+        Some(transactorContactDetailsRow.build(vatScheme))
+      ).flatten
     )
+  }
 }
