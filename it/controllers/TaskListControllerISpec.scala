@@ -28,7 +28,7 @@ class TaskListControllerISpec extends ControllerISpec {
 
     val section1a = new {
       val heading = "2. About you"
-      val row1 = "Personal details Completed"
+      val transactorPersonalDetailsCompletedRow = "Your personal information Completed"
     }
 
     val section2 = new {
@@ -39,16 +39,25 @@ class TaskListControllerISpec extends ControllerISpec {
 
     val section3 = new {
       val heading = "3. About you"
+      val heading2 = "4. About the business contact"
 
       val leadPartnerCompletedRow = "Lead partner details Completed"
       val leadPartnerNotStartedRow = "Lead partner details Not started"
+
       val addressesCompletedRow = "Addresses Completed"
+      val transactorAddressesCompletedRow = "Your addresses Completed"
+      val applicantAddressesCompletedRow = "Their addresses Completed"
+
       val addressesCannotStartRow = "Addresses Cannot start yet"
+
       val contactDetailsCompletedRow = "Contact details Completed"
+      val transactorContactDetailsCompletedRow = "Your contact details Completed"
+      val applicantContactDetailsCompletedRow = "Their contact details Completed"
+
       val contactDetailsCannotStartRow = "Contact details Cannot start yet"
 
-      val heading2 = "4. About the business contact"
-      val row1 = "Personal details Completed"
+      val personalDetailsCompletedRow = "Personal information Completed"
+      val applicantPersonalDetailsCompletedRow = "Their personal information Completed"
     }
 
     val aboutTheBusinessSection = new {
@@ -126,7 +135,7 @@ class TaskListControllerISpec extends ControllerISpec {
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
         sectionMustExist(3)(ExpectedMessages.section3.heading, List(
           ExpectedMessages.section3.leadPartnerCompletedRow,
-          ExpectedMessages.section3.row1,
+          ExpectedMessages.section3.personalDetailsCompletedRow,
           ExpectedMessages.section3.addressesCompletedRow,
           ExpectedMessages.section3.contactDetailsCompletedRow
         ))
@@ -159,7 +168,7 @@ class TaskListControllerISpec extends ControllerISpec {
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
         sectionMustExist(3)(ExpectedMessages.section3.heading, List(
-          ExpectedMessages.section3.row1,
+          ExpectedMessages.section3.personalDetailsCompletedRow,
           ExpectedMessages.section3.addressesCompletedRow,
           ExpectedMessages.section3.contactDetailsCompletedRow
         ))
@@ -190,15 +199,51 @@ class TaskListControllerISpec extends ControllerISpec {
         res.status mustBe OK
         sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
         sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
-          ExpectedMessages.section1a.row1,
-          ExpectedMessages.section3.addressesCompletedRow,
-          ExpectedMessages.section3.contactDetailsCompletedRow
+          ExpectedMessages.section1a.transactorPersonalDetailsCompletedRow,
+          ExpectedMessages.section3.transactorAddressesCompletedRow,
+          ExpectedMessages.section3.transactorContactDetailsCompletedRow
         ))
         sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
         sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
-          ExpectedMessages.section3.row1,
-          ExpectedMessages.section3.addressesCompletedRow,
-          ExpectedMessages.section3.contactDetailsCompletedRow
+          ExpectedMessages.section3.applicantPersonalDetailsCompletedRow,
+          ExpectedMessages.section3.applicantAddressesCompletedRow,
+          ExpectedMessages.section3.applicantContactDetailsCompletedRow
+        ))
+      }
+
+      "show the transactor section without address tasklist when in agent flow" in new Setup {
+        enable(TaskList)
+
+        val scheme = emptyUkCompanyVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+            applicantDetails = Some(validFullApplicantDetails)
+        )
+
+        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+        given
+          .user.isAuthorised(arn = Some(testArn))
+          .registrationApi.getRegistration(scheme)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get)
+        implicit val doc = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+        sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
+          ExpectedMessages.section1a.transactorPersonalDetailsCompletedRow,
+          ExpectedMessages.section3.transactorContactDetailsCompletedRow
+        ))
+        sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
+        sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
+          ExpectedMessages.section3.applicantPersonalDetailsCompletedRow,
+          ExpectedMessages.section3.applicantAddressesCompletedRow,
+          ExpectedMessages.section3.applicantContactDetailsCompletedRow
         ))
       }
 
@@ -235,7 +280,7 @@ class TaskListControllerISpec extends ControllerISpec {
         sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
         sectionMustExist(3)(ExpectedMessages.section3.heading, List(
           ExpectedMessages.section3.leadPartnerNotStartedRow,
-          "Personal details Cannot start yet",
+          "Personal information Cannot start yet",
           ExpectedMessages.section3.addressesCannotStartRow,
           ExpectedMessages.section3.contactDetailsCannotStartRow
         ))

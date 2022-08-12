@@ -17,9 +17,8 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import models.{CurrentProfile, OtherBusinessInvolvement}
 import models.api.VatScheme
-import models.{Business, CurrentProfile}
+import models.{Business, CurrentProfile, OtherBusinessInvolvement}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import services.BusinessService
@@ -87,15 +86,15 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
       val firstQuestionAnswered = Seq(scheme.business.exists(_.otherBusinessInvolvement.isDefined))
       if (scheme.business.exists(_.otherBusinessInvolvement.contains(true))) {
         firstQuestionAnswered :+
-          (scheme.otherBusinessInvolvements match {
+          !(scheme.otherBusinessInvolvements match {
             case Some(Nil) | None => List(false)
-            case Some(list) => list.map(obi => obi match {
-                case OtherBusinessInvolvement(Some(_), Some(true), Some(_), _, _, Some(_)) => true
-                case OtherBusinessInvolvement(Some(_), _, _, Some(true), Some(_), Some(_)) => true
-                case OtherBusinessInvolvement(Some(_), Some(false), _, Some(false), _, Some(_)) => true
-                case _ => false
-            })
-          }).filter(_ == false).isEmpty
+            case Some(list) => list.map {
+              case OtherBusinessInvolvement(Some(_), Some(true), Some(_), _, _, Some(_)) => true
+              case OtherBusinessInvolvement(Some(_), _, _, Some(true), Some(_), Some(_)) => true
+              case OtherBusinessInvolvement(Some(_), Some(false), _, Some(false), _, Some(_)) => true
+              case _ => false
+            }
+          }).contains(false)
       } else {
         firstQuestionAnswered
       }
