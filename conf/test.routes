@@ -18,6 +18,8 @@ POST        /api/feature-switches                             featureswitch.api.
 
 + nocsrf
 POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney(partyType: String)
+GET         /api/incorp-id-journey/response-values/:journeyId controllers.test.IncorpIdApiStubController.showStubPage(journeyId: String)
+POST        /api/incorp-id-journey/response-values/:journeyId controllers.test.IncorpIdApiStubController.submitStubPage(journeyId: String)
 GET         /api/incorp-id-journey/:journeyId                 controllers.test.IncorpIdApiStubController.getDetails(journeyId)
 
 GET         /personal-details-validation/:validationId        controllers.test.PersonalDetailsValidationStubController.retrieveValidationResult(validationId)

@@ -1,0 +1,63 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.test.IncorpStubData
+@import config.FrontendAppConfig
+
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    formWithCSRF: FormWithCSRF,
+    inputText: components.inputText,
+    yesNoRadio: components.yesNoRadio,
+    button: components.button,
+)
+
+
+@(dataForm: Form[IncorpStubData], journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(dataForm, "Incorp ID Stub"))) {
+
+    @formWithCSRF(action = controllers.test.routes.IncorpIdApiStubController.submitStubPage(journeyId)) {
+        @h1("Incorp ID Stub")
+
+        @inputText(
+            dataForm,
+            id = "crn",
+            name = "crn",
+            label = "Company Reference Number (CRN)",
+            isPageHeading = false
+        )
+
+        @inputText(
+            dataForm,
+            id = "utr",
+            name = "utr",
+            label = "Unique Taxpayer Reference (UTR)",
+            isPageHeading = false
+        )
+
+        @yesNoRadio(
+            dataForm,
+            fieldName = "passBv",
+            headingKey = "Pass Business Verification?",
+            classes = "govuk-heading-m"
+        )
+
+        @button("Submit")
+    }
+
+}
