@@ -1,6 +1,7 @@
 
 package controllers.attachments
 
+import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import play.api.http.HeaderNames
@@ -170,6 +171,22 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
       }
+    }
+
+    "return a redirect to task list page when task list feature switch is on and no attachments are given" in {
+      enable(TaskList)
+      given()
+        .user.isAuthorised()
+        .attachmentsApi.getAttachments(List[AttachmentType]())
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      val res = buildClient(resolveUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+      disable(TaskList)
     }
   }
 

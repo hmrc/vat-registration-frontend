@@ -37,7 +37,8 @@ case class VatScheme(registrationId: String,
                      otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None,
                      vatApplication: Option[VatApplication] = None,
                      bankAccount: Option[BankAccount] = None,
-                     flatRateScheme: Option[FlatRateScheme] = None) {
+                     flatRateScheme: Option[FlatRateScheme] = None,
+                     attachments: Option[Attachments] = None) {
 
   def partyType: Option[PartyType] = eligibilitySubmissionData.map(_.partyType)
 
@@ -61,13 +62,15 @@ object VatScheme {
         (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
         (__ \ "vatApplication").readNullable[VatApplication] and
         (__ \ "bankAccount").readNullable[BankAccount] and
-        (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat)
+        (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
+        (__ \ "attachments").readNullable[Attachments]
       ) (VatScheme.apply _)
       case None => (
         (__ \ "registrationId").read[String] and
         (__ \ "createdDate").read[LocalDate] and
         (__ \ "status").read[VatRegStatus.Value] and
         (__ \ "applicationReference").readNullable[String] and
+        Reads.pure(None) and
         Reads.pure(None) and
         Reads.pure(None) and
         Reads.pure(None) and
@@ -95,7 +98,8 @@ object VatScheme {
     (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]] and
     (__ \ "vatApplication").writeNullable[VatApplication] and
     (__ \ "bankAccount").writeNullable[BankAccount] and
-    (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat)
+    (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
+    (__ \ "attachments").writeNullable[Attachments]
   ) (unlift(VatScheme.unapply))
 
   implicit val format: Format[VatScheme] = Format(reads, writes)
