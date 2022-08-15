@@ -16,19 +16,27 @@
 
 package controllers.test
 
+import config.FrontendAppConfig
+import forms.test.IncorpIdStubForm
 import models.api._
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
-import models.external.{BusinessVerificationStatus, BvPass, IncorporatedEntity}
+import models.external.{BusinessVerificationStatus, BvFail, BvPass, IncorporatedEntity}
+import models.test.IncorpStubData
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.test.IncorpIdStubPage
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
+class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
+                                          sessionService: SessionService,
+                                          stubView: IncorpIdStubPage)
+                                         (implicit ex: ExecutionContext, appConfig: FrontendAppConfig)
   extends FrontendController(mcc) {
 
   final val ukCompany = "UK_COMPANY"
@@ -38,8 +46,8 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
   final val charitableOrg = "CHARITABLE_ORG"
   final val charitableOrgExcludeBv = "CHARITABLE_ORG_EXCLUDE_BV"
 
-  def createJourney(partyType: String): Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]) {
-    request =>
+  def createJourney(partyType: String): Action[IncorpIdJourneyConfig] = Action(parse.json[IncorpIdJourneyConfig]).async {
+    implicit request =>
       val journeyId = PartyType.fromString(partyType) match {
         case UkCompany if !request.body.businessVerificationCheck => ukCompanyExcludeBv
         case UkCompany => ukCompany
@@ -49,23 +57,56 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents)
         case CharitableOrg => charitableOrg
       }
 
-      Created(Json.obj("journeyStartUrl" -> JsString(request.body.continueUrl + s"?journeyId=$journeyId")))
+      sessionService.cache("continueUrl", request.body.continueUrl).map { _ =>
+        Created(Json.obj("journeyStartUrl" -> JsString(routes.IncorpIdApiStubController.showStubPage(journeyId).url)))
+      }
   }
 
-  def getDetails(journeyId: String): Action[AnyContent] = Action.async { _ =>
-    Future.successful(
-      Ok(Json.toJson(IncorporatedEntity(
-        companyName = Some("Test company"),
-        companyNumber = "12345678",
-        ctutr = if (!journeyId.contains(charitableOrg)) Some("123567890") else None,
-        chrn = if (journeyId.contains(charitableOrg)) Some("123567890") else None,
-        dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
-        identifiersMatch = true,
-        registration = "REGISTERED",
-        businessVerification = businessVerificationStatus(journeyId),
-        bpSafeId = Some("testBpId")
-      ))(IncorporatedEntity.apiFormat))
+  def showStubPage(journeyId: String): Action[AnyContent] = Action { implicit request =>
+    Ok(stubView(IncorpIdStubForm.form, journeyId))
+  }
+
+  def submitStubPage(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
+    IncorpIdStubForm.form.bindFromRequest.fold(
+      errors =>
+        Future.successful(BadRequest(stubView(errors, journeyId))),
+      values =>
+        sessionService.cache("incorpStubResponse", values).flatMap { _ =>
+          sessionService.fetchAndGet[String]("continueUrl").collect {
+            case Some(continueUrl) =>
+              Redirect(continueUrl + s"?journeyId=$journeyId")
+          }
+        }
     )
+  }
+
+  def getDetails(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
+    sessionService.fetchAndGet[IncorpStubData]("incorpStubResponse").map {
+      case Some(data) =>
+        Ok(Json.toJson(IncorporatedEntity(
+          companyName = Some("Test company"),
+          companyNumber = data.crn,
+          ctutr = if (!journeyId.contains(charitableOrg)) Some(data.utr.get) else None,
+          chrn = if (journeyId.contains(charitableOrg)) Some("123567890") else None,
+          dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
+          identifiersMatch = true,
+          registration = "REGISTERED",
+          businessVerification = if (data.passBv) { Some(BvPass) } else { Some(BvFail) },
+          bpSafeId = Some("testBpId")
+        ))(IncorporatedEntity.apiFormat))
+      case _ =>
+        Ok(Json.toJson(IncorporatedEntity(
+          companyName = Some("Test company"),
+          companyNumber = "12345678",
+          ctutr = if (!journeyId.contains(charitableOrg)) Some("123567890") else None,
+          chrn = if (journeyId.contains(charitableOrg)) Some("123567890") else None,
+          dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
+          identifiersMatch = true,
+          registration = "REGISTERED",
+          businessVerification = businessVerificationStatus(journeyId),
+          bpSafeId = Some("testBpId")
+        ))(IncorporatedEntity.apiFormat))
+    }
   }
 
   private def businessVerificationStatus(journeyId: String): Option[BusinessVerificationStatus] = {
