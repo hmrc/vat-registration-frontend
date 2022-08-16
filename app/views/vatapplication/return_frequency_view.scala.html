@@ -19,7 +19,7 @@
 @import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.Request
-@import forms.ReturnFrequencyForm._
+@import forms.vatapplication.ReturnsFrequencyForm._
 @import views.html.components._
 @import views.html.layouts.layout
 
@@ -55,7 +55,7 @@
         )
     }
 
-    @formWithCSRF(action = controllers.vatapplication.routes.ReturnsController.submitReturnsFrequency) {
+    @formWithCSRF(action = controllers.vatapplication.routes.ReturnsFrequencyController.submit) {
         @inputRadio(
             form = form,
             legend = messages("pages.vat.return.frequency.heading"),

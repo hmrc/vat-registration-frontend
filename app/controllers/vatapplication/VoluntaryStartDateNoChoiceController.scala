@@ -58,7 +58,7 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
           if (isEnabled(TaskList)) {
             Redirect(controllers.routes.TaskListController.show.url)
           } else {
-            Redirect(routes.ReturnsController.returnsFrequencyPage)
+            Redirect(routes.ReturnsFrequencyController.show)
           }
         }
     )

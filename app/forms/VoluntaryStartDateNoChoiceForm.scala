@@ -17,6 +17,7 @@
 package forms
 
 import forms.FormValidation.{nonEmptyDate, validDate, withinRange}
+import forms.vatapplication.StartDateForm
 import play.api.data.Form
 import play.api.data.Forms._
 import services.TimeService

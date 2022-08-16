@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.vatapplication
 
 import models.DateSelection
 import models.DateSelection._

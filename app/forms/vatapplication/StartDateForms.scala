@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package forms
+package forms.vatapplication
 
 import forms.FormValidation._
 import models.DateSelection
 import models.DateSelection.specific_date
-import models.api.vatapplication._
-import play.api.data.Forms.{single, tuple, _}
+import play.api.data.Forms.{tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
@@ -58,48 +57,6 @@ trait StartDateForm {
   }
 }
 
-object AccountingPeriodForm {
-
-  private val accountingPeriodInvalidKey = "validation.accounting.period.missing"
-  private val ACCOUNTING_PERIOD = "value"
-
-  val janStaggerKey = "jan"
-  val febStaggerKey = "feb"
-  val marStaggerKey = "mar"
-
-  implicit def formatter: Formatter[QuarterlyStagger] = new Formatter[QuarterlyStagger] {
-    def bind(key: String, data: Map[String, String]): Either[Seq[FormError], QuarterlyStagger] = {
-      data.get(key) match {
-        case Some(`janStaggerKey`) => Right(JanuaryStagger)
-        case Some(`febStaggerKey`) => Right(FebruaryStagger)
-        case Some(`marStaggerKey`) => Right(MarchStagger)
-        case _ => Left(Seq(FormError(key, accountingPeriodInvalidKey, Nil)))
-      }
-    }
-
-    def unbind(key: String, value: QuarterlyStagger) =
-      Map(key -> {
-        value match {
-          case JanuaryStagger => janStaggerKey
-          case FebruaryStagger => febStaggerKey
-          case MarchStagger => marStaggerKey
-        }
-      })
-  }
-
-  val form: Form[QuarterlyStagger] = Form(
-    single(ACCOUNTING_PERIOD -> Forms.of[QuarterlyStagger])
-  )
-}
-
-object ChargeExpectancyForm extends RequiredBooleanForm {
-  override val errorMsg = "validation.vat.charge.expectancy.missing"
-  val EXPECT_CHARGE_MORE_VAT = "value"
-
-  val form: Form[Boolean] = Form(
-    single(EXPECT_CHARGE_MORE_VAT -> requiredBoolean)
-  )
-}
 
 object MandatoryDateForm extends StartDateForm {
   private val dateWithinFourYears = "validation.startDateManIncorp.range.below4y"
@@ -127,40 +84,6 @@ object MandatoryDateForm extends StartDateForm {
     )
   )
 
-}
-
-object ReturnFrequencyForm {
-
-  private val returnFrequencyEmptyKey = "validation.vat.return.frequency.missing"
-  private val RETURN_FREQUENCY = "value"
-
-  val monthlyKey = "monthly"
-  val quarterlyKey = "quarterly"
-  val annualKey = "annual"
-
-  implicit def formatter: Formatter[ReturnsFrequency] = new Formatter[ReturnsFrequency] {
-    def bind(key: String, data: Map[String, String]): Either[Seq[FormError], ReturnsFrequency] = {
-      data.get(key) match {
-        case Some(`monthlyKey`) => Right(Monthly)
-        case Some(`quarterlyKey`) => Right(Quarterly)
-        case Some(`annualKey`) => Right(Annual)
-        case _ => Left(Seq(FormError(key, returnFrequencyEmptyKey, Nil)))
-      }
-    }
-
-    def unbind(key: String, value: ReturnsFrequency) =
-      Map(key -> {
-        value match {
-          case Monthly => monthlyKey
-          case Quarterly => quarterlyKey
-          case Annual => annualKey
-        }
-      })
-  }
-
-  val form: Form[ReturnsFrequency] = Form(
-    single(RETURN_FREQUENCY -> Forms.of[ReturnsFrequency])
-  )
 }
 
 object VoluntaryDateForm extends StartDateForm {

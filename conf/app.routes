@@ -40,12 +40,12 @@ POST        /honesty-declaration                                      controller
 GET         /resolve-vat-start-date                                   controllers.vatapplication.VatRegStartDateResolverController.resolve
 
 ## VOLUNTARY START DATE PAGE
-GET         /vat-start-date                                           controllers.vatapplication.ReturnsController.voluntaryStartPage
-POST        /vat-start-date                                           controllers.vatapplication.ReturnsController.submitVoluntaryStart
+GET         /vat-start-date                                           controllers.vatapplication.VoluntaryStartDateController.show
+POST        /vat-start-date                                           controllers.vatapplication.VoluntaryStartDateController.submit
 
 ## MANDATORY START DATE PAGE
-GET         /mandatory-vat-start-date                                 controllers.vatapplication.ReturnsController.mandatoryStartPage
-POST        /mandatory-vat-start-date                                 controllers.vatapplication.ReturnsController.submitMandatoryStart
+GET         /mandatory-vat-start-date                                 controllers.vatapplication.MandatoryStartDateController.show
+POST        /mandatory-vat-start-date                                 controllers.vatapplication.MandatoryStartDateController.submit
 
 ## VOLUNTART START DATE (no date choice) PAGE
 GET         /voluntary-vat-start-date                                 controllers.vatapplication.VoluntaryStartDateNoChoiceController.show
@@ -91,12 +91,12 @@ GET         /vat-exemption                                            controller
 POST        /vat-exemption                                            controllers.vatapplication.VatExemptionController.submit
 
 ## ACCOUNTING PERIOD PAGE
-GET         /submit-vat-returns                                       controllers.vatapplication.ReturnsController.accountPeriodsPage
-POST        /submit-vat-returns                                       controllers.vatapplication.ReturnsController.submitAccountPeriods
+GET         /submit-vat-returns                                       controllers.vatapplication.AccountingPeriodController.show
+POST        /submit-vat-returns                                       controllers.vatapplication.AccountingPeriodController.submit
 
 ## VAT RETURN FREQUENCY
-GET         /how-often-submit-returns                                 controllers.vatapplication.ReturnsController.returnsFrequencyPage
-POST        /how-often-submit-returns                                 controllers.vatapplication.ReturnsController.submitReturnsFrequency
+GET         /how-often-submit-returns                                 controllers.vatapplication.ReturnsFrequencyController.show
+POST        /how-often-submit-returns                                 controllers.vatapplication.ReturnsFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
 GET         /companys-bank-account                                    controllers.bankdetails.HasBankAccountController.show

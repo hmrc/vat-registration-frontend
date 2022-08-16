@@ -52,8 +52,8 @@ class VatRegStartDateResolverController @Inject()(val sessionService: SessionSer
       } yield (registrationReason.isVoluntary, incorpDate) match {
         case _ if registrationReason.equals(GroupRegistration) => Redirect(routes.VoluntaryStartDateNoChoiceController.show)
         case (true, None) => Redirect(routes.VoluntaryStartDateNoChoiceController.show)
-        case (true, _) => Redirect(routes.ReturnsController.voluntaryStartPage)
-        case (false, _) => Redirect(routes.ReturnsController.mandatoryStartPage)
+        case (true, _) => Redirect(routes.VoluntaryStartDateController.show)
+        case (false, _) => Redirect(routes.MandatoryStartDateController.show)
       }
   }
 

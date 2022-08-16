@@ -91,7 +91,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("I would like to join the Annual Accounting Scheme"),
-          optUrl = Some(controllers.vatapplication.routes.ReturnsController.accountPeriodsPage.url)),
+          optUrl = Some(controllers.vatapplication.routes.AccountingPeriodController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.paymentFrequency,
           optAnswer = Some("Quarterly"),
@@ -162,7 +162,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("Once a month"),
-          optUrl = Some(controllers.vatapplication.routes.ReturnsController.accountPeriodsPage.url))
+          optUrl = Some(controllers.vatapplication.routes.AccountingPeriodController.show.url))
       ).flatten)
 
       val res = Builder.build(testVatScheme)

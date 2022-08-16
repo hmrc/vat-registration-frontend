@@ -24,13 +24,16 @@ import services.VatApplicationService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
+import java.util
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiConnector,
                                       val vatService: VatRegistrationService,
-                                      val s4lService: S4LService
+                                      val s4lService: S4LService,
+                                      applicantDetailsService: ApplicantDetailsService,
+                                      timeService: TimeService
                                      )(implicit executionContext: ExecutionContext) extends FeatureSwitching {
 
   def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
@@ -242,6 +245,19 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     saveVatApplication(voluntaryDate)
   }
 
+  def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = for {
+    isGroupRegistration <- vatService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
+    dateOfIncorporationOption <-
+      if (isGroupRegistration) {
+        Future.successful(None)
+      } else {
+        applicantDetailsService.getDateOfIncorporation
+      }
+  } yield {
+    val fourYearsAgo = timeService.minusYears(4)
+    val dateOfIncorporation = dateOfIncorporationOption.getOrElse(fourYearsAgo)
+    util.Collections.max(util.Arrays.asList(fourYearsAgo, dateOfIncorporation))
+  }
 }
 
 case class VoluntaryPageViewModel(form: Option[(DateSelection.Value, Option[LocalDate])],

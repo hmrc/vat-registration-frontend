@@ -48,7 +48,7 @@
         @messages("pages.start.date.incorp.para1", calculatedDate)
     }
 
-    @formWithCSRF(action = controllers.vatapplication.routes.ReturnsController.submitMandatoryStart, 'autoComplete -> "off") {
+    @formWithCSRF(action = controllers.vatapplication.routes.MandatoryStartDateController.submit, 'autoComplete -> "off") {
         @inputRadio(
             form = mandatoryDateForm,
             legend = messages("pages.start.date.incorp.heading"),

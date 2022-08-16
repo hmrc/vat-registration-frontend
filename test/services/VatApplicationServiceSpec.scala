@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
-import play.api.libs.json.{JsString, JsValue, Reads, Writes}
+import play.api.libs.json.{JsString, Reads, Writes}
 import services.VatApplicationService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
@@ -40,7 +40,9 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
     object Service extends VatApplicationService(
       mockRegistrationApiConnector,
       vatRegistrationServiceMock,
-      mockS4LService
+      mockS4LService,
+      mockApplicantDetailsServiceOld,
+      mockTimeService
     )
   }
 

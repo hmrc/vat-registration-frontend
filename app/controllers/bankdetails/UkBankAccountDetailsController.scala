@@ -61,7 +61,7 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
               case (true, _) if isEnabled(TaskList) =>
                 Redirect(controllers.routes.TaskListController.show.url)
               case (true, TransferOfAGoingConcern) =>
-                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                Redirect(controllers.vatapplication.routes.ReturnsFrequencyController.show)
               case (true, _) =>
                 Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
               case (false, _) =>

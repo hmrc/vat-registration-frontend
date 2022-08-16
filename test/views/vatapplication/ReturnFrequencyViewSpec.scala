@@ -16,7 +16,7 @@
 
 package views.vatapplication
 
-import forms.ReturnFrequencyForm
+import forms.vatapplication.ReturnsFrequencyForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
 import views.html.vatapplication.return_frequency_view
@@ -24,7 +24,7 @@ import views.html.vatapplication.return_frequency_view
 class ReturnFrequencyViewSpec extends VatRegViewSpec {
 
   val view = app.injector.instanceOf[return_frequency_view]
-  implicit val doc = Jsoup.parse(view(form = ReturnFrequencyForm.form, showAAS = true, showMonthly = false).body)
+  implicit val doc = Jsoup.parse(view(form = ReturnsFrequencyForm.form, showAAS = true, showMonthly = false).body)
 
   object ExpectedContent {
     val heading = "When will the business do its VAT Returns?"

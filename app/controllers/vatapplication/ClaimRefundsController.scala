@@ -19,7 +19,7 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
-import forms.ChargeExpectancyForm
+import forms.vatapplication.ChargeExpectancyForm
 import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ClaimVatRefunds

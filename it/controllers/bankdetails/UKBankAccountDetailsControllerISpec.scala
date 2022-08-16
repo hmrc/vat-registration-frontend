@@ -78,7 +78,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
       }
     }
     "bank details and Bank Account Reputation states are invalid" must {

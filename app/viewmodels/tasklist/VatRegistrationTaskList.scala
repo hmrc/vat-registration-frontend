@@ -85,7 +85,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
 
   def vatReturnsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
-    url = _ => controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url,
+    url = _ => controllers.vatapplication.routes.ReturnsFrequencyController.show.url,
     tagId = "vatReturnsRow",
     checks = scheme => scheme.vatApplication.fold(Seq(false))(checkVatReturns),
     prerequisites = scheme => Seq(

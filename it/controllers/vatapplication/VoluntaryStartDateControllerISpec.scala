@@ -12,7 +12,7 @@ import play.api.test.Helpers._
 
 import java.time.LocalDate
 
-class ReturnsControllerISpec extends ControllerISpec {
+class VoluntaryStartDateControllerISpec extends ControllerISpec {
 
   "GET /vat-start-date" must {
     "Return OK when the user is authenticated" in {
@@ -73,7 +73,7 @@ class ReturnsControllerISpec extends ControllerISpec {
       enable(TaskList)
       verifyRedirect(controllers.routes.TaskListController.show.url)
       disable(TaskList)
-      verifyRedirect(routes.ReturnsController.returnsFrequencyPage.url)
+      verifyRedirect(routes.ReturnsFrequencyController.show.url)
     }
   }
 
