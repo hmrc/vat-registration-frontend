@@ -82,7 +82,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
           Some(s"$sectionId.accountingPeriod.annual")
         case _ => throw new InternalServerException("[SummaryCheckYourAnswersBuilder] Invalid accounting period")
       },
-      Some(vatApplicationRoutes.ReturnsController.accountPeriodsPage.url)
+      Some(vatApplicationRoutes.AccountingPeriodController.show.url)
     )
 
   private def lastMonthOfAccountingYear(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =

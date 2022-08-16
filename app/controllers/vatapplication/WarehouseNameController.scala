@@ -62,7 +62,7 @@ class WarehouseNameController @Inject()(val sessionService: SessionService,
               if (isEnabled(TaskList)) {
                 Redirect(controllers.routes.TaskListController.show.url)
               } else {
-                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                Redirect(controllers.vatapplication.routes.ReturnsFrequencyController.show)
               }
             }
           }

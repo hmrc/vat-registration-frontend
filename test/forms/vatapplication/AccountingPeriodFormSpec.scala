@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.vatapplication
 
 import models.api.vatapplication._
 import play.api.data.Form

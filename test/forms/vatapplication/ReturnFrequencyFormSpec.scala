@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.vatapplication
 
 import models.api.vatapplication._
 import play.api.data.Form
@@ -22,7 +22,7 @@ import testHelpers.VatRegSpec
 
 class ReturnFrequencyFormSpec extends VatRegSpec {
 
-  val form: Form[ReturnsFrequency] = ReturnFrequencyForm.form
+  val form: Form[ReturnsFrequency] = ReturnsFrequencyForm.form
 
   "Binding ReturnFrequencyForm" should {
     "Bind successfully for a monthly selection" in {

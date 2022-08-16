@@ -119,7 +119,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
         }
 
         "redirect to the application-progress page if TaskList FS enabled" in new Setup {

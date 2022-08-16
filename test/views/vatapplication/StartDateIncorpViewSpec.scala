@@ -16,7 +16,7 @@
 
 package views.vatapplication
 
-import forms.VoluntaryDateForm
+import forms.vatapplication.VoluntaryDateForm
 import models.DateSelection
 import org.jsoup.Jsoup
 import services.TimeService

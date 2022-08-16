@@ -104,7 +104,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
           enable(TaskList)
           verifyRedirect(controllers.routes.TaskListController.show.url)
           disable(TaskList)
-          verifyRedirect(routes.ReturnsController.returnsFrequencyPage.url)
+          verifyRedirect(routes.ReturnsFrequencyController.show.url)
         }
       }
       "the vatApplication block in S4L block is incomplete" must {
@@ -132,7 +132,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
           enable(TaskList)
           verifyRedirect(controllers.routes.TaskListController.show.url)
           disable(TaskList)
-          verifyRedirect(routes.ReturnsController.returnsFrequencyPage.url)
+          verifyRedirect(routes.ReturnsFrequencyController.show.url)
         }
       }
     }

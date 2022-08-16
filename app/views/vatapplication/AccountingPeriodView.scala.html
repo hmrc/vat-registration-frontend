@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import forms.AccountingPeriodForm.{febStaggerKey, janStaggerKey, marStaggerKey}
+@import forms.vatapplication.AccountingPeriodForm.{febStaggerKey, janStaggerKey, marStaggerKey}
 @import models.api.vatapplication.QuarterlyStagger
 @import play.api.data.Form
 @import play.api.i18n.Messages
@@ -47,7 +47,7 @@
 
     @p{ @messages("pages.accounting.period.para1") }
 
-    @formWithCSRF(action = controllers.vatapplication.routes.ReturnsController.submitAccountPeriods) {
+    @formWithCSRF(action = controllers.vatapplication.routes.AccountingPeriodController.submit) {
         @inputRadio(
             form = accountingPeriodForm,
             legend = messages("pages.accounting.period.heading"),

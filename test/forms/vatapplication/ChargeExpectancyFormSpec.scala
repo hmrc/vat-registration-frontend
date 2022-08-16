@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package forms
+package forms.vatapplication
 
-import forms.ChargeExpectancyForm._
+import forms.vatapplication.ChargeExpectancyForm._
+import play.api.data.Form
 import testHelpers.VatRegSpec
 
 class ChargeExpectancyFormSpec extends VatRegSpec {
 
-  val form = ChargeExpectancyForm.form
+  val form: Form[Boolean] = ChargeExpectancyForm.form
 
   "Binding ChargeExpectancyForm" should {
     "Bind successfully for a yes selection" in {

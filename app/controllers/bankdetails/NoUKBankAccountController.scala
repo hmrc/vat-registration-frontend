@@ -61,7 +61,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
               case _ if isEnabled(TaskList) =>
                 Redirect(controllers.routes.TaskListController.show.url)
               case TransferOfAGoingConcern =>
-                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
+                Redirect(controllers.vatapplication.routes.ReturnsFrequencyController.show)
               case _ =>
                 Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
             }

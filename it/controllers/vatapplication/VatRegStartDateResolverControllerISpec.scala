@@ -27,7 +27,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           val res = await(buildClient(url).get)
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.voluntaryStartPage.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.VoluntaryStartDateController.show.url)
         }
       }
       "GRS doesn't return a date of incorporation for a UK company" must {
@@ -96,7 +96,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
         val res = await(buildClient(url).get)
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.ReturnsController.mandatoryStartPage.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.MandatoryStartDateController.show.url)
       }
     }
     "the user is a VAT group" must {

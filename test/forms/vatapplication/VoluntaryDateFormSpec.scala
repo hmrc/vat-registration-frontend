@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package forms
+package forms.vatapplication
 
-import java.time.LocalDate
-
+import models.DateSelection
 import models.DateSelection.{business_start_date, company_registration_date, specific_date}
+import play.api.data.Form
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+
+import java.time.LocalDate
 
 class VoluntaryDateFormSpec extends VatRegSpec {
   val now: LocalDate = LocalDate.of(2018, 1, 2)
@@ -44,7 +46,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
     ))
   }
 
-  val form = VoluntaryDateForm.form(now.plusDays(2), now.plusMonths(3))
+  val form: Form[(DateSelection.Value, Option[LocalDate])] = VoluntaryDateForm.form(now.plusDays(2), now.plusMonths(3))
 
   "Binding VoluntaryDateForm" should {
     "Bind successfully for an incorp date selection" in {

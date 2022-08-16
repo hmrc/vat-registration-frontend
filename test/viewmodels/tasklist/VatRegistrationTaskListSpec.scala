@@ -445,7 +445,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
         val sectionRow = section.vatReturnsRow.build(schema)
         sectionRow.status mustBe TLNotStarted
-        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsFrequencyController.show.url
       }
     }
 
@@ -468,7 +468,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
         val sectionRow = section.vatReturnsRow.build(schema)
         sectionRow.status mustBe TLNotStarted
-        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsFrequencyController.show.url
       }
     }
 
@@ -494,7 +494,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
         val sectionRow = section.vatReturnsRow.build(schema)
         sectionRow.status mustBe TLNotStarted
-        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsFrequencyController.show.url
       }
     }
 
@@ -515,7 +515,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
         val sectionRow = section.vatReturnsRow.build(scheme)
         sectionRow.status mustBe TLInProgress
-        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsFrequencyController.show.url
 
         disable(TaxRepPage)
       }
@@ -537,7 +537,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
         val sectionRow = section.vatReturnsRow.build(scheme)
         sectionRow.status mustBe TLCompleted
-        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage.url
+        sectionRow.url mustBe controllers.vatapplication.routes.ReturnsFrequencyController.show.url
       }
     }
   }
