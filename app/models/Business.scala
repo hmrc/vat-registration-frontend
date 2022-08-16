@@ -16,7 +16,7 @@
 
 package models
 
-import models.api.{Address, CharitableOrg, NonUkNonEstablished, PartyType, RegSociety, SicCode, Trust, UkCompany, UnincorpAssoc}
+import models.api.{Address, CharitableOrg, LtdLiabilityPartnership, LtdPartnership, NonUkNonEstablished, Partnership, PartyType, RegSociety, ScotLtdPartnership, ScotPartnership, SicCode, Trust, UkCompany, UnincorpAssoc}
 import play.api.libs.json.{Json, OFormat}
 
 case class Business(hasTradingName: Option[Boolean] = None,
@@ -45,5 +45,5 @@ object Business {
   implicit val s4lKey: S4LKey[Business] = S4LKey("business")
 
   def tradingNameOptional(partyType: PartyType): Boolean =
-    Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc).contains(partyType)
+    Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc, Partnership, ScotPartnership, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership).contains(partyType)
 }

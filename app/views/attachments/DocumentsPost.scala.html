@@ -15,6 +15,7 @@
  *@
 
 @import featureswitch.core.config.SaveAndContinueLater
+@import featureswitch.core.config.TaskList
 @import config.FrontendAppConfig
 
 @this(
@@ -43,7 +44,7 @@
 
     <div class="govuk-button-group">
         @link(
-            link = controllers.routes.SummaryController.show.url,
+            link = if(appConfig.isEnabled(TaskList)) controllers.routes.TaskListController.show.url else controllers.routes.SummaryController.show.url,
             messageKey = "app.common.continue",
             isButton = true
         )

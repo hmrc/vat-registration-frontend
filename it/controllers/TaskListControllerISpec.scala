@@ -3,15 +3,14 @@ package controllers
 
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
-import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
-import models.api._
-import models.view.PreviousAddressView
 import models._
+import models.api._
+import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
+import models.view.PreviousAddressView
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
 import play.api.test.Helpers._
-import play.api.libs.json.Json
 
 import java.time.LocalDate
 import scala.collection.JavaConverters._
@@ -124,6 +123,8 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -158,6 +159,8 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .registrationApi.getSection[TransactorDetails](None)
+          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -190,6 +193,8 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -227,6 +232,8 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -269,6 +276,8 @@ class TaskListControllerISpec extends ControllerISpec {
               emailAddress = None, emailVerified = None, telephoneNumber = None
             ))
           )
+          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -299,6 +308,8 @@ class TaskListControllerISpec extends ControllerISpec {
             .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
             .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
             .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+            .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+            .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -383,6 +394,8 @@ class TaskListControllerISpec extends ControllerISpec {
             .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
             .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
             .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+            .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+            .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
           if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
 
@@ -618,6 +631,8 @@ class TaskListControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

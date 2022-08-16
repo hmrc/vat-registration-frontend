@@ -19,9 +19,9 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, BankAccountDetailsService, BusinessService, FlatRateService, SessionService, TransactorDetailsService, VatApplicationService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
-import viewmodels.tasklist.{AboutTheBusinessTaskList, AboutYouTaskList, AboutYouTransactorTaskList, RegistrationReasonTaskList, VatRegistrationTaskList, VerifyBusinessTaskList}
+import viewmodels.tasklist._
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
@@ -37,6 +37,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    aboutYouTaskList: AboutYouTaskList,
                                    aboutTheBusinessTaskList: AboutTheBusinessTaskList,
                                    vatRegistrationTaskList: VatRegistrationTaskList,
+                                   attachmentsTaskList: AttachmentsTaskList,
                                    applicantDetailsService: ApplicantDetailsService,
                                    transactorDetailsService: TransactorDetailsService,
                                    businessService: BusinessService,
@@ -58,6 +59,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
         business <- businessService.getBusiness
         vatApplication <- vatApplicationService.getVatApplication
         flatRateScheme <- flatRateService.getFlatRate
+        attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
         scheme = vatScheme.copy(
           applicantDetails = Some(applicantDetails),
           transactorDetails = Some(transactorDetails),
@@ -71,7 +73,8 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
           Some(verifyBusinessTaskList.build(scheme)),
           Some(aboutYouTaskList.build(scheme)),
           Some(aboutTheBusinessTaskList.build(scheme)),
-          Some(vatRegistrationTaskList.build(scheme))
+          Some(vatRegistrationTaskList.build(scheme)),
+          attachmentsTaskListRow.map(attachmentsTaskList.build(scheme, _))
         ).flatten
       } yield Ok(view(sections: _*))
     } else {

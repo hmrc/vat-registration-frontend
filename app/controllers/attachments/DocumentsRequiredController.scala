@@ -18,6 +18,7 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.TaskList
 import models.api.{IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
@@ -43,7 +44,11 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
           isTransactor <- vatRegistrationService.isTransactor
           redirect = attachments match {
             case Nil =>
-              Redirect(controllers.routes.SummaryController.show)
+              if (isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show)
+              } else {
+                Redirect(controllers.routes.SummaryController.show)
+              }
             case list if isTransactor && list.forall(List(IdentityEvidence, TransactorIdentityEvidence).contains(_)) =>
               Redirect(routes.TransactorIdentityEvidenceRequiredController.show)
             case list if list.size > 1 =>
