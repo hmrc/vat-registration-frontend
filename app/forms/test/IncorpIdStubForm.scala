@@ -26,6 +26,9 @@ object IncorpIdStubForm {
     mapping(
       "crn" -> text,
       "utr" -> optional(text),
+      "chrn" -> optional(text),
+      "bpRef" -> optional(text),
+      "identifiersMatch" -> boolean,
       "passBv" -> boolean
     )(IncorpStubData.apply)(IncorpStubData.unapply)
   )

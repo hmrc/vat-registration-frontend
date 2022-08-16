@@ -63,7 +63,15 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showStubPage(journeyId: String): Action[AnyContent] = Action { implicit request =>
-    Ok(stubView(IncorpIdStubForm.form, journeyId))
+    val data = Map(
+      "crn" -> "12345678",
+      "utr" -> "1234567890",
+      "bpRef" -> "testBpId",
+      "identifiersMatch" -> "true",
+      "passBv" -> "false"
+    )
+
+    Ok(stubView(IncorpIdStubForm.form.bind(data), journeyId))
   }
 
   def submitStubPage(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
@@ -86,13 +94,13 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
         Ok(Json.toJson(IncorporatedEntity(
           companyName = Some("Test company"),
           companyNumber = data.crn,
-          ctutr = if (!journeyId.contains(charitableOrg)) Some(data.utr.get) else None,
-          chrn = if (journeyId.contains(charitableOrg)) Some("123567890") else None,
+          ctutr = if (!journeyId.contains(charitableOrg)) data.utr else None,
+          chrn = if (journeyId.contains(charitableOrg)) data.chrn else None,
           dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
-          identifiersMatch = true,
+          identifiersMatch = data.identifiersMatch,
           registration = "REGISTERED",
           businessVerification = if (data.passBv) { Some(BvPass) } else { Some(BvFail) },
-          bpSafeId = Some("testBpId")
+          bpSafeId = data.bpRef
         ))(IncorporatedEntity.apiFormat))
       case _ =>
         Ok(Json.toJson(IncorporatedEntity(

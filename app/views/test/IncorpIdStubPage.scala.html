@@ -38,7 +38,7 @@
             dataForm,
             id = "crn",
             name = "crn",
-            label = "Company Reference Number (CRN)",
+            label = "Company Reference Number",
             isPageHeading = false
         )
 
@@ -46,8 +46,31 @@
             dataForm,
             id = "utr",
             name = "utr",
-            label = "Unique Taxpayer Reference (UTR)",
+            label = "Unique Taxpayer Reference (optional)",
             isPageHeading = false
+        )
+
+        @inputText(
+            dataForm,
+            id = "chrn",
+            name = "chrn",
+            label = "Charity Reference Number (optional)",
+            isPageHeading = false
+        )
+
+        @inputText(
+            dataForm,
+            id = "bpRef",
+            name = "bpRef",
+            label = "Business Partner Reference number (optional)",
+            isPageHeading = false
+        )
+
+        @yesNoRadio(
+            dataForm,
+            fieldName = "identifiersMatch",
+            headingKey = "Identifiers match?",
+            classes = "govuk-heading-m"
         )
 
         @yesNoRadio(

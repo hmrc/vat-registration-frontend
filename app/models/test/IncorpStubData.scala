@@ -18,7 +18,7 @@ package models.test
 
 import play.api.libs.json.Json
 
-case class IncorpStubData(crn: String, utr: Option[String], passBv: Boolean)
+case class IncorpStubData(crn: String, utr: Option[String], chrn: Option[String], bpRef: Option[String], identifiersMatch: Boolean, passBv: Boolean)
 
 object IncorpStubData {
   implicit val format = Json.format[IncorpStubData]
