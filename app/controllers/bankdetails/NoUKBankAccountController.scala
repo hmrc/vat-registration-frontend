@@ -20,16 +20,16 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.NoUKBankAccountForm
-import models.{BankAccount, TransferOfAGoingConcern}
+import models.TransferOfAGoingConcern
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionProfile, SessionService, VatRegistrationService}
-import views.html.bankdetails.no_uk_bank_account
+import views.html.bankdetails.NoUkBankAccount
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_account,
+class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
                                           val authConnector: AuthClientConnector,
                                           val bankAccountDetailsService: BankAccountDetailsService,
                                           val vatRegistrationService: VatRegistrationService,
@@ -55,21 +55,15 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: no_uk_bank_accoun
           badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
           reason =>
             for {
-              _ <- bankAccountDetailsService.saveBankAccountDetails(BankAccount(isProvided = false, details = None, overseasDetails = None, reason = Some(reason)))
+              _ <- bankAccountDetailsService.saveNoUkBankAccountDetails(reason)
               eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
             } yield eligibilityData.registrationReason match {
+              case _ if isEnabled(TaskList) =>
+                Redirect(controllers.routes.TaskListController.show.url)
               case TransferOfAGoingConcern =>
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
-                }
+                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
               case _ =>
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
-                }
+                Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
             }
         )
       }

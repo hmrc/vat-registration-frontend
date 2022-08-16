@@ -56,7 +56,6 @@ object BankAccountDetails {
 object BankAccount extends JsonUtilities {
 
   implicit val apiKey: ApiKey[BankAccount] = ApiKey("bank-account")
-  implicit val s4lKey: S4LKey[BankAccount] = S4LKey[BankAccount]("bankAccount")
 
   implicit val format: Format[BankAccount] = (
     (__ \ "isProvided").format[Boolean] and

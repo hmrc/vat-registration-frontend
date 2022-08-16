@@ -38,13 +38,13 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request => implicit profile =>
-        vatRegistrationService.partyType.flatMap {
-          case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
-          case _ => for {
-            bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
-            filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
-          } yield Ok(view(filledForm))
-        }
+      vatRegistrationService.partyType.flatMap {
+        case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+        case _ => for {
+          bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+          filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
+        } yield Ok(view(filledForm))
+      }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -53,7 +53,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors))),
         hasBankAccount =>
-          bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount) flatMap { _ =>
+          bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).flatMap { _ =>
             vatRegistrationService.partyType.map {
               case NETP | NonUkNonEstablished =>
                 Redirect(routes.OverseasBankAccountController.show)

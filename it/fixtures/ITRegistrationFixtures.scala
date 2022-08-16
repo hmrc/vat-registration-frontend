@@ -49,7 +49,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val bankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None, None)
   val emptyBankAccount = BankAccount(isProvided = true, None, None, None)
   val bankAccountNotProvidedNoReason = BankAccount(isProvided = false, None, None, None)
-  val bankAccountNotProvided = BankAccount(isProvided = false, None, None, Some(BeingSetup))
+  val bankAccountNotProvided = BankAccount(isProvided = false, None, None, Some(BeingSetupOrNameChange))
   val testBic = "BIC"
   val testIban = "IBAN"
   val testOverseasBankAccountDetails: OverseasBankDetails = OverseasBankDetails(testBankName, testBic, testIban)

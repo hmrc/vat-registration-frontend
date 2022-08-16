@@ -16,31 +16,28 @@
 
 package forms
 
-import models.{BeingSetup, NameChange, NoUKBankAccount, OverseasAccount}
-import play.api.data.{Form, FormError}
+import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
+import models._
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
+import play.api.data.{Form, FormError}
 
-object NoUKBankAccountForm {
+object NoUKBankAccountForm extends FeatureSwitching {
 
   val noUKBankAccount: String = "value"
 
   val beingSetup: String = "beingSetup"
   val overseasAccount: String = "overseasAccount"
   val nameChange: String = "nameChange"
+  val accountNotInBusinessName: String = "accountNotInBusinessName"
+  val dontWantToProvide: String = "dontWantToProvide"
 
   val noUKBankAccountError: String = "pages.noUKBankAccount.error"
 
-  def apply(): Form[NoUKBankAccount] = Form(
-    single(
-      noUKBankAccount -> of(formatter)
-    )
-  )
-
-  def formatter: Formatter[NoUKBankAccount] = new Formatter[NoUKBankAccount] {
+  private def formatter: Formatter[NoUKBankAccount] = new Formatter[NoUKBankAccount] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], NoUKBankAccount] = {
       data.get(key) match {
-        case Some(`beingSetup`) => Right(BeingSetup)
+        case Some(`beingSetup`) => Right(BeingSetupOrNameChange)
         case Some(`overseasAccount`) => Right(OverseasAccount)
         case Some(`nameChange`) => Right(NameChange)
         case _ => Left(Seq(FormError(key, noUKBankAccountError)))
@@ -49,9 +46,34 @@ object NoUKBankAccountForm {
 
     override def unbind(key: String, value: NoUKBankAccount): Map[String, String] = {
       val stringValue = value match {
-        case BeingSetup => beingSetup
+        case BeingSetupOrNameChange => beingSetup
         case OverseasAccount => overseasAccount
         case NameChange => nameChange
+        case _ => ""
+      }
+      Map(key -> stringValue)
+    }
+  }
+
+  private def newFormatter: Formatter[NoUKBankAccount] = new Formatter[NoUKBankAccount] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], NoUKBankAccount] = {
+      data.get(key) match {
+        case Some(`beingSetup`) => Right(BeingSetupOrNameChange)
+        case Some(`overseasAccount`) => Right(OverseasAccount)
+        case Some(`accountNotInBusinessName`) => Right(AccountNotInBusinessName)
+        case Some(`dontWantToProvide`) => Right(DontWantToProvide)
+        case _ => Left(Seq(FormError(key, noUKBankAccountError)))
+      }
+    }
+
+    override def unbind(key: String, value: NoUKBankAccount): Map[String, String] = {
+      val stringValue = value match {
+        case BeingSetupOrNameChange => beingSetup
+        case OverseasAccount => overseasAccount
+        case AccountNotInBusinessName => accountNotInBusinessName
+        case DontWantToProvide => dontWantToProvide
+        case NameChange => beingSetup //Converting old answer to new
+        case _ => ""
       }
       Map(key -> stringValue)
     }
@@ -59,7 +81,13 @@ object NoUKBankAccountForm {
 
   def form: Form[NoUKBankAccount] = Form(
     single(
-      noUKBankAccount -> of(formatter)
+      noUKBankAccount -> of(
+        if (isEnabled(NewNoBankReasons)) {
+          newFormatter
+        } else {
+          formatter
+        }
+      )
     )
   )
 }

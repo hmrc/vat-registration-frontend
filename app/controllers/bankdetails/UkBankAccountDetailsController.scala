@@ -58,18 +58,12 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
               accountDetailsValid <- bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails)
               eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
             } yield (accountDetailsValid, eligibilityData.registrationReason) match {
+              case (true, _) if isEnabled(TaskList) =>
+                Redirect(controllers.routes.TaskListController.show.url)
               case (true, TransferOfAGoingConcern) =>
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
-                }
+                Redirect(controllers.vatapplication.routes.ReturnsController.returnsFrequencyPage)
               case (true, _) =>
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
-                }
+                Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
               case (false, _) =>
                 val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
                 BadRequest(view(invalidDetails))

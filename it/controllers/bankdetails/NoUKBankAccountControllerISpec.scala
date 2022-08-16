@@ -19,7 +19,7 @@ package controllers.bankdetails
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
-import models.{BankAccount, BeingSetup, TransferOfAGoingConcern}
+import models.{BankAccount, BeingSetupOrNameChange, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
 import play.mvc.Http.HeaderNames
@@ -34,7 +34,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "return an OK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, None)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -48,7 +48,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "return an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, Some(BeingSetup)))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, Some(BeingSetupOrNameChange))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -66,9 +66,8 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "redirect to returns frequency page when the user is TOGC/COLE" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, None)))
         .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
-        .s4lContainer[BankAccount].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -84,9 +83,8 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     "redirect to the start date resolver page when the user is non-NETP" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, None)))
         .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
-        .s4lContainer[BankAccount].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -103,9 +101,8 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
       enable(TaskList)
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, None)))
         .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
-        .s4lContainer[BankAccount].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

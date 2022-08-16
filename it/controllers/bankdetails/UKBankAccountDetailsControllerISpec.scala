@@ -19,7 +19,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -31,8 +30,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     "return OK with a pre-populated form from S4L" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(bankAccount)
-        .registrationApi.getSection[BankAccount](None)
+        .registrationApi.getSection[BankAccount](Some(bankAccount))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -47,7 +45,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     "return OK with a pre-populated form from the backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[BankAccount].isEmpty
         .registrationApi.getSection[BankAccount](Some(bankAccount))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -68,8 +65,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.passes
-          .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
-          .s4lContainer[BankAccount].clearedByKey
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
           .registrationApi.replaceSection[BankAccount](bankAccount)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
@@ -90,7 +86,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.fails
-          .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -110,8 +106,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       given
         .user.isAuthorised()
         .bankAccountReputation.passes
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
-        .s4lContainer[BankAccount].clearedByKey
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
         .registrationApi.replaceSection[BankAccount](bankAccount)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
@@ -133,7 +128,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.fails
-          .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, None, None))
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

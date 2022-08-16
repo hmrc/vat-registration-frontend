@@ -667,9 +667,9 @@ cya.registrationDetails.accountingPeriod.jan                    = January, April
 cya.registrationDetails.accountingPeriod.feb                    = February, May, August and November
 cya.registrationDetails.accountingPeriod.mar                    = March, June, September and December
 cya.registrationDetails.accountingPeriod.annual                 = I would like to join the Annual Accounting Scheme
-cya.registrationDetails.companyBankAccount                      = Have a business bank account set up
+cya.registrationDetails.companyBankAccount                      = Bank or building society account
 cya.registrationDetails.companyBankAccount.details              = Bank details
-cya.registrationDetails.companyBankAccount.reason               = Reason the bank account is not set up yet
+cya.registrationDetails.companyBankAccount.reason               = Reason for no bank or building society details
 cya.registrationDetails.joinFrs                                 = Do you want to join the Flat Rate Scheme?
 cya.registrationDetails.costsInclusive                          = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
 cya.registrationDetails.estimateTotalSales                      = Total sales, including VAT, for the next 3 months
@@ -722,19 +722,19 @@ page.IndividualAffinityKickOut.signInLink            = Sign into your organisati
 page.IndividualAffinityKickOut.createLink            = Create a business tax account
 
 ## Company Bank Account
-pages.company.bank.account.heading                   = Does the business have a bank or building society account?
+pages.company.bank.account.heading                   = Are you able to provide bank or building society account details for the business?
 pages.company.bank.account.para                      = The account does not have to be a dedicated business account but must be separate from a personal account. We will use this account for VAT repayments.
-validation.company.bank.account.missing              = Select yes if the business has a bank or building society account
+validation.company.bank.account.missing              = Select yes if you are able to provide bank or building society details for the business
 
 ## No UK Bank Account
-pages.noUKBankAccount.heading                        = Why is the bank account not set up?
+pages.noUKBankAccount.heading                        = Why are you unable to provide bank account details for the business?
 pages.noUKBankAccount.beingSetup                     = It is being set up but is taking a while
+pages.noUKBankAccount.beingSetupOrNameChange         = The bank account is still being set up (for example, the name is being changed from a sole trader to a limited company)
 pages.noUKBankAccount.overseasAccount                = The business has an overseas bank account
 pages.noUKBankAccount.nameChange                     = The name is being changed (for example, from sole trader to limited company)
-pages.noUKBankAccount.error                          = Tell us why the bank account is not set up
-pages.noUKBankAccount.reason.beingSetup              = Being set up
-pages.noUKBankAccount.reason.overseasAccount         = Overseas account
-pages.noUKBankAccount.reason.nameChange              = The name is being changed
+pages.noUKBankAccount.accountNotInBusinessName       = The bank account is not in the business name
+pages.noUKBankAccount.dontWantToProvide              = I do not want to provide the business bank account details
+pages.noUKBankAccount.error                          = Select why you cannot provide bank account details for the business
 
 ## Bank Details page
 pages.bankDetails.heading                           = What are the business’s bank or building society account details?

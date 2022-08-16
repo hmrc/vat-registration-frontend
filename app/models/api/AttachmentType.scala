@@ -34,7 +34,7 @@ case object TransactorIdentityEvidence extends AttachmentType
 case object TaxRepresentativeAuthorisation extends AttachmentType
 case object TaxAgentAuthorisation extends AttachmentType
 case object OtherAttachments extends AttachmentType
-
+// DetailedIdentityEvidence Is only used on the getIncompleteAttachments API to allow us to properly go through the upload attachments flow
 sealed trait DetailedIdentityEvidence extends AttachmentType
 case object PrimaryIdentityEvidence extends DetailedIdentityEvidence
 case object ExtraIdentityEvidence extends DetailedIdentityEvidence

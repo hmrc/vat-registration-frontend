@@ -18,7 +18,7 @@ package viewmodels
 
 import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
-import featureswitch.core.config.FeatureSwitching
+import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
 import models._
 import models.api.vatapplication._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
@@ -144,9 +144,12 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val noUKBankAccount = optSummaryListRowString(
       s"$sectionId.companyBankAccount.reason",
       bankAccount.flatMap(_.reason).map {
-        case BeingSetup => "pages.noUKBankAccount.reason.beingSetup"
-        case OverseasAccount => "pages.noUKBankAccount.reason.overseasAccount"
-        case NameChange => "pages.noUKBankAccount.reason.nameChange"
+        case BeingSetupOrNameChange if isEnabled(NewNoBankReasons) => "pages.noUKBankAccount.beingSetupOrNameChange"
+        case BeingSetupOrNameChange => "pages.noUKBankAccount.beingSetup"
+        case OverseasAccount => "pages.noUKBankAccount.overseasAccount"
+        case NameChange => "pages.noUKBankAccount.nameChange"
+        case AccountNotInBusinessName => "pages.noUKBankAccount.accountNotInBusinessName"
+        case DontWantToProvide => "pages.noUKBankAccount.dontWantToProvide"
       },
       Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)
     )

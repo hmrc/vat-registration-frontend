@@ -19,7 +19,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
     "return an OK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, None)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -33,7 +33,7 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
     "return an OK with pre-populated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None)))
         .registrationApi.getRegistration(fullVatScheme.copy(eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -54,9 +54,8 @@ class OverseasBankAccountControllerISpec extends ControllerISpec {
     "return a redirect to flatrate scheme" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[BankAccount].contains(BankAccount(isProvided = false, None, None, None))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None, None)))
         .registrationApi.replaceSection[BankAccount](testOverseasBankAccountFrs)
-        .s4lContainer[BankAccount].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

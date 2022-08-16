@@ -16,66 +16,108 @@
 
 package views.bankdetails
 
-import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
+import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons, SaveAndContinueLater}
 import forms.NoUKBankAccountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.bankdetails.no_uk_bank_account
+import views.html.bankdetails.NoUkBankAccount
 
 class NoUKBankAccountViewSpec extends VatRegViewSpec with FeatureSwitching {
 
-  val view: no_uk_bank_account = app.injector.instanceOf[no_uk_bank_account]
+  val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
   implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
 
   object ExpectedContent {
 
-    val title: String = "Why is the bank account not set up? - Register for VAT - GOV.UK"
-    val heading: String = "Why is the bank account not set up?"
+    val title: String = "Why are you unable to provide bank account details for the business? - Register for VAT - GOV.UK"
+    val heading: String = "Why are you unable to provide bank account details for the business?"
     val button1: String = "It is being set up but is taking a while"
+    val newButton1: String = "The bank account is still being set up (for example, the name is being changed from a sole trader to a limited company)"
     val button2: String = "The business has an overseas bank account"
     val button3: String = "The name is being changed (for example, from sole trader to limited company)"
-    val error: String = "Tell us why the bank account is not set up"
+    val newButton3: String = "The bank account is not in the business name"
+    val newButton4: String = "I do not want to provide the business bank account details"
+    val error: String = "Select why you cannot provide bank account details for the business"
     val continue: String = "Save and continue"
     val continueLater: String = "Save and come back later"
   }
 
-  "No UK Bank Account Page" should {
+  "No UK Bank Account Page" when {
+    "the NewNoBankReasons FS is disabled" should {
+      enable(SaveAndContinueLater)
+      disable(NewNoBankReasons)
+      val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
+      implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
+      disable(SaveAndContinueLater)
 
-    enable(SaveAndContinueLater)
+      "have the correct title" in new ViewSetup() {
+        doc.title mustBe ExpectedContent.title
+      }
 
-    val view: no_uk_bank_account = app.injector.instanceOf[no_uk_bank_account]
-    implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
+      "have the correct heading" in new ViewSetup() {
+        doc.heading mustBe Some(ExpectedContent.heading)
+      }
 
-    disable(SaveAndContinueLater)
+      "have the correct button1" in new ViewSetup() {
+        doc.radio("beingSetup") mustBe Some(ExpectedContent.button1)
+      }
 
-    "have the correct title" in new ViewSetup() {
-      doc.title mustBe ExpectedContent.title
+      "have the correct button2" in new ViewSetup() {
+        doc.radio("overseasAccount") mustBe Some(ExpectedContent.button2)
+      }
+
+      "have the correct button3" in new ViewSetup() {
+        doc.radio("nameChange") mustBe Some(ExpectedContent.button3)
+      }
+
+      "have the correct continue button" in new ViewSetup() {
+        doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
+      }
+
+      "have a save and continue button when the FS is enabled" in {
+        doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
+      }
     }
+    "the NewNoBankReasons FS is enabled" should {
+      enable(SaveAndContinueLater)
+      enable(NewNoBankReasons)
+      val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
+      implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
+      disable(NewNoBankReasons)
+      disable(SaveAndContinueLater)
 
-    "have the correct heading" in new ViewSetup() {
-      doc.heading mustBe Some(ExpectedContent.heading)
-    }
+      "have the correct title" in new ViewSetup() {
+        doc.title mustBe ExpectedContent.title
+      }
 
-    "have the correct button1" in new ViewSetup() {
-      doc.radio("beingSetup") mustBe Some(ExpectedContent.button1)
-    }
+      "have the correct heading" in new ViewSetup() {
+        doc.heading mustBe Some(ExpectedContent.heading)
+      }
 
-    "have the correct button2" in new ViewSetup() {
-      doc.radio("overseasAccount") mustBe Some(ExpectedContent.button2)
-    }
+      "have the correct button1" in new ViewSetup() {
+        doc.radio("beingSetup") mustBe Some(ExpectedContent.newButton1)
+      }
 
-    "have the correct button3" in new ViewSetup() {
-      doc.radio("nameChange") mustBe Some(ExpectedContent.button3)
-    }
+      "have the correct button2" in new ViewSetup() {
+        doc.radio("overseasAccount") mustBe Some(ExpectedContent.button2)
+      }
 
-    "have the correct continue button" in new ViewSetup() {
-      doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
-    }
+      "have the correct button3" in new ViewSetup() {
+        doc.radio("accountNotInBusinessName") mustBe Some(ExpectedContent.newButton3)
+      }
 
-    "have a save and continue button when the FS is enabled" in {
-      doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
+      "have the correct button4" in new ViewSetup() {
+        doc.radio("dontWantToProvide") mustBe Some(ExpectedContent.newButton4)
+      }
+
+      "have the correct continue button" in new ViewSetup() {
+        doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
+      }
+
+      "have a save and continue button when the FS is enabled" in {
+        doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
+      }
     }
   }
-
 }

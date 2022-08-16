@@ -476,7 +476,7 @@ class TaskListControllerISpec extends ControllerISpec {
               )),
               northernIrelandProtocol = Some(NIPTurnover(
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
-                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None))
               )),
               returnsFrequency = None,
               staggerStart = None
@@ -514,7 +514,7 @@ class TaskListControllerISpec extends ControllerISpec {
               staggerStart = None
             )),
             bankAccount = Some(bankAccount.copy(
-              isProvided = false, None, None, Some(BeingSetup)
+              isProvided = false, None, None, Some(BeingSetupOrNameChange)
             ))
           ),
           ExpectedMessages.vatRegistrationSection.heading, List(
@@ -540,12 +540,12 @@ class TaskListControllerISpec extends ControllerISpec {
               )),
               northernIrelandProtocol = Some(NIPTurnover(
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
-                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None))
               )),
               startDate = Some(LocalDate.of(2017, 10, 10)),
               staggerStart = None
             )),
-            bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetup)))
+            bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetupOrNameChange)))
           ),
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
@@ -570,12 +570,12 @@ class TaskListControllerISpec extends ControllerISpec {
               )),
               northernIrelandProtocol = Some(NIPTurnover(
                 goodsToEU = Some(ConditionalValue(answer = false, None)),
-                goodsFromEU = Some(ConditionalValue(answer = false, None)),
+                goodsFromEU = Some(ConditionalValue(answer = false, None))
               )),
               startDate = Some(LocalDate.of(2017, 10, 10)),
               hasTaxRepresentative = Some(false)
             )),
-            bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetup)))
+            bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetupOrNameChange)))
           ),
           ExpectedMessages.vatRegistrationSection.heading, List(
             ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
@@ -618,8 +618,6 @@ class TaskListControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-        .s4lContainer[BankAccount].isEmpty
-        .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
