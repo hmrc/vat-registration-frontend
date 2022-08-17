@@ -2,14 +2,13 @@
 package controllers.business
 
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
-import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
 import models.api._
 import models.{ApplicantDetails, Business, LabourCompliance}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
-class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec with SicAndComplianceFixture {
+class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
 
   "intermediary workers controller" should {
     disable(OtherBusinessInvolvement)

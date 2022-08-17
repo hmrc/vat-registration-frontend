@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.business
+package controllers.sicandcompliance
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
 import fixtures.VatRegistrationFixture
@@ -35,7 +35,6 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
   with MockVatRegistrationService {
 
   val mockAboutToConfirmSicView: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
-  val mockMainBusinessActivityView: main_business_activity = app.injector.instanceOf[main_business_activity]
 
   class Setup {
     val controller: SicController = new SicController(
@@ -45,8 +44,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       mockFlatRateService,
       mockICLService,
       vatRegistrationServiceMock,
-      mockAboutToConfirmSicView,
-      mockMainBusinessActivityView
+      mockAboutToConfirmSicView
     ) {
       override val iclFEurlwww: String = "www-url"
     }
@@ -54,9 +52,6 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
   }
-
-  val validLabourSicCode: SicCode = SicCode("81221001", "BarFoo", "BarFoo")
-  val validNoCompliance: SicCode = SicCode("12345678", "fooBar", "FooBar")
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -116,7 +111,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.business.routes.SicController.showMainBusinessActivity.url
+            res redirectsTo controllers.sicandcompliance.routes.MainBusinessActivityController.show.url
         }
       }
 
@@ -133,7 +128,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         callAuthorised(controller.saveIclCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.business.routes.SicController.showMainBusinessActivity.url
+            res redirectsTo controllers.sicandcompliance.routes.MainBusinessActivityController.show.url
         }
       }
 
@@ -174,77 +169,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
   }
 
-  s"GET ${controllers.business.routes.SicController.showMainBusinessActivity}" should {
-    "return OK when view present in S4L" in new Setup {
-      mockGetBusiness(Future.successful(validBusiness))
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
-      callAuthorised(controller.showMainBusinessActivity) {
-        status(_) mustBe OK
-      }
-    }
-
-    "return HTML where getSicAndCompliance returns empty viewModels for labour" in new Setup {
-      mockGetBusiness(Future.successful(validBusinessWithNoDescriptionAndLabour))
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
-
-      callAuthorised(controller.showMainBusinessActivity) { result =>
-        status(result) mustBe OK
-      }
-    }
-  }
-
-  s"POST ${controllers.business.routes.SicController.submitMainBusinessActivity}" should {
-    val fakeRequest = FakeRequest(controllers.business.routes.SicController.showMainBusinessActivity)
-
-    "return 400" in new Setup {
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
-      mockPartyType(Future.successful(UkCompany))
-
-      submitAuthorised(controller.submitMainBusinessActivity, fakeRequest.withFormUrlEncodedBody()
-      )(result => result isA 400)
-    }
-
-    "return 400 with selected sicCode but no sicCode list in keystore" in new Setup {
-      mockUpdateBusiness(Future.successful(validBusiness))
-      mockSessionFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
-      mockPartyType(Future.successful(UkCompany))
-
-      submitAuthorised(controller.submitMainBusinessActivity,
-        fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
-      )(_ isA 400)
-
-    }
-
-    "return 303 with selected sicCode" in new Setup {
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      mockPartyType(Future.successful(UkCompany))
-
-      when(mockBusinessService.updateBusiness(any())(any(), any()))
-        .thenReturn(Future.successful(validBusiness))
-      when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockBusinessService.needComplianceQuestions(any())).thenReturn(true)
-
-      submitAuthorised(controller.submitMainBusinessActivity,
-        fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
-      )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-business")
-
-    }
-
-    "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
-      mockSessionFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
-      mockPartyType(Future.successful(UkCompany))
-
-      when(mockBusinessService.updateBusiness(any())(any(), any()))
-        .thenReturn(Future.successful(validBusiness))
-      when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockBusinessService.needComplianceQuestions(any())).thenReturn(false)
-
-      submitAuthorised(controller.submitMainBusinessActivity,
-        fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
-      )(_ redirectsTo controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)
-    }
-  }
 
   "returnToICL" should {
     "take the user to ICL stub" when {

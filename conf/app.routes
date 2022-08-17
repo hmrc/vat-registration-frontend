@@ -123,22 +123,22 @@ GET         /business-description                                     controller
 POST        /business-description                                     controllers.business.BusinessActivityDescriptionController.submit
 
 ## MAIN BUSINESS ACTIVITY
-GET         /main-source-business-income                              controllers.business.SicController.showMainBusinessActivity
-POST        /main-source-business-income                              controllers.business.SicController.submitMainBusinessActivity
+GET         /main-source-business-income                              controllers.sicandcompliance.MainBusinessActivityController.show
+POST        /main-source-business-income                              controllers.sicandcompliance.MainBusinessActivityController.submit
 
 ## CONFIRM SIC CODES
-GET         /choose-standard-industry-classification-codes            controllers.business.SicController.showSicHalt
-POST        /choose-standard-industry-classification-codes            controllers.business.SicController.submitSicHalt
+GET         /choose-standard-industry-classification-codes            controllers.sicandcompliance.SicController.showSicHalt
+POST        /choose-standard-industry-classification-codes            controllers.sicandcompliance.SicController.submitSicHalt
 
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-business                          controllers.business.ComplianceIntroductionController.show
 POST        /tell-us-more-about-the-business                          controllers.business.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
-GET         /save-sic-codes                                           controllers.business.SicController.saveIclCodes
+GET         /save-sic-codes                                           controllers.sicandcompliance.SicController.saveIclCodes
 
 ## SHOW ICL CONFIRM
-GET         /show-icl-confirmation                                    controllers.business.SicController.returnToICL
+GET         /show-icl-confirmation                                    controllers.sicandcompliance.SicController.returnToICL
 
 ## LABOUR COMPLIANCE QUESTIONS
 GET         /supply-of-workers                                        controllers.business.SupplyWorkersController.show

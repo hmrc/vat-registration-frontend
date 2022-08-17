@@ -34,6 +34,8 @@ trait BaseFixture {
   val testTradingName = "ACME INC"
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
+  val validLabourSicCode: SicCode = SicCode("81221001", "BarFoo", "BarFoo")
+  val validNoCompliance: SicCode = SicCode("12345678", "fooBar", "FooBar")
   val validExpectedOverTrue = Some(testDate)
 
   def generateThreshold(mandatory: Boolean = false,

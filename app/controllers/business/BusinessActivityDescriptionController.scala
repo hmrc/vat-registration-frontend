@@ -51,7 +51,7 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
         BusinessActivityDescriptionForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
           data => businessService.updateBusiness(BusinessActivityDescription(data)).map {
-            _ => Redirect(controllers.business.routes.SicController.showSicHalt)
+            _ => Redirect(controllers.sicandcompliance.routes.SicController.showSicHalt)
           }
         )
   }
