@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class MandatoryStartDateController @Inject()(val sessionService: SessionService,
                                              val authConnector: AuthClientConnector,
                                              val vatApplicationService: VatApplicationService,
-                                             mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view,
+                                             mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

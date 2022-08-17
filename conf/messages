@@ -69,6 +69,8 @@ tasklist.attachments.heading                = Attachments
 tasklist.attachments.identityDocuments      = Identity documents
 tasklist.attachments.additionalForms        = Additional forms
 tasklist.attachments.documentsAndForms      = Documents and forms
+tasklist.cya.heading                        = Send application
+tasklist.vatRegistration.cya.submit         = Check answers and submit
 
 # Ordinal numbers
 ordinals.1 = First
