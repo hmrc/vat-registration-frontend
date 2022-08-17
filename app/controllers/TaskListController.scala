@@ -38,6 +38,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    aboutTheBusinessTaskList: AboutTheBusinessTaskList,
                                    vatRegistrationTaskList: VatRegistrationTaskList,
                                    attachmentsTaskList: AttachmentsTaskList,
+                                   summaryTaskList: SummaryTaskList,
                                    applicantDetailsService: ApplicantDetailsService,
                                    transactorDetailsService: TransactorDetailsService,
                                    businessService: BusinessService,
@@ -74,7 +75,8 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
           Some(aboutYouTaskList.build(scheme)),
           Some(aboutTheBusinessTaskList.build(scheme)),
           Some(vatRegistrationTaskList.build(scheme)),
-          attachmentsTaskListRow.map(attachmentsTaskList.build(scheme, _))
+          attachmentsTaskListRow.map(attachmentsTaskList.build(scheme, _)),
+          Some(summaryTaskList.build(scheme, attachmentsTaskListRow))
         ).flatten
       } yield Ok(view(sections: _*))
     } else {
