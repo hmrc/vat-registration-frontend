@@ -1,14 +1,13 @@
 
 package controllers.business
 
-import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
 import models._
 import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
-class SupplyWorkersControllerISpec extends ControllerISpec with SicAndComplianceFixture {
+class SupplyWorkersControllerISpec extends ControllerISpec {
 
   "supply workers controllers" should {
     "return OK on Show AND users answer is pre-popped on page" in new Setup {

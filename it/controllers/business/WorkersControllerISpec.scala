@@ -3,7 +3,6 @@ package controllers.business
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaskList}
 import featureswitch.core.models.FeatureSwitch
-import fixtures.SicAndComplianceFixture
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
 import models.{Business, LabourCompliance}
@@ -11,7 +10,7 @@ import play.api.http.HeaderNames
 import play.api.mvc.Call
 import play.api.test.Helpers._
 
-class WorkersControllerISpec extends ControllerISpec with SicAndComplianceFixture with FeatureSwitching {
+class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
 
   def verifyRedirectLocation(optFeatureSwitch: Option[FeatureSwitch], resolvedLocation: Call) = {
     optFeatureSwitch.foreach(enable)

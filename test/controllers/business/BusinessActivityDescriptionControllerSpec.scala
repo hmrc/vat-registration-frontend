@@ -39,9 +39,6 @@ class BusinessActivityDescriptionControllerSpec extends ControllerSpec with Futu
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  val validLabourSicCode = SicCode("81221001", "BarFoo", "BarFoo")
-  val validNoCompliance = SicCode("12345678", "fooBar", "FooBar")
-
   "show" should {
     "return OK" in new Setup {
       mockGetBusiness(Future.successful(validBusiness))

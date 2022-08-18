@@ -144,7 +144,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     optSummaryListRowString(
       s"$sectionId.mainSicCode",
       business.mainBusinessActivity.map(_.description),
-      Some(controllers.business.routes.SicController.showMainBusinessActivity.url)
+      Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)
     )
 
   private def otherBusinessInvolvements(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
@@ -161,7 +161,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         business.businessActivities.map(codes => codes.map(
           sicCode => sicCode.code + " - " + sicCode.description
         )),
-        Some(controllers.business.routes.SicController.returnToICL.url)
+        Some(controllers.sicandcompliance.routes.SicController.returnToICL.url)
       )
     } else {
       None

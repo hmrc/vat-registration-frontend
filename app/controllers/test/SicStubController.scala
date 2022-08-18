@@ -94,7 +94,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                 }
               }
             } else {
-              Redirect(controllers.business.routes.SicController.showMainBusinessActivity)
+              Redirect(controllers.sicandcompliance.routes.MainBusinessActivityController.show)
             }
           }
         )
