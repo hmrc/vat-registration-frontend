@@ -32,7 +32,7 @@ class WarehouseNumberViewSpec extends VatRegViewSpec {
   object ExpectedContent {
     val heading = "What is the Fulfilment Warehouse number?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "This is a 15 character number that starts with 3 letters followed by 12 numbers."
+    val para1 = "This is usually 4 letters followed by 11 numbers. For example, ABCD12345678912."
     val continue = "Save and continue"
   }
 
