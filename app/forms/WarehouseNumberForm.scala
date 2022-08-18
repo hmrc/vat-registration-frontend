@@ -44,7 +44,7 @@ object WarehouseNumberConstraints {
   val formatErrorMessage = "validation.warehouseNumber.format"
 
   val regex = "^[A-Za-z0-9]*$"
-  val numberFormat = "^[A-Za-z]{3}[0-9]{12}$"
+  val numberFormat = "^[A-Za-z0-9]{1,30}$"
 
   val warehouseNumberMissing: Constraint[String] = Constraint(
     warehouseNumber => validate(

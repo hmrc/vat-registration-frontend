@@ -1131,10 +1131,10 @@ validation.dispatchFromWarehouse.missing                 = Select yes if the bus
 
 ## WAREHOUSE NUMBER
 pages.warehouseNumber.heading                            = What is the Fulfilment Warehouse number?
-pages.warehouseNumber.para1                              = This is a 15 character number that starts with 3 letters followed by 12 numbers.
+pages.warehouseNumber.para1                              = This is usually 4 letters followed by 11 numbers. For example, ABCD12345678912.
 validation.warehouseNumber.missing                       = Enter the fulfilment warehouse number
 validation.warehouseNumber.regex                         = Enter a number that does not contain special characters
-validation.warehouseNumber.format                        = Enter a number that is 15 character number that starts with 3 letters followed by 12 numbers
+validation.warehouseNumber.format                        = Enter a Fulfilment Warehouse number in the correct format
 
 ## WAREHOUSE NAME
 pages.warehouseName.heading                              = What is the business name of the Fulfilment Warehouse?

@@ -105,11 +105,11 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> "ts1234567890123"))
+      val res = buildClient(url).post(Json.obj("warehouseNumber" -> "1234567890123456789012345678901"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
-        Jsoup.parse(result.body).getElementById("warehouseNumber-error").text mustBe "Error: Enter a number that is 15 character number that starts with 3 letters followed by 12 numbers"
+        Jsoup.parse(result.body).getElementById("warehouseNumber-error").text mustBe "Error: Enter a Fulfilment Warehouse number in the correct format"
       }
     }
 
