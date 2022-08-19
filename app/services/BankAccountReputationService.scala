@@ -48,7 +48,7 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
             auditConnector.sendExplicitAudit("BarsValidateCheck", auditEvent)
 
             Future.successful(
-              (bankAccountValidationResponse \ "accountNumberWithSortCodeIsValid").as[BankAccountDetailsStatus]
+              (bankAccountValidationResponse \ "accountNumberIsWellFormatted").as[BankAccountDetailsStatus]
             )
           case None =>
             throw new InternalServerException("Missing internal ID for BARS check auditing")
@@ -56,6 +56,3 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
     }
   }
 }
-
-
-

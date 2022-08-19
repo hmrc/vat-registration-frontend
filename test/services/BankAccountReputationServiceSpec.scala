@@ -102,7 +102,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with
       val testUserId = "testUserId"
 
       when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
-        .thenReturn(Future.successful(Json.obj("accountNumberWithSortCodeIsValid"-> "false")))
+        .thenReturn(Future.successful(Json.obj("accountNumberIsWellFormatted"-> "false")))
       mockAuthenticatedInternalId(Some(testUserId))
 
       intercept[NoSuchElementException] {

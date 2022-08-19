@@ -35,7 +35,6 @@ object BankAccountDetails {
   implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails] {
     override def writes(o: BankAccountDetails): JsObject = {
       Json.obj("account" -> Json.obj(
-        "accountName" -> o.name,
         "accountNumber" -> o.number,
         "sortCode" -> o.sortCode.replace("-", "")
       ))

@@ -37,7 +37,7 @@ class BankAccountReputationStubController @Inject()(mcc: MessagesControllerCompo
 
     Future.successful(
       Ok(Json.obj(
-        "accountNumberWithSortCodeIsValid" -> status,
+        "accountNumberIsWellFormatted" -> status,
         "nonStandardAccountDetailsRequiredForBacs" -> "no",
         "sortCodeIsPresentOnEISCD" -> "yes",
         "supportsBACS" -> "yes",
