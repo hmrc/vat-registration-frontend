@@ -96,7 +96,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val validBankCheckJsonResponseString =
     s"""
        |{
-       |  "accountNumberWithSortCodeIsValid": "yes",
+       |  "accountNumberIsWellFormatted": "yes",
        |  "nonStandardAccountDetailsRequiredForBacs": "no"
        |}
      """.stripMargin
@@ -106,7 +106,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val invalidBankCheckJsonResponseString =
     s"""
        |{
-       |  "accountNumberWithSortCodeIsValid": "no",
+       |  "accountNumberIsWellFormatted": "no",
        |  "nonStandardAccountDetailsRequiredForBacs": "no"
        |}
      """.stripMargin
@@ -116,7 +116,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val indeterminateBankCheckJsonResponseString =
     s"""
        |{
-       |  "accountNumberWithSortCodeIsValid": "indeterminate",
+       |  "accountNumberIsWellFormatted": "indeterminate",
        |  "nonStandardAccountDetailsRequiredForBacs": "no"
        |}
      """.stripMargin

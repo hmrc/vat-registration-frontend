@@ -383,12 +383,12 @@ trait StubUtils {
 
   case class BankAccountReputationServiceStub()(implicit builder: PreconditionBuilder) {
     def passes: PreconditionBuilder = {
-      stubFor(post(urlMatching("/v2/validateBankDetails"))
+      stubFor(post(urlMatching("/v3/validate/bank-details"))
         .willReturn(
           aResponse().withStatus(200).withBody(
             s"""
                |{
-               |  "accountNumberWithSortCodeIsValid": "yes",
+               |  "accountNumberIsWellFormatted": "yes",
                |  "nonStandardAccountDetailsRequiredForBacs": "no"
                |}
               """.stripMargin)
@@ -398,12 +398,12 @@ trait StubUtils {
     }
 
     def fails: PreconditionBuilder = {
-      stubFor(post(urlMatching("/v2/validateBankDetails"))
+      stubFor(post(urlMatching("/v3/validate/bank-details"))
         .willReturn(
           aResponse().withStatus(200).withBody(
             s"""
                |{
-               |  "accountNumberWithSortCodeIsValid": "no",
+               |  "accountNumberIsWellFormatted": "no",
                |  "nonStandardAccountDetailsRequiredForBacs": "no"
                |}
               """.stripMargin)
@@ -412,7 +412,7 @@ trait StubUtils {
     }
 
     def isDown: PreconditionBuilder = {
-      stubFor(post(urlMatching("/v2/validateBankDetails"))
+      stubFor(post(urlMatching("/v3/validate/bank-details"))
         .willReturn(
           serverError()
         ))
