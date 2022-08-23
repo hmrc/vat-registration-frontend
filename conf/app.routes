@@ -127,18 +127,21 @@ GET         /main-source-business-income                              controller
 POST        /main-source-business-income                              controllers.sicandcompliance.MainBusinessActivityController.submit
 
 ## CONFIRM SIC CODES
-GET         /choose-standard-industry-classification-codes            controllers.sicandcompliance.SicController.showSicHalt
-POST        /choose-standard-industry-classification-codes            controllers.sicandcompliance.SicController.submitSicHalt
+GET         /choose-standard-industry-classification-codes            controllers.sicandcompliance.SicController.show
+POST        /choose-standard-industry-classification-codes            controllers.sicandcompliance.SicController.startICLJourney
+
+## Business activity resolver (compliance/obi/partytype)
+GET         /resolve-business-activities                              controllers.sicandcompliance.BusinessActivitiesResolverController.resolve
 
 ## COMPLIANCE INTRODUCTION
 GET         /tell-us-more-about-the-business                          controllers.business.ComplianceIntroductionController.show
 POST        /tell-us-more-about-the-business                          controllers.business.ComplianceIntroductionController.submit
 
 ## SAVE ICL CODES
-GET         /save-sic-codes                                           controllers.sicandcompliance.SicController.saveIclCodes
+GET         /save-sic-codes                                           controllers.sicandcompliance.SicController.saveICLCodes
 
 ## SHOW ICL CONFIRM
-GET         /show-icl-confirmation                                    controllers.sicandcompliance.SicController.returnToICL
+GET         /show-icl-confirmation                                    controllers.sicandcompliance.SicController.startICLJourney
 
 ## LABOUR COMPLIANCE QUESTIONS
 GET         /supply-of-workers                                        controllers.business.SupplyWorkersController.show

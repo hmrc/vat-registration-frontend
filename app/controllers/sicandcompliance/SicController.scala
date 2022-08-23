@@ -18,12 +18,11 @@ package controllers.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl, TaskList}
+import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.{NETP, NonUkNonEstablished, PartyType, SicCode}
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, Call, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.sicandcompliance._
@@ -37,7 +36,6 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
                               val businessService: BusinessService,
                               val frsService: FlatRateService,
                               val iclService: ICLService,
-                              vatRegistrationService: VatRegistrationService,
                               val aboutToConfirmSicPage: about_to_confirm_sic)
                              (implicit appConfig: FrontendAppConfig,
                               val executionContext: ExecutionContext,
@@ -46,32 +44,35 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
 
-
-
-
-  private def resolveRoute(sicCodeList: List[SicCode], partyType: PartyType): Call = {
-    if (businessService.needComplianceQuestions(sicCodeList)) {
-      controllers.business.routes.ComplianceIntroductionController.show
-    } else {
-      if (isEnabled(TaskList)) {
-        controllers.routes.TaskListController.show
-      } else {
-        if (isEnabled(OtherBusinessInvolvement)) {
-          controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
-        } else {
-          partyType match {
-            case NonUkNonEstablished | NETP => controllers.vatapplication.routes.TurnoverEstimateController.show
-            case _ => controllers.vatapplication.routes.ImportsOrExportsController.show
-          }
-        }
-      }
-    }
-  }
-
-  def showSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       _ =>
         Future.successful(Ok(aboutToConfirmSicPage()))
+  }
+
+  def startICLJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        startSelectingNewSicCodes
+  }
+
+  def saveICLCodes: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        for {
+          iclCodes <- iclService.getICLSICCodes()
+          _ <- sessionService.cache(SIC_CODES_KEY, iclCodes)
+          _ <- businessService.submitSicCodes(iclCodes)
+        } yield {
+          iclCodes match {
+            case codes if codes.size > 1 =>
+              Redirect(controllers.sicandcompliance.routes.MainBusinessActivityController.show)
+            case List() =>
+              throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
+            case _ =>
+              Redirect(controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve)
+          }
+        }
   }
 
   private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
@@ -86,36 +87,5 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
 
       iclService.journeySetup(customICLMessages) map (redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))
     }
-  }
-
-  def submitSicHalt: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        startSelectingNewSicCodes
-  }
-
-  def returnToICL: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        startSelectingNewSicCodes
-  }
-
-  def saveIclCodes: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        for {
-          iclCodes <- iclService.getICLSICCodes()
-          _ <- sessionService.cache(SIC_CODES_KEY, iclCodes)
-          _ <- businessService.submitSicCodes(iclCodes)
-          partyType <- vatRegistrationService.partyType
-        } yield {
-          Redirect(iclCodes match {
-            case codes if codes.size > 1 =>
-              controllers.sicandcompliance.routes.MainBusinessActivityController.show
-            case List() =>
-              throw new InternalServerException("[SicAndComplianceController][saveIclCodes] tried to save empty list")
-            case codes => resolveRoute(codes, partyType)
-          })
-        }
   }
 }

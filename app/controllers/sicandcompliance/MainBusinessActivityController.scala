@@ -18,13 +18,13 @@ package controllers.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaskList}
+import featureswitch.core.config.FeatureSwitching
 import forms.MainBusinessActivityForm
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.{NETP, NonUkNonEstablished, PartyType, SicCode}
-import play.api.mvc.{Action, AnyContent, Call}
+import models.api.SicCode
+import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.MainBusinessActivity
-import services.{BusinessService, FlatRateService, SessionProfile, SessionService, VatRegistrationService}
+import services.{BusinessService, FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.sicandcompliance.main_business_activity
 
@@ -35,15 +35,10 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
                                                val sessionService: SessionService,
                                                val businessService: BusinessService,
                                                val frsService: FlatRateService,
-                                               vatRegistrationService: VatRegistrationService,
                                                val mainBusinessActivityPage: main_business_activity)
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
-
-  private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
-    sessionService.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
-
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -66,31 +61,13 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
             )(selected => for {
               _ <- businessService.updateBusiness(MainBusinessActivity(selected))
               _ <- frsService.resetFRSForSAC(selected)
-              partyType <- vatRegistrationService.partyType
             } yield {
-              Redirect(resolveRoute(sicCodeList, partyType))
+              Redirect(controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve)
             })
           )
         }
   }
 
-  private def resolveRoute(sicCodeList: List[SicCode], partyType: PartyType): Call = {
-    if (businessService.needComplianceQuestions(sicCodeList)) {
-      controllers.business.routes.ComplianceIntroductionController.show
-    } else {
-      if (isEnabled(TaskList)) {
-        controllers.routes.TaskListController.show
-      } else {
-        if (isEnabled(OtherBusinessInvolvement)) {
-          controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show
-        } else {
-          partyType match {
-            case NonUkNonEstablished | NETP => controllers.vatapplication.routes.TurnoverEstimateController.show
-            case _ => controllers.vatapplication.routes.ImportsOrExportsController.show
-          }
-        }
-      }
-    }
-  }
-
+  private def fetchSicCodeList()(implicit hc: HeaderCarrier): Future[List[SicCode]] =
+    sessionService.fetchAndGet[List[SicCode]](SIC_CODES_KEY) map (_.getOrElse(List.empty[SicCode]))
 }

@@ -39,7 +39,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.SicController.submitSicHalt.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.SicController.startICLJourney.url)
       }
     }
   }

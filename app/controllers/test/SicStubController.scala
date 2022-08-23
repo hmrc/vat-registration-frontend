@@ -19,10 +19,9 @@ package controllers.test
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
-import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
+import controllers.sicandcompliance.BusinessActivitiesResolverController
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.{NETP, NonUkNonEstablished}
 import models.test._
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -36,9 +35,9 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val sessionService: SessionService,
                                   val s4LService: S4LService,
                                   val businessService: BusinessService,
-                                  vatRegistrationService: VatRegistrationService,
                                   val authConnector: AuthClientConnector,
-                                  view: SicStubPage)
+                                  view: SicStubPage,
+                                  sicCodesResponseHandler: BusinessActivitiesResolverController)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -74,28 +73,8 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
             }
             _ <- sessionService.cache(SIC_CODES_KEY, sicCodesList)
             _ <- businessService.submitSicCodes(sicCodesList)
-            partyType <- vatRegistrationService.partyType
           } yield {
-            if (sicCodesList.size == 1) {
-              if (businessService.needComplianceQuestions(sicCodesList)) {
-                Redirect(controllers.business.routes.ComplianceIntroductionController.show)
-              } else {
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  if (isEnabled(OtherBusinessInvolvement)) {
-                    Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
-                  } else {
-                    partyType match {
-                      case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                      case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-                    }
-                  }
-                }
-              }
-            } else {
-              Redirect(controllers.sicandcompliance.routes.MainBusinessActivityController.show)
-            }
+            Redirect(controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve)
           }
         )
   }
