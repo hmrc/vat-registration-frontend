@@ -161,7 +161,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(business.routes.ComplianceIntroductionController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve.url)
     }
   }
 

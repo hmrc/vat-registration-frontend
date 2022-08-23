@@ -18,12 +18,8 @@ package controllers.sicandcompliance
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
 import fixtures.VatRegistrationFixture
-import models.ModelKeys.SIC_CODES_KEY
-import models.api.{SicCode, UkCompany}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
-import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -31,8 +27,7 @@ import views.html.sicandcompliance._
 
 import scala.concurrent.Future
 
-class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching
-  with MockVatRegistrationService {
+class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
 
   val mockAboutToConfirmSicView: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
 
@@ -43,7 +38,6 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       mockBusinessService,
       mockFlatRateService,
       mockICLService,
-      vatRegistrationServiceMock,
       mockAboutToConfirmSicView
     ) {
       override val iclFEurlwww: String = "www-url"
@@ -63,7 +57,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
   }
 
   "showHaltPage should return a 200" in new Setup {
-    callAuthorised(controller.showSicHalt) {
+    callAuthorised(controller.show) {
       status(_) mustBe 200
     }
   }
@@ -71,7 +65,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
   "submitHaltPage" should {
     "redirect to SIC stub if feature switch is true" in new Setup {
       enable(StubIcl)
-      callAuthorised(controller.submitSicHalt) {
+      callAuthorised(controller.startICLJourney) {
         res =>
           status(res) mustBe 303
           res redirectsTo controllers.test.routes.SicStubController.show.url
@@ -82,7 +76,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful("/url"))
 
-      callAuthorised(controller.submitSicHalt) {
+      callAuthorised(controller.startICLJourney) {
         res =>
           status(res) mustBe 303
           res redirectsTo "www-url/url"
@@ -92,7 +86,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       enable(StubIcl)
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
-      intercept[Exception](callAuthorised(controller.submitSicHalt)(_ => 1 mustBe 2))
+      intercept[Exception](callAuthorised(controller.startICLJourney)(_ => 1 mustBe 2))
     }
   }
 
@@ -106,9 +100,8 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        mockPartyType(Future.successful(UkCompany))
 
-        callAuthorised(controller.saveIclCodes) {
+        callAuthorised(controller.saveICLCodes) {
           res =>
             status(res) mustBe 303
             res redirectsTo controllers.sicandcompliance.routes.MainBusinessActivityController.show.url
@@ -123,9 +116,8 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        mockPartyType(Future.successful(UkCompany))
 
-        callAuthorised(controller.saveIclCodes) {
+        callAuthorised(controller.saveICLCodes) {
           res =>
             status(res) mustBe 303
             res redirectsTo controllers.sicandcompliance.routes.MainBusinessActivityController.show.url
@@ -140,30 +132,11 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
-        mockPartyType(Future.successful(UkCompany))
 
-        callAuthorised(controller.saveIclCodes) {
+        callAuthorised(controller.saveICLCodes) {
           res =>
             status(res) mustBe 303
-            res redirectsTo controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
-        }
-      }
-
-      "returning from ICL with one compliance question SIC code" in new Setup {
-        val codes = List(sicCode.copy(code = "81222"))
-
-        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
-        when(mockBusinessService.submitSicCodes(any())(any(), any()))
-          .thenReturn(Future.successful(validBusiness))
-        when(mockBusinessService.needComplianceQuestions(any())).thenReturn(true)
-        when(mockSessionService.cache(any(), any())(any(), any()))
-          .thenReturn(Future.successful(CacheMap("test", Map())))
-        mockPartyType(Future.successful(UkCompany))
-
-        callAuthorised(controller.saveIclCodes) {
-          res =>
-            status(res) mustBe 303
-            res redirectsTo controllers.business.routes.ComplianceIntroductionController.show.url
+            res redirectsTo controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve.url
         }
       }
     }
@@ -171,11 +144,11 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
 
 
 
-  "returnToICL" should {
+  "startICLJourney" should {
     "take the user to ICL stub" when {
       "hitting change (for SIC codes) on the summary" in new Setup {
         enable(StubIcl)
-        callAuthorised(controller.returnToICL) {
+        callAuthorised(controller.startICLJourney) {
           res =>
             status(res) mustBe 303
             res redirectsTo controllers.test.routes.SicStubController.show.url
@@ -188,7 +161,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful("/url"))
 
-        callAuthorised(controller.returnToICL) {
+        callAuthorised(controller.startICLJourney) {
           res =>
             status(res) mustBe 303
             res redirectsTo "www-url/url"
@@ -199,7 +172,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       enable(StubIcl)
       when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
-      intercept[Exception](callAuthorised(controller.returnToICL)(_ => 1 mustBe 2))
+      intercept[Exception](callAuthorised(controller.startICLJourney)(_ => 1 mustBe 2))
     }
   }
 

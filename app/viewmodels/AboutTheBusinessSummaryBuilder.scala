@@ -161,7 +161,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         business.businessActivities.map(codes => codes.map(
           sicCode => sicCode.code + " - " + sicCode.description
         )),
-        Some(controllers.sicandcompliance.routes.SicController.returnToICL.url)
+        Some(controllers.sicandcompliance.routes.SicController.startICLJourney.url)
       )
     } else {
       None

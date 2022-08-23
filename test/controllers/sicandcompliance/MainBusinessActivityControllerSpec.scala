@@ -19,18 +19,17 @@ package controllers.sicandcompliance
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
-import models.api.{SicCode, UkCompany}
+import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
-import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.sicandcompliance.main_business_activity
 
 import scala.concurrent.Future
 
-class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching
-with MockVatRegistrationService {
+class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAssertions
+  with VatRegistrationFixture with FeatureSwitching {
 
 
   val mockMainBusinessActivityView: main_business_activity = app.injector.instanceOf[main_business_activity]
@@ -41,7 +40,6 @@ with MockVatRegistrationService {
       mockSessionService,
       mockBusinessService,
       mockFlatRateService,
-      vatRegistrationServiceMock,
       mockMainBusinessActivityView
     )
 
@@ -83,7 +81,6 @@ with MockVatRegistrationService {
 
     "return 400" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
-      mockPartyType(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()
       )(result => result isA 400)
@@ -92,7 +89,6 @@ with MockVatRegistrationService {
     "return 400 with selected sicCode but no sicCode list in keystore" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockSessionFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
-      mockPartyType(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit,
         fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
@@ -102,31 +98,12 @@ with MockVatRegistrationService {
 
     "return 303 with selected sicCode" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      mockPartyType(Future.successful(UkCompany))
-
-      when(mockBusinessService.updateBusiness(any())(any(), any()))
-        .thenReturn(Future.successful(validBusiness))
+      when(mockBusinessService.updateBusiness(any())(any(), any())).thenReturn(Future.successful(validBusiness))
       when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockBusinessService.needComplianceQuestions(any())).thenReturn(true)
 
       submitAuthorised(controller.submit,
         fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
-      )(_ redirectsTo s"$contextRoot/tell-us-more-about-the-business")
-
-    }
-
-    "return 303 with selected sicCode (noCompliance) and sicCode list in keystore" in new Setup {
-      mockSessionFetchAndGet(SIC_CODES_KEY, Some(List(validNoCompliance)))
-      mockPartyType(Future.successful(UkCompany))
-
-      when(mockBusinessService.updateBusiness(any())(any(), any()))
-        .thenReturn(Future.successful(validBusiness))
-      when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
-      when(mockBusinessService.needComplianceQuestions(any())).thenReturn(false)
-
-      submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("value" -> validNoCompliance.code)
-      )(_ redirectsTo controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)
+      )(_ redirectsTo controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve.url)
     }
   }
 
