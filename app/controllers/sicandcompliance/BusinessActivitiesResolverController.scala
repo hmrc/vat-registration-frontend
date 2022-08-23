@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BusinessActivitiesResolverController @Inject()(val sessionService: SessionService,
@@ -46,9 +46,12 @@ class BusinessActivitiesResolverController @Inject()(val sessionService: Session
         for {
           iclCodes <- sessionService.fetchAndGet[List[SicCode]](SIC_CODES_KEY).map(_.getOrElse(List.empty[SicCode]))
           partyType <- vatRegistrationService.partyType
+          mainBusinessActivitySubmissionFlow <- Future.successful(request.headers.get(REFERER).exists(
+            _.contains(controllers.sicandcompliance.routes.MainBusinessActivityController.submit.url)
+          ))
         } yield {
           iclCodes match {
-            case codes if codes.size > 1 =>
+            case codes if codes.size > 1 && !mainBusinessActivitySubmissionFlow =>
               Redirect(controllers.sicandcompliance.routes.MainBusinessActivityController.show)
             case List() =>
               throw new InternalServerException("[SicResolverController][resolve] Failed to resolve due to empty sic code list")

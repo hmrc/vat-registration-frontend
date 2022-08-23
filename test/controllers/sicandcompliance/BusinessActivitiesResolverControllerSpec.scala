@@ -21,6 +21,7 @@ import fixtures.VatRegistrationFixture
 import models.ModelKeys.SIC_CODES_KEY
 import models.api.{NonUkNonEstablished, SicCode, UkCompany}
 import org.mockito.Mockito.when
+import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.InternalServerException
@@ -51,6 +52,24 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
         res =>
           status(res) mustBe 303
           res redirectsTo controllers.sicandcompliance.routes.MainBusinessActivityController.show.url
+      }
+    }
+
+    "redirect to ImportsOrExports if session cache has multiple codes and is main business activity submission flow" in new Setup {
+      disable(TaskList)
+      disable(OtherBusinessInvolvement)
+
+      mockPartyType(Future.successful(UkCompany))
+      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(sicCode, sicCode.copy(code = "81222"))))
+
+      val requestWithReferer = FakeRequest().withHeaders(
+        REFERER -> controllers.sicandcompliance.routes.MainBusinessActivityController.submit.url
+      )
+
+      requestWithAuthorisedUser(controller.resolve, requestWithReferer) {
+        res =>
+          status(res) mustBe 303
+          res redirectsTo controllers.vatapplication.routes.ImportsOrExportsController.show.url
       }
     }
 
