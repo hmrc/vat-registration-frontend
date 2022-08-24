@@ -18,9 +18,12 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import connectors.RegistrationApiConnector.honestyDeclarationKey
 import controllers.transactor.{routes => transactorRoutes}
 import featureswitch.core.config._
 import forms.StartNewApplicationForm
+import models.ApiKey
+import models.api.EligibilitySubmissionData
 import play.api.mvc._
 import services._
 import views.html.start_new_application
@@ -100,13 +103,14 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
         for {
           _ <- journeyService.buildCurrentProfile(regId)
           header <- vatRegistrationService.getVatSchemeHeader(regId)
+          eligibilitySubmissionData <- vatRegistrationService.getSection[EligibilitySubmissionData](regId)
           trafficManagementResponse <- if (isEnabled(TrafficManagementPredicate)) trafficManagementService.checkTrafficManagement(regId) else Future.successful(PassedVatReg)
         } yield (header.status, trafficManagementResponse) match {
           case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)
           case (VatRegStatus.submitted, _) => Redirect(routes.ApplicationSubmissionController.show)
           case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
-          case _ if isEnabled(TaskList) => Redirect(controllers.routes.TaskListController.show)
-          case _ if isEnabled(MultipleRegistrations) => Redirect(routes.ApplicationReferenceController.show)
+          case _ if isEnabled(TaskList) && eligibilitySubmissionData.isDefined => Redirect(controllers.routes.TaskListController.show)
+          case _ if isEnabled(MultipleRegistrations) && header.applicationReference.isEmpty => Redirect(routes.ApplicationReferenceController.show)
           case _ => Redirect(routes.HonestyDeclarationController.show)
         }
       case None =>

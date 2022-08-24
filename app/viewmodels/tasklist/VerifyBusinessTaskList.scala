@@ -21,7 +21,6 @@ import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
 import play.api.mvc.Request
-import services.S4LService
 
 import javax.inject.{Inject, Singleton}
 
@@ -37,10 +36,11 @@ class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationR
     checks =
       scheme => Seq(scheme.applicantDetails.exists(_.entity.isDefined)),
     prerequisites = scheme =>
-      Seq(
-        Some(registrationReasonTaskList.registrationReasonRow(scheme.registrationId)),
-        if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.transactorPersonalDetailsRow) else None
-      ).flatten
+      if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) {
+        Seq(aboutYouTransactorTaskList.transactorContactDetailsRow)
+      } else {
+        Seq(registrationReasonTaskList.registrationReasonRow(scheme.registrationId))
+      }
   )
 
   def build(vatScheme: VatScheme)
