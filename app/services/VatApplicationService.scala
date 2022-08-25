@@ -122,7 +122,10 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
               annualAccountingDetails = None
             )
           case _ =>
-            before.copy(returnsFrequency = Some(answer))
+            before.copy(
+              returnsFrequency = Some(answer),
+              staggerStart = None
+            )
         }
       case answer: Stagger =>
         answer match {

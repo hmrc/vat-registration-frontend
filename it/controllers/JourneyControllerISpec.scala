@@ -361,6 +361,25 @@ class JourneyControllerISpec extends ControllerISpec {
             res.status mustBe SEE_OTHER
             res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
           }
+
+          "redirect to the Task List Controller page if TL FS enabled and submission data available" in new Setup {
+            enable(TaskList)
+            enable(MultipleRegistrations)
+            given()
+              .user.isAuthorised()
+              .registrationApi.getSection(Some(VatRegStatus.draft))
+              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
+              .registrationApi.getSection(Some(testEligibilitySubmissionData))
+              .trafficManagement.fails
+
+            insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+            val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+            res.status mustBe SEE_OTHER
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.TaskListController.show.url)
+            disable(TaskList)
+          }
         }
       }
       "the multiple registrations feature switch is disabled" when {

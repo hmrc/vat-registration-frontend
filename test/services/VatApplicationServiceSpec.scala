@@ -309,7 +309,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
       }
       "updating with returnsFrequency" that {
         "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(returnsFrequency = Some(Quarterly))
+          val expected: VatApplication = emptyVatApplication.copy(returnsFrequency = Some(Quarterly), staggerStart = None)
 
           mockS4LGet(Some(emptyVatApplication))
           mockGetSection[VatApplication](testRegId, None)
@@ -317,15 +317,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
 
           await(Service.saveVatApplication(Quarterly)) mustBe expected
         }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(returnsFrequency = Some(Quarterly))
 
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(Quarterly)) mustBe expected
-        }
         "makes the block complete and saves to backend while hardcoding Monthly stagger" in new Setup() {
           val expected: VatApplication = testAASVatApplication.copy(
             returnsFrequency = Some(Monthly),
