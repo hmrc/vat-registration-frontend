@@ -294,6 +294,23 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         res.status mustBe TLNotStarted
         res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
       }
+      "be not started when personal details is missing but roleInTheBusiness available as Partner" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = LtdPartnership,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = None,
+            roleInTheBusiness = testRole
+          )),
+          partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true)))
+        )
+        val res = section.personalDetailsRow.build(scheme)
+        res.status mustBe TLNotStarted
+        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+      }
     }
     "the user is a Uk Company" when {
       "the UseSoleTraderIdentification feature switch is enabled" must {
