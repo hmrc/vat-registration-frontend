@@ -62,7 +62,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       .++ {
         if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
           Nil
-        } else if (scheme.partyType.contains(LtdLiabilityPartnership)) {
+        } else if (Seq(Partnership, LtdPartnership, ScotLtdPartnership, ScotPartnership, LtdLiabilityPartnership).exists(scheme.partyType.contains)) {
           Seq(scheme.applicantDetails.exists(_.personalDetails.isDefined))
         } else {
           Seq(
