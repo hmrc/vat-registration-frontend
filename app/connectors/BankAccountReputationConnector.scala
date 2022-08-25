@@ -41,7 +41,7 @@ class BankAccountReputationConnector @Inject()(val http: HttpClient,
           case status => throw new InternalServerException(s"Unexpected status returned by Bank Account Reputation: $status")
         }
       }.recover {
-        case _ => throw new InternalServerException("Something went wrong when calling bank account validation API")
+        case ex => throw new InternalServerException(s"Something went wrong when calling bank account validation API: ${ex.getMessage}")
       }
   }
 }
