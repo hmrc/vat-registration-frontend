@@ -33,7 +33,7 @@ class SummaryTaskList @Inject() (vatRegistrationTaskList: VatRegistrationTaskLis
       messageKey = _ => "tasklist.vatRegistration.cya.submit",
       url= _ => controllers.routes.SummaryController.show.url,
       tagId = "summaryRow",
-      checks = _ => Seq(true),
+      checks = _ => Seq(false),
       prerequisites = _ => Seq(
         attachmentsTaskListRowBuilder.getOrElse(vatRegistrationTaskList.flatRateSchemeRow)
       )

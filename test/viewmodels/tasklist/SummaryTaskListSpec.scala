@@ -42,7 +42,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "FRS prerequisites are met when digital attachments tasklist section not available" must {
-      "return TLCompleted" in {
+      "return TLNotStarted" in {
         val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
           overseasCompliance = Some(OverseasCompliance(
             goodsToOverseas = Some(false),
@@ -69,12 +69,12 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         )
 
         val row = summaryTaskList.summaryRow(None).build(scheme)
-        row.status mustBe TLCompleted
+        row.status mustBe TLNotStarted
       }
     }
 
     "digital attachments prerequisites are met when digital attachments tasklist available" must {
-      "return TLCompleted" in {
+      "return TLNotStarted" in {
         val attachmentsTaskList: AttachmentsTaskList = new AttachmentsTaskList(vatRegistrationTaskList, mockAttachmentsService)
 
         val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
@@ -107,7 +107,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
 
         val row = summaryTaskList.summaryRow(await(attachmentsTaskList.attachmentsRequiredRow)).build(scheme)
-        row.status mustBe TLCompleted
+        row.status mustBe TLNotStarted
       }
     }
   }
