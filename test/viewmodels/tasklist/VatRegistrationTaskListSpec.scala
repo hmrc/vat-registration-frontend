@@ -197,9 +197,14 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
       }
 
       "resolve to registration date row if registration reason available and eligible for registration date flow" in {
-        val scheme = emptyVatScheme.copy(eligibilitySubmissionData = Some(validEligibilitySubmissionData))
-        section.resolveVATRegistrationDateRow(scheme).map(_.build(scheme).url) mustBe
-          Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
+        Seq(ForwardLook, BackwardLook, GroupRegistration, Voluntary, IntendingTrader, SuppliesOutsideUk).map { reason =>
+          val scheme = emptyVatScheme.copy(eligibilitySubmissionData =
+            Some(validEligibilitySubmissionData.copy(registrationReason = reason))
+          )
+
+          section.resolveVATRegistrationDateRow(scheme).map(_.build(scheme).url) mustBe
+            Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
+        }
       }
 
       "throw InternalServerException if no registration reason available" in {

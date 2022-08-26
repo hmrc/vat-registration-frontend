@@ -128,7 +128,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def validateBankDetailsUrl: String =
     if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/validate-bank-details"
-    else s"$bankAccountReputationHost/v3/validate/bank-details"
+    else s"$bankAccountReputationHost/validate/bank-details"
 
   // Incorporated Entity Identification Section
 

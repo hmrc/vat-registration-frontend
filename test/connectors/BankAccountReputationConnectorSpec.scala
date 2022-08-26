@@ -41,7 +41,7 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
     val bankDetails = BankAccountDetails("testName", "12-34-56", "12345678")
 
     "return a valid JSON value" in new Setup {
-      mockHttpPOST[BankAccountDetails, HttpResponse]("/v3/validate/bank-details", HttpResponse(status = OK, json = validBankCheckJsonResponse, headers = Map()))
+      mockHttpPOST[BankAccountDetails, HttpResponse]("/validate/bank-details", HttpResponse(status = OK, json = validBankCheckJsonResponse, headers = Map()))
 
       connector.validateBankDetails(bankDetails) returns validBankCheckJsonResponse
     }

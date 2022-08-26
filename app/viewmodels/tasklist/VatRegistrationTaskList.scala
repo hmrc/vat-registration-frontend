@@ -148,7 +148,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
 
   private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
     vatScheme.eligibilitySubmissionData.map(_.registrationReason) match {
-      case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) =>
+      case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) | Some(SuppliesOutsideUk) =>
         Some(registrationDateRow)
       case Some(_) =>
         None
