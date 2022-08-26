@@ -568,7 +568,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           vatApplication = Some(validVatApplication.copy(turnoverEstimate = Some(BigDecimal(149999)))),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = ForwardLook))
         )
-        section.resolveFlatRateSchemeRow(scheme).map(_.url) mustBe
+        section.resolveFlatRateSchemeRow(scheme).map(_.build(scheme).url) mustBe
           Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
       }
     }

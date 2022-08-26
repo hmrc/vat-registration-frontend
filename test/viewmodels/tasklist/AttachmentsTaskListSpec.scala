@@ -19,7 +19,7 @@ package viewmodels.tasklist
 import fixtures.VatRegistrationFixture
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
 import models.api._
-import models.{ConditionalValue, NIPTurnover}
+import models.{ConditionalValue, GroupRegistration, NIPTurnover}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
@@ -62,6 +62,15 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "be None when attachments are missing" in new Setup {
+      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+
+      val rowBuilder = await(section.attachmentsRequiredRow)
+
+      rowBuilder mustBe None
+    }
+
+    "be TLCannotStart when eligible for FlatRate but no data available" in new Setup {
       val scheme = validVatScheme.copy(
         business = Some(validBusiness.copy(
           hasLandAndProperty = Some(false),
@@ -71,15 +80,17 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
           startDate = Some(LocalDate.of(2017, 10, 10))
         )),
-        flatRateScheme = Some(validFlatRate),
-        attachments = None
+        attachments = None,
+        flatRateScheme = None
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
+      val row = rowBuilder.get.build(scheme)
 
-      rowBuilder mustBe None
+      row.status mustBe TLCannotStart
+      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
     }
 
     "be not started when attachment method is not selected" in new Setup {
@@ -102,6 +113,53 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLNotStarted
+      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+    }
+
+    "be not started when attachment method is not selected and no FlatRate prerequisite available" in new Setup {
+      val scheme = validVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)),
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          otherBusinessInvolvement = Some(false),
+          businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+        )),
+        vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+          startDate = Some(LocalDate.of(2017, 10, 10))
+        )),
+        attachments = None
+      )
+      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+
+      val rowBuilder = await(section.attachmentsRequiredRow)
+      val row = rowBuilder.get.build(scheme)
+
+      row.status mustBe TLNotStarted
+      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+    }
+
+    "be TLCannotStart when attachment method is not selected and not FlatRate scheme but vat returns data not complete" in new Setup {
+      val scheme = validVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)),
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          otherBusinessInvolvement = Some(false),
+          businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+        )),
+        vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+          returnsFrequency = None,
+          startDate = Some(LocalDate.of(2017, 10, 10))
+        )),
+        attachments = None
+      )
+      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+
+      val rowBuilder = await(section.attachmentsRequiredRow)
+      val row = rowBuilder.get.build(scheme)
+
+      row.status mustBe TLCannotStart
       row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
     }
 
