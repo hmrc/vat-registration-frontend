@@ -127,8 +127,8 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         resolveBankDetailsRow(vatScheme).map(_.build(vatScheme)),
         resolveVATRegistrationDateRow(vatScheme).map(_.build(vatScheme)),
         Some(vatReturnsRow.build(vatScheme)),
-        resolveFlatRateSchemeRow(vatScheme)
-    ).flatten
+        resolveFlatRateSchemeRow(vatScheme).map(_.build(vatScheme))
+      ).flatten
     )
   }
 
@@ -142,7 +142,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     ) {
       None
     } else {
-      Some(flatRateSchemeRow.build(vatScheme))
+      Some(flatRateSchemeRow)
     }
   }
 

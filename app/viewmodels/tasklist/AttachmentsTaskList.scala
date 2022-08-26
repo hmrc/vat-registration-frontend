@@ -42,7 +42,11 @@ class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTask
           url = _ => controllers.attachments.routes.AttachmentMethodController.show.url,
           tagId = "attachmentsRequiredRow",
           checks = scheme => checks(scheme, incompleteAttachments),
-          prerequisites = _ => Seq(vatRegistrationTaskList.flatRateSchemeRow)
+          prerequisites = vatScheme => Seq(
+            vatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme).getOrElse(
+              vatRegistrationTaskList.vatReturnsRow
+            )
+          )
         )
       )
     } else {
