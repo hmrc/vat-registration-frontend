@@ -192,7 +192,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
       "resolve to None if registration reason available but not eligible for registration date flow" in {
         section.resolveVATRegistrationDateRow(emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = NonUk))
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk))
         )) mustBe None
       }
 

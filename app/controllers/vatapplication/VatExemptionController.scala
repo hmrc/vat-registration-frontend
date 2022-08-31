@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.VatExemptionForm
-import models.NonUk
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.AppliedForExemption
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
@@ -58,9 +58,9 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
           success => {
             for {
               _ <- vatApplicationService.saveVatApplication(AppliedForExemption(success))
-              registrationReason <- vatRegistrationService.getEligibilitySubmissionData.map(_.registrationReason)
-            } yield registrationReason match {
-              case NonUk =>
+              partyType <- vatRegistrationService.getEligibilitySubmissionData.map(_.partyType)
+            } yield partyType match {
+              case NETP | NonUkNonEstablished =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
                 if (isEnabled(TaskList)) {

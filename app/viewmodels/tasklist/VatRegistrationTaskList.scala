@@ -49,8 +49,8 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
           scheme.vatApplication.exists(_.claimVatRefunds.isDefined)
         )
       }.++ {
-        scheme.eligibilitySubmissionData.map(_.registrationReason) match {
-          case Some(NonUk) => scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
+        scheme.eligibilitySubmissionData.map(_.partyType) match {
+          case Some(NETP) | Some(NonUkNonEstablished) => scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
           case _ => Nil
         }
       }
