@@ -16,15 +16,15 @@
 
 package forms
 
-import java.time.LocalDate
 import forms.FormValidation._
 import models.FRSDateChoice
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+
+import java.time.LocalDate
 
 object OverBusinessGoodsForm extends RequiredBooleanForm {
   val RADIO_INCLUSIVE: String = "value"
@@ -38,7 +38,7 @@ object OverBusinessGoodsForm extends RequiredBooleanForm {
 
 trait OverBusinessGoodsPercentForm extends RequiredBooleanForm {
   val RADIO_INCLUSIVE: String = "value"
-  val pct: Long
+  val pct: BigDecimal
 
   override val errorMsg: String = "validation.frs.costsLimited.missing"
   override lazy val errorMsgArgs: Seq[Any] = Seq(pct)
@@ -96,11 +96,16 @@ object FRSStartDateForm {
 
 object EstimateTotalSalesForm {
   implicit val errorCode: ErrorCode = "frs.estimateTotalSales"
+  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
+  val commasNowAllowed = """^[^,]+$""".r
 
   val form = Form(single("totalSalesEstimate" -> text
-    .verifying(mandatoryNumericText)
-    .transform[Long](taxEstimateTextToLong, _.toString)
-    .verifying(inRange[Long](1, 99999999999L))
+    .verifying(StopOnFirstFail(
+      regexPattern(regex),
+      matchesRegex(commasNowAllowed, "validation.estimateTotalSales.commasNotAllowed"),
+      mandatoryFullNumericText))
+    .transform[BigDecimal](BigDecimal(_).setScale(2, BigDecimal.RoundingMode.HALF_UP), _.toString)
+    .verifying(inRange[BigDecimal](1, BigDecimal("99999999999")))
   ))
 }
 

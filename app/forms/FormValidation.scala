@@ -91,7 +91,7 @@ object FormValidation {
   }
 
   def mandatoryFullNumericText()(implicit e: ErrorCode): Constraint[String] = Constraint {
-    val NumericText = """[-.,0-9]+""".r
+    val NumericText = """[.,0-9]+""".r
     (input: String) =>
       input match {
         case NumericText(_*) => Valid

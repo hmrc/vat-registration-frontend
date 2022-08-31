@@ -18,7 +18,7 @@ package forms
 
 import forms.FormValidation.{maxLenText, regexPattern, removeNewlineAndTrim, textMapping}
 import play.api.data.Form
-import play.api.data.Forms.{mapping, single, text}
+import play.api.data.Forms.{single, text}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object BusinessActivityDescriptionForm {

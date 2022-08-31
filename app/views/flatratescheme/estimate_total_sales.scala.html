@@ -31,7 +31,7 @@
         errorSummary: errorSummary
 )
 
-@(estimateTotalSalesForm: Form[Long])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(estimateTotalSalesForm: Form[BigDecimal])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(title(estimateTotalSalesForm, messages("pages.frs.estimateTotalSales.heading")))) {
 
@@ -49,7 +49,8 @@
             classes = Some("govuk-input--width-10"),
             isPageHeading = false,
             label = Some(messages("pages.frs.estimateTotalSales.legend")),
-            labelClasses = Some("govuk-!-font-weight-bold")
+            labelClasses = Some("govuk-!-font-weight-bold"),
+            hint = Some(Html(messages("pages.frs.estimateTotalSales.hint")))
         )
 
         @button("app.common.continue")

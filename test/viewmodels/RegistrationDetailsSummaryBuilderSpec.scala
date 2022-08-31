@@ -24,6 +24,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.twirl.api.HtmlFormat
+import services.FlatRateService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
@@ -36,7 +37,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
-    val Builder = new RegistrationDetailsSummaryBuilder(configConnector = mockConfigConnector, flatRateService = mockFlatRateService, govukSummaryList)
+    val Builder = new RegistrationDetailsSummaryBuilder(configConnector = mockConfigConnector, flatRateService = app.injector.instanceOf[FlatRateService], govukSummaryList)
   }
 
   object TestContent {
@@ -51,7 +52,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     val joinFrs = "Do you want to join the Flat Rate Scheme?"
     val costsInclusive = "Will the business spend more than £250 over the next 3 months on ’relevant goods’?"
     val estimatedTotalSales = "Total sales, including VAT, for the next 3 months"
-    val costsLimited = "Will the business spend more than £0, including VAT, on relevant goods over the next 3 months?"
+    val costsLimited = "Will the business spend more than £101, including VAT, on relevant goods over the next 3 months?"
     val flatRate = "Do you want to use the 3.14% flat rate?"
     val businessSector = "Business type for the Flat Rate Scheme"
     val flatRateDate = "When do you want to join the Flat Rate Scheme?"
@@ -110,7 +111,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           optUrl = Some(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)),
         optSummaryListRowString(
           questionId = TestContent.estimatedTotalSales,
-          optAnswer = Some("£5,003"),
+          optAnswer = Some("£5,003.00"),
           optUrl = Some(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)),
         optSummaryListRowBoolean(
           questionId = TestContent.costsLimited,

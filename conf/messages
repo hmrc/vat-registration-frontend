@@ -482,19 +482,24 @@ pages.turnoverEstimate.heading                              = What do you think 
 pages.turnoverEstimate.text                                 = Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate.
 pages.turnoverEstimate.link                                 = Find out more about which goods and services are exempt from VAT
 pages.turnoverEstimate.label                                = Turnover estimate
-pages.turnoverEstimate.hint                                 = For example, £90000
-validation.turnoverEstimate.missing                         = Enter what you think the business’s VAT-taxable turnover will be for the next 12 months
+pages.turnoverEstimate.hint                                 = For example, £600 or £90000
+validation.turnoverEstimate.missing                         = Enter the VAT-taxable turnover expected for the next 12 months
+validation.turnoverEstimate.invalid                         = Enter the VAT-taxable turnover, expected for the next 12 months, in the correct format
+validation.turnoverEstimate.commasNotAllowed                = The VAT-taxable turnover, expected for the next 12 months, amount cannot include commas
 validation.turnoverEstimate.range.above                     = Give an estimate that is more than or equal to £{0}
 validation.turnoverEstimate.range.below                     = Give an estimate that is less than or equal to £{0}
 
 ## Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
-pages.zeroRatedSupplies.text                                = Enter a value for all of the taxable goods which are zero-rated. For example £12,000.
+pages.zeroRatedSupplies.text                                = Enter a value for all of the taxable goods which are zero-rated.
 pages.zeroRatedSupplies.summary                             = What are zero-rated taxable goods?
 pages.zeroRatedSupplies.details                             = Zero-rated are goods which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return.
 pages.zeroRatedSupplies.link                                = Find out about VAT rates on different goods and services
 pages.zeroRatedSupplies.label                               = Zero rated turnover estimate
-validation.zeroRatedSupplies.missing                        = Enter a value for all of the taxable goods which are zero-rated
+pages.zeroRatedSupplies.hint                                = For example, £600 or £90000
+validation.zeroRatedSupplies.missing                        = Enter the value you expect the business’s zero-rated taxable goods to be over the next 12 months
+validation.zeroRatedSupplies.invalid                        = Enter the value of zero-rated taxable goods, expected over the next 12 months, in the correct format
+validation.zeroRatedSupplies.commasNotAllowed               = The value of zero-rated taxable goods, expected over the next 12 months, cannot include commas
 validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than or equal to the total value of the taxable turnover
 validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
@@ -679,7 +684,7 @@ cya.registrationDetails.companyBankAccount.reason               = Reason for no 
 cya.registrationDetails.joinFrs                                 = Do you want to join the Flat Rate Scheme?
 cya.registrationDetails.costsInclusive                          = Will the business spend more than £250 over the next 3 months on ’relevant goods’?
 cya.registrationDetails.estimateTotalSales                      = Total sales, including VAT, for the next 3 months
-cya.registrationDetails.costsLimited                            = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+cya.registrationDetails.costsLimited                            = Will the business spend more than {0}, including VAT, on relevant goods over the next 3 months?
 cya.registrationDetails.flatRate                                = Do you want to use the {0}% flat rate?
 cya.registrationDetails.businessSector                          = Business type for the Flat Rate Scheme
 cya.registrationDetails.frsStartDate                            = When do you want to join the Flat Rate Scheme?
@@ -931,11 +936,13 @@ validation.frs.costsInclusive.missing                     = Select yes if the bu
 ## Estimate Total Sales Page
 pages.frs.estimateTotalSales.heading          = Estimate the business’s total sales, including VAT, for the next 3 months
 pages.frs.estimateTotalSales.legend           = Enter the estimate
+pages.frs.estimateTotalSales.hint             = For example, £600 or £90000
 pages.frs.estimateTotalSales.info             = Give figures that are as realistic as possible.
 validation.frs.estimateTotalSales.range.above = Enter an estimate which is less than £99,999,999,999
 validation.frs.estimateTotalSales.range.below = Enter an estimate which is £1 or more
-validation.frs.estimateTotalSales.missing     = Enter an estimate of the business’s total sales, including VAT, for the next 3 months
-validation.frs.estimateTotalSales.invalid     = Enter a valid number
+validation.frs.estimateTotalSales.missing     = Enter the business’s estimated total sales, including VAT, for the next 3 months
+validation.frs.estimateTotalSales.invalid     = Enter the business’s estimated total sales, including VAT, for the next 3 months, in the correct format
+validation.estimateTotalSales.commasNotAllowed= The business’s estimated total sales, including VAT, for the next 3 months, cannot include commas
 
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.heading                   = Confirm the business type for the Flat Rate Scheme
@@ -963,7 +970,7 @@ pages.frs.registerForWithSector.subheading1               = Do you want the busi
 validation.frs.registerForWithSector.missing              = Select yes if you want the business to join the Flat Rate Scheme
 
 ## Do you spend less than 2% of your turn over Page
-pages.frs.costsLimited.heading                          = Will the business spend more than £{0}, including VAT, on relevant goods over the next 3 months?
+pages.frs.costsLimited.heading                          = Will the business spend more than {0}, including VAT, on relevant goods over the next 3 months?
 validation.frs.costsLimited.missing                     = Select yes if the business will spend more than £{0}, including VAT, on relevant goods over the next 3 months
 
 ## When do you want to join the Flat Rate Scheme?
@@ -1289,10 +1296,12 @@ pages.CoverSheet.vat1TRLink                        = VAT1TR form
 
 ## Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = Does the business expect to receive goods in Northern Ireland from an EU country?
-pages.northernIrelandReceiveGoods.hint                   = What is the value of these goods?
-nip.receiveGoods.missing                                 = Select yes if the business expects to receive goods in Northern Ireland from an EU country
-validation.northernIrelandReceiveGoods.missing           = Enter the value of these goods
-validation.northernIrelandReceiveGoods.invalid           = Enter the value of these goods using characters 0 to 9
+pages.northernIrelandReceiveGoods.label                  = What is the value of these goods?
+pages.northernIrelandReceiveGoods.hint                   = For example, £600 or £9000
+nip.receiveGoods.missing                                 = Select yes if the business expects to receive goods in Northern Ireland from an EU country in the next 12 months
+validation.northernIrelandReceiveGoods.missing           = Enter the estimated value of the goods
+validation.northernIrelandReceiveGoods.invalid           = Enter the estimated value of the goods in the correct format
+validation.northernIrelandReceiveGoods.commasNotAllowed  = The estimated value of the goods cannot include commas
 
 # NORTHERN IRELAND PROTOCOL
 
@@ -1300,9 +1309,13 @@ nip.sellOrMove.heading                                   = Does the business exp
 nip.sellOrMove.para                                      = Tell us if the business will do any of the following:
 nip.sellOrMove.bullet1                                   = sell goods located in Northern Ireland to any country
 nip.sellOrMove.bullet2                                   = sell or move goods from Northern Ireland to an EU country
-nip.sellOrMove.hint                                      = What is the value of these goods?
-nip.error.missing                                        = Select yes if the business will do any of the activities in the next 12 months
-validation.sellOrMoveNip.missing                         = Enter the value of these goods
+nip.sellOrMove.label                                     = What is the value of these goods?
+nip.sellOrMove.hint                                      = For example, £600 or £9000
+nip.error.missing                                        = Select yes if the business expects to do any of the following in the next 12 months
+validation.sellOrMoveNip.missing                         = Enter the estimated value of the goods
+validation.sellOrMoveNip.invalid                         = Enter the estimated value of the goods in the correct format
+validation.sellOrMoveNip.commasNotAllowed                = The estimated value of the goods cannot include commas
+
 
 pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
 pages.EmailDocuments.para1                               = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.

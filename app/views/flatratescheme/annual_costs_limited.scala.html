@@ -19,6 +19,7 @@
 @import play.api.i18n.Messages
 @import views.html.components._
 @import views.html.layouts.layout
+@import viewmodels.Formatters
 @import config.FrontendAppConfig
 
 @this(
@@ -32,16 +33,16 @@
         errorSummary: errorSummary
 )
 
-@(annualCostsLimitedForm: Form[Boolean], estimateVatTurnover: Long)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(annualCostsLimitedForm: Form[Boolean], estimateVatTurnover: BigDecimal)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(annualCostsLimitedForm, messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)))), backLink = true) {
+@layout(pageTitle = Some(title(annualCostsLimitedForm, messages("pages.frs.costsLimited.heading", Formatters.currencyWithoutDecimal(estimateVatTurnover)))), backLink = true) {
 
     @errorSummary(annualCostsLimitedForm.errors)
 
     @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitAnnualCostsLimited) {
         @inputRadio(
             form = annualCostsLimitedForm,
-            legend = messages("pages.frs.costsLimited.heading", "%,d".format(estimateVatTurnover)),
+            legend = messages("pages.frs.costsLimited.heading", Formatters.currencyWithoutDecimal(estimateVatTurnover)),
             legendAsHeading = true,
             items = Seq(
                 RadioItem(

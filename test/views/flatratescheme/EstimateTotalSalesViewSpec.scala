@@ -32,7 +32,7 @@ class EstimateTotalSalesViewSpec extends VatRegViewSpec {
   val label = "Enter the estimate"
   val buttonText = "Save and continue"
 
-  val form: Form[Long] = EstimateTotalSalesForm.form
+  val form: Form[BigDecimal] = EstimateTotalSalesForm.form
   val view: Html = app.injector.instanceOf[estimate_total_sales].apply(form)
   implicit val doc: Document = Jsoup.parse(view.body)
 

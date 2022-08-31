@@ -116,6 +116,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None, estimateTotalSales = Some(1234L))))
+      when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
       callAuthorised(controller.annualCostsLimitedPage) { result =>
         status(result) mustBe 200
@@ -125,6 +126,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
+      when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
       callAuthorised(controller.annualCostsLimitedPage) { result =>
         status(result) mustBe 200
@@ -138,6 +140,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     "return a 400 when the request is empty" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
+      when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
