@@ -20,6 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.vatapplication.ChargeExpectancyForm
+import models.api.{NETP, NonUkNonEstablished}
 import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ClaimVatRefunds
@@ -67,10 +68,10 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
                 (zeroRatedSupplies * 2 > turnover) &&
                 !eligibilityData.appliedForException.contains(true) &&
                 List(ForwardLook, BackwardLook, NonUk, TransferOfAGoingConcern).contains(eligibilityData.registrationReason)
-            } yield eligibilityData.registrationReason match {
+            } yield eligibilityData.partyType match {
               case _ if canApplyForExemption =>
                 Redirect(routes.VatExemptionController.show)
-              case NonUk =>
+              case NETP | NonUkNonEstablished =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
                 if (isEnabled(TaskList)) {
