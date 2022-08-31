@@ -57,7 +57,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     val businessSector = "Business type for the Flat Rate Scheme"
     val flatRateDate = "When do you want to join the Flat Rate Scheme?"
     val flatRateRegDate = "Date of registration"
-    val currentlyTrading = "Trading by registration date?"
+    val currentlyTrading = "Trading by registration date"
   }
 
   "Generate Registration Details Builder" when {

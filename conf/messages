@@ -384,7 +384,7 @@ pages.failedSubmission.link             = VAT1 form
 
 ##Passcode Not Found Page
 page.passcodeNotFound.heading           = You need to start again
-page.passcodeNotFound.p1                = The code we send you cannot be found or has expired.
+page.passcodeNotFound.p1                = The code we sent you cannot be found or has expired.
 page.passcodeNotFound.p2a               = You will need to
 page.passcodeNotFound.linkText          = get a new code
 page.passcodeNotFound.p2b               = to continue with the registration.
@@ -399,14 +399,6 @@ page.MaxPasscodeAttemptsExceeded.link              = sign out
 page.MaxConfirmationCodeAttemptsExceeded.heading           = You have reached the maximum number of confirmation code requests
 page.MaxConfirmationCodeAttemptsExceeded.p                 = We cannot send another code to {0}. If it is not in your inbox, spam or junk folder, you can
 page.MaxConfirmationCodeAttemptsExceeded.link              = provide another email address
-
-## Unable to confirm identity page
-pages.cantconfirmidentity.title         = We won’t be able to confirm your identity
-pages.cantconfirmidentity.heading       = We won’t be able to confirm your identity
-pages.cantconfirmidentity.body.one      = We don’t hold enough information for us to check who you are.
-pages.cantconfirmidentity.body.two      = If you have the company’s name and registration date, you can register for VAT
-pages.cantconfirmidentity.body.link     = using another HMRC service
-pages.cantconfirmidentity.body.three    = , which has a different way of confirming your identity.
 
 ## Contact OSH Page
 contact.title                           = Sorry this service is unavailable
@@ -718,7 +710,7 @@ cya.registrationDetails.paymentMethod.BankGIRO                  = Bank Giro Tran
 cya.registrationDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
 cya.registrationDetails.paymentMethod.StandingOrder             = Standing order
 cya.registrationDetails.taxRep                                  = Do you want to appoint a UK tax representative for the business?
-cya.registrationDetails.currentlyTrading                        = Trading by registration date?
+cya.registrationDetails.currentlyTrading                        = Trading by registration date
 
 ## Summary Headings
 cya.heading.eligibility                              = Registration reason

@@ -16,7 +16,7 @@
 
 package models.external.partnershipid
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
 case class PartnershipIdJourneyConfig(continueUrl: String,
                                       optServiceName: Option[String] = None,
@@ -24,8 +24,22 @@ case class PartnershipIdJourneyConfig(continueUrl: String,
                                       signOutUrl: String,
                                       accessibilityUrl: String,
                                       regime: String,
-                                      businessVerificationCheck: Boolean)
+                                      businessVerificationCheck: Boolean,
+                                      labels: Option[JourneyLabels] = None)
 
 object PartnershipIdJourneyConfig {
   implicit val format: OFormat[PartnershipIdJourneyConfig] = Json.format[PartnershipIdJourneyConfig]
+}
+
+case class JourneyLabels(optWelshServiceName: Option[String])
+
+object JourneyLabels {
+
+  val welshLabelsKey: String = "cy"
+  val optServiceNameKey: String = "optServiceName"
+
+  implicit val reads: Reads[JourneyLabels] = (JsPath \ welshLabelsKey \ optServiceNameKey).readNullable[String].map(JourneyLabels.apply)
+  implicit val writes: OWrites[JourneyLabels] = (JsPath \ welshLabelsKey \ optServiceNameKey).writeNullable[String].contramap(_.optWelshServiceName)
+
+  val format: OFormat[JourneyLabels] = OFormat(reads, writes)
 }

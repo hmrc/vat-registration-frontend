@@ -22,7 +22,8 @@ import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import models.PartnerEntity
 import models.api._
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
+import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
 import services.SessionService.leadPartnerEntityKey
 import services._
@@ -52,21 +53,29 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
             case partyType@(Individual | NETP) =>
               for {
                 isTransactor <- vatRegistrationService.isTransactor
-                fullNamePageLabel = isTransactor match {
-                  case true => Some(request2Messages(request)("transactorName.optFullNamePageLabel"))
-                  case _ => None
+                (fullNamePageLabel, welshFullNamePageLabel) = if (isTransactor) {
+                  (
+                    messagesApi.translate("transactorName.optFullNamePageLabel", Nil)(Lang("en")),
+                    messagesApi.translate("transactorName.optFullNamePageLabel", Nil)(Lang("cy"))
+                  )
+                } else {
+                  (None, None)
                 }
                 config = SoleTraderIdJourneyConfig(
                   continueUrl = appConfig.soleTraderCallbackUrl,
-                  optServiceName = Some(request2Messages(request)("service.name")),
+                  optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
                   optFullNamePageLabel = fullNamePageLabel,
                   deskProServiceId = appConfig.contactFormServiceIdentifier,
                   signOutUrl = appConfig.feedbackUrl,
                   accessibilityUrl = appConfig.accessibilityStatementUrl,
                   regime = appConfig.regime,
-                  businessVerificationCheck = true
+                  businessVerificationCheck = true,
+                  labels = Some(JourneyLabels(TranslationLabels(
+                    optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
+                    optFullNamePageLabel = welshFullNamePageLabel
+                  )))
                 )
-                url <- soleTraderIdentificationService.startSoleTraderJourney(config,partyType)
+                url <- soleTraderIdentificationService.startSoleTraderJourney(config, partyType)
               } yield {
                 Redirect(url)
               }
@@ -98,12 +107,15 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
         implicit profile =>
           val journeyConfig = SoleTraderIdJourneyConfig(
             continueUrl = appConfig.leadPartnerCallbackUrl,
-            optServiceName = Some(request2Messages(request)("service.name")),
+            optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
             deskProServiceId = appConfig.contactFormServiceIdentifier,
             signOutUrl = appConfig.feedbackUrl,
             accessibilityUrl = appConfig.accessibilityStatementUrl,
             regime = appConfig.regime,
-            businessVerificationCheck = false
+            businessVerificationCheck = false,
+            labels = Some(JourneyLabels(TranslationLabels(
+              optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy"))
+            )))
           )
 
           for {

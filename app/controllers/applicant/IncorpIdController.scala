@@ -22,7 +22,8 @@ import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{TaskList, UseSoleTraderIdentification}
 import models.PartnerEntity
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
-import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels}
+import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
 import services.SessionService.leadPartnerEntityKey
 import services._
@@ -49,12 +50,13 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         val journeyConfig = IncorpIdJourneyConfig(
           continueUrl = appConfig.incorpIdCallbackUrl,
-          optServiceName = Some(request2Messages(request)("service.name")),
+          optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
           deskProServiceId = appConfig.contactFormServiceIdentifier,
           signOutUrl = appConfig.feedbackUrl,
           accessibilityUrl = appConfig.accessibilityStatementUrl,
           regime = appConfig.regime,
-          businessVerificationCheck = true
+          businessVerificationCheck = true,
+          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
         )
 
         vatRegistrationService.partyType.flatMap {
@@ -93,12 +95,13 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         val journeyConfig = IncorpIdJourneyConfig(
           continueUrl = appConfig.incorpIdPartnerCallbackUrl,
-          optServiceName = Some(request2Messages(request)("service.name")),
+          optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
           deskProServiceId = appConfig.contactFormServiceIdentifier,
           signOutUrl = appConfig.feedbackUrl,
           accessibilityUrl = appConfig.accessibilityStatementUrl,
           regime = appConfig.regime,
-          businessVerificationCheck = false
+          businessVerificationCheck = false,
+          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
         )
 
         for {

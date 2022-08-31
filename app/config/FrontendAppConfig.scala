@@ -26,21 +26,9 @@ import java.nio.charset.Charset
 import java.util.Base64
 import javax.inject.{Inject, Singleton}
 
-trait AppConfig {
-  val host: String
-  val analyticsToken: String
-  val analyticsHost: String
-  val reportAProblemPartialUrl: String
-  val reportAProblemNonJSUrl: String
-  val betaFeedbackUrl: String
-  val timeout: Int
-  val countdown: Int
-  val contactFrontendUrl: String
-}
-
 // scalastyle:off
 @Singleton
-class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends AppConfig with FeatureSwitching {
+class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends FeatureSwitching {
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
 

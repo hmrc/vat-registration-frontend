@@ -74,6 +74,47 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
     val heading = "Find your home address"
   }
 
+  object LookupPageOptionsCy {
+    val title = "Dewch o hyd i’ch cyfeiriad cartref"
+    val heading = "Dewch o hyd i’ch cyfeiriad cartref"
+    val filterLabel = "Enw neu rif yr eiddo"
+    val submitLabel = "Yn eich blaen"
+    val manualAddressLinkText = "Nid oes gan y cyfeiriad god post yn y DU"
+  }
+
+  object SelectPageOptionsCy {
+    val title = "Dewiswch y cyfeiriad"
+    val heading = "Dewiswch y cyfeiriad"
+    val editAddressLinkText = "Nodwch y cyfeiriad â llaw"
+    val submitLabel = "Yn eich blaen"
+  }
+
+  object EditPageOptionsCy {
+    val title = "Nodwch eich cyfeiriad cartref"
+    val heading = "Nodwch eich cyfeiriad cartref"
+    val line1Label = "Cyfeiriad – llinell 1"
+    val line2Label = "Cyfeiriad – llinell 2"
+    val line3Label = "Cyfeiriad – llinell 3"
+    val internationalLine3Label = "Cyfeiriad – llinell 3 (dewisol)"
+    val countryLabel = "Gwlad"
+    val postcodeLabel = "Cod post"
+    val internationalPostcodeLabel = "Cod post (dewisol)"
+    val submitLabel = "Yn eich blaen"
+    val townLabel = "Tref/Dinas"
+  }
+
+  object ConfirmPageLabelsCy {
+    val title = "Cadarnhewch eich cyfeiriad cartref"
+    val heading = "Cadarnhewch eich cyfeiriad cartref"
+    val submitLabel = "Yn eich blaen"
+    val changeLinkText = "Golygu’r cyfeiriad hwn"
+  }
+
+  object CountryPickerLabelsCy {
+    val title = "Dewch o hyd i’ch cyfeiriad cartref"
+    val heading = "Dewch o hyd i’ch cyfeiriad cartref"
+  }
+
   private val internationalAddressMessages: JsObject = Json.obj(
     "appLevelLabels" -> Json.obj(
       "navTitle" -> "Register for VAT",
@@ -108,6 +149,43 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "heading" -> ConfirmPageLabels.heading,
       "submitLabel" -> ConfirmPageLabels.submitLabel,
       "changeLinkText" -> ConfirmPageLabels.changeLinkText
+    )
+  )
+
+  private val internationalAddressMessagesCy: JsObject = Json.obj(
+    "appLevelLabels" -> Json.obj(
+      "navTitle" -> "Cofrestru ar gyfer TAW",
+      "phaseBannerHtml" -> "Gwasanaeth newydd yw hwn. Helpwch ni i’w wella – anfonwch eich <a href=\"https://www.tax.service.gov.uk/register-for-vat/feedback\">adborth</a>."
+    ),
+    "lookupPageLabels" -> Json.obj(
+      "title" -> LookupPageOptionsCy.title,
+      "heading" -> LookupPageOptionsCy.heading,
+      "filterLabel" -> LookupPageOptionsCy.filterLabel,
+      "submitLabel" -> LookupPageOptionsCy.submitLabel,
+      "manualAddressLinkText" -> LookupPageOptionsCy.manualAddressLinkText
+    ),
+    "selectPageLabels" -> Json.obj(
+      "title" -> SelectPageOptionsCy.title,
+      "heading" -> SelectPageOptionsCy.heading,
+      "submitLabel" -> SelectPageOptionsCy.submitLabel,
+      "editAddressLinkText" -> SelectPageOptionsCy.editAddressLinkText
+    ),
+    "editPageLabels" -> Json.obj(
+      "title" -> EditPageOptionsCy.title,
+      "heading" -> EditPageOptionsCy.heading,
+      "line1Label" -> EditPageOptionsCy.line1Label,
+      "line2Label" -> EditPageOptionsCy.line2Label,
+      "line3Label" -> EditPageOptionsCy.internationalLine3Label,
+      "townLabel" -> EditPageOptionsCy.townLabel,
+      "postcodeLabel" -> EditPageOptionsCy.internationalPostcodeLabel,
+      "countryLabel" -> EditPageOptionsCy.countryLabel,
+      "submitLabel" -> EditPageOptionsCy.submitLabel
+    ),
+    "confirmPageLabels" -> Json.obj(
+      "title" -> ConfirmPageLabelsCy.title,
+      "heading" -> ConfirmPageLabelsCy.heading,
+      "submitLabel" -> ConfirmPageLabelsCy.submitLabel,
+      "changeLinkText" -> ConfirmPageLabelsCy.changeLinkText
     )
   )
 
@@ -172,39 +250,39 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       ),
       "cy" -> Json.obj(
         "appLevelLabels" -> Json.obj(
-          "navTitle" -> "Register for VAT",
-          "phaseBannerHtml" -> "This is a new service. Help us improve it - send your <a href=\"https://www.tax.service.gov.uk/register-for-vat/feedback\">feedback</a>."
+          "navTitle" -> "Cofrestru ar gyfer TAW",
+          "phaseBannerHtml" -> "Gwasanaeth newydd yw hwn. Helpwch ni i’w wella – anfonwch eich <a href=\"https://www.tax.service.gov.uk/register-for-vat/feedback\">adborth</a>."
         ),
         "lookupPageLabels" -> Json.obj(
-          "title" -> LookupPageOptions.title,
-          "heading" -> LookupPageOptions.heading,
-          "filterLabel" -> LookupPageOptions.filterLabel,
-          "submitLabel" -> LookupPageOptions.submitLabel,
-          "manualAddressLinkText" -> LookupPageOptions.manualAddressLinkText
+          "title" -> LookupPageOptionsCy.title,
+          "heading" -> LookupPageOptionsCy.heading,
+          "filterLabel" -> LookupPageOptionsCy.filterLabel,
+          "submitLabel" -> LookupPageOptionsCy.submitLabel,
+          "manualAddressLinkText" -> LookupPageOptionsCy.manualAddressLinkText
         ),
         "selectPageLabels" -> Json.obj(
-          "title" -> SelectPageOptions.title,
-          "heading" -> SelectPageOptions.heading,
-          "editAddressLinkText" -> SelectPageOptions.editAddressLinkText,
-          "submitLabel" -> SelectPageOptions.submitLabel
+          "title" -> SelectPageOptionsCy.title,
+          "heading" -> SelectPageOptionsCy.heading,
+          "editAddressLinkText" -> SelectPageOptionsCy.editAddressLinkText,
+          "submitLabel" -> SelectPageOptionsCy.submitLabel
         ),
         "editPageLabels" -> Json.obj(
-          "title" -> EditPageOptions.title,
-          "heading" -> EditPageOptions.heading,
-          "line1Label" -> EditPageOptions.line1Label,
-          "line2Label" -> EditPageOptions.line2Label,
-          "line3Label" -> EditPageOptions.line3Label,
-          "postcodeLabel" -> EditPageOptions.postcodeLabel,
-          "countryLabel" -> EditPageOptions.countryLabel,
-          "submitLabel" -> EditPageOptions.submitLabel
+          "title" -> EditPageOptionsCy.title,
+          "heading" -> EditPageOptionsCy.heading,
+          "line1Label" -> EditPageOptionsCy.line1Label,
+          "line2Label" -> EditPageOptionsCy.line2Label,
+          "line3Label" -> EditPageOptionsCy.line3Label,
+          "postcodeLabel" -> EditPageOptionsCy.postcodeLabel,
+          "countryLabel" -> EditPageOptionsCy.countryLabel,
+          "submitLabel" -> EditPageOptionsCy.submitLabel
         ),
         "confirmPageLabels" -> Json.obj(
-          "title" -> ConfirmPageLabels.title,
-          "heading" -> ConfirmPageLabels.heading,
-          "submitLabel" -> ConfirmPageLabels.submitLabel,
-          "changeLinkText" -> ConfirmPageLabels.changeLinkText
+          "title" -> ConfirmPageLabelsCy.title,
+          "heading" -> ConfirmPageLabelsCy.heading,
+          "submitLabel" -> ConfirmPageLabelsCy.submitLabel,
+          "changeLinkText" -> ConfirmPageLabelsCy.changeLinkText
         ),
-        "international" -> internationalAddressMessages
+        "international" -> internationalAddressMessagesCy
       )
     )
   )
@@ -219,13 +297,13 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
             "en" -> Json.obj(
               "countryPickerLabels" -> Json.obj(
                 "title" -> CountryPickerLabels.title,
-                "heading" -> CountryPickerLabels.heading,
+                "heading" -> CountryPickerLabels.heading
               )
             ),
             "cy" -> Json.obj(
               "countryPickerLabels" -> Json.obj(
-                "title" -> CountryPickerLabels.title,
-                "heading" -> CountryPickerLabels.heading,
+                "title" -> CountryPickerLabelsCy.title,
+                "heading" -> CountryPickerLabelsCy.heading
               )
             )
           )

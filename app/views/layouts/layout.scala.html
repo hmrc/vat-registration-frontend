@@ -15,9 +15,10 @@
  *@
 
 @import config.FrontendAppConfig
+@import featureswitch.core.config.WelshLanguage
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import views.html.helper.CSPNonce
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(
     govukBackLink: GovukBackLink,
@@ -62,7 +63,7 @@
 @hmrcLayout(
     pageTitle = pageTitle,
     serviceName = Some(messages("service.name")),
-    isWelshTranslationAvailable = false,
+    isWelshTranslationAvailable = appConfig.isEnabled(WelshLanguage),
     additionalHeadBlock = Some(head),
     signOutUrl = if (signOutLink) Some(controllers.callbacks.routes.SignInOutController.signOut.url) else None,
     serviceUrl = Some(controllers.routes.JourneyController.show.url),
