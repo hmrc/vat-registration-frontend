@@ -439,7 +439,14 @@ validation.startDate.range                            = Enter a date between {0}
 validation.startDate.invalid                          = Enter a valid date
 validation.startDate.missing                          = Enter a date
 
-## Voluntart Start Date (no date choice) page
+currentlyTrading.heading.past                         = Was the business trading taxable goods or services by {0}?
+currentlyTrading.heading.future                       = Will the business be trading taxable goods or services by {0}?
+currentlyTrading.no.past                              = No, it started trading after this date
+currentlyTrading.no.future                            = No, it will start trading after this date
+currentlyTrading.error.required.past                  = Select yes if the business was trading taxable goods or services by {0}
+currentlyTrading.error.required.future                = Select yes if the business will be trading taxable goods or services by {0}
+
+## Voluntary Start Date (no date choice) page
 voluntaryStartDateNoChoice.heading                    = What do you want the business’s VAT start date to be
 voluntaryStartDateNoChoice.para                       = You can choose the date the business becomes VAT registered when you register voluntarily. This could be up to 4 years ago or within the next 3 months
 voluntaryStartDateNoChoice.panel                      = Once the business is successfully registered for VAT you cannot change its start date
@@ -706,6 +713,7 @@ cya.registrationDetails.paymentMethod.BankGIRO                  = Bank Giro Tran
 cya.registrationDetails.paymentMethod.CHAPS                     = Clearing House Automated Payment System (CHAPS)
 cya.registrationDetails.paymentMethod.StandingOrder             = Standing order
 cya.registrationDetails.taxRep                                  = Do you want to appoint a UK tax representative for the business?
+cya.registrationDetails.currentlyTrading                        = Trading by registration date?
 
 ## Summary Headings
 cya.heading.eligibility                              = Registration reason

@@ -38,7 +38,7 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
 
   def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
     s4lService.fetchAndGet[VatApplication].flatMap {
-      case None | Some(VatApplication(None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
+      case None | Some(VatApplication(None, None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
         registrationApiConnector.getSection[VatApplication](profile.registrationId).map {
           case Some(vatApplication) => vatApplication
           case None => VatApplication()
@@ -61,13 +61,13 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
   }
 
   def isModelComplete(vatApplication: VatApplication): Completion[VatApplication] = vatApplication match {
-    case VatApplication(_, _, _, _, Some(NIPTurnover(goodsToEU, None)), _, _, _, _, _, _, _, _) =>
+    case VatApplication(_, _, _, _, Some(NIPTurnover(goodsToEU, None)), _, _, _, _, _, _, _, _, _) =>
       Incomplete(vatApplication)
-    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(_), _, _, _, Some(Quarterly), Some(stagger: QuarterlyStagger), None, _) =>
+    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(_), _, _, _, Some(Quarterly), Some(stagger: QuarterlyStagger), None, _, _) =>
       Complete(vatApplication)
-    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(true), _, _, _, Some(Monthly), Some(MonthlyStagger), None, _) =>
+    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(true), _, _, _, Some(Monthly), Some(MonthlyStagger), None, _, _) =>
       Complete(vatApplication)
-    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(_), _, _, _, Some(Annual), Some(stagger: AnnualStagger), Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _) =>
+    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(_), _, _, _, Some(Annual), Some(stagger: AnnualStagger), Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _, _) =>
       Complete(vatApplication)
     case _ =>
       Incomplete(vatApplication)
@@ -155,6 +155,8 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
         before.copy(
           annualAccountingDetails = Some(updateAasBlock(answer, aasBefore))
         )
+      case CurrentlyTrading(answer) =>
+        before.copy(currentlyTrading = Some(answer))
     }
   }
 
@@ -298,6 +300,8 @@ object VatApplicationService {
   case class WarehouseName(answer: String) extends OverseasComplianceAnswer
 
   case class HasTaxRepresentative(answer: Boolean)
+
+  case class CurrentlyTrading(answer: Boolean)
 
   trait AasAnswer
 

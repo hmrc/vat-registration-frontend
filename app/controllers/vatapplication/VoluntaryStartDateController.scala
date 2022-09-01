@@ -75,11 +75,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
               Future.successful(BadRequest(voluntaryStartDateIncorpPage(errors, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, dynamicDate)))
             },
             success => vatApplicationService.saveVoluntaryStartDate(success._1, success._2, incorpDate).map(_ =>
-              if (isEnabled(TaskList)) {
-                Redirect(controllers.routes.TaskListController.show.url)
-              } else {
-                Redirect(routes.ReturnsFrequencyController.show)
-              }
+              Redirect(controllers.vatapplication.routes.CurrentlyTradingController.show)
             )
           )
         }

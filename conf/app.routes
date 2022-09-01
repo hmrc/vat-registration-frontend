@@ -51,6 +51,10 @@ POST        /mandatory-vat-start-date                                 controller
 GET         /voluntary-vat-start-date                                 controllers.vatapplication.VoluntaryStartDateNoChoiceController.show
 POST        /voluntary-vat-start-date                                 controllers.vatapplication.VoluntaryStartDateNoChoiceController.submit
 
+## INTENDING/VOLUNTARY TRADING TAXABLE GOODS
+GET         /trading-taxable-goods-and-services-date                  controllers.vatapplication.CurrentlyTradingController.show
+POST        /trading-taxable-goods-and-services-date                  controllers.vatapplication.CurrentlyTradingController.submit
+
 ## TRADING NAME PAGE
 GET         /trading-name                                             controllers.business.TradingNameController.show
 POST        /trading-name                                             controllers.business.TradingNameController.submit

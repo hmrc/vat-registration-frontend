@@ -96,7 +96,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
+        redirectLocation(result) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
       }
     }
 
@@ -126,7 +126,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
 
         submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
+          redirectLocation(result) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
         }
       }
 
@@ -154,7 +154,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
 
         submitAuthorised(testController.submit, request) { result =>
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
+          redirectLocation(result) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
 
         }
       }

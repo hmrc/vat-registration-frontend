@@ -28,7 +28,9 @@
         classes: String = "govuk-fieldset__legend--xl",
         hiddenYesContent: Option[Html] = None,
         hiddenNoContent: Option[Html] = None,
-        fieldName: String = "value"
+        fieldName: String = "value",
+        yesText: Option[String] = None,
+        noText: Option[String] = None
 )(implicit messages: Messages)
 
 @govukRadios(Radios(
@@ -49,14 +51,14 @@
         RadioItem(
             id = Some("value"),
             value = Some("true"),
-            content = Text(messages("app.common.yes")),
+            content = Text(yesText.getOrElse(messages("app.common.yes"))),
             checked = form(fieldName).value.contains("true"),
             conditionalHtml = hiddenYesContent
         ),
         RadioItem(
             id = Some("value-no"),
             value = Some("false"),
-            content = Text(messages("app.common.no")),
+            content = Text(noText.getOrElse(messages("app.common.no"))),
             checked = form(fieldName).value.contains("false"),
             conditionalHtml = hiddenNoContent
         )
