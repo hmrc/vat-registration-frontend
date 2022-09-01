@@ -57,6 +57,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     val businessSector = "Business type for the Flat Rate Scheme"
     val flatRateDate = "When do you want to join the Flat Rate Scheme?"
     val flatRateRegDate = "Date of registration"
+    val currentlyTrading = "Trading by registration date?"
   }
 
   "Generate Registration Details Builder" when {
@@ -70,7 +71,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           claimVatRefunds = Some(true),
           returnsFrequency = Some(Annual),
           annualAccountingDetails = Some(validAasDetails),
-          startDate = frsDate.flatMap(_.date)
+          startDate = frsDate.flatMap(_.date),
+          currentlyTrading = Some(true)
         )),
         bankAccount = Some(validUkBankAccount),
         flatRateScheme = Some(validFlatRate)
@@ -89,6 +91,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
           optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+        optSummaryListRowBoolean(
+          questionId = TestContent.currentlyTrading,
+          optAnswer = Some(true),
+          optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.accountingPeriod,
           optAnswer = Some("I would like to join the Annual Accounting Scheme"),

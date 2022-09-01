@@ -50,6 +50,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       bankAccountSection(vatScheme, partyType) ++
         List(
           startDate(vatApplication),
+          currentlyTrading(vatApplication),
           accountingPeriod(vatApplication),
           lastMonthOfAccountingYear(vatApplication),
           paymentFrequency(vatApplication),
@@ -119,6 +120,14 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       vatApplication.hasTaxRepresentative,
       Some(controllers.vatapplication.routes.TaxRepController.show.url)
     )
+
+  private def currentlyTrading(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] = {
+    optSummaryListRowBoolean(
+      s"$sectionId.currentlyTrading",
+      vatApplication.currentlyTrading,
+      Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
+    )
+  }
 
   private def bankAccountSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {
     val bankAccount: Option[BankAccount] = vatScheme.bankAccount

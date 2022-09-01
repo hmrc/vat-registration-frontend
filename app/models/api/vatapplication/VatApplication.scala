@@ -34,7 +34,8 @@ case class VatApplication(tradeVatGoodsOutsideUk: Option[Boolean] = None,
                           returnsFrequency: Option[ReturnsFrequency] = None,
                           staggerStart: Option[Stagger] = None,
                           annualAccountingDetails: Option[AASDetails] = None,
-                          hasTaxRepresentative: Option[Boolean] = None)
+                          hasTaxRepresentative: Option[Boolean] = None,
+                          currentlyTrading: Option[Boolean] = None)
 
 object VatApplication extends JsonUtilities {
   implicit val s4lKey: S4LKey[VatApplication] = S4LKey("vatApplication")

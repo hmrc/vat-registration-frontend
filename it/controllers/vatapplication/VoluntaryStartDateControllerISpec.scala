@@ -1,7 +1,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import models.api.{EligibilitySubmissionData, UkCompany}
@@ -47,22 +46,6 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
       val today = LocalDate.now().plusDays(1)
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
-      def verifyRedirect(redirectUrl: String) = {
-        val res = buildClient("/vat-start-date").post(Json.obj(
-          "value" -> DateSelection.specific_date.toString,
-          "startDate" -> Json.obj(
-            "day" -> today.getDayOfMonth,
-            "month" -> today.getMonthValue,
-            "year" -> today.getYear
-          )
-        ))
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-        }
-      }
-
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].isUpdatedWith(VatApplication(startDate = Some(today)))
@@ -70,10 +53,19 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(routes.ReturnsFrequencyController.show.url)
+      val res = buildClient("/vat-start-date").post(Json.obj(
+        "value" -> DateSelection.specific_date.toString,
+        "startDate" -> Json.obj(
+          "day" -> today.getDayOfMonth,
+          "month" -> today.getMonthValue,
+          "year" -> today.getYear
+        )
+      ))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
+      }
     }
   }
 

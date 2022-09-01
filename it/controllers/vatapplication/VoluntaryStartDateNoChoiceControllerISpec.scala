@@ -1,7 +1,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
@@ -80,18 +79,6 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
     "the date entered is valid" when {
       "the vatApplication block in S4L is complete" must {
         "store the data and redirect to the Returns Frequency page" in new Setup {
-
-          private def verifyRedirect(redirectUrl: String) = {
-            val res = await(buildClient(url).post(Json.obj(
-              "startDate.day" -> testDate.getDayOfMonth.toString,
-              "startDate.month" -> testDate.getMonthValue.toString,
-              "startDate.year" -> testDate.getYear.toString
-            )))
-
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-          }
-
           given
             .user.isAuthorised()
             .s4lContainer[VatApplication].contains(fullVatApplication)
@@ -100,27 +87,18 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
+          val res = await(buildClient(url).post(Json.obj(
+            "startDate.day" -> testDate.getDayOfMonth.toString,
+            "startDate.month" -> testDate.getMonthValue.toString,
+            "startDate.year" -> testDate.getYear.toString
+          )))
 
-          enable(TaskList)
-          verifyRedirect(controllers.routes.TaskListController.show.url)
-          disable(TaskList)
-          verifyRedirect(routes.ReturnsFrequencyController.show.url)
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
         }
       }
       "the vatApplication block in S4L block is incomplete" must {
         "Update S4L and redirect to the Returns Frequency page" in new Setup {
-
-          private def verifyRedirect(redirectUrl: String) = {
-            val res = await(buildClient(url).post(Json.obj(
-              "startDate.day" -> testDate.getDayOfMonth.toString,
-              "startDate.month" -> testDate.getMonthValue.toString,
-              "startDate.year" -> testDate.getYear.toString
-            )))
-
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-          }
-
           val s4lVatApplication: VatApplication = fullVatApplication.copy(turnoverEstimate = None)
           given
             .user.isAuthorised()
@@ -129,10 +107,14 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          enable(TaskList)
-          verifyRedirect(controllers.routes.TaskListController.show.url)
-          disable(TaskList)
-          verifyRedirect(routes.ReturnsFrequencyController.show.url)
+          val res = await(buildClient(url).post(Json.obj(
+            "startDate.day" -> testDate.getDayOfMonth.toString,
+            "startDate.month" -> testDate.getMonthValue.toString,
+            "startDate.year" -> testDate.getYear.toString
+          )))
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
         }
       }
     }

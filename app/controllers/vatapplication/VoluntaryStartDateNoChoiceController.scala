@@ -55,11 +55,7 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
         Future.successful(BadRequest(view(formWithErrors, timeService.today.format(exampleDateFormatter)))),
       startDate =>
         vatApplicationService.saveVatApplication(startDate).map { _ =>
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show.url)
-          } else {
-            Redirect(routes.ReturnsFrequencyController.show)
-          }
+          Redirect(controllers.vatapplication.routes.CurrentlyTradingController.show)
         }
     )
   }
