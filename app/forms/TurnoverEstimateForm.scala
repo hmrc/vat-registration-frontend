@@ -19,19 +19,25 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object TurnoverEstimateForm {
 
   implicit val errorCode: String = "turnoverEstimate"
   val turnoverEstimateKey = "turnoverEstimate"
+  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
+  val commasNowAllowed = """^[^,]+$""".r
 
   val form: Form[BigDecimal] = Form(
     single(
       turnoverEstimateKey ->
         text
-          .verifying(mandatoryFullNumericText)
+          .verifying(StopOnFirstFail(
+            regexPattern(regex),
+            matchesRegex(commasNowAllowed, "validation.turnoverEstimate.commasNotAllowed"),
+            mandatoryFullNumericText))
           .transform[BigDecimal](string =>
-            BigDecimal(string.replace(",", "")).setScale(2, BigDecimal.RoundingMode.HALF_UP),
+            BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
             _.toString
           )
           .verifying(inRange[BigDecimal](0, BigDecimal("999999999999999")))

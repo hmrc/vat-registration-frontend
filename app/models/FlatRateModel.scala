@@ -31,7 +31,7 @@ object FRSDateChoice extends Enumeration {
 
 case class FlatRateScheme(joinFrs : Option[Boolean] = None,
                           overBusinessGoods : Option[Boolean] = None,
-                          estimateTotalSales : Option[Long] = None,
+                          estimateTotalSales : Option[BigDecimal] = None,
                           overBusinessGoodsPercent : Option[Boolean] = None,
                           useThisRate : Option[Boolean] = None,
                           frsStart : Option[Start] = None,

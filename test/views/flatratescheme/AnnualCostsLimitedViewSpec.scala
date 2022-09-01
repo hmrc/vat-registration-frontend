@@ -26,7 +26,7 @@ class AnnualCostsLimitedViewSpec extends VatRegViewSpec with OverBusinessGoodsPe
 
   val view: annual_costs_limited = app.injector.instanceOf[annual_costs_limited]
 
-  val pct: Long = 1
+  val pct: BigDecimal = 1
   val heading = "Will the business spend more than £1, including VAT, on relevant goods over the next 3 months?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val continue = "Save and continue"

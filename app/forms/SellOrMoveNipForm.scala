@@ -19,6 +19,7 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 object SellOrMoveNipForm extends RequiredBooleanForm {
@@ -26,15 +27,20 @@ object SellOrMoveNipForm extends RequiredBooleanForm {
   val inputAmount: String = "sellOrMoveNip"
   implicit val errorCode: ErrorCode = inputAmount
   val yesNo: String = "value"
+  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
+  val commasNowAllowed = """^[^,]+$""".r
 
   val form = Form(
     tuple(
       yesNo -> requiredBoolean,
       inputAmount -> mandatoryIf(
         isEqual(yesNo, "true"),
-        text.verifying(mandatoryFullNumericText)
+        text.verifying(StopOnFirstFail(
+          regexPattern(regex),
+          matchesRegex(commasNowAllowed, "validation.sellOrMoveNip.commasNotAllowed"),
+          mandatoryFullNumericText))
           .transform[BigDecimal](s =>
-            BigDecimal(s.replace(",", "")).setScale(2, BigDecimal.RoundingMode.HALF_UP),
+            BigDecimal(s).setScale(2, BigDecimal.RoundingMode.HALF_UP),
             _.toString
           )
       )

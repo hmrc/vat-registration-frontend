@@ -24,14 +24,16 @@ class ZeroRatedSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
 
   val turnoverEstimate = 15000
   val zeroRatedSuppliesForm: Form[BigDecimal] = ZeroRatedSuppliesForm.form(turnoverEstimate)
-  val testValidZeroRatedSupplies: String = "14,999.99"
+  val testValidZeroRatedSupplies: String = "14999.99"
   val validZeroRatedSupplies: BigDecimal = 14999.99
   val testNonNumberZeroRatedSupplies: String = "test"
+  val testZeroRatedSuppliesWithComma: String = "14,999.99"
   val testInvalidZeroRatedSupplies: String = "16000"
   val testNegativeZeroRatedSupplies: String = "-1"
 
-  val numeric_error_key: String = "validation.numeric"
+  val invalid_zero_rated_supplies_error_key: String = "validation.zeroRatedSupplies.invalid"
   val missing_zero_rated_supplies_error_key: String = "validation.zeroRatedSupplies.missing"
+  val commasNotAllowed_zero_rated_supplies_error_key: String = "validation.zeroRatedSupplies.commasNotAllowed"
   val too_big_zero_rated_supplies_error_key: String = "validation.zeroRatedSupplies.range.above"
   val negative_zero_rated_supplies_error_key: String = "validation.zeroRatedSupplies.range.below"
 
@@ -51,7 +53,17 @@ class ZeroRatedSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
     "validate that non numeric zeroRatedSupplies fails" in {
       val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesForm.zeroRatedSuppliesKey -> testNonNumberZeroRatedSupplies))
 
-      form.errors must contain(FormError(ZeroRatedSuppliesForm.zeroRatedSuppliesKey, numeric_error_key))
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe ZeroRatedSuppliesForm.zeroRatedSuppliesKey
+      form.errors.head.message mustBe invalid_zero_rated_supplies_error_key
+    }
+
+    "validate zeroRatedSupplies with comma fails" in {
+      val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesForm.zeroRatedSuppliesKey -> testZeroRatedSuppliesWithComma))
+
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe ZeroRatedSuppliesForm.zeroRatedSuppliesKey
+      form.errors.head.message mustBe commasNotAllowed_zero_rated_supplies_error_key
     }
 
     "validate that when zeroRatedSupplies > turnoverEstimates the form fails" in {
@@ -63,7 +75,9 @@ class ZeroRatedSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
     "validate that when zeroRatedSupplies is negative the form fails" in {
       val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesForm.zeroRatedSuppliesKey -> testNegativeZeroRatedSupplies))
 
-      form.errors must contain(FormError(ZeroRatedSuppliesForm.zeroRatedSuppliesKey, negative_zero_rated_supplies_error_key, List(0)))
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe ZeroRatedSuppliesForm.zeroRatedSuppliesKey
+      form.errors.head.message mustBe invalid_zero_rated_supplies_error_key
     }
   }
 }

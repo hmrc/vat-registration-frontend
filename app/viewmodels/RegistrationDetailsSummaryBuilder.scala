@@ -180,7 +180,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     val estimateTotalSalesRow = optSummaryListRowString(
       s"$sectionId.estimateTotalSales",
-      optFlatRateScheme.flatMap(_.estimateTotalSales.map("%,d".format(_))).map(sales => s"£$sales"),
+      optFlatRateScheme.flatMap(_.estimateTotalSales.map(Formatters.currency)),
       Some(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)
     )
 
@@ -188,7 +188,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       s"$sectionId.costsLimited",
       optFlatRateScheme.flatMap(_.overBusinessGoodsPercent),
       Some(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage.url),
-      Seq(optFlatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v))).map("%,d".format(_)).getOrElse("0"))
+      Seq(optFlatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v)).map(Formatters.currencyWithoutDecimal)).getOrElse("0"))
     )
 
     val flatRatePercentageRow = optSummaryListRowBoolean(

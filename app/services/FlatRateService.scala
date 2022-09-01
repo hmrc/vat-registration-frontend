@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import java.time.LocalDate
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
+import scala.math.BigDecimal.RoundingMode
 
 @Singleton
 class FlatRateService @Inject()(val s4LService: S4LService,
@@ -35,7 +36,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
                                 val configConnector: ConfigConnector,
                                 registrationApiConnector: RegistrationApiConnector)(implicit ec: ExecutionContext) {
 
-  def applyPercentRoundUp(l: Long): Long = Math.ceil(l * relevantGoodsPercent).toLong
+  def applyPercentRoundUp(b: BigDecimal): BigDecimal = (b * relevantGoodsPercent).setScale(0, RoundingMode.CEILING)
 
   def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     s4LService.fetchAndGet[FlatRateScheme] flatMap {
@@ -196,7 +197,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
   }
 
-  def saveEstimateTotalSales(estimate: Long)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
+  def saveEstimateTotalSales(estimate: BigDecimal)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
     updateFlatRate(_.copy(estimateTotalSales = Some(estimate)))
 
   def saveBusinessType(businessType: String)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =

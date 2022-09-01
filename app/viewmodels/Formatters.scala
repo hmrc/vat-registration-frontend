@@ -22,6 +22,9 @@ object Formatters {
 
   private val currencyFormat = new DecimalFormat("£#,##0.00")
 
+  private val currencyWithoutDecimalFormat = new DecimalFormat("£#,##0")
+
   def currency(value: BigDecimal): String = currencyFormat.format(value)
 
+  def currencyWithoutDecimal(value: BigDecimal): String = currencyWithoutDecimalFormat.format(value)
 }

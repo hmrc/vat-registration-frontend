@@ -49,8 +49,8 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
   val yourFlatRateForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.registerForWithSector")
   val overBusinessGoodsForm: Form[Boolean] = OverBusinessGoodsForm.form
 
-  def overBusinessGoodsPercentForm(formPct: Long = 0): Form[Boolean] = new OverBusinessGoodsPercentForm {
-    override val pct: Long = formPct
+  def overBusinessGoodsPercentForm(formPct: BigDecimal = 0): Form[Boolean] = new OverBusinessGoodsPercentForm {
+    override val pct: BigDecimal = formPct
   }.form
 
   def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile() {
