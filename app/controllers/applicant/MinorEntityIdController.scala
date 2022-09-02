@@ -21,9 +21,10 @@ import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
-import models.external.minorentityid.MinorEntityIdJourneyConfig
+import models.external.minorentityid.{JourneyLabels, MinorEntityIdJourneyConfig}
+import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, MinorEntityIdService, SessionProfile, SessionService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
@@ -46,12 +47,13 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         val journeyConfig = MinorEntityIdJourneyConfig(
           continueUrl = appConfig.minorEntityIdCallbackUrl,
-          optServiceName = Some(request2Messages(request)("service.name")),
+          optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
           deskProServiceId = appConfig.contactFormServiceIdentifier,
           signOutUrl = appConfig.feedbackUrl,
           accessibilityUrl = appConfig.accessibilityStatementUrl,
           regime = appConfig.regime,
-          businessVerificationCheck = true
+          businessVerificationCheck = true,
+          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
         )
 
         vatRegistrationService.partyType.flatMap {

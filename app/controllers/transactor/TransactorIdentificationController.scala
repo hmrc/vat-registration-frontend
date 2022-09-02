@@ -20,9 +20,10 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import models.api.{NETP, NonUkNonEstablished}
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
+import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionService, _}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 
 import javax.inject.{Inject, Singleton}
@@ -46,12 +47,15 @@ class TransactorIdentificationController @Inject()(val sessionService: SessionSe
           soleTraderIdentificationService.startIndividualJourney(
             SoleTraderIdJourneyConfig(
               continueUrl = appConfig.transactorCallbackUrl,
-              optServiceName = Some(request2Messages(request)("service.name")),
+              optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
               regime = appConfig.regime,
-              businessVerificationCheck = true
+              businessVerificationCheck = true,
+              labels = Some(JourneyLabels(TranslationLabels(
+                optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy"))
+              )))
             )
           ).map(url => Redirect(url))
     }

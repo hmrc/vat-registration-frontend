@@ -18,7 +18,7 @@ package controllers.applicant
 
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -46,7 +46,11 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       signOutUrl = appConfig.feedbackUrl,
       accessibilityUrl = appConfig.accessibilityStatementUrl,
       regime = appConfig.regime,
-      businessVerificationCheck = true
+      businessVerificationCheck = true,
+      labels = Some(JourneyLabels(TranslationLabels(
+        optFullNamePageLabel = Some("Ar ran pwy rydych yn cofrestru?"),
+        optServiceName = Some("Cofrestru ar gyfer TAW")
+      )))
     )
 
     object Controller extends SoleTraderIdentificationController(

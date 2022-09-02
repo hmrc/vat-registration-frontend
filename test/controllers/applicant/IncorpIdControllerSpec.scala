@@ -21,7 +21,7 @@ import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
 import models.api.{CharitableOrg, GovOrg, RegSociety, UkCompany}
-import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockPartnersService, MockVatRegistrationService, TimeServiceMock}
@@ -64,7 +64,8 @@ class IncorpIdControllerSpec extends ControllerSpec
     signOutUrl = appConfig.feedbackUrl,
     accessibilityUrl = appConfig.accessibilityStatementUrl,
     regime = appConfig.regime,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    labels = Some(JourneyLabels(Some("Cofrestru ar gyfer TAW")))
   )
 
   "startJourney" should {

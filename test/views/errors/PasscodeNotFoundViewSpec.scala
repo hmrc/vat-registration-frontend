@@ -28,7 +28,7 @@ class PasscodeNotFoundViewSpec extends VatRegViewSpec {
 
   val heading = "You need to start again"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val p1 = "The code we send you cannot be found or has expired."
+  val p1 = "The code we sent you cannot be found or has expired."
   val linkText = "get a new code"
   val p2 = s"You will need to get a new code to continue with the registration."
 
