@@ -25,16 +25,18 @@ object TurnoverEstimateForm {
 
   implicit val errorCode: String = "turnoverEstimate"
   val turnoverEstimateKey = "turnoverEstimate"
-  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
-  val commasNowAllowed = """^[^,]+$""".r
+  val regex = """^[0-9]*\.?[0-9]+$""".r
+  val commasNotAllowed = """^[^,]+$""".r
+  val moreThanTwoDecimalsNotAllowed = """^[0-9]*\.?[0-9]{1,2}$""".r
 
   val form: Form[BigDecimal] = Form(
     single(
       turnoverEstimateKey ->
         text
           .verifying(StopOnFirstFail(
+            matchesRegex(commasNotAllowed, "validation.turnoverEstimate.commasNotAllowed"),
             regexPattern(regex),
-            matchesRegex(commasNowAllowed, "validation.turnoverEstimate.commasNotAllowed"),
+            matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed"),
             mandatoryFullNumericText))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),

@@ -17,7 +17,6 @@
 package forms
 
 import forms.FormValidation._
-import forms.TurnoverEstimateForm.{commasNowAllowed, regex}
 import play.api.data.Form
 import play.api.data.Forms._
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
@@ -26,16 +25,18 @@ object ZeroRatedSuppliesForm {
 
   implicit val errorCode: String = "zeroRatedSupplies"
   val zeroRatedSuppliesKey = "zeroRatedSupplies"
-  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
-  val commasNowAllowed = """^[^,]+$""".r
+  val regex = """^[0-9]*\.?[0-9]+$""".r
+  val commasNotAllowed = """^[^,]+$""".r
+  val moreThanTwoDecimalsNotAllowed = """^[0-9]*\.?[0-9]{1,2}$""".r
 
   def form(turnoverEstimate: BigDecimal): Form[BigDecimal] = Form(
     single(
       zeroRatedSuppliesKey ->
         text
           .verifying(StopOnFirstFail(
+            matchesRegex(commasNotAllowed, "validation.zeroRatedSupplies.commasNotAllowed"),
             regexPattern(regex),
-            matchesRegex(commasNowAllowed, "validation.zeroRatedSupplies.commasNotAllowed"),
+            matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed"),
             mandatoryFullNumericText))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
