@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package views.attachments
+package views.vatapplication
 
+import forms.vatapplication.CurrentlyTradingForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import forms.vatapplication.CurrentlyTradingForm
 import views.html.vatapplication.CurrentlyTradingView
 
 class CurrentlyTradingViewSpec extends VatRegViewSpec {

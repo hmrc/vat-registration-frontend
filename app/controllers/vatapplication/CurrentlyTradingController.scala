@@ -50,7 +50,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
           vatApplication.startDate match {
             case Some(startDate) =>
               val msgKeySuffix = if (startDate.isBefore(LocalDate.now())) "past" else "future"
-              val registrationDate = DateTimeFormatter.ofPattern("dd MMMM yyyy").format(startDate)
+              val registrationDate = DateTimeFormatter.ofPattern("d MMMM yyyy").format(startDate)
               val form = CurrentlyTradingForm(msgKeySuffix, registrationDate).form
 
               Ok(view(vatApplication.currentlyTrading.fold(form)(form.fill), msgKeySuffix, registrationDate))
