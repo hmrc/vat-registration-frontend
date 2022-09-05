@@ -223,7 +223,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
     "prerequisite is complete but registration date flow hasn't started" must {
       "return TLNotStarted with correct url" in {
-        val schema = validVatScheme.copy(
+        val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
@@ -238,8 +238,28 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection)
         )
 
-        val sectionRow = section.registrationDateRow.build(schema)
+        val sectionRow = section.registrationDateRow.build(scheme)
         sectionRow.status mustBe TLNotStarted
+        sectionRow.url mustBe controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url
+      }
+    }
+
+    "prerequisite is complete and registration date available but currently trading check not complete for voluntary" must {
+      "return TLInProgress with correct url" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = Voluntary)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          ))
+        )
+
+        val sectionRow = section.registrationDateRow.build(scheme)
+        sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url
       }
     }

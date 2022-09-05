@@ -79,7 +79,16 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     messageKey = _ => "tasklist.vatRegistration.registrationDate",
     url = _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
     tagId = "vatRegistrationDateRow",
-    checks = scheme => Seq(scheme.vatApplication.exists(_.startDate.isDefined)),
+    checks = scheme => {
+      Seq(scheme.vatApplication.exists(_.startDate.isDefined))
+        .++ {
+          if (scheme.eligibilitySubmissionData.exists(_.registrationReason.isVoluntary)) {
+            Seq(scheme.vatApplication.exists(_.currentlyTrading.isDefined))
+          } else {
+            Nil
+          }
+        }
+    },
     prerequisites = _ => Seq(bankAccountDetailsRow)
   )
 
