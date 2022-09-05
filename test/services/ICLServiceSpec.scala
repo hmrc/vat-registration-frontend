@@ -46,7 +46,8 @@ class ICLServiceSpec extends VatRegSpec {
     }
   }
 
-  val customICLMessages: CustomICLMessages = CustomICLMessages("heading", "lead", "hint")
+  val customICLMessages: CustomICLMessages = CustomICLMessages(Some("heading"), Some("lead"), Some("hint"))
+  val customICLMessagesCy: CustomICLMessages = CustomICLMessages(Some("headingCy"), Some("leadCy"), Some("hintCy"))
 
   "journeySetup" should {
     "return the ICL start url when neither VR or II are prepopped" in new Setup {
@@ -56,7 +57,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
-      val res = await(testService.journeySetup(customICLMessages))
+      val res = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
       res mustBe "example.url"
     }
     "return the ICL start url when VR codes are prepopped" in new Setup {
@@ -68,7 +69,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
-      val res = await(testService.journeySetup(customICLMessages))
+      val res = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
       res mustBe "example.url"
     }
     "return the ICL start url when VR call fails" in new Setup {
@@ -78,25 +79,25 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
-      val res = await(testService.journeySetup(customICLMessages))
+      val res = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
       res mustBe "example.url"
     }
     "return an exception when setting up ICL failed" in new Setup {
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.failed(new Exception))
-      intercept[Exception](await(testService.journeySetup(customICLMessages)))
+      intercept[Exception](await(testService.journeySetup(customICLMessages, customICLMessagesCy)))
     }
     "return a exception when json was invalid" in new Setup {
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsInvalidResponse))
-      intercept[Exception](await(testService.journeySetup(customICLMessages)))
+      intercept[Exception](await(testService.journeySetup(customICLMessages, customICLMessagesCy)))
     }
     "return an exception when keystore cache is not successful" in new Setup {
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.failed(new Exception))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
         .thenReturn(Future.successful(jsResponse))
-      intercept[Exception](await(testService.journeySetup(customICLMessages)))
+      intercept[Exception](await(testService.journeySetup(customICLMessages, customICLMessagesCy)))
     }
   }
 
@@ -140,7 +141,7 @@ class ICLServiceSpec extends VatRegSpec {
   "constructJsonForJourneySetup" should {
     "construct a json body for starting an ICL journey" when {
       "given custom messages and sic codes" in new Setup {
-        testService.constructJsonForJourneySetup(List("12345"), CustomICLMessages("heading", "lead", "hint")) mustBe
+        testService.constructJsonForJourneySetup(List("12345"), customICLMessages, customICLMessagesCy) mustBe
           Json.parse(
             """{
               |  "redirectUrl":"dummy-url",
@@ -149,6 +150,11 @@ class ICLServiceSpec extends VatRegSpec {
               |      "heading":"heading",
               |      "lead":"lead",
               |      "hint":"hint"
+              |    },
+              |    "summaryCy" : {
+              |      "heading":"headingCy",
+              |      "lead":"leadCy",
+              |      "hint":"hintCy"
               |    }},
               |    "sicCodes":["12345"]
               |  }
@@ -156,7 +162,7 @@ class ICLServiceSpec extends VatRegSpec {
       }
 
       "given custom messages and no sic codes" in new Setup {
-        testService.constructJsonForJourneySetup(Nil, CustomICLMessages("heading", "lead", "hint")) mustBe
+        testService.constructJsonForJourneySetup(Nil, customICLMessages, customICLMessagesCy) mustBe
           Json.parse(
             """{
               |  "redirectUrl":"dummy-url",
@@ -165,8 +171,12 @@ class ICLServiceSpec extends VatRegSpec {
               |      "heading":"heading",
               |      "lead":"lead",
               |      "hint":"hint"
-              |    }}
-              |    ,
+              |    },
+              |    "summaryCy" : {
+              |      "heading":"headingCy",
+              |      "lead":"leadCy",
+              |      "hint":"hintCy"
+              |    }},
               |    "sicCodes":[]
               |  }
               |}""".stripMargin)

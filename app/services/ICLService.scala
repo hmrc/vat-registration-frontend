@@ -54,7 +54,9 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
     }
   }
 
-  def journeySetup(customICLMessages: CustomICLMessages)(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[String] = {
+  def journeySetup(customICLMessages: CustomICLMessages, welshCustomICLMessages: CustomICLMessages)
+                  (implicit hc: HeaderCarrier, cp: CurrentProfile): Future[String] = {
+
     def extractFromJsonSetup(jsonSetup: JsObject, item: String) = {
       (jsonSetup \ item).validate[String].getOrElse {
         logger.error(s"[ICLServiceImpl] [journeySetup] $item couldn't be parsed from Json object")
@@ -64,7 +66,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
 
     for {
       codes <- prepopulateSicCodes
-      jsonSetup <- iclConnector.iclSetup(constructJsonForJourneySetup(codes, customICLMessages))
+      jsonSetup <- iclConnector.iclSetup(constructJsonForJourneySetup(codes, customICLMessages, welshCustomICLMessages))
       fetchResultsUri = extractFromJsonSetup(jsonSetup, "fetchResultsUri")
       _ <- keystore.cache[String]("ICLFetchResultsUri", fetchResultsUri)
     } yield {
@@ -72,12 +74,13 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
     }
   }
 
-  private[services] def constructJsonForJourneySetup(sicCodes: List[String], customICLMessages: CustomICLMessages): JsObject = {
+  private[services] def constructJsonForJourneySetup(sicCodes: List[String], customICLMessages: CustomICLMessages, welshCustomICLMessages: CustomICLMessages): JsObject = {
     Json.obj(
       "redirectUrl" -> vatRedirectUrl,
       "journeySetupDetails" -> Json.obj(
         "customMessages" -> Json.obj(
-          "summary" -> customICLMessages
+          "summary" -> customICLMessages,
+          "summaryCy" -> welshCustomICLMessages
         ),
         "sicCodes" -> sicCodes
       )
@@ -99,9 +102,9 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
   }
 }
 
-case class CustomICLMessages(heading: String,
-                             lead: String,
-                             hint: String)
+case class CustomICLMessages(heading: Option[String],
+                             lead: Option[String],
+                             hint: Option[String])
 
 object CustomICLMessages {
   implicit val writes: OWrites[CustomICLMessages] = Json.writes[CustomICLMessages]
