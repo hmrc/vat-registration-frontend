@@ -18,16 +18,12 @@ package connectors
 
 import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
-import models._
 import models.api._
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
-import play.api.http.Status.{NOT_FOUND, NO_CONTENT, OK}
-import play.api.libs.json.{JsValue, Json}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http._
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixture {
@@ -111,19 +107,19 @@ class VatRegistrationConnectorSpec extends VatRegSpec with VatRegistrationFixtur
     "return a Success" in new Setup {
       mockHttpPUT[String, HttpResponse]("test-url", validHttpResponse)
 
-      await(connector.submitRegistration("tstID", Map.empty)) mustBe Success
+      await(connector.submitRegistration("tstID", Map.empty, "en")) mustBe Success
     }
     "return a SubmissionFailed" in new Setup {
       when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new BadRequestException("")))
 
-      await(connector.submitRegistration("tstID", Map.empty)) mustBe SubmissionFailed
+      await(connector.submitRegistration("tstID", Map.empty, "en")) mustBe SubmissionFailed
     }
     "return a SubmissionFailedRetryable" in new Setup {
       when(mockHttpClient.PUT[String, HttpResponse](anyString(), any(), any())(any(), any(), any(), any()))
         .thenReturn(Future.failed(new Upstream5xxResponse("502", 502, 502)))
 
-      await(connector.submitRegistration("tstID", Map.empty)) mustBe SubmissionFailedRetryable
+      await(connector.submitRegistration("tstID", Map.empty, "en")) mustBe SubmissionFailedRetryable
     }
   }
 }

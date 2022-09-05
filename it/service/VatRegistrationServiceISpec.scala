@@ -21,6 +21,7 @@ import connectors._
 import itutil.{IntegrationSpecBase, WiremockHelper}
 import models.CurrentProfile
 import play.api.Application
+import play.api.i18n.MessagesApi
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -51,6 +52,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
 
   val sId = UUID.randomUUID().toString
   implicit val hc = HeaderCarrier(sessionId = Some(SessionId(sId)))
+  val messagesApi = app.injector.instanceOf[MessagesApi]
 
   def currentProfile(regId: String): CurrentProfile = CurrentProfile(
     registrationId = regId,
@@ -65,7 +67,7 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
       stubPut(s"/vatreg/$regId/submit-registration", 200, "")
 
       val vatRegistrationService = app.injector.instanceOf[VatRegistrationService]
-      val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId), FakeRequest())
+      val response = vatRegistrationService.submitRegistration()(hc, currentProfile(regId), FakeRequest(), messagesApi)
 
       await(response) mustBe Success
     }

@@ -19,8 +19,10 @@ package services
 import common.enums.VatRegStatus
 import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import connectors._
+import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import models._
 import models.api._
+import play.api.i18n.MessagesApi
 import play.api.libs.json.{Format, Reads}
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -35,7 +37,7 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        vatRegConnector: VatRegistrationConnector,
                                        registrationApiConnector: RegistrationApiConnector,
                                        val sessionService: SessionService
-                                      )(implicit ec: ExecutionContext) {
+                                      )(implicit ec: ExecutionContext) extends FeatureSwitching {
 
   // -- New Registrations API methods --
 
@@ -76,8 +78,13 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
     getSection[VatRegStatus.Value](regId).map(_.getOrElse(throw new InternalServerException("Missing Vat Registration Status")))
   }
 
-  def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[DESResponse] = {
-    vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap)
+  def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_], messagesApi: MessagesApi): Future[DESResponse] = {
+    val lang = request.cookies.get(messagesApi.langCookieName) match {
+      case Some(langCookie) if isEnabled(WelshLanguage) => langCookie.value
+      case _ => "en"
+    }
+
+    vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap, lang)
   }
 
   def getEligibilitySubmissionData(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[EligibilitySubmissionData] =
