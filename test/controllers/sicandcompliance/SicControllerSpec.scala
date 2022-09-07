@@ -73,7 +73,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
     "redirect to ICL if feature switch is false" in new Setup {
       disable(StubIcl)
-      when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
+      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.successful("/url"))
 
       callAuthorised(controller.startICLJourney) {
@@ -84,7 +84,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
     "return exception" in new Setup {
       enable(StubIcl)
-      when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
+      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.startICLJourney)(_ => 1 mustBe 2))
     }
@@ -158,7 +158,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     "take the user to ICL" when {
       "hitting change (for SIC codes) on the summary" in new Setup {
         disable(StubIcl)
-        when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
+        when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful("/url"))
 
         callAuthorised(controller.startICLJourney) {
@@ -170,7 +170,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
     "return exception" in new Setup {
       enable(StubIcl)
-      when(mockICLService.journeySetup(any())(any[HeaderCarrier](), any()))
+      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.startICLJourney)(_ => 1 mustBe 2))
     }

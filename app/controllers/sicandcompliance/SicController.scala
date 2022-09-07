@@ -21,7 +21,7 @@ import controllers.BaseController
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
-import play.api.i18n.Messages
+import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{Action, AnyContent, Result}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -79,13 +79,13 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
     if (isEnabled(StubIcl)) {
       Future.successful(Redirect(controllers.test.routes.SicStubController.show))
     } else {
-      val customICLMessages: CustomICLMessages = CustomICLMessages(
-        messages("pages.icl.heading"),
-        messages("pages.icl.lead"),
-        messages("pages.icl.hint")
+      val customICLMessages: String => CustomICLMessages = (lang: String) => CustomICLMessages(
+        messagesApi.translate("pages.icl.heading", Nil)(Lang(lang)),
+        messagesApi.translate("pages.icl.lead", Nil)(Lang(lang)),
+        messagesApi.translate("pages.icl.hint", Nil)(Lang(lang))
       )
 
-      iclService.journeySetup(customICLMessages) map (redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))
+      iclService.journeySetup(customICLMessages("en"), customICLMessages("cy")) map (redirectUrl => Redirect(iclFEurlwww + redirectUrl, 303))
     }
   }
 }
