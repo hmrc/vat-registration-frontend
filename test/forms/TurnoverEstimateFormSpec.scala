@@ -27,12 +27,14 @@ class TurnoverEstimateFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val validTurnoverEstimate: BigDecimal = 14999.99
   val testNonNumberTurnoverEstimate: String = "test"
   val testTurnoverEstimateWithComma: String = "14,999.99"
+  val testTurnoverEstimateWithMoreDecimals: String = "14999.999"
   val testInvalidTurnoverEstimate: String = (999999999999999L + 1).toString
   val testNegativeTurnoverEstimate: String = "-1"
 
   val invalid_turnover_estimate_error_key: String = "validation.turnoverEstimate.invalid"
   val missing_turnover_estimate_error_key: String = "validation.turnoverEstimate.missing"
   val commasNotAllowed_turnover_estimate_error_key: String = "validation.turnoverEstimate.commasNotAllowed"
+  val moreThanTwoDecimalsNotAllowed_turnover_estimate_error_key: String = "validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed"
   val too_big_turnover_estimate_error_key: String = "validation.turnoverEstimate.range.above"
   val negative_turnover_estimate_error_key: String = "validation.turnoverEstimate.range.below"
 
@@ -63,6 +65,14 @@ class TurnoverEstimateFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       form.errors.size mustBe 1
       form.errors.head.key mustBe TurnoverEstimateForm.turnoverEstimateKey
       form.errors.head.message mustBe commasNotAllowed_turnover_estimate_error_key
+    }
+
+    "validate that turnoverEstimate with more than two decimals fails" in {
+      val form = turnoverEstimateForm.bind(Map(TurnoverEstimateForm.turnoverEstimateKey -> testTurnoverEstimateWithMoreDecimals))
+
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe TurnoverEstimateForm.turnoverEstimateKey
+      form.errors.head.message mustBe moreThanTwoDecimalsNotAllowed_turnover_estimate_error_key
     }
 
     "validate that when turnoverEstimate > 999999999999999 the form fails" in {

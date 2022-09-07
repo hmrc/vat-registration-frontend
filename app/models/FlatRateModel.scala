@@ -62,7 +62,7 @@ object FlatRateScheme {
       JsSuccess(FlatRateScheme(
         Some(joinFrs),
         if (!joinFrs && details.isEmpty) None else Some(businessGoods.isDefined),
-        businessGoods.map(js => (js \ "estimatedTotalSales").as[Long]),
+        businessGoods.map(js => (js \ "estimatedTotalSales").as[BigDecimal]),
         businessGoods.map(js => (js \ "overTurnover").as[Boolean]),
         if (details.isEmpty) None else Some(joinFrs),
         start,

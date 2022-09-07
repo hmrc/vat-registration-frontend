@@ -485,6 +485,7 @@ pages.turnoverEstimate.hint                                 = For example, £600
 validation.turnoverEstimate.missing                         = Enter the VAT-taxable turnover expected for the next 12 months
 validation.turnoverEstimate.invalid                         = Enter the VAT-taxable turnover, expected for the next 12 months, in the correct format
 validation.turnoverEstimate.commasNotAllowed                = The VAT-taxable turnover, expected for the next 12 months, amount cannot include commas
+validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed   = The VAT-taxable turnover, expected for the next 12 months, can only include pounds and pence
 validation.turnoverEstimate.range.above                     = Give an estimate that is more than or equal to £{0}
 validation.turnoverEstimate.range.below                     = Give an estimate that is less than or equal to £{0}
 
@@ -499,6 +500,7 @@ pages.zeroRatedSupplies.hint                                = For example, £600
 validation.zeroRatedSupplies.missing                        = Enter the value you expect the business’s zero-rated taxable goods to be over the next 12 months
 validation.zeroRatedSupplies.invalid                        = Enter the value of zero-rated taxable goods, expected over the next 12 months, in the correct format
 validation.zeroRatedSupplies.commasNotAllowed               = The value of zero-rated taxable goods, expected over the next 12 months, cannot include commas
+validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed  = The value of zero-rated taxable goods, expected over the next 12 months, can only include pounds and pence
 validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than or equal to the total value of the taxable turnover
 validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
@@ -943,6 +945,7 @@ validation.frs.estimateTotalSales.range.below = Enter an estimate which is £1 o
 validation.frs.estimateTotalSales.missing     = Enter the business’s estimated total sales, including VAT, for the next 3 months
 validation.frs.estimateTotalSales.invalid     = Enter the business’s estimated total sales, including VAT, for the next 3 months, in the correct format
 validation.estimateTotalSales.commasNotAllowed= The business’s estimated total sales, including VAT, for the next 3 months, cannot include commas
+validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed   = The business’s estimated total sales, including VAT, for the next 3 months, can only include pounds and pence
 
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.heading                   = Confirm the business type for the Flat Rate Scheme
@@ -1302,6 +1305,7 @@ nip.receiveGoods.missing                                 = Select yes if the bus
 validation.northernIrelandReceiveGoods.missing           = Enter the estimated value of the goods
 validation.northernIrelandReceiveGoods.invalid           = Enter the estimated value of the goods in the correct format
 validation.northernIrelandReceiveGoods.commasNotAllowed  = The estimated value of the goods cannot include commas
+validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed = The estimated value of the goods can only include pounds and pence
 
 # NORTHERN IRELAND PROTOCOL
 
@@ -1315,7 +1319,7 @@ nip.error.missing                                        = Select yes if the bus
 validation.sellOrMoveNip.missing                         = Enter the estimated value of the goods
 validation.sellOrMoveNip.invalid                         = Enter the estimated value of the goods in the correct format
 validation.sellOrMoveNip.commasNotAllowed                = The estimated value of the goods cannot include commas
-
+validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed   = The estimated value of the goods can only include pounds and pence
 
 pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
 pages.EmailDocuments.para1                               = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.

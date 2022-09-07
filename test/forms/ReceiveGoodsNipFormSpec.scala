@@ -28,6 +28,7 @@ class ReceiveGoodsNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val validYesNo: String = "true"
   val testNonNumberReceiveGoodsNip: String = "test"
   val testReceiveGoodsNipWithComma: String = "14,999.99"
+  val testReceiveGoodsNipWithMoreDecimals: String = "14999.999"
   val testInvalidReceiveGoodsNip: String = (999999999999999L + 1).toString
   val testNegativeReceiveGoodsNip: String = "-1"
 
@@ -35,6 +36,7 @@ class ReceiveGoodsNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val missing_receive_goods_nip_nip_error_key: String = "validation.northernIrelandReceiveGoods.missing"
   val missing_yes_no_error_key: String = "nip.receiveGoods.missing"
   val commasNotAllowed_receive_goods_nip_error_key: String = "validation.northernIrelandReceiveGoods.commasNotAllowed"
+  val moreThanTwoDecimalsNotAllowed_receive_goods_nip_error_key = "validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed"
   val too_big_receive_goods_nip_nip_error_key: String = "validation.northernIrelandReceiveGoods.range.above"
   val negative_receive_goods_nip_nip_error_key: String = "validation.northernIrelandReceiveGoods.range.below"
 
@@ -71,6 +73,14 @@ class ReceiveGoodsNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       form.errors.size mustBe 1
       form.errors.head.key mustBe ReceiveGoodsNipForm.inputAmount
       form.errors.head.message mustBe commasNotAllowed_receive_goods_nip_error_key
+    }
+
+    "validate that receiveGoodsNip with more than two decimals fails" in {
+      val form = receiveGoodsNipForm.bind(Map(ReceiveGoodsNipForm.yesNo -> validYesNo, ReceiveGoodsNipForm.inputAmount -> testReceiveGoodsNipWithMoreDecimals))
+
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe ReceiveGoodsNipForm.inputAmount
+      form.errors.head.message mustBe moreThanTwoDecimalsNotAllowed_receive_goods_nip_error_key
     }
 
     "validate that when receiveGoodsNip is negative the form fails" in {

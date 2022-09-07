@@ -83,7 +83,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient(url).post(Json.obj(
-        "zeroRatedSupplies" -> "10000.535"
+        "zeroRatedSupplies" -> "10000.53"
       ))
 
       whenReady(res) { result =>

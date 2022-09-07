@@ -28,6 +28,7 @@ class SellOrMoveNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val validYesNo: String = "true"
   val testNonNumberSellOrMoveNip: String = "test"
   val testSellOrMoveNipWithComma: String = "14,999.99"
+  val testSellOrMoveNipWithMoreDecimals: String = "14999.999"
   val testInvalidSellOrMoveNip: String = (999999999999999L + 1).toString
   val testNegativeSellOrMoveNip: String = "-1"
 
@@ -35,6 +36,7 @@ class SellOrMoveNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val missing_sell_or_move_nip_error_key: String = "validation.sellOrMoveNip.missing"
   val missing_yes_no_error_key: String = "nip.error.missing"
   val commasNotAllowed_sell_or_move_nip_error_key: String = "validation.sellOrMoveNip.commasNotAllowed"
+  val moreThanTwoDecimalsNotAllowed_sell_or_move_nip_error_key = "validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed"
   val too_big_sell_or_move_nip_error_key: String = "validation.sellOrMoveNip.range.above"
   val negative_sell_or_move_nip_error_key: String = "validation.sellOrMoveNip.range.below"
 
@@ -71,6 +73,14 @@ class SellOrMoveNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       form.errors.size mustBe 1
       form.errors.head.key mustBe SellOrMoveNipForm.inputAmount
       form.errors.head.message mustBe commasNotAllowed_sell_or_move_nip_error_key
+    }
+
+    "validate that sellOrMoveNip with more than two decimals fails" in {
+      val form = sellOrMoveNipForm.bind(Map(SellOrMoveNipForm.yesNo -> validYesNo, SellOrMoveNipForm.inputAmount -> testSellOrMoveNipWithMoreDecimals))
+
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe SellOrMoveNipForm.inputAmount
+      form.errors.head.message mustBe moreThanTwoDecimalsNotAllowed_sell_or_move_nip_error_key
     }
 
     "validate that when sellOrMoveNip is negative the form fails" in {

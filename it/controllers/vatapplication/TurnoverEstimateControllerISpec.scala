@@ -73,7 +73,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient(url).post(Json.obj(
-        "turnoverEstimate" -> "10000.535"
+        "turnoverEstimate" -> "10000.53"
       ))
 
       whenReady(res) { result =>

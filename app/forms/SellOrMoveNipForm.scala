@@ -27,8 +27,9 @@ object SellOrMoveNipForm extends RequiredBooleanForm {
   val inputAmount: String = "sellOrMoveNip"
   implicit val errorCode: ErrorCode = inputAmount
   val yesNo: String = "value"
-  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
-  val commasNowAllowed = """^[^,]+$""".r
+  val regex = """^[0-9]*\.?[0-9]+$""".r
+  val commasNotAllowed = """^[^,]+$""".r
+  val moreThanTwoDecimalsNotAllowed = """^[0-9]*\.?[0-9]{1,2}$""".r
 
   val form = Form(
     tuple(
@@ -36,8 +37,9 @@ object SellOrMoveNipForm extends RequiredBooleanForm {
       inputAmount -> mandatoryIf(
         isEqual(yesNo, "true"),
         text.verifying(StopOnFirstFail(
+          matchesRegex(commasNotAllowed, "validation.sellOrMoveNip.commasNotAllowed"),
           regexPattern(regex),
-          matchesRegex(commasNowAllowed, "validation.sellOrMoveNip.commasNotAllowed"),
+          matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed"),
           mandatoryFullNumericText))
           .transform[BigDecimal](s =>
             BigDecimal(s).setScale(2, BigDecimal.RoundingMode.HALF_UP),
