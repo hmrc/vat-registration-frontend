@@ -25,7 +25,7 @@ object ZeroRatedSuppliesForm {
 
   implicit val errorCode: String = "zeroRatedSupplies"
   val zeroRatedSuppliesKey = "zeroRatedSupplies"
-  val regex = """^[0-9]*\.?[0-9]+$""".r
+  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
   val commasNotAllowed = """^[^,]+$""".r
   val moreThanTwoDecimalsNotAllowed = """^[0-9]*\.?[0-9]{1,2}$""".r
 
@@ -34,8 +34,8 @@ object ZeroRatedSuppliesForm {
       zeroRatedSuppliesKey ->
         text
           .verifying(StopOnFirstFail(
-            matchesRegex(commasNotAllowed, "validation.zeroRatedSupplies.commasNotAllowed"),
             regexPattern(regex),
+            matchesRegex(commasNotAllowed, "validation.zeroRatedSupplies.commasNotAllowed"),
             matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed"),
             mandatoryFullNumericText))
           .transform[BigDecimal](string =>
