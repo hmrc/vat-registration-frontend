@@ -11,6 +11,7 @@ app.common.applied                      = Wedi gwneud cais
 app.common.yes                          = Iawn
 app.common.no                           = Na
 app.common.continue                     = Cadw ac yn eich blaen
+app.common.continueNoSave               = Yn eich blaen
 app.common.print                        = Argraffu’r dudalen hon
 app.common.saveAndComeBackLater         = Cadw a dod yn ôl yn nes ymlaen
 app.common.confirmAndContinue           = Cadarnhau ac yn eich blaen
@@ -165,9 +166,9 @@ addressLookup.applicantAddress.selectPage.heading                 = Dewiswch y c
 addressLookup.applicantAddress.selectPage.editAddressLinkText     = Nodwch y cyfeiriad â llaw
 addressLookup.applicantAddress.selectPage.submitLabel             = Yn eich blaen
 
-
 addressLookup.applicantAddress.editPage.title                     = Nodwch ei gyfeiriad
 addressLookup.applicantAddress.editPage.heading                   = Nodwch ei gyfeiriad
+
 addressLookup.applicantAddress.editPage.line1Label                = Cyfeiriad – llinell 1
 addressLookup.applicantAddress.editPage.line2Label                = Cyfeiriad – llinell 2
 addressLookup.applicantAddress.editPage.line3Label                = Cyfeiriad – llinell 3
@@ -464,7 +465,6 @@ pages.start.date.confirmation.heading                        = Dyddiad dechrau T
 pages.start.date.confirmation.para1                          = Dyma pryd y mae angen i’r cwmni ddechrau rhoi cyfrif am TAW.
 pages.start.date.confirmation.para2                          = Bydd dyddiad dechrau TAW y cwmni yr un peth â’r dyddiad y gwnaeth Tŷ’r Cwmnïau sefydlu’r cwmni. Ni ellir cofrestru’r cwmni ar gyfer TAW cyn i hyn ddigwydd.
 
-
 ## Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = Pryd hoffech i’ch dyddiad cofrestru TAW ddechrau?
 pages.start.date.incorp.heading                              = Pryd hoffech i’ch dyddiad cofrestru TAW ddechrau?
@@ -483,6 +483,7 @@ pages.turnoverEstimate.hint                                 = For example, £600
 validation.turnoverEstimate.missing                         = Enter the VAT-taxable turnover expected for the next 12 months
 validation.turnoverEstimate.invalid                         = Enter the VAT-taxable turnover, expected for the next 12 months, in the correct format
 validation.turnoverEstimate.commasNotAllowed                = The VAT-taxable turnover, expected for the next 12 months, amount cannot include commas
+validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed   = The VAT-taxable turnover, expected for the next 12 months, can only include pounds and pence
 validation.turnoverEstimate.range.above                     = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
 validation.turnoverEstimate.range.below                     = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
 
@@ -497,6 +498,7 @@ pages.zeroRatedSupplies.hint                                = For example, £600
 validation.zeroRatedSupplies.missing                        = Enter the value you expect the business’s zero-rated taxable goods to be over the next 12 months
 validation.zeroRatedSupplies.invalid                        = Enter the value of zero-rated taxable goods, expected over the next 12 months, in the correct format
 validation.zeroRatedSupplies.commasNotAllowed               = The value of zero-rated taxable goods, expected over the next 12 months, cannot include commas
+validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed  = The value of zero-rated taxable goods, expected over the next 12 months, can only include pounds and pence
 validation.zeroRatedSupplies.range.above                    = Mae’n rhaid i werth y trosiant trethadwy sydd ar gyfradd sero fod yn llai na neu’n hafal i gyfanswm y trosiant trethadwy
 validation.zeroRatedSupplies.range.below                    = Peidiwch â defnyddio rhifau negyddol, megis -1200
 
@@ -932,15 +934,16 @@ pages.frs.costsInclusive.para3.1                          = Cynllun Cyfradd Unff
 validation.frs.costsInclusive.missing                     = Dewiswch ‘Iawn’ os bydd y busnes yn gwario mwy na £250 dros y tri mis nesaf ar ‘nwyddau perthnasol’
 
 ## Estimate Total Sales Page
-pages.frs.estimateTotalSales.heading          = Amcangyfrifwch gyfanswm gwerthiannau’r busnes, gan gynnwys TAW, ar gyfer y tri mis nesaf
-pages.frs.estimateTotalSales.legend           = Nodwch yr amcangyfrif
-pages.frs.estimateTotalSales.hint             = For example, £600 or £90000
-pages.frs.estimateTotalSales.info             = Rhowch ffigurau sydd mor realistig â phosibl.
-validation.frs.estimateTotalSales.range.above = Nodwch amcangyfrif sy’n llai na £99,999,999,999
-validation.frs.estimateTotalSales.range.below = Nodwch amcangyfrif sy’n £1 neu’n fwy
-validation.frs.estimateTotalSales.missing     = Enter the business’s estimated total sales, including VAT, for the next 3 months
-validation.frs.estimateTotalSales.invalid     = Enter the business’s estimated total sales, including VAT, for the next 3 months, in the correct format
-validation.estimateTotalSales.commasNotAllowed= The business’s estimated total sales, including VAT, for the next 3 months, cannot include commas
+pages.frs.estimateTotalSales.heading                        = Amcangyfrifwch gyfanswm gwerthiannau’r busnes, gan gynnwys TAW, ar gyfer y tri mis nesaf
+pages.frs.estimateTotalSales.legend                         = Nodwch yr amcangyfrif
+pages.frs.estimateTotalSales.hint                           = For example, £600 or £90000
+pages.frs.estimateTotalSales.info                           = Rhowch ffigurau sydd mor realistig â phosibl.
+validation.frs.estimateTotalSales.range.above               = Nodwch amcangyfrif sy’n llai na £99,999,999,999
+validation.frs.estimateTotalSales.range.below               = Nodwch amcangyfrif sy’n £1 neu’n fwy
+validation.frs.estimateTotalSales.missing                   = Enter the business’s estimated total sales, including VAT, for the next 3 months
+validation.frs.estimateTotalSales.invalid                   = Enter the business’s estimated total sales, including VAT, for the next 3 months, in the correct format
+validation.estimateTotalSales.commasNotAllowed              = The business’s estimated total sales, including VAT, for the next 3 months, cannot include commas
+validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed = The business’s estimated total sales, including VAT, for the next 3 months, can only include pounds and pence
 
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.heading                   = Cadarnhewch y math o fusnes ar gyfer y Cynllun Cyfradd Unffurf?
@@ -1291,7 +1294,6 @@ pages.CoverSheet.idEvidence.birthCert              = tystysgrif geni
 pages.CoverSheet.vat1TRStart                       = ffurflen VAT1TR
 pages.CoverSheet.vat1TRLink                        = wedi’i chwblhau
 
-
 ## Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = A yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE?
 pages.northernIrelandReceiveGoods.label                  = What is the value of these goods?
@@ -1300,6 +1302,7 @@ nip.receiveGoods.missing                                 = Select yes if the bus
 validation.northernIrelandReceiveGoods.missing           = Enter the estimated value of the goods
 validation.northernIrelandReceiveGoods.invalid           = Enter the estimated value of the goods in the correct format
 validation.northernIrelandReceiveGoods.commasNotAllowed  = The estimated value of the goods cannot include commas
+validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed = The estimated value of the goods can only include pounds and pence
 
 # NORTHERN IRELAND PROTOCOL
 
@@ -1313,6 +1316,7 @@ nip.error.missing                                        = Select yes if the bus
 validation.sellOrMoveNip.missing                         = Enter the estimated value of the goods
 validation.sellOrMoveNip.invalid                         = Enter the estimated value of the goods in the correct format
 validation.sellOrMoveNip.commasNotAllowed                = The estimated value of the goods cannot include commas
+validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed   = The estimated value of the goods can only include pounds and pence
 
 pages.EmailDocuments.heading                             = Mae angen i chi anfon y dogfennau i’r cyfeiriad e-bost CThEM canlynol
 pages.EmailDocuments.para1                               = Er mwyn i ni allu bwrw ymlaen yn gyflym â’ch cofrestriad TAW, mae angen i chi anfon y dogfennau hyn atom cyn gynted ag y byddwch wedi cyflwyno’r ffurflen gais.
@@ -1624,3 +1628,17 @@ taxRep.para1                                         = You can appoint a tax rep
 taxRep.para2                                         = They will be the point of contact for VAT and they can be made responsible for any of the business’s VAT debts.
 validation.taxRep.error                              = Select yes if you would like to appoint a UK Tax Representative for the business
 
+# SUPPLY 1614A PAGE
+supply1614A.heading                                     = Do you need to upload a VAT1614A form?
+supply1614A.hint                                        = This is to tell us about an option to tax land and buildings.
+validation.supply1614A.error                            = Select yes if you need to upload a VAT1614A form
+
+# SUPPLY 1614H PAGE
+supply1614H.heading                                     = Do you need to upload a VAT1614H form?
+supply1614H.hint                                        = This is to apply for permission to opt to tax land and buildings.
+validation.supply1614H.error                            = Select yes if you need to upload a VAT1614H form
+
+# SUPPLY SUPPORTING DOCUMENTS PAGE
+supplySupportingDocuments.heading                       = Do you have any supporting documents?
+supplySupportingDocuments.hint                          = These are any land or property documents that may support your VAT5L application. For example, planning permission or solicitors correspondence.
+validation.supplySupportingDocuments.error              = Select yes if you have any supporting documents

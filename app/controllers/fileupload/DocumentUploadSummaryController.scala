@@ -18,6 +18,8 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.OptionToTax
+import models.api.VAT5L
 import models.external.upscan.{Ready, UpscanDetails}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
@@ -46,10 +48,11 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
         upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
         uploadSummaryRows = scanDetailsAsSummaryRows(upscanResponse)
         incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
+        needOptionToTax = isEnabled(OptionToTax) && upscanResponse.map(_.attachmentType).contains(VAT5L) && incompleteAttachments.isEmpty
       } yield {
         uploadSummaryRows match {
           case Nil => Redirect(routes.UploadDocumentController.show)
-          case _ => Ok(view(uploadSummaryRows, incompleteAttachments.size))
+          case _ => Ok(view(uploadSummaryRows, incompleteAttachments.size, needOptionToTax))
         }
       }
   }

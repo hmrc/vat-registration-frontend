@@ -31,7 +31,7 @@
         saveProgressButton: components.saveProgressButton
 )
 
-@(uploadedDocuments: Seq[DocumentUploadSummaryRow], pendingDocumentsCount: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(uploadedDocuments: Seq[DocumentUploadSummaryRow], pendingDocumentsCount: Int, needOptionToTax: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @defining(uploadedDocuments.size) { noOfUploadedDocuments =>
     @defining(
@@ -59,7 +59,11 @@
 
             <div class="govuk-button-group">
                 @link(
-                    link = controllers.fileupload.routes.UploadDocumentController.show.url,
+                    link = if(needOptionToTax) {
+                        controllers.fileupload.routes.Supply1614AController.show.url
+                    } else {
+                        controllers.fileupload.routes.UploadDocumentController.show.url
+                    },
                     messageKey = "app.common.continue",
                     isButton = true
                 )

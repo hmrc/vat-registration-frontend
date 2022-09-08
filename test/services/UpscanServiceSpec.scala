@@ -17,7 +17,7 @@
 package services
 
 import connectors.mocks.MockUpscanConnector
-import models.api.PrimaryIdentityEvidence
+import models.api.{LandPropertyOtherDocs, PrimaryIdentityEvidence}
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import testHelpers.VatRegSpec
@@ -30,9 +30,11 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
   object TestService extends UpscanService(mockUpscanConnector)
 
   val testReference = "testReference"
+  val testReference2 = "testReference2"
   val testHref = "testHref"
   val testUpscanResponse: UpscanResponse = UpscanResponse(testReference, testHref, Map())
   val testUpscanDetails: UpscanDetails = UpscanDetails(reference = testReference, fileStatus = InProgress, attachmentType = PrimaryIdentityEvidence)
+  val testUpscanDetailsLandAndPropertyOther: UpscanDetails = UpscanDetails(reference = testReference2, fileStatus = InProgress, attachmentType = LandPropertyOtherDocs)
 
   "initiateUpscan" must {
     "return an UpscanResponse" in {
@@ -87,6 +89,32 @@ class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
       mockDeleteUpscanDetails(testRegId, testReference)(Future.failed(new InternalServerException("")))
 
       intercept[InternalServerException](await(TestService.deleteUpscanDetails(testRegId, testReference)))
+    }
+  }
+
+  "deleteUpscanDetailsByType" must {
+    "delete if any details matching the type exist" in {
+      mockFetchAllUpscanDetails(testRegId)(Future.successful(List(testUpscanDetails, testUpscanDetailsLandAndPropertyOther)))
+      mockDeleteUpscanDetails(testRegId, testReference2)(Future.successful(true))
+
+      val response = await(TestService.deleteUpscanDetailsByType(testRegId, LandPropertyOtherDocs))
+
+      response mustBe List(true)
+    }
+
+    "throw an exception if delete fails" in {
+      mockFetchAllUpscanDetails(testRegId)(Future.successful(List(testUpscanDetails, testUpscanDetailsLandAndPropertyOther)))
+      mockDeleteUpscanDetails(testRegId, testReference2)(Future.failed(new InternalServerException("")))
+
+      intercept[InternalServerException](await(TestService.deleteUpscanDetailsByType(testRegId, LandPropertyOtherDocs)))
+    }
+
+    "do nothing if no details match the type" in {
+      mockFetchAllUpscanDetails(testRegId)(Future.successful(List(testUpscanDetails)))
+
+      val response = await(TestService.deleteUpscanDetailsByType(testRegId, LandPropertyOtherDocs))
+
+      response mustBe Nil
     }
   }
 

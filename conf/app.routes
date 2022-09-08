@@ -541,3 +541,15 @@ POST        /business-website                                         controller
 ## Tax Rep page
 GET         /tax-representative                                       controllers.vatapplication.TaxRepController.show
 POST        /tax-representative                                       controllers.vatapplication.TaxRepController.submit
+
+## Supply 1614A Page
+GET         /supply-1614a                                             controllers.fileupload.Supply1614AController.show
+POST        /supply-1614a                                             controllers.fileupload.Supply1614AController.submit
+
+## Supply 1614H Page
+GET         /supply-1614h                                             controllers.fileupload.Supply1614HController.show
+POST        /supply-1614h                                             controllers.fileupload.Supply1614HController.submit
+
+## Supply Supporting Documents Page
+GET         /supply-supporting-documents                              controllers.fileupload.SupplySupportingDocumentsController.show
+POST        /supply-supporting-documents                              controllers.fileupload.SupplySupportingDocumentsController.submit
