@@ -84,6 +84,19 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
         )
   }
 
+  def continue: Action[AnyContent] = isAuthenticatedWithProfile() {
+    implicit request =>
+      implicit profile =>
+        if (isEnabled(TaskList)) {
+          Future.successful(Redirect(controllers.routes.TaskListController.show))
+        } else {
+          vatRegistrationService.partyType.map {
+            case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+            case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
+          }
+        }
+  }
+
   private def buildRows(otherBusinessInvolvements: List[OtherBusinessInvolvement]): List[ObiSummaryRow] =
     otherBusinessInvolvements.zipWithIndex.map { case (obi, idx) =>
       val businessName = obi.businessName.getOrElse(throw new InternalServerException(s"Couldn't render OBI summary due to missing business name for index: $idx"))

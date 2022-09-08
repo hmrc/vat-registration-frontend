@@ -500,6 +500,7 @@ POST        /other-business-involvement/check-answers                 controller
 ## Other Business Involvement Summary
 GET         /other-business-involvement/summary                       controllers.otherbusinessinvolvements.ObiSummaryController.show
 POST        /other-business-involvement/summary                       controllers.otherbusinessinvolvements.ObiSummaryController.submit
+POST        /other-business-involvement/continue                      controllers.otherbusinessinvolvements.ObiSummaryController.continue
 
 ## Other Business Involvement Remove
 GET         /other-business-involvement/:index/remove                 controllers.otherbusinessinvolvements.RemoveOtherBusinessController.show(index: Int)
