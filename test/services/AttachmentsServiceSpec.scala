@@ -18,6 +18,7 @@ package services
 
 import connectors.mocks.{MockAttachmentsConnector, MockRegistrationApiConnector}
 import models.api.{AttachmentType, Attachments, IdentityEvidence, Post}
+import services.AttachmentsService.{Supply1614AAnswer, Supply1614HAnswer, SupplySupportingDocumentsAnswer}
 import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
@@ -51,11 +52,72 @@ class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector wi
   }
 
   "storeAttachmentDetails" should {
-    "send the given value and proxy the response from the connector" in {
+    "send the given attachment method and proxy the response from the connector" in {
       val updatedAttachments = Attachments(method = Some(Post))
+      mockGetSection[Attachments](testRegId, None)
       mockReplaceSection[Attachments](testRegId, updatedAttachments)
 
       val res = await(Service.storeAttachmentDetails(testRegId, Post))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'false' Supply 1614A Answer" in {
+      val presentAttachments = Attachments(method = Some(Post))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614a = Some(false))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, Supply1614AAnswer(false)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'true' Supply 1614A Answer and remove supplyVat1614h" in {
+      val presentAttachments = Attachments(method = Some(Post), supplyVat1614a = Some(false), supplyVat1614h = Some(false))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614a = Some(true), supplyVat1614h = None)
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, Supply1614AAnswer(true)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'false' Supply 1614H Answer" in {
+      val presentAttachments = Attachments(method = Some(Post), supplyVat1614a = Some(false))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614h = Some(false))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, Supply1614HAnswer(false)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'true' Supply 1614H Answer" in {
+      val presentAttachments = Attachments(method = Some(Post), supplyVat1614a = Some(false))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614h = Some(true))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, Supply1614HAnswer(true)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'false' Supply Supporting Documents Answer" in {
+      val presentAttachments = Attachments(method = Some(Post), supplyVat1614a = Some(false), supplyVat1614h = Some(false))
+      val updatedAttachments = presentAttachments.copy(supplySupportingDocuments = Some(false))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, SupplySupportingDocumentsAnswer(false)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'true' Supply Supporting Documents Answer" in {
+      val presentAttachments = Attachments(method = Some(Post), supplyVat1614a = Some(false), supplyVat1614h = Some(true))
+      val updatedAttachments = presentAttachments.copy(supplySupportingDocuments = Some(true))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, SupplySupportingDocumentsAnswer(true)))
       res mustBe updatedAttachments
     }
   }

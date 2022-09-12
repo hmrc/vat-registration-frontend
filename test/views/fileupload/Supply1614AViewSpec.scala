@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package views.attachments
+package views.fileupload
 
-import forms.TaxRepForm
+import forms.Supply1614AForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.vatapplication.TaxRepresentative
+import views.html.fileupload.Supply1614A
 
-class TaxRepresentativeViewSpec extends VatRegViewSpec {
+class Supply1614AViewSpec extends VatRegViewSpec {
 
-  val taxRepPage: TaxRepresentative = app.injector.instanceOf[TaxRepresentative]
+  val taxRepPage: Supply1614A = app.injector.instanceOf[Supply1614A]
 
-  lazy val view: Html = taxRepPage(TaxRepForm.form)
-  implicit val doc = Jsoup.parse(view.body)
+  lazy val view: Html = taxRepPage(Supply1614AForm.form)
+  implicit val doc: Document = Jsoup.parse(view.body)
 
   object ExpectedContent {
-    val heading = "Do you want to appoint a UK tax representative for the business?"
+    val heading = "Do you need to upload a VAT1614A form?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "You can appoint a tax representative to deal with VAT matters on behalf of the business."
-    val para2 = "They will be the point of contact for VAT and they can be made responsible for any of the business’s VAT debts."
+    val para1 = "This is to tell us about an option to tax land and buildings."
     val yes = "Yes"
     val no = "No"
-    val continue = "Save and continue"
+    val continue = "Continue"
   }
 
   "The Tax Representative page" must {
@@ -52,9 +52,8 @@ class TaxRepresentativeViewSpec extends VatRegViewSpec {
       doc.title mustBe ExpectedContent.title
     }
 
-    "have the correct text" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedContent.para1)
-      doc.para(2) mustBe Some(ExpectedContent.para2)
+    "have the correct hint text" in new ViewSetup {
+      doc.hintText mustBe Some(ExpectedContent.para1)
     }
 
     "have yes/no radio options" in new ViewSetup {

@@ -11,6 +11,7 @@ app.common.applied                      = Applied
 app.common.yes                          = Yes
 app.common.no                           = No
 app.common.continue                     = Save and continue
+app.common.continueNoSave               = Continue
 app.common.print                        = Print this page
 app.common.saveAndComeBackLater         = Save and come back later
 app.common.confirmAndContinue           = Confirm and continue
@@ -164,7 +165,6 @@ addressLookup.applicantAddress.selectPage.title                   = Choose the a
 addressLookup.applicantAddress.selectPage.heading                 = Choose the address
 addressLookup.applicantAddress.selectPage.editAddressLinkText     = Enter address manually
 addressLookup.applicantAddress.selectPage.submitLabel             = Continue
-
 
 addressLookup.applicantAddress.editPage.title                     = Enter their address
 addressLookup.applicantAddress.editPage.heading                   = Enter their address
@@ -406,7 +406,6 @@ contact.heading                         = Sorry this service is unavailable
 contact.p                               = Sorry the system is unavailable. Please try again later or contact the
 contact.oshLink                         = HM Revenue & Customs Online Service Helpdesk
 
-
 ## Start Date Page
 pages.startDate.heading                               = What do you want the business’s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.
@@ -465,7 +464,6 @@ pages.summary.voluntaryReason.intendsToSell                   = The company inte
 pages.start.date.confirmation.heading                        = The company’s VAT start date
 pages.start.date.confirmation.para1                          = This is when the company needs to start accounting for VAT.
 pages.start.date.confirmation.para2                          = The company’s VAT start date will be the same as the date Companies House set it up. The company can’t be registered for VAT before this happens.
-
 
 ## Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = When would you like your VAT registration date to start?
@@ -936,16 +934,16 @@ pages.frs.costsInclusive.para3.1                          = VAT Flat Rate Scheme
 validation.frs.costsInclusive.missing                     = Select yes if the business will spend more than £250 over the next 3 months on ‘relevant goods’
 
 ## Estimate Total Sales Page
-pages.frs.estimateTotalSales.heading          = Estimate the business’s total sales, including VAT, for the next 3 months
-pages.frs.estimateTotalSales.legend           = Enter the estimate
-pages.frs.estimateTotalSales.hint             = For example, £600 or £90000
-pages.frs.estimateTotalSales.info             = Give figures that are as realistic as possible.
-validation.frs.estimateTotalSales.range.above = Enter an estimate which is less than £99,999,999,999
-validation.frs.estimateTotalSales.range.below = Enter an estimate which is £1 or more
-validation.frs.estimateTotalSales.missing     = Enter the business’s estimated total sales, including VAT, for the next 3 months
-validation.frs.estimateTotalSales.invalid     = Enter the business’s estimated total sales, including VAT, for the next 3 months, in the correct format
-validation.estimateTotalSales.commasNotAllowed= The business’s estimated total sales, including VAT, for the next 3 months, cannot include commas
-validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed   = The business’s estimated total sales, including VAT, for the next 3 months, can only include pounds and pence
+pages.frs.estimateTotalSales.heading                        = Estimate the business’s total sales, including VAT, for the next 3 months
+pages.frs.estimateTotalSales.legend                         = Enter the estimate
+pages.frs.estimateTotalSales.hint                           = For example, £600 or £90000
+pages.frs.estimateTotalSales.info                           = Give figures that are as realistic as possible.
+validation.frs.estimateTotalSales.range.above               = Enter an estimate which is less than £99,999,999,999
+validation.frs.estimateTotalSales.range.below               = Enter an estimate which is £1 or more
+validation.frs.estimateTotalSales.missing                   = Enter the business’s estimated total sales, including VAT, for the next 3 months
+validation.frs.estimateTotalSales.invalid                   = Enter the business’s estimated total sales, including VAT, for the next 3 months, in the correct format
+validation.estimateTotalSales.commasNotAllowed              = The business’s estimated total sales, including VAT, for the next 3 months, cannot include commas
+validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed = The business’s estimated total sales, including VAT, for the next 3 months, can only include pounds and pence
 
 ## FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.heading                   = Confirm the business type for the Flat Rate Scheme
@@ -1296,7 +1294,6 @@ pages.CoverSheet.idEvidence.birthCert              = birth certificate
 pages.CoverSheet.vat1TRStart                       = a completed
 pages.CoverSheet.vat1TRLink                        = VAT1TR form
 
-
 ## Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = Does the business expect to receive goods in Northern Ireland from an EU country?
 pages.northernIrelandReceiveGoods.label                  = What is the value of these goods?
@@ -1631,3 +1628,17 @@ taxRep.para1                                          = You can appoint a tax re
 taxRep.para2                                         = They will be the point of contact for VAT and they can be made responsible for any of the business’s VAT debts.
 validation.taxRep.error                              = Select yes if you would like to appoint a UK Tax Representative for the business
 
+# SUPPLY 1614A PAGE
+supply1614A.heading                                     = Do you need to upload a VAT1614A form?
+supply1614A.hint                                        = This is to tell us about an option to tax land and buildings.
+validation.supply1614A.error                            = Select yes if you need to upload a VAT1614A form
+
+# SUPPLY 1614H PAGE
+supply1614H.heading                                     = Do you need to upload a VAT1614H form?
+supply1614H.hint                                        = This is to apply for permission to opt to tax land and buildings.
+validation.supply1614H.error                            = Select yes if you need to upload a VAT1614H form
+
+# SUPPLY SUPPORTING DOCUMENTS PAGE
+supplySupportingDocuments.heading                       = Do you have any supporting documents?
+supplySupportingDocuments.hint                          = These are any land or property documents that may support your VAT5L application. For example, planning permission or solicitors correspondence.
+validation.supplySupportingDocuments.error              = Select yes if you have any supporting documents

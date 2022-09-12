@@ -38,7 +38,7 @@ class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationF
 
   val testList = List(DocumentUploadSummaryRow("test-document", removeLink))
 
-  implicit val doc = Jsoup.parse(view(testList, testList.size).body)
+  implicit val doc = Jsoup.parse(view(testList, testList.size, false).body)
 
   "The document upload summary view" must {
     "have the correct title" in new ViewSetup {

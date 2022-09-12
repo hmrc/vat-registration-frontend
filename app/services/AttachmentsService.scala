@@ -18,6 +18,7 @@ package services
 
 import connectors.{AttachmentsConnector, RegistrationApiConnector}
 import models.api.{AttachmentMethod, AttachmentType, Attachments}
+import services.AttachmentsService._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -30,12 +31,40 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
   def getAttachmentDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[Attachments]] =
     registrationApiConnector.getSection[Attachments](regId)
 
-  def storeAttachmentDetails(regId: String, method: AttachmentMethod)(implicit hc: HeaderCarrier): Future[Attachments] =
-    registrationApiConnector.replaceSection[Attachments](regId, Attachments(method = Some(method)))
+  def storeAttachmentDetails[T](regId: String, data: T)(implicit hc: HeaderCarrier): Future[Attachments] = {
+    getAttachmentDetails(regId).flatMap { attachmentDetails =>
+      val presentAttachmentDetails = attachmentDetails.getOrElse(Attachments())
+      val updatedAttachmentDetails = data match {
+        case answer: AttachmentMethod =>
+          Attachments(method = Some(answer), None, None, None)
+        case Supply1614AAnswer(answer) =>
+          if (answer) {
+            presentAttachmentDetails.copy(supplyVat1614a = Some(answer), supplyVat1614h = None)
+          } else {
+            presentAttachmentDetails.copy(supplyVat1614a = Some(answer))
+          }
+        case Supply1614HAnswer(answer) =>
+          presentAttachmentDetails.copy(supplyVat1614a = Some(false), supplyVat1614h = Some(answer))
+        case SupplySupportingDocumentsAnswer(answer) =>
+          presentAttachmentDetails.copy(supplySupportingDocuments = Some(answer))
+      }
+
+      registrationApiConnector.replaceSection[Attachments](regId, updatedAttachmentDetails)
+    }
+
+  }
 
   def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
     attachmentsConnector.getAttachmentList(regId)
 
   def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
     attachmentsConnector.getIncompleteAttachments(regId)
+}
+
+object AttachmentsService {
+  case class Supply1614AAnswer(answer: Boolean)
+
+  case class Supply1614HAnswer(answer: Boolean)
+
+  case class SupplySupportingDocumentsAnswer(answer: Boolean)
 }
