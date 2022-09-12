@@ -58,7 +58,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCannotStart
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be None when attachments are missing" in new Setup {
@@ -90,7 +90,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCannotStart
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be not started when attachment method is not selected" in new Setup {
@@ -113,7 +113,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLNotStarted
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be not started when attachment method is not selected and no FlatRate prerequisite available" in new Setup {
@@ -136,7 +136,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLNotStarted
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be TLCannotStart when attachment method is not selected and not FlatRate scheme but vat returns data not complete" in new Setup {
@@ -160,7 +160,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCannotStart
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be in progress when attachment method is digital attachment and there are incomplete attachments" in new Setup {
@@ -183,7 +183,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLInProgress
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be completed when attachment method is digital attachment and all attachment are completed" in new Setup {
@@ -206,7 +206,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be completed when attachment method is post" in new Setup {
@@ -229,7 +229,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
     "be completed when attachment method is email" in new Setup {
@@ -252,7 +252,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted
-      row.url mustBe controllers.attachments.routes.AttachmentMethodController.show.url
+      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
   }
 }

@@ -21,8 +21,9 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.MultipleDocumentsRequired
+import featureswitch.core.config._
 
-class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
+class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val view: MultipleDocumentsRequired = app.injector.instanceOf[MultipleDocumentsRequired]
 
@@ -34,7 +35,9 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
     def bullet1Named(name: String) = s"three documents to confirm $name’s identity"
     val linkText = "VAT2 form (opens in new tab)"
     val bullet2 = s"a completed $linkText"
-    val vat5LBullet = "a completed VAT5L form (opens in new tab)"
+    val vat5LBullet = "a completed VAT5L form (opens in new tab) with details of the land and property supplies the business is making"
+    val vat1614Bullet = "a VAT1614A (opens in new tab) or VAT1614H form (opens in new tab) if you have decided to, or want to opt to tax land or buildings"
+    val supportingDocsBullet = "any supporting documents"
     val continue = "Save and continue"
     val transactorName = "Transactor Name"
     val applicantName = "Applicant Name"
@@ -92,6 +95,16 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
       override val doc: Document = Jsoup.parse(view(List(VAT5L), None, None).body)
 
       doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
+    }
+
+    "show the vat5L, vat1614 and supporting docs bullet points when option to tax feature switch is on and attachment list contains VAT5L" in new ViewSetup {
+      enable(OptionToTax)
+      override val doc: Document = Jsoup.parse(view(List(VAT5L), None, None).body)
+      disable(OptionToTax)
+
+      doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
+      doc.unorderedList(1) must contain(ExpectedContent.vat1614Bullet)
+      doc.unorderedList(1) must contain(ExpectedContent.supportingDocsBullet)
     }
 
     "show the vat1TR bullet point when attachment list does contain vat1TR" in new ViewSetup {

@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51, TransactorIdentityEvidence, VAT5L, TaxRepresentativeAuthorisation}
+@import featureswitch.core.config.OptionToTax
 
 @this(
         layout: layouts.layout,
@@ -46,7 +47,15 @@
             case VAT5L => vat5LBlock
             case TaxRepresentativeAuthorisation => vat1TRBlock
             case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
-        }: _*
+        }
+        ::: attachments.map{
+            case VAT5L if appConfig.isEnabled(OptionToTax) => vat1614Block
+            case _ => HtmlFormat.empty
+        }.filter(!_.equals(HtmlFormat.empty))
+        ::: attachments.map{
+            case VAT5L if appConfig.isEnabled(OptionToTax) => supportingDocsBlock
+            case _ => HtmlFormat.empty
+        }.filter(!_.equals(HtmlFormat.empty)): _*
     )
 
     @if(attachments.contains(IdentityEvidence)) {
@@ -101,6 +110,27 @@
         messageKey = messages("attachments.multipleDocumentsRequired.VAT5L.link"),
         isExternal = true
     )
+    @messages("attachments.multipleDocumentsRequired.VAT5L.para2")
+}
+
+@vat1614Block = {
+    @messages("attachments.multipleDocumentsRequired.VAT1614.para1")
+    @link(
+        link = appConfig.vat1614ALink,
+        messageKey = messages("attachments.multipleDocumentsRequired.VAT1614A.link"),
+        isExternal = true
+    )
+    @messages("attachments.multipleDocumentsRequired.VAT1614.para2")
+    @link(
+        link = appConfig.vat1614HLink,
+        messageKey = messages("attachments.multipleDocumentsRequired.VAT1614H.link"),
+        isExternal = true
+    )
+    @messages("attachments.multipleDocumentsRequired.VAT1614.para3")
+}
+
+@supportingDocsBlock = {
+    @messages("attachments.multipleDocumentsRequired.supportingDocs.para1")
 }
 
 @vat1TRBlock = {

@@ -16,24 +16,26 @@
 
 package views.attachments
 
+import featureswitch.core.config.{FeatureSwitching, OptionToTax}
 import models.api.{AttachmentType, IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.EmailCoverSheet
 
-class EmailCoverSheetViewSpec extends VatRegViewSpec {
+class EmailCoverSheetViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val testRef = "VRN12345689"
   val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence, VAT5L, TaxRepresentativeAuthorisation)
   val testVat2: List[AttachmentType] = List[AttachmentType](VAT2)
+  val testVat5L: List[AttachmentType] = List[AttachmentType](VAT5L)
 
   lazy val view: EmailCoverSheet = app.injector.instanceOf[EmailCoverSheet]
 
   object ExpectedContent {
     val heading = "How to email documents to HMRC"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your supporting documents."
+    val para1 = "The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your documents."
     val panel1 = s"Register for VAT reference number: $testRef"
     val heading2 = "What you must attach to the email"
     val para2 = "You must send us additional documents in order for us to process this VAT application:"
@@ -41,9 +43,11 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val vat5LBullet = "a completed VAT5L form (opens in new tab)"
+    val vat1614Bullet = "a completed VAT1614A (opens in new tab) or VAT1614H form (opens in new tab) if you have decided to, or want to opt to tax land or buildings"
+    val supportingDocsBullet = "any supporting documents"
     val idEvidence = "three documents to confirm your identity"
     def idEvidenceNamed(name: String) = s"three documents to confirm $name’s identity"
-    val para3 = "Send the supporting documents to:"
+    val para3 = "Send your documents to:"
     val panel2 = "VATREGBETA@hmrc.gov.uk"
     val print = "Print this page"
     val transactorName = "Transactor Name"
@@ -53,7 +57,8 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
 
   object IdentityEvidenceBlock {
     val summary = "What identity documents can I provide?"
-    val content: String = "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
+    val content: String = "The three identity documents you should send " +
+      "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
       "passport " +
       "driving licence photocard " +
       "national identity card " +
@@ -123,12 +128,24 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec {
     }
 
     "have the correct first bullet list" in new ViewSetup {
+
       doc.unorderedList(1) mustBe List(
         ExpectedContent.vat2Bullet,
         ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence,
         ExpectedContent.vat5LBullet,
         ExpectedContent.vat1TRBullet
+      )
+    }
+
+    "have the vat5L, vat1614 and supporting docs bullet list when OptionToTax feature switch is on and attachment list contains VAT5L" in new ViewSetup {
+      enable(OptionToTax)
+      override val doc: Document = Jsoup.parse(view(testRef, testVat5L, None, None).body)
+      disable(OptionToTax)
+      doc.unorderedList(1) mustBe List(
+        ExpectedContent.vat5LBullet,
+        ExpectedContent.vat1614Bullet,
+        ExpectedContent.supportingDocsBullet
       )
     }
 
