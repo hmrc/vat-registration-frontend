@@ -30,6 +30,7 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   object ExpectedMessages {
     val heading = "You have added 1 business involvement"
+    val maxOBILimitHeading = "You have added 10 business involvements"
     val changeLink = "Change"
     val removeLink = "Remove"
     val questionLabel = "Do you need to add another business?"
@@ -43,15 +44,16 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
   val removeLink = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
   val testVatNumber = "testVatNumber"
 
-  val testList = List(ObiSummaryRow(
+  val summaryRow: ObiSummaryRow = ObiSummaryRow(
     businessName = testCompanyName,
     changeAction = changeLink,
     deleteAction = removeLink
-  ))
-
-  implicit val doc = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
+  )
 
   "The OBI summary view" must {
+    val testList = List(summaryRow)
+    implicit val doc = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
+
     "have the correct title" in new ViewSetup {
       doc.title must include (ExpectedMessages.heading)
     }
@@ -79,4 +81,24 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
     }
   }
 
+  "OBI summary view with max allowed OBI rows" must {
+    val testList = List.fill(10)(summaryRow)
+    implicit val doc = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
+
+    "have the correct title" in new ViewSetup {
+      doc.title must include(ExpectedMessages.maxOBILimitHeading)
+    }
+    "have the correct h1 heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedMessages.maxOBILimitHeading)
+    }
+    "have max limit of 10 OBIs" in new ViewSetup {
+      doc.getElementsByTag("tr").size() mustBe 10
+    }
+    "does not have a Yes/No question" in new ViewSetup {
+      doc.radioGroup(1) mustBe None
+    }
+    "have a submit button" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedMessages.submitButton)
+    }
+  }
 }

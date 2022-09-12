@@ -43,19 +43,23 @@
 
         @obiSummaryTable(obiList)
 
-        @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.submit) {
-            @yesNoRadio(
-                form = obiSummaryForm,
-                headingKey = messages("obi.summary.subHeading"),
-                isPageHeading = false,
-                inline = true,
-                fieldName = "value",
-                hint = Some(Html(messages("obi.summary.hint"))),
-                classes = "govuk-heading-m"
-            )
-
-            @button("app.common.continue", showSaveProgressButton = true)
+        @if(numObis < 10) {
+            @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.submit) {
+                @yesNoRadio(
+                    form = obiSummaryForm,
+                    headingKey = messages("obi.summary.subHeading"),
+                    isPageHeading = false,
+                    inline = true,
+                    fieldName = "value",
+                    hint = Some(Html(messages("obi.summary.hint"))),
+                    classes = "govuk-heading-m"
+                )
+                @button("app.common.continue", showSaveProgressButton = true)
+            }
+        } else {
+            @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.continue) {
+                @button("app.common.continue", showSaveProgressButton = true)
+            }
         }
-
     }
 }

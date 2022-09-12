@@ -13,17 +13,18 @@ import play.api.test.Helpers._
 class ObiSummaryControllerISpec extends ControllerISpec {
 
   def pageUrl(): String = routes.ObiSummaryController.show.url
+  def continueUrl(): String = routes.ObiSummaryController.continue.url
 
-  val testObis = List(
-    OtherBusinessInvolvement(
-      businessName = Some(testCompanyName),
-      hasVrn = Some(true),
-      vrn = Some(testVrn),
-      hasUtr = None,
-      utr = None,
-      stillTrading = Some(true)
-    )
+  private val otherBusinessInvolvement: OtherBusinessInvolvement = OtherBusinessInvolvement(
+    businessName = Some(testCompanyName),
+    hasVrn = Some(true),
+    vrn = Some(testVrn),
+    hasUtr = None,
+    utr = None,
+    stillTrading = Some(true)
   )
+
+  val testObis = List(otherBusinessInvolvement)
 
   "GET" when {
     "the user has no OBIs" must {
@@ -175,4 +176,40 @@ class ObiSummaryControllerISpec extends ControllerISpec {
     }
   }
 
+  "POST" when {
+    "the user chooses to continue after reaching OBI limit" must {
+      val limitReachedOBIList = List.fill(10)(otherBusinessInvolvement)
+
+      "redirect to the 'Imports or Exports' for UkCompany" in new Setup {
+        given
+          .user.isAuthorised()
+          .registrationApi.getListSection[OtherBusinessInvolvement](Some(limitReachedOBIList))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(continueUrl()).post(""))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
+      }
+
+      "redirect to the task list page if TaskList FS is on" in new Setup {
+        enable(TaskList)
+        given
+          .user.isAuthorised()
+          .registrationApi.getListSection[OtherBusinessInvolvement](Some(limitReachedOBIList))
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(continueUrl()).post(""))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+        disable(TaskList)
+      }
+    }
+  }
 }
