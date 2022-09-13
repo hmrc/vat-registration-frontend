@@ -90,8 +90,8 @@ class Supply1614AControllerISpec extends ControllerISpec {
 
       val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "true")))
 
-      res.status mustBe NOT_IMPLEMENTED
-      //        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadOptionToTaxDocumentController.show.url)
     }
 
     "remove old supplyVat1614a uploaded file and redirect to Supply 1614H page if 'no' is selected" in new Setup {
