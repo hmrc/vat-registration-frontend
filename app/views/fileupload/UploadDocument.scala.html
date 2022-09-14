@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import helper.form
+@import models.api._
 @import models.external.upscan.UpscanResponse
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
@@ -33,9 +34,9 @@
         panelIndent: panelIndent
 )
 
-@(upscanResponse: UpscanResponse, hintHtml: Html, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(upscanResponse: UpscanResponse, optHintHtml: Option[Html], attachmentType: AttachmentType, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm(messages("fileUpload.uploadDocument.heading")))) {
+@layout(pageTitle = Some(titleNoForm(heading))) {
 
     @errorSummary(optErrorCode.map(errorCode => FormError("file-upload-1", s"fileUpload.error.$errorCode")).toSeq)
 
@@ -44,9 +45,11 @@
             <input type="hidden" name="@field._1" value="@field._2"/>
         }
 
-        @h1("fileUpload.uploadDocument.heading")
+        @h1(heading)
 
-        @panelIndent(hintHtml)
+        @optHintHtml.map { html =>
+            @panelIndent(html)
+        }
 
         @govukFileUpload(FileUpload(
             name = "file",
@@ -61,7 +64,18 @@
         @govukButton(Button(
             attributes = Map("id" -> "file-upload-button"),
             classes = "govuk-!-margin-right-1",
-            content = Text(messages("app.common.continue"))
+            content = Text(messages("app.common.continueNoSave"))
         ))
+    }
+}
+
+@heading = @{
+    attachmentType match {
+        case VAT5L => messages("supplementary.uploadDocument.heading.vat5L")
+        case VAT51 => messages("supplementary.uploadDocument.heading.vat51")
+        case VAT2 => messages("supplementary.uploadDocument.heading.vat2")
+        case TaxRepresentativeAuthorisation => messages("supplementary.uploadDocument.heading.vat1tr")
+        case LandPropertyOtherDocs => messages("supplementary.uploadDocument.heading.supportingDocuments")
+        case _ => messages("fileUpload.uploadDocument.heading")
     }
 }

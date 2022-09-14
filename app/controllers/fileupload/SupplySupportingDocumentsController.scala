@@ -60,7 +60,7 @@ class SupplySupportingDocumentsController @Inject()(val authConnector: AuthConne
           success => {
             attachmentsService.storeAttachmentDetails(profile.registrationId, SupplySupportingDocumentsAnswer(success)).flatMap { _ =>
               if (success) {
-                Future.successful(NotImplemented)
+                Future.successful(Redirect(routes.UploadSupportingDocumentController.show))
               } else {
                 upscanService.deleteUpscanDetailsByType(profile.registrationId, LandPropertyOtherDocs).map { _ =>
                   if (isEnabled(TaskList)) {

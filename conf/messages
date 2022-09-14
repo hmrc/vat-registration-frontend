@@ -1577,8 +1577,11 @@ validation.obi.summary.error               = Select yes if you need to add anoth
 # DOCUMENT UPLOAD SUMMARY PAGE
 document.upload.summary.heading             = You have added {0} document
 document.upload.summary.headingPlural       = You have added {0} documents
+document.upload.summary.subHeading          = Do you need to add another supporting document?
+document.upload.summary.hint                = You must add all your supporting documents.
 pending.documents.message                   = You need to upload another document
 pending.documents.messagePlural             = You need to upload another {0} documents
+validation.supplySupportingDocuments.error  = Select yes if you need to add another supporting document
 
 # DOCUMENT UPLOAD REMOVE
 document.upload.remove.heading                  = Are you sure you want to remove {0}?
@@ -1606,11 +1609,16 @@ fileUpload.uploadDocument.hint.fileType              = The file must be a JPG, B
 fileUpload.uploadDocument.label                      = Upload a file
 
 # UPLOAD SUPPLEMENTARY FORMS PAGE
-supplementary.uploadDocument.start                   = Upload a completed
-supplementary.uploadDocument.vat5LLink               = VAT5L form
-supplementary.uploadDocument.vat51Link               = VAT 50/51 form
-supplementary.uploadDocument.vat2Link                = VAT2 form
-supplementary.uploadDocument.vat1trLink              = VAT1TR form
+supplementary.uploadDocument.heading.vat5L                  = Upload a VAT5L
+supplementary.uploadDocument.heading.vat51                  = Upload a VAT 50/51
+supplementary.uploadDocument.heading.vat2                   = Upload a VAT2
+supplementary.uploadDocument.heading.vat1tr                 = Upload a VAT1TR
+supplementary.uploadDocument.heading.supportingDocuments    = Upload a supporting document
+supplementary.uploadDocument.start                          = Upload a completed
+supplementary.uploadDocument.vat5LLink                      = VAT5L form
+supplementary.uploadDocument.vat51Link                      = VAT 50/51 form
+supplementary.uploadDocument.vat2Link                       = VAT2 form
+supplementary.uploadDocument.vat1trLink                     = VAT1TR form
 
 # UPLOAD FORM ERROR MESSAGES
 fileUpload.async.error.page.heading                  = There is a problem with the selected file

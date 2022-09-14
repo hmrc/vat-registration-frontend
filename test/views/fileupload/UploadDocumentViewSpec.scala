@@ -17,6 +17,7 @@
 package views.fileupload
 
 
+import models.api.{LandPropertyOtherDocs, PrimaryIdentityEvidence}
 import models.external.upscan.UpscanResponse
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -33,20 +34,47 @@ class UploadDocumentViewSpec extends VatRegViewSpec {
 
   object ExpectedContent {
     val heading = "Upload a document"
+    val headingSupporting = "Upload a supporting document"
     val title = s"$heading - Register for VAT - GOV.UK"
+    val titleSupporting = s"$headingSupporting - Register for VAT - GOV.UK"
     val testHint = "testHint"
     val label = "Upload a file"
-    val continue = "Save and continue"
+    val continue = "Continue"
     val fileUploadError = "Error: The selected file must be smaller than 10MB"
   }
 
   "The Upload Documents Page with no error response from upscan" must {
-    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Html(ExpectedContent.testHint), None)
+    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Some(Html(ExpectedContent.testHint)), PrimaryIdentityEvidence, None)
     verifyPageLayout(Jsoup.parse(view.body))
   }
 
+  "The Upload Documents Page with no error response from upscan for supporting documents" must {
+    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, None, LandPropertyOtherDocs, None)
+    implicit val doc: Document = Jsoup.parse(view.body)
+
+    "have a back link" in new ViewSetup {
+      doc.hasBackLink mustBe true
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.headingSupporting)
+    }
+
+    "have the correct title" in new ViewSetup {
+      doc.title mustBe ExpectedContent.titleSupporting
+    }
+
+    "have no panel text" in new ViewSetup {
+      doc.panelIndent(0) mustBe None
+    }
+
+    "have a primary action" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.continue)
+    }
+  }
+
   "The Upload Documents Page with error response from upscan" must {
-    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Html(ExpectedContent.testHint), Some("EntityTooLarge"))
+    lazy val view: Html = uploadDocumentsPage(testUpscanResponse, Some(Html(ExpectedContent.testHint)), PrimaryIdentityEvidence, Some("EntityTooLarge"))
     implicit val doc: Document = Jsoup.parse(view.body)
 
     verifyPageLayout(doc)

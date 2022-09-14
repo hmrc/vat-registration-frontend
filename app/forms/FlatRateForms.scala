@@ -96,14 +96,14 @@ object FRSStartDateForm {
 
 object EstimateTotalSalesForm {
   implicit val errorCode: ErrorCode = "frs.estimateTotalSales"
-  val regex = """^[0-9]*\.?[0-9]+$""".r
+  val regex = """^[0-9 ,]*\.?[0-9]+$""".r
   val commasNotAllowed = """^[^,]+$""".r
   val moreThanTwoDecimalsNotAllowed = """^[0-9]*\.?[0-9]{1,2}$""".r
 
   val form = Form(single("totalSalesEstimate" -> text
     .verifying(StopOnFirstFail(
-      matchesRegex(commasNotAllowed, "validation.estimateTotalSales.commasNotAllowed"),
       regexPattern(regex),
+      matchesRegex(commasNotAllowed, "validation.estimateTotalSales.commasNotAllowed"),
       matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed"),
       mandatoryFullNumericText))
     .transform[BigDecimal](BigDecimal(_).setScale(2, BigDecimal.RoundingMode.HALF_UP), _.toString)
