@@ -17,6 +17,7 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+import featureswitch.core.config.{FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
 import models.api.VatScheme
 import models.{Business, CurrentProfile, OtherBusinessInvolvement}
 import play.api.i18n.Messages
@@ -26,7 +27,7 @@ import services.BusinessService
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService) {
+class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService) extends FeatureSwitching {
 
   def businessDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
@@ -59,10 +60,14 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
 
   def businessActivitiesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessActivities",
-    url = _ => controllers.business.routes.LandAndPropertyController.show.url,
+    url = _ =>
+      if (isEnabled(LandAndProperty)) {
+        controllers.business.routes.LandAndPropertyController.show.url
+      } else {
+        controllers.business.routes.BusinessActivityDescriptionController.show.url
+      },
     tagId = "businessActivitiesRow",
     checks = scheme => Seq(
-      scheme.business.exists(_.hasLandAndProperty.isDefined),
       scheme.business.exists(_.businessDescription.isDefined),
       scheme.business.exists(_.mainBusinessActivity.isDefined)
     ).++ {
@@ -71,6 +76,12 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
       }
       if (needsCompliance) {
         Seq(scheme.business.exists(_.labourCompliance.exists(businessService.isLabourComplianceModelComplete)))
+      } else {
+        Nil
+      }
+    }.++ {
+      if (isEnabled(LandAndProperty)) {
+        Seq(scheme.business.exists(_.hasLandAndProperty.isDefined))
       } else {
         Nil
       }
@@ -118,8 +129,9 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
       heading = messages("tasklist.aboutTheBusiness.heading"),
       rows = Seq(
         businessDetailsRow.build(vatScheme),
-        businessActivitiesRow.build(vatScheme),
-        otherBusinessInvolvementsRow.build(vatScheme)
-      )
+        businessActivitiesRow.build(vatScheme)
+      ).++ {
+        if (isEnabled(OBI_FS)) Seq(otherBusinessInvolvementsRow.build(vatScheme)) else Nil
+      }
     )
 }

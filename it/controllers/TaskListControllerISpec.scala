@@ -1,7 +1,7 @@
 
 package controllers
 
-import featureswitch.core.config.TaskList
+import featureswitch.core.config.{TaskList, OtherBusinessInvolvement => OBI_FS}
 import itutil.ControllerISpec
 import models._
 import models.api._
@@ -297,6 +297,7 @@ class TaskListControllerISpec extends ControllerISpec {
 
       "show business activities section with correct states when pre-requisites are not complete" in new Setup {
         enable(TaskList)
+        enable(OBI_FS)
 
         implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
@@ -326,9 +327,11 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.aboutTheBusinessSection.businessActivitiesCannotStartYetRow,
           ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
         ))
+        disable(OBI_FS)
       }
 
       "show business activities section with business details section complete" in new Setup {
+        enable(OBI_FS)
         enable(TaskList)
 
         implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
@@ -360,9 +363,11 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.aboutTheBusinessSection.businessActivitiesNotStartedRow,
           ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
         ))
+        disable(OBI_FS)
       }
 
       "show business activities section with business details and activities section complete" in new Setup {
+        enable(OBI_FS)
         enable(TaskList)
 
         implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
@@ -394,6 +399,7 @@ class TaskListControllerISpec extends ControllerISpec {
           ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow,
           ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsNotStartedRow
         ))
+        disable(OBI_FS)
       }
 
       "show vat registration section with correct states when pre-requisites are not met" in new Setup {
