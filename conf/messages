@@ -1202,10 +1202,17 @@ attachments.multipleDocumentsRequired.VAT51.para1                   = a complete
 attachments.multipleDocumentsRequired.VAT51.link                    = VAT 50/51 form
 attachments.multipleDocumentsRequired.VAT51.para2                   = to provide us with details of the VAT group, including details of each subsidiary.
 attachments.multipleDocumentsRequired.VAT5L.para1                   = a completed
+attachments.multipleDocumentsRequired.VAT5L.para2                   = with details of the land and property supplies the business is making
 attachments.multipleDocumentsRequired.VAT5L.link                    = VAT5L form
 attachments.multipleDocumentsRequired.VAT1TR.para1                  = a completed
 attachments.multipleDocumentsRequired.VAT1TR.link                   = VAT1TR form
 attachments.multipleDocumentsRequired.VAT1TR.para2                  = with details of your chosen UK tax representative.
+attachments.multipleDocumentsRequired.VAT1614.para1                 = a
+attachments.multipleDocumentsRequired.VAT1614A.link                 = VAT1614A
+attachments.multipleDocumentsRequired.VAT1614.para2                 = or
+attachments.multipleDocumentsRequired.VAT1614H.link                 = VAT1614H form
+attachments.multipleDocumentsRequired.VAT1614.para3                 = if you have decided to, or want to opt to tax land or buildings
+attachments.multipleDocumentsRequired.supportingDocs.para1          = any supporting documents
 
 ## IDENTITY EVIDENCE REQUIRED
 
@@ -1238,13 +1245,13 @@ attachments.uploadingDocument.subheading           = We are checking your file.
 attachments.uploadingDocument.status.button.text   = Check status
 
 pages.PostalCoverSheet.heading                           = Print cover letter for documents
-pages.PostalCoverSheet.para                              = Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your supporting documents.
+pages.PostalCoverSheet.para                              = Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your documents.
 pages.PostalCoverSheet.warningText                       = Do not post the original documents to HMRC as we are unable to return them to you.
 pages.PostalCoverSheet.panel1                            = Register for VAT reference number:
 pages.PostalCoverSheet.whatYouMustSend                   = What you must post to us
 pages.PostalCoverSheet.para4                             = Include this cover letter.
 pages.PostalCoverSheet.heading5                          = Postal address
-pages.PostalCoverSheet.para5                             = Send the supporting documents and covering letter to:
+pages.PostalCoverSheet.para5                             = Send the documents and covering letter to:
 pages.PostalCoverSheet.panel2                            = VAT Registration Applications
 pages.PostalCoverSheet.panel3                            = BT VAT
 pages.PostalCoverSheet.panel4                            = HM Revenue and Customs
@@ -1254,11 +1261,11 @@ pages.PostalCoverSheet.panel6                            = United Kingdom
 ## EMAIL ATTACHMENTS
 
 pages.EmailCoverSheet.heading                           = How to email documents to HMRC
-pages.EmailCoverSheet.para                              = The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your supporting documents.
+pages.EmailCoverSheet.para                              = The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your documents.
 pages.EmailCoverSheet.panel1                            = Register for VAT reference number:
 pages.EmailCoverSheet.whatYouMustSend.heading           = What you must attach to the email
 pages.EmailCoverSheet.sendHeading                       = Email address
-pages.EmailCoverSheet.sendDocsTo                        = Send the supporting documents to:
+pages.EmailCoverSheet.sendDocsTo                        = Send your documents to:
 pages.EmailCoverSheet.attachmentsEmail                  = VATREGBETA@hmrc.gov.uk
 
 ## COMMON COVER SHEET MESSAGES
@@ -1272,9 +1279,16 @@ pages.CoverSheet.vat51Link                         = VAT 50/51 form
 pages.CoverSheet.vat51End                          = to provide us with details of the VAT group, including details of each subsidiary
 pages.CoverSheet.vat5LStart                        = a completed
 pages.CoverSheet.vat5LLink                         = VAT5L form
+pages.CoverSheet.vat1614.para1                     = a completed
+pages.CoverSheet.vat1614ALink                      = VAT1614A
+pages.CoverSheet.vat1614.para2                     = or
+pages.CoverSheet.vat1614HLink                      = VAT1614H form
+pages.CoverSheet.vat1614.para3                     = if you have decided to, or want to opt to tax land or buildings
+pages.CoverSheet.supportingDocs                    = any supporting documents
 pages.CoverSheet.identityEvidence                  = three documents to confirm your identity
 pages.CoverSheet.identityEvidence.name             = three documents to confirm {0}’s identity
 pages.CoverSheet.idEvidence.details                = What identity documents can I provide?
+pages.CoverSheet.idEvidence.heading                = The three identity documents you should send
 pages.CoverSheet.idEvidence.para1                  = Include a copy of
 pages.CoverSheet.idEvidence.para1Bold              = one
 pages.CoverSheet.idEvidence.para1Finish            = piece of evidence that includes a government issued photo. This could be a:
@@ -1429,6 +1443,11 @@ pages.vat5LRequired.heading                              = You must send us a co
 pages.vat5LRequired.para1                                = We need a completed
 pages.vat5LRequired.link                                 = VAT5L form
 pages.vat5LRequired.para2                                = to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to us.
+pages.vat5LRequired.para3                                = If you have decided to, or want to opt to tax land or buildings, we also need a completed
+pages.vat5LRequired.vat1614A.link                        = VAT1614A
+pages.vat5LRequired.para4                                = or
+pages.vat5LRequired.vat1614H.link                        = VAT1614H form
+pages.vat5LRequired.para5                                = If you have any supporting documents, you need to send these too.
 
 ## VAT1TR REQUIRED
 pages.vat1TRRequired.heading                             = You must send us a completed VAT1TR form in order for us to process this application

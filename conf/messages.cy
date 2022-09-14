@@ -1202,10 +1202,17 @@ attachments.multipleDocumentsRequired.VAT51.para1                   = ffurflen V
 attachments.multipleDocumentsRequired.VAT51.link                    = wedi’i chwblhau
 attachments.multipleDocumentsRequired.VAT51.para2                   = i roi manylion am y grŵp TAW i ni, gan gynnwys manylion pob is-gwmni.
 attachments.multipleDocumentsRequired.VAT5L.para1                   = ffurflen VAT5L
+attachments.multipleDocumentsRequired.VAT5L.para2                   = with details of the land and property supplies the business is making
 attachments.multipleDocumentsRequired.VAT5L.link                    = wedi’i chwblhau
 attachments.multipleDocumentsRequired.VAT1TR.para1                  = a completed
 attachments.multipleDocumentsRequired.VAT1TR.link                   = VAT1TR form
 attachments.multipleDocumentsRequired.VAT1TR.para2                  = with details of your chosen UK tax representative.
+attachments.multipleDocumentsRequired.VAT1614.para1                 = a
+attachments.multipleDocumentsRequired.VAT1614A.link                 = VAT1614A
+attachments.multipleDocumentsRequired.VAT1614.para2                 = or
+attachments.multipleDocumentsRequired.VAT1614H.link                 = VAT1614H form
+attachments.multipleDocumentsRequired.VAT1614.para3                 = if you have decided to, or want to opt to tax land or buildings
+attachments.multipleDocumentsRequired.supportingDocs.para1          = any supporting documents
 
 ## IDENTITY EVIDENCE REQUIRED
 
@@ -1272,9 +1279,16 @@ pages.CoverSheet.vat51Link                         = wedi’i chwblhau
 pages.CoverSheet.vat51End                          = i roi manylion am y grŵp TAW i ni, gan gynnwys manylion pob is-gwmni
 pages.CoverSheet.vat5LStart                        = ffurflen VAT5L
 pages.CoverSheet.vat5LLink                         = wedi’i chwblhau
+pages.CoverSheet.vat1614.para1                     = a completed
+pages.CoverSheet.vat1614ALink                      = VAT1614A
+pages.CoverSheet.vat1614.para2                     = or
+pages.CoverSheet.vat1614HLink                      = VAT1614H form
+pages.CoverSheet.vat1614.para3                     = if you have decided to, or want to opt to tax land or buildings
+pages.CoverSheet.supportingDocs                    = any supporting documents
 pages.CoverSheet.identityEvidence                  = tair dogfen i gadarnhau pwy ydych
 pages.CoverSheet.identityEvidence.name             = tair dogfen i gadarnhau pwy yw {0}
 pages.CoverSheet.idEvidence.details                = Pa ddogfennau adnabod allaf eu darparu?
+pages.CoverSheet.idEvidence.heading                = The three identity documents you should send
 pages.CoverSheet.idEvidence.para1                  = Cofiwch gynnwys copi o
 pages.CoverSheet.idEvidence.para1Bold              = un
 pages.CoverSheet.idEvidence.para1Finish            = darn o dystiolaeth sy’n cynnwys llun a gyhoeddwyd gan y llywodraeth. Gallai hyn fod yn un o’r canlynol:
@@ -1429,6 +1443,11 @@ pages.vat5LRequired.heading                              = Mae’n rhaid i chi a
 pages.vat5LRequired.para1                                = Mae arnom angen
 pages.vat5LRequired.link                                 = ffurflen VAT5L wedi’i chwblhau
 pages.vat5LRequired.para2                                = i gasglu gwybodaeth am yr holl gyflenwadau tir ac eiddo mae’r busnes yn eu gwneud. Ar ôl i chi orffen y ffurflen hon, mae’n rhaid i chi naill ai uwchlwytho, e-bostio neu bostio copi ohoni at CThEM.
+pages.vat5LRequired.para3                                = If you have decided to, or want to opt to tax land or buildings, we also need a completed
+pages.vat5LRequired.vat1614A.link                        = VAT1614A
+pages.vat5LRequired.para4                                = or
+pages.vat5LRequired.vat1614H.link                        = VAT1614H form
+pages.vat5LRequired.para5                                = If you have any supporting documents, you need to send these too.
 
 ## VAT1TR REQUIRED
 pages.vat1TRRequired.heading                             = You must send us a completed VAT1TR form in order for us to process this application

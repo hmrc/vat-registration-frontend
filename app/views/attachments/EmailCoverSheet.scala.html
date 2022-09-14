@@ -19,11 +19,13 @@
 @import views.html.layouts.layout
 @import models.api.AttachmentType
 @import models.api.{VAT2, VAT51, IdentityEvidence, TransactorIdentityEvidence, VAT5L, TaxRepresentativeAuthorisation}
+@import featureswitch.core.config.OptionToTax
 
 @this(
         layout: layout,
         h1: h1,
         h2:h2,
+        h3:h3,
         p: p,
         button: button,
         formWithCSRF: FormWithCSRF,
@@ -60,7 +62,15 @@
             case TransactorIdentityEvidence => Html(transactorName.map(name => messages("pages.CoverSheet.identityEvidence.name", name)))
             case VAT5L => vat5LBlock
             case TaxRepresentativeAuthorisation => vat1TRBlock
-        }: _*
+        }
+        ::: attachments.map{
+            case VAT5L if appConfig.isEnabled(OptionToTax) => vat1614Block
+            case _ => HtmlFormat.empty
+        }.filter(!_.equals(HtmlFormat.empty))
+        ::: attachments.map{
+            case VAT5L if appConfig.isEnabled(OptionToTax) => supportingDocsBlock
+            case _ => HtmlFormat.empty
+        }.filter(!_.equals(HtmlFormat.empty)): _*
     )
 
     @if(attachments.contains(IdentityEvidence)) {
@@ -77,6 +87,7 @@
 }
 
 @identityEvidenceBlock = {
+    @h3(messages("pages.CoverSheet.idEvidence.heading"))
     @p{
         @messages("pages.CoverSheet.idEvidence.para1")
         @strong { @messages(s"pages.CoverSheet.idEvidence.para1Bold") }
@@ -122,6 +133,26 @@
 @vat5LBlock = {
     @messages("pages.CoverSheet.vat5LStart")
     @link(appConfig.vat5LLink, "pages.CoverSheet.vat5LLink", isExternal = true)
+}
+
+@vat1614Block = {
+    @messages("pages.CoverSheet.vat1614.para1")
+    @link(
+        link = appConfig.vat1614ALink,
+        messageKey = messages("pages.CoverSheet.vat1614ALink"),
+        isExternal = true
+    )
+    @messages("pages.CoverSheet.vat1614.para2")
+    @link(
+        link = appConfig.vat1614HLink,
+        messageKey = messages("pages.CoverSheet.vat1614HLink"),
+        isExternal = true
+    )
+    @messages("pages.CoverSheet.vat1614.para3")
+}
+
+@supportingDocsBlock = {
+    @messages("pages.CoverSheet.supportingDocs")
 }
 
 @vat1TRBlock = {

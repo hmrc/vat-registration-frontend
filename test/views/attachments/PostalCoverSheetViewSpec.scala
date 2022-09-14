@@ -16,13 +16,14 @@
 
 package views.attachments
 
+import featureswitch.core.config.{FeatureSwitching, OptionToTax}
 import models.api.{AttachmentType, IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.PostalCoverSheet
 
-class PostalCoverSheetViewSpec extends VatRegViewSpec {
+class PostalCoverSheetViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   val testRef = "VRN12345689"
   val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence, VAT5L, TaxRepresentativeAuthorisation)
@@ -34,7 +35,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
   object ExpectedContent {
     val heading = "Print cover letter for documents"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your supporting documents."
+    val para1 = "Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your documents."
     val warningText = "Do not post the original documents to HMRC as we are unable to return them to you."
     val panel1 = s"Register for VAT reference number: $testRef"
     val heading2 = "What you must post to us"
@@ -46,6 +47,8 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
     val vat2Bullet = "a completed VAT2 form (opens in new tab) to capture the details of all the partners"
     val vat51Bullet = "a completed VAT 50/51 form (opens in new tab) to provide us with details of the VAT group, including details of each subsidiary"
     val vat5LBullet = "a completed VAT5L form (opens in new tab)"
+    val vat1614Bullet = "a completed VAT1614A (opens in new tab) or VAT1614H form (opens in new tab) if you have decided to, or want to opt to tax land or buildings"
+    val supportingDocsBullet = "any supporting documents"
     val idEvidence = "three documents to confirm your identity"
     def idEvidenceNamed(name: String) = s"three documents to confirm $name’s identity"
     val print = "Print this page"
@@ -56,7 +59,8 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
 
   object IdentityEvidenceBlock {
     val summary = "What identity documents can I provide?"
-    val content: String = "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
+    val content: String = "The three identity documents you should send " +
+      "Include a copy of one piece of evidence that includes a government issued photo. This could be a: " +
       "passport " +
       "driving licence photocard " +
       "national identity card " +
@@ -142,6 +146,17 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
       )
     }
 
+    "have the vat5L, vat1614 and supporting docs bullet list when OptionToTax feature switch is on and attachment list contains VAT5L" in new ViewSetup {
+      enable(OptionToTax)
+      override val doc: Document = Jsoup.parse(view(testRef, testVat5L, None, None).body)
+      disable(OptionToTax)
+      doc.unorderedList(1) mustBe List(
+        ExpectedContent.vat5LBullet,
+        ExpectedContent.vat1614Bullet,
+        ExpectedContent.supportingDocsBullet
+      )
+    }
+
     "have the correct first bullet list for the transactor flow" when {
       "transactor is unverified" in new ViewSetup {
         override val doc: Document = Jsoup.parse(view(testRef, List(TransactorIdentityEvidence), None, Some(ExpectedContent.transactorName)).body)
@@ -177,5 +192,6 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec {
       doc.select(Selectors.indent).get(1).text mustBe ExpectedContent.panel2
     }
   }
+
 }
 
