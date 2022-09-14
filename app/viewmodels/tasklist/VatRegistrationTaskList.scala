@@ -17,7 +17,7 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, TaxRepPage}
+import featureswitch.core.config.{FeatureSwitching, TaxRepPage, OtherBusinessInvolvement}
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
@@ -55,7 +55,12 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         }
       }
     },
-    prerequisites = _ => Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
+    prerequisites = _ =>
+      if (isEnabled(OtherBusinessInvolvement)) {
+        Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
+      } else {
+        Seq(aboutTheBusinessTaskList.businessActivitiesRow)
+      }
   )
 
   def bankAccountDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
