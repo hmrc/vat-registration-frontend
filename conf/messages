@@ -871,7 +871,7 @@ validation.formerNameDate.range.above                    = Enter a date that is 
 pages.previousAddressQuestion.yourHeading                = Have you lived at your current address for 3 years or more?
 pages.previousAddressQuestion.namedHeading               = Has {0} lived at their current address for 3 years or more?
 validation.previousAddressQuestion.missing               = Select yes if you have lived at your current address for 3 years or more
-validation.previousAddressQuestionThirdParty.missing    = Select yes if they have lived at the current address for 3 years or more
+validation.previousAddressQuestionThirdParty.missing     = Select yes if they have lived at the current address for 3 years or more
 
 ## PPOB
 pages.ppob.title                                        = What is the ’principal place of business’?

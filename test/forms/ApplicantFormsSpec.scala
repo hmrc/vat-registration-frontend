@@ -130,7 +130,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
     "bind successfully with data" in {
       val data = Map(
-        "previousAddressQuestionRadio" -> "true"
+        "value" -> "true"
       )
 
       val result = testForm.bind(data).fold(
@@ -145,18 +145,18 @@ class ApplicantFormsSpec extends VatRegSpec {
       val data: Map[String, String] = Map()
       val boundForm = testForm.bind(data)
 
-      boundForm shouldHaveErrors Seq("previousAddressQuestionRadio" -> "validation.previousAddressQuestion.missing")
+      boundForm shouldHaveErrors Seq("value" -> "validation.previousAddressQuestion.missing")
     }
 
     "have the correct error if no data is provided and an alternate error code is specified" in {
       val data: Map[String, String] = Map()
       val boundForm = PreviousAddressForm.form("previousAddressQuestionThirdParty").bind(data)
 
-      boundForm shouldHaveErrors Seq("previousAddressQuestionRadio" -> "validation.previousAddressQuestionThirdParty.missing")
+      boundForm shouldHaveErrors Seq("value" -> "validation.previousAddressQuestionThirdParty.missing")
     }
 
     "Unbind successfully with full data" in {
-      val data = Map("previousAddressQuestionRadio" -> "false")
+      val data = Map("value" -> "false")
 
       testForm.fill(testData).data mustBe data
     }

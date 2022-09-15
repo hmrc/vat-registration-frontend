@@ -131,7 +131,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockSaveApplicantDetails(PreviousAddressView(true, None))(emptyApplicantDetails)
 
       submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
-        "previousAddressQuestionRadio" -> "true"
+        "value" -> "true"
       )) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show.url)
@@ -144,7 +144,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
       submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
+        fakeRequest.withFormUrlEncodedBody("value" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some("/register-for-vat/current-address/changePreviousAddress")
@@ -154,7 +154,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(NETP))
 
       submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("previousAddressQuestionRadio" -> "false")
+        fakeRequest.withFormUrlEncodedBody("value" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(routes.InternationalPreviousAddressController.show.url)

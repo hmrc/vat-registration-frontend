@@ -21,7 +21,7 @@ import play.api.data.Forms.single
 
 object VatExemptionForm extends RequiredBooleanForm {
 
-  override val errorMsg = "validation.vatExemption.error"
+  override val errorMsg = "validation.vatExemption.missing"
   val value = "value"
 
   val form: Form[Boolean] = Form(
