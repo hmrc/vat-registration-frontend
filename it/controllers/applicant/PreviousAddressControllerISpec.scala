@@ -52,7 +52,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(applicantRoutes.PreviousAddressController.submit.url)
-        .post(Map("previousAddressQuestionRadio" -> Seq("false"))))
+        .post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
@@ -67,7 +67,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(applicantRoutes.PreviousAddressController.submit.url)
-        .post(Map("previousAddressQuestionRadio" -> Seq("false"))))
+        .post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
@@ -85,7 +85,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("previousAddressQuestionRadio" -> Seq("true")))
+        val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("value" -> Seq("true")))
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)

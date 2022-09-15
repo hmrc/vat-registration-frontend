@@ -56,7 +56,7 @@ object HomeAddressForm {
 }
 
 object PreviousAddressForm {
-  val RADIO_YES_NO: String = "previousAddressQuestionRadio"
+  val RADIO_YES_NO: String = "value"
 
   def form(errorCode: ErrorCode = "previousAddressQuestion"): Form[PreviousAddressView] =
     Form(

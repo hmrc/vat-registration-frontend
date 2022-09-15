@@ -871,7 +871,7 @@ validation.formerNameDate.range.above                    = Nodwch ddyddiad sydd 
 pages.previousAddressQuestion.yourHeading                = A ydych wedi byw yn eich cyfeiriad presennol ers tair blynedd neu fwy?
 pages.previousAddressQuestion.namedHeading               = A yw’r cyfeiriad presennol yn gartref i {0} ers tair blynedd neu fwy?
 validation.previousAddressQuestion.missing               = Dewiswch ‘Iawn’ os ydych wedi byw yn eich cyfeiriad presennol ers tair blynedd neu fwy
-validation.previousAddressQuestionThirdParty.missing     = Dewiswch ‘Iawn’ os yw’r cyfeiriad presennol yn gartref i {0} ers tair blynedd neu fwy
+validation.previousAddressQuestionThirdParty.missing     = Select yes if they have lived at the current address for 3 years or more
 
 ## PPOB
 pages.ppob.title                                        = Beth yw ‘prif leoliad y busnes’?

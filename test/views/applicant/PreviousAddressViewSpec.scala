@@ -45,7 +45,7 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
 
   "Previous Address Page" should {
     "display the page without pre populated data" in {
-      nonTransactorDoc.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      nonTransactorDoc.getElementsByAttributeValue("name", "value").size mustBe 2
       nonTransactorDoc.getElementsByAttribute("checked").size mustBe 0
     }
 
@@ -55,7 +55,7 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
       lazy val view = previousAddressPage(form.fill(validPreviousAddress), None)
       lazy val document = Jsoup.parse(view.body)
 
-      document.getElementsByAttributeValue("name", "previousAddressQuestionRadio").size mustBe 2
+      document.getElementsByAttributeValue("name", "value").size mustBe 2
       document.getElementsByAttribute("checked").size mustBe 1
     }
 

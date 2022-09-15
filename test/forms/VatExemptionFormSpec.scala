@@ -39,7 +39,7 @@ class VatExemptionFormSpec extends VatRegSpec {
       val boundForm = testForm.bind(data)
 
       boundForm shouldHaveErrors Seq(
-        "value" -> "validation.vatExemption.error"
+        "value" -> "validation.vatExemption.missing"
       )
     }
 
