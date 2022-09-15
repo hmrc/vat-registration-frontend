@@ -1577,8 +1577,11 @@ validation.obi.summary.error               = Dewiswch ‘Iawn’ os oes angen i 
 # DOCUMENT UPLOAD SUMMARY PAGE
 document.upload.summary.heading             = Rydych wedi ychwanegu {0} ddogfen
 document.upload.summary.headingPlural       = Rydych wedi ychwanegu {0} o ddogfennau
+document.upload.summary.subHeading          = Do you need to add another supporting document?
+document.upload.summary.hint                = You must add all your supporting documents.
 pending.documents.message                   = Mae angen i chi uwchlwytho dogfen arall
 pending.documents.messagePlural             = Mae angen i chi ychwanegu {0} o ddogfennau yn rhagor
+validation.supplySupportingDocuments.error  = Select yes if you need to add another supporting document
 
 # DOCUMENT UPLOAD REMOVE
 document.upload.remove.heading                  = A ydych yn siŵr eich bod am dynnu {0}?
@@ -1606,11 +1609,16 @@ fileUpload.uploadDocument.hint.fileType              = Mae’n rhaid i’r ffeil
 fileUpload.uploadDocument.label                      = Uwchlwytho ffeil
 
 # UPLOAD SUPPLEMENTARY FORMS PAGE
-supplementary.uploadDocument.start                   = Uwchlwytho
-supplementary.uploadDocument.vat5LLink               = ffurflen VAT5L wedi’i chwblhau
-supplementary.uploadDocument.vat51Link               = ffurflen VAT 50/51 wedi’i chwblhau
-supplementary.uploadDocument.vat2Link                = ffurflen VAT2 wedi’i chwblhau
-supplementary.uploadDocument.vat1trLink              = ffurflen VAT1TR wedi’i chwblhau
+supplementary.uploadDocument.heading.vat5L                  = Upload a VAT5L
+supplementary.uploadDocument.heading.vat51                  = Upload a VAT 50/51
+supplementary.uploadDocument.heading.vat2                   = Upload a VAT2
+supplementary.uploadDocument.heading.vat1tr                 = Upload a VAT1TR
+supplementary.uploadDocument.heading.supportingDocuments    = Upload a supporting document
+supplementary.uploadDocument.start                          = Uwchlwytho
+supplementary.uploadDocument.vat5LLink                      = ffurflen VAT5L wedi’i chwblhau
+supplementary.uploadDocument.vat51Link                      = ffurflen VAT 50/51 wedi’i chwblhau
+supplementary.uploadDocument.vat2Link                       = ffurflen VAT2 wedi’i chwblhau
+supplementary.uploadDocument.vat1trLink                     = ffurflen VAT1TR wedi’i chwblhau
 
 # UPLOAD FORM ERROR MESSAGES
 fileUpload.async.error.page.heading                  = Mae problem gyda’r ffeil dan sylw

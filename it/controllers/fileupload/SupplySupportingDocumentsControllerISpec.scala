@@ -92,8 +92,8 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
 
       val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "true")))
 
-      res.status mustBe NOT_IMPLEMENTED
-      //        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadSupportingDocumentController.show.url)
     }
 
     "remove old supplySupportingDocuments files and redirect to Summary page if 'no' is selected and tasklist is off" in new Setup {

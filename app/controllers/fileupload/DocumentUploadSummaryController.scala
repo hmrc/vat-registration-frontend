@@ -18,8 +18,10 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.OptionToTax
-import models.api.VAT5L
+import controllers.fileupload.DocumentUploadSummaryController.maxSupportingLandAndPropertyDocs
+import featureswitch.core.config.{OptionToTax, TaskList}
+import forms.DocumentUploadSummaryForm
+import models.api._
 import models.external.upscan.{Ready, UpscanDetails}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
@@ -29,7 +31,7 @@ import viewmodels.DocumentUploadSummaryRow
 import views.html.fileupload.DocumentUploadSummary
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
@@ -42,19 +44,90 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
-    profile =>
+  val show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    implicit profile =>
       for {
         upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
         uploadSummaryRows = scanDetailsAsSummaryRows(upscanResponse)
         incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
-        needOptionToTax = isEnabled(OptionToTax) && upscanResponse.map(_.attachmentType).contains(VAT5L) && incompleteAttachments.isEmpty
+        attachmentDetails <- attachmentsService.getAttachmentDetails(profile.registrationId).map(_.getOrElse(Attachments()))
+        uploadedAttachments = upscanResponse.map(_.attachmentType)
+        showSupplySupportingDocuments = incompleteAttachments.isEmpty &&
+          canSupply1614Form(uploadedAttachments) &&
+          is1614FormComplete(attachmentDetails, uploadedAttachments) &&
+          attachmentDetails.supplySupportingDocuments.contains(true) &&
+          1 <= uploadedAttachments.count(_.equals(LandPropertyOtherDocs)) &&
+          uploadedAttachments.count(_.equals(LandPropertyOtherDocs)) < maxSupportingLandAndPropertyDocs
       } yield {
         uploadSummaryRows match {
-          case Nil => Redirect(routes.UploadDocumentController.show)
-          case _ => Ok(view(uploadSummaryRows, incompleteAttachments.size, needOptionToTax))
+          case Nil =>
+            Redirect(routes.UploadDocumentController.show)
+          case _ =>
+            Ok(view(DocumentUploadSummaryForm.form, uploadSummaryRows, incompleteAttachments.size, showSupplySupportingDocuments))
         }
       }
+  }
+
+  val continue: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    implicit profile =>
+      for {
+        upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
+        incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
+        attachmentDetails <- attachmentsService.getAttachmentDetails(profile.registrationId).map(_.getOrElse(Attachments()))
+        uploadedAttachments = upscanResponse.map(_.attachmentType)
+      } yield {
+        if (incompleteAttachments.nonEmpty) {
+          Redirect(routes.UploadDocumentController.show)
+        } else if (canSupply1614Form(uploadedAttachments) && !is1614FormComplete(attachmentDetails, uploadedAttachments)) {
+          Redirect(routes.Supply1614AController.show)
+        } else if (canSupply1614Form(uploadedAttachments) && !areSupportingDocumentsComplete(attachmentDetails, uploadedAttachments)) {
+          Redirect(routes.SupplySupportingDocumentsController.show)
+        } else {
+          if (isEnabled(TaskList)) {
+            Redirect(controllers.routes.TaskListController.show.url)
+          } else {
+            Redirect(controllers.routes.SummaryController.show.url)
+          }
+        }
+      }
+  }
+
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+    implicit profile =>
+      DocumentUploadSummaryForm.form.bindFromRequest().fold(
+        errors => for {
+          upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
+          uploadSummaryRows = scanDetailsAsSummaryRows(upscanResponse)
+          incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
+        } yield BadRequest(view(errors, uploadSummaryRows, incompleteAttachments.size, supplySupportingDocuments = true)),
+        success => {
+          if (success) {
+            Future.successful(Redirect(routes.UploadSupportingDocumentController.show.url))
+          } else {
+            if (isEnabled(TaskList)) {
+              Future.successful(Redirect(controllers.routes.TaskListController.show.url))
+            } else {
+              Future.successful(Redirect(controllers.routes.SummaryController.show.url))
+            }
+          }
+        }
+      )
+  }
+
+  private def canSupply1614Form(uploadedAttachments: Seq[AttachmentType]): Boolean =
+    isEnabled(OptionToTax) && uploadedAttachments.contains(VAT5L)
+
+  private def is1614FormComplete(attachmentDetails: Attachments, uploadedAttachments: Seq[AttachmentType]): Boolean = attachmentDetails match {
+    case Attachments(_, Some(false), Some(false), _) => true
+    case Attachments(_, Some(false), Some(true), _) if uploadedAttachments.contains(Attachment1614h) => true
+    case Attachments(_, Some(true), _, _) if uploadedAttachments.contains(Attachment1614a) => true
+    case _ => false
+  }
+
+  private def areSupportingDocumentsComplete(attachmentDetails: Attachments, uploadedAttachments: Seq[AttachmentType]): Boolean = attachmentDetails match {
+    case Attachments(_, _, _, Some(false)) => true
+    case Attachments(_, _, _, Some(true)) if uploadedAttachments.contains(LandPropertyOtherDocs) => true
+    case _ => false
   }
 
   private def scanDetailsAsSummaryRows(upscanResponse: Seq[UpscanDetails]): Seq[DocumentUploadSummaryRow] = {
@@ -65,4 +138,8 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
       DocumentUploadSummaryRow(fileName, routes.RemoveUploadedDocumentController.show(details.reference))
     })
   }
+}
+
+object DocumentUploadSummaryController {
+  val maxSupportingLandAndPropertyDocs = 20
 }

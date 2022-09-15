@@ -508,6 +508,8 @@ POST        /other-business-involvement/:index/remove                 controller
 
 ## Uploaded Documents Summary
 GET         /file-upload/summary                                      controllers.fileupload.DocumentUploadSummaryController.show
+POST        /file-upload/summary-continue                             controllers.fileupload.DocumentUploadSummaryController.continue
+POST        /file-upload/summary                                      controllers.fileupload.DocumentUploadSummaryController.submit
 
 ## Uploaded Document Remove
 GET         /file-upload/:reference/remove                            controllers.fileupload.RemoveUploadedDocumentController.show(reference: String)
@@ -520,6 +522,9 @@ GET         /file-upload/uploading-document-poll                      controller
 
 ## Upload Document
 GET         /file-upload/upload-document                              controllers.fileupload.UploadDocumentController.show
+
+## Upload Supporting Document
+GET         /file-upload/upload-supporting-document                   controllers.fileupload.UploadSupportingDocumentController.show
 
 ## Async upload document error page
 GET         /file-upload/problem-with-selected-file                   controllers.fileupload.DocumentUploadErrorController.show
