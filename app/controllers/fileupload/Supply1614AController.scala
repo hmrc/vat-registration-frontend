@@ -60,11 +60,11 @@ class Supply1614AController @Inject()(val authConnector: AuthConnector,
             attachmentsService.storeAttachmentDetails(profile.registrationId, Supply1614AAnswer(success)).flatMap { _ =>
               if (success) {
                 upscanService.deleteUpscanDetailsByType(profile.registrationId, Attachment1614h).map { _ =>
-                  NotImplemented
+                  Redirect(routes.UploadOptionToTaxDocumentController.show)
                 }
               } else {
                 upscanService.deleteUpscanDetailsByType(profile.registrationId, Attachment1614a).map { _ =>
-                  Redirect(controllers.fileupload.routes.Supply1614HController.show)
+                  Redirect(routes.Supply1614HController.show)
                 }
               }
             }

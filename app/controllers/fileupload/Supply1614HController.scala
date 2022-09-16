@@ -19,7 +19,8 @@ package controllers.fileupload
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.Supply1614HForm
-import models.api.{Attachment1614a, Attachment1614h}
+import models.api.{Attachment1614a, Attachment1614h, LandPropertyOtherDocs}
+import models.external.upscan.Ready
 import play.api.mvc.{Action, AnyContent}
 import services.AttachmentsService.Supply1614HAnswer
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
@@ -60,11 +61,18 @@ class Supply1614HController @Inject()(val authConnector: AuthConnector,
             attachmentsService.storeAttachmentDetails(profile.registrationId, Supply1614HAnswer(success)).flatMap { _ =>
               if (success) {
                 upscanService.deleteUpscanDetailsByType(profile.registrationId, Attachment1614a).map { _ =>
-                  NotImplemented
+                  Redirect(routes.UploadOptionToTaxDocumentController.show)
                 }
               } else {
-                upscanService.deleteUpscanDetailsByType(profile.registrationId, Attachment1614h).map { _ =>
-                  Redirect(controllers.fileupload.routes.SupplySupportingDocumentsController.show)
+                upscanService.deleteUpscanDetailsByType(profile.registrationId, Attachment1614h).flatMap { _ =>
+                  upscanService.fetchAllUpscanDetails(profile.registrationId).map { list =>
+                    list.map(file => (file.attachmentType, file.fileStatus)) match {
+                      case list if list.contains((LandPropertyOtherDocs, Ready)) =>
+                        Redirect(routes.DocumentUploadSummaryController.show)
+                      case _ =>
+                        Redirect(routes.SupplySupportingDocumentsController.show)
+                    }
+                  }
                 }
               }
             }

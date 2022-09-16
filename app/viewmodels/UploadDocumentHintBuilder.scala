@@ -72,6 +72,10 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
         transactorName.map(dynamicPrimaryIdentityEvidenceHint)
       case ExtraTransactorIdentityEvidence =>
         transactorName.map(dynamicExtraIdentityEvidenceHint)
+      case Attachment1614a =>
+        Future.successful(supplementDocumentUploadHint(appConfig.vat1614ALink, "VAT1614ALink"))
+      case Attachment1614h =>
+        Future.successful(supplementDocumentUploadHint(appConfig.vat1614HLink, "VAT1614HLink"))
       case VAT51 =>
         Future.successful(supplementDocumentUploadHint(appConfig.vat51Link, "vat51Link"))
       case VAT5L =>

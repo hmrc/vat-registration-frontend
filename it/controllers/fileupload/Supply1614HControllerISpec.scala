@@ -17,7 +17,7 @@
 package controllers.fileupload
 
 import itutil.ControllerISpec
-import models.api.{Attachment1614a, Attachment1614h, Attachments}
+import models.api.{Attachment1614a, Attachment1614h, Attachments, LandPropertyOtherDocs}
 import models.external.upscan.{Ready, UpscanDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
@@ -32,6 +32,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
   val testReference = "testReference"
   val test1614ADetails: UpscanDetails = UpscanDetails(attachmentType = Attachment1614a, reference = testReference, fileStatus = Ready)
   val test1614HDetails: UpscanDetails = UpscanDetails(attachmentType = Attachment1614h, reference = testReference, fileStatus = Ready)
+  val testSupportingDocumentDetails: UpscanDetails = UpscanDetails(attachmentType = LandPropertyOtherDocs, reference = testReference, fileStatus = Ready)
 
   s"GET $url" must {
     "return OK with a blank form if no data is stored" in new Setup {
@@ -90,8 +91,8 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
       val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "true")))
 
-      res.status mustBe NOT_IMPLEMENTED
-      //        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadOptionToTaxDocumentController.show.url)
     }
 
     "remove old supplyVat1614h uploaded file and redirect to Supply Supporting Documents page if 'no' is selected" in new Setup {
@@ -108,6 +109,22 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.SupplySupportingDocumentsController.show.url)
+    }
+
+    "remove old supplyVat1614h uploaded file and redirect to Supply Supporting Documents page if 'no' is selected and there is already a supporting document uploaded" in new Setup {
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(true))))
+        .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false)))
+        .upscanApi.fetchAllUpscanDetails(List(test1614HDetails, testSupportingDocumentDetails))
+        .upscanApi.deleteUpscanDetails(testRegId, testReference)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "false")))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentUploadSummaryController.show.url)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

@@ -1614,11 +1614,15 @@ supplementary.uploadDocument.heading.vat51                  = Upload a VAT 50/51
 supplementary.uploadDocument.heading.vat2                   = Upload a VAT2
 supplementary.uploadDocument.heading.vat1tr                 = Upload a VAT1TR
 supplementary.uploadDocument.heading.supportingDocuments    = Upload a supporting document
+supplementary.uploadDocument.heading.VAT1614A               = Upload a VAT1614A
+supplementary.uploadDocument.heading.VAT1614H               = Upload a VAT1614H
 supplementary.uploadDocument.start                          = Uwchlwytho
 supplementary.uploadDocument.vat5LLink                      = ffurflen VAT5L wedi’i chwblhau
 supplementary.uploadDocument.vat51Link                      = ffurflen VAT 50/51 wedi’i chwblhau
 supplementary.uploadDocument.vat2Link                       = ffurflen VAT2 wedi’i chwblhau
 supplementary.uploadDocument.vat1trLink                     = ffurflen VAT1TR wedi’i chwblhau
+supplementary.uploadDocument.VAT1614ALink                   = VAT1614A form
+supplementary.uploadDocument.VAT1614HLink                   = VAT1614H form
 
 # UPLOAD FORM ERROR MESSAGES
 fileUpload.async.error.page.heading                  = Mae problem gyda’r ffeil dan sylw

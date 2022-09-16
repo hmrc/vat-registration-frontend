@@ -526,6 +526,9 @@ GET         /file-upload/upload-document                              controller
 ## Upload Supporting Document
 GET         /file-upload/upload-supporting-document                   controllers.fileupload.UploadSupportingDocumentController.show
 
+## Upload 1614 Document
+GET         /file-upload/upload-1614-document                         controllers.fileupload.UploadOptionToTaxDocumentController.show
+
 ## Async upload document error page
 GET         /file-upload/problem-with-selected-file                   controllers.fileupload.DocumentUploadErrorController.show
 
