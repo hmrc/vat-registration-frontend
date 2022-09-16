@@ -38,7 +38,6 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
 
   def startSoleTraderJourney(config: SoleTraderIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
     httpClient.POST(appConfig.soleTraderJourneyUrl(partyType), Json.toJson(config)) map { response =>
-      logger.info("url " + response.body)
       response.status match {
         case CREATED => (response.json \ journeyUrlKey).validate[String] match {
           case JsSuccess(journeyId, _) => journeyId
