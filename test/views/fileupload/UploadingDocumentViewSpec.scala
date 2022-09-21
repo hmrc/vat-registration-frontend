@@ -16,16 +16,25 @@
 
 package views.fileupload
 
+import models.api.PrimaryIdentityEvidence
+import models.external.upscan.{Ready, UploadDetails, UpscanDetails}
 import org.jsoup.Jsoup
 import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.fileupload.UploadingDocument
 
+import java.time.LocalDateTime
+
 class UploadingDocumentViewSpec extends VatRegViewSpec {
 
   val uploadingDocumentPage = app.injector.instanceOf[UploadingDocument]
 
-  lazy val view: Html = uploadingDocumentPage("reference")
+  lazy val view: Html = uploadingDocumentPage(UpscanDetails(
+    attachmentType = PrimaryIdentityEvidence,
+    reference = "testReference",
+    fileStatus = Ready,
+    uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))
+  ))
   implicit val doc = Jsoup.parse(view.body)
 
   object ExpectedContent {

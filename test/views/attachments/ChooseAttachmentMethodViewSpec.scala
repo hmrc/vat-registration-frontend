@@ -31,7 +31,7 @@ class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureSwitchin
     val upload = "Upload the documents using this service"
     val email = "Email copies to HMRC"
     val post = "Post copies to HMRC"
-    val button = "Save and continue"
+    val button = "Continue"
   }
 
   "The Choose Attachment Method page" must {

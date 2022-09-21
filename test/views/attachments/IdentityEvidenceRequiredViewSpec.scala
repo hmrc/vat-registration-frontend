@@ -39,7 +39,7 @@ class IdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
     val additionalBullet4 = "any correspondence from the Department for Work and Pensions confirming entitlement to benefits"
     val additionalBullet5 = "a recent utility bill"
     val additionalBullet6 = "a birth certificate"
-    val continue = "Save and continue"
+    val continue = "Continue"
   }
 
   "The identity evidence required page" must {

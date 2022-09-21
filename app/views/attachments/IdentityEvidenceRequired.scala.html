@@ -50,7 +50,7 @@
     )
 
     @form(controllers.attachments.routes.DocumentsRequiredController.submit) {
-        @button(messages("app.common.continue"), showSaveProgressButton = true)
+        @button("app.common.continueNoSave", showSaveProgressButton = false)
     }
 
 }

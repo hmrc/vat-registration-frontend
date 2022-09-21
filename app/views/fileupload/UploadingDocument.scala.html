@@ -14,10 +14,12 @@
  * limitations under the License.
  *@
 
-@import views.html.components._
-@import views.html.layouts.layout
 @import config.FrontendAppConfig
+@import models.api._
+@import models.external.upscan.UpscanDetails
+@import views.html.components._
 @import views.html.helper.CSPNonce
+@import views.html.layouts.layout
 
 @this(
         layout: layout,
@@ -27,22 +29,36 @@
         h2: h2
 )
 
+@(upscanDetails: UpscanDetails)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@(reference: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+<div id="data" data-reference="@{upscanDetails.reference}" data-timeout="@{appConfig.upscanTimeout}" data-interval="@{appConfig.upscanInterval}"></div>
 
-<div id="data" data-reference="@{reference}" data-timeout="@{appConfig.upscanTimeout}" data-interval="@{appConfig.upscanInterval}"></div>
+@layout(pageTitle = Some(titleNoForm(heading))) {
 
-@layout(pageTitle = Some(titleNoForm(messages("attachments.uploadingDocument.heading")))) {
-
-    @h1(messages("attachments.uploadingDocument.heading"))
+    @h1(heading)
 
     @h2(messages("attachments.uploadingDocument.subheading"))
 
     <div class="ccms-loader govuk-!-margin-bottom-5"></div>
 
-    @formWithCSRF(action = controllers.fileupload.routes.UploadingDocumentController.submit(reference)) {
+    @formWithCSRF(action = controllers.fileupload.routes.UploadingDocumentController.submit(upscanDetails.reference)) {
         @button(messages("attachments.uploadingDocument.status.button.text"), showSaveProgressButton = false)
     }
 
-    <script @{CSPNonce.attr} src="@controllers.routes.Assets.versioned("javascripts/uploadingDocument.js")"></script>
+    <script @{
+        CSPNonce.attr
+    } src="@controllers.routes.Assets.versioned("javascripts/uploadingDocument.js")"></script>
+}
+
+@heading = @{
+    upscanDetails.attachmentType match {
+        case VAT5L => messages("attachments.uploadingDocument.heading.vat5L")
+        case VAT51 => messages("attachments.uploadingDocument.heading.vat51")
+        case VAT2 => messages("attachments.uploadingDocument.heading.vat2")
+        case TaxRepresentativeAuthorisation => messages("attachments.uploadingDocument.heading.vat1tr")
+        case LandPropertyOtherDocs => messages("attachments.uploadingDocument.heading.supportingDocuments")
+        case Attachment1614a => messages("attachments.uploadingDocument.heading.VAT1614A")
+        case Attachment1614h => messages("attachments.uploadingDocument.heading.VAT1614H")
+        case _ => messages("attachments.uploadingDocument.heading")
+    }
 }

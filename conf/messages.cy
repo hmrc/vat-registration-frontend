@@ -1,4 +1,4 @@
-## Global
+# Global
 
 site.govuk                              = GOV.UK
 service.name                            = Cofrestru ar gyfer TAW
@@ -109,7 +109,7 @@ addressLookup.common.navTitle                               = Cofrestru ar gyfer
 addressLookup.common.phaseBannerHtml                        = Gwasanaeth newydd yw hwn. Helpwch ni i’w wella – anfonwch eich <a href="https://www.tax.service.gov.uk/register-for-vat/feedback">adborth</a>.
 addressLookup.common.deskProServiceName                     = SCRS
 
-## homeAddress
+# homeAddress
 addressLookup.homeAddress.lookupPage.title                   = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.homeAddress.lookupPage.heading                 = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.homeAddress.lookupPage.filterLabel             = Enw neu rif yr eiddo
@@ -138,7 +138,7 @@ addressLookup.homeAddress.confirmPage.submitLabel            = Yn eich blaen
 addressLookup.homeAddress.countryPicker.title                = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.homeAddress.countryPicker.heading              = Dewch o hyd i’ch cyfeiriad cartref
 
-## international.homeAddress
+# international.homeAddress
 international.addressLookup.homeAddress.editPage.title                     = Nodwch eich cyfeiriad cartref
 international.addressLookup.homeAddress.editPage.heading                   = Nodwch eich cyfeiriad cartref
 international.addressLookup.homeAddress.editPage.line1Label                = Cyfeiriad – llinell 1
@@ -154,7 +154,7 @@ international.addressLookup.homeAddress.confirmPage.heading                = Cad
 international.addressLookup.homeAddress.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 international.addressLookup.homeAddress.confirmPage.submitLabel            = Yn eich blaen
 
-## applicantAddress
+# applicantAddress
 addressLookup.applicantAddress.lookupPage.title                   = Dewch o hyd i’w gyfeiriad
 addressLookup.applicantAddress.lookupPage.heading                 = Dewch o hyd i’w gyfeiriad
 addressLookup.applicantAddress.lookupPage.filterLabel             = Enw neu rif yr eiddo
@@ -184,7 +184,7 @@ addressLookup.applicantAddress.confirmPage.submitLabel            = Yn eich blae
 addressLookup.applicantAddress.countryPicker.title                = Dewch o hyd i’w gyfeiriad
 addressLookup.applicantAddress.countryPicker.heading              = Dewch o hyd i’w gyfeiriad
 
-## international.applicantAddress
+# international.applicantAddress
 international.addressLookup.applicantAddress.editPage.title                     = Nodwch ei gyfeiriad
 international.addressLookup.applicantAddress.editPage.heading                   = Nodwch ei gyfeiriad
 international.addressLookup.applicantAddress.editPage.line1Label                = Cyfeiriad – llinell 1
@@ -200,7 +200,7 @@ international.addressLookup.applicantAddress.confirmPage.heading                
 international.addressLookup.applicantAddress.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 international.addressLookup.applicantAddress.confirmPage.submitLabel            = Yn eich blaen
 
-## addressThreeYearsOrLess
+# addressThreeYearsOrLess
 addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Dewch o hyd i’ch cyfeiriad cartref blaenorol
 addressLookup.addressThreeYearsOrLess.lookupPage.heading                 = Dewch o hyd i’ch cyfeiriad cartref blaenorol
 addressLookup.addressThreeYearsOrLess.lookupPage.filterLabel             = Enw neu rif yr eiddo (dewisol)
@@ -231,7 +231,7 @@ addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Golyg
 addressLookup.addressThreeYearsOrLess.countryPicker.title                = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.addressThreeYearsOrLess.countryPicker.heading              = Dewch o hyd i’ch cyfeiriad cartref
 
-## international.addressThreeYearsOrLess
+# international.addressThreeYearsOrLess
 international.addressLookup.addressThreeYearsOrLess.editPage.title                     = Nodwch eich cyfeiriad cartref blaenorol
 international.addressLookup.addressThreeYearsOrLess.editPage.heading                   = Nodwch eich cyfeiriad cartref blaenorol
 international.addressLookup.addressThreeYearsOrLess.editPage.line1Label                = Cyfeiriad – llinell 1
@@ -248,7 +248,7 @@ international.addressLookup.addressThreeYearsOrLess.confirmPage.heading         
 international.addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Yn eich blaen
 international.addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 
-## applicantAddressThreeYearsOrLess
+# applicantAddressThreeYearsOrLess
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.title                   = Dewch o hyd i’w gyfeiriad blaenorol
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.heading                 = Dewch o hyd i’w gyfeiriad blaenorol
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.filterLabel             = Enw neu rif yr eiddo (dewisol)
@@ -279,7 +279,7 @@ addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText       
 addressLookup.applicantAddressThreeYearsOrLess.countryPicker.title                = Dewch o hyd i’w gyfeiriad blaenorol
 addressLookup.applicantAddressThreeYearsOrLess.countryPicker.heading              = Dewch o hyd i’w gyfeiriad blaenorol
 
-## international.applicantAddressThreeYearsOrLess
+# international.applicantAddressThreeYearsOrLess
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Nodwch ei gyfeiriad blaenorol
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.heading                   = Nodwch ei gyfeiriad blaenorol
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.line1Label                = Cyfeiriad – llinell 1
@@ -296,7 +296,7 @@ international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.heading
 international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitLabel            = Yn eich blaen
 international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 
-## businessActivities
+# businessActivities
 addressLookup.businessActivities.lookupPage.title                   = Ble mae prif leoliad y busnes?
 addressLookup.businessActivities.lookupPage.heading                 = Ble mae prif leoliad y busnes?
 addressLookup.businessActivities.lookupPage.filterLabel             = Enw neu rif yr eiddo
@@ -324,7 +324,7 @@ addressLookup.businessActivities.confirmPage.heading                = Cadarnhewc
 addressLookup.businessActivities.confirmPage.submitLabel            = Yn eich blaen
 addressLookup.businessActivities.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 
-## transactorAddress
+# transactorAddress
 addressLookup.transactorAddress.lookupPage.title                   = Dewch o hyd i’ch cyfeiriad
 addressLookup.transactorAddress.lookupPage.heading                 = Dewch o hyd i’ch cyfeiriad
 addressLookup.transactorAddress.lookupPage.filterLabel             = Enw neu rif yr eiddo
@@ -377,7 +377,7 @@ pages.retrySubmission.p1                = Mae’n ddrwg gennym, mae problem dech
 pages.retrySubmission.p2                = Ailanfonwch eich cais.
 pages.retrySubmission.button            = Ailanfon
 
-## Submission Failed Page
+# Submission Failed Page
 pages.failedSubmission.heading          = Mae problem wedi codi
 pages.failedSubmission.p1               = Ni allwch gyflwyno’r cais hwn. Mae angen i chi gofrestru ar gyfer TAW gan ddefnyddio’r
 pages.failedSubmission.link             = ffurflen VAT1
@@ -396,18 +396,17 @@ page.MaxPasscodeAttemptsExceeded.p2                = I ddechrau eto, bydd angen 
 page.MaxPasscodeAttemptsExceeded.link              = allgofnodi
 
 ##Max Confirmation Code Attempts Exceeded
-#---------------------------------------------------WELSH CONTENT MISSING-----------------------------------------------------
 page.MaxConfirmationCodeAttemptsExceeded.heading           = You have reached the maximum number of confirmation code requests
 page.MaxConfirmationCodeAttemptsExceeded.p                 = Ni allwn anfon cod arall at {0}. Os nad yw hwn yn eich mewnflwch, eich ffolder sbam neu’ch folder sothach, gallwch
 page.MaxConfirmationCodeAttemptsExceeded.link              = roi cyfeiriad e-bost arall
 
-## Contact OSH Page
+# Contact OSH Page
 contact.title                           = Mae’n ddrwg gennym, nid yw’r gwasanaeth hwn ar gael
 contact.heading                         = Mae’n ddrwg gennym, nid yw’r gwasanaeth hwn ar gael
 contact.p                               = Mae’n ddrwg gennym, nid yw’r system ar gael. Rhowch gynnig arall arni nes ymlaen neu cysylltwch â
 contact.oshLink                         = Gwasanaeth Cwsmeriaid Cymraeg CThEF
 
-## Start Date Page
+# Start Date Page
 pages.startDate.heading                               = Beth hoffech i ddyddiad dechrau TAW y busnes fod?
 pages.startDate.para1                                 = Dyma pryd y mae angen i’r cwmni ddechrau rhoi cyfrif am TAW.
 pages.startDate.para1.post                            = Gallwch ddewis y dyddiad y bydd y busnes yn cael ei gofrestru ar gyfer TAW pan fyddwch yn cofrestru’n wirfoddol.
@@ -438,13 +437,13 @@ currentlyTrading.no.future                            = Na – bydd yn dechrau m
 currentlyTrading.error.required.past                  = Dewiswch ‘Iawn’ os oedd y busnes yn masnachu nwyddau neu wasanaethau trethadwy erbyn {0}
 currentlyTrading.error.required.future                = Dewiswch ‘Iawn’ os bydd y busnes yn masnachu nwyddau neu wasanaethau trethadwy erbyn {0}
 
-## Voluntary Start Date (no date choice) page
+# Voluntary Start Date (no date choice) page
 voluntaryStartDateNoChoice.heading                    = Beth hoffech i ddyddiad dechrau TAW y busnes fod?
 voluntaryStartDateNoChoice.para                       = Gallwch ddewis y dyddiad y bydd y busnes yn cael ei gofrestru ar gyfer TAW pan fyddwch yn cofrestru’n wirfoddol. Gallai hyn fod hyd at bedair blynedd yn ôl neu o fewn y tri mis nesaf
 voluntaryStartDateNoChoice.panel                      = Unwaith y bydd y busnes wedi’i gofrestru’n llwyddiannus ar gyfer TAW, ni allwch newid ei ddyddiad dechrau
 voluntaryStartDateNoChoice.hint                       = Er enghraifft, {0}
 
-## Trading Name Page
+# Trading Name Page
 pages.tradingName.heading                           = A yw neu a fydd y busnes yn masnachu gan ddefnyddio enw sy’n wahanol i {0}?
 pages.tradingName.tradingNameLabel                  = Nodwch yr enw masnachu
 pages.tradingName.panel.para1                       = Beth yw enw masnachu?
@@ -457,16 +456,16 @@ validation.tradingName.maxlen                       = Nodwch enw masnachu gan dd
 validation.tradingName.missing                      = Nodwch enw masnachu
 validation.tradingNameRadio.missing                 = Dewiswch ‘Iawn’ os bydd y busnes yn masnachu o dan enw arall
 
-## Voluntary Registration Reason Summary
+# Voluntary Registration Reason Summary
 pages.summary.voluntaryReason.sells                           = Mae’r cwmni eisoes yn gwerthu nwyddau neu wasanaethau
 pages.summary.voluntaryReason.intendsToSell                   = Mae’r cwmni’n bwriadu gwerthu nwyddau neu wasanaethau yn y dyfodol
 
-## Mandatory Start Date Confirmation page
+# Mandatory Start Date Confirmation page
 pages.start.date.confirmation.heading                        = Dyddiad dechrau TAW y cwmni
 pages.start.date.confirmation.para1                          = Dyma pryd y mae angen i’r cwmni ddechrau rhoi cyfrif am TAW.
 pages.start.date.confirmation.para2                          = Bydd dyddiad dechrau TAW y cwmni yr un peth â’r dyddiad y gwnaeth Tŷ’r Cwmnïau sefydlu’r cwmni. Ni ellir cofrestru’r cwmni ar gyfer TAW cyn i hyn ddigwydd.
 
-## Mandatory Start Date Incorp page
+# Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = Pryd hoffech i’ch dyddiad cofrestru TAW ddechrau?
 pages.start.date.incorp.heading                              = Pryd hoffech i’ch dyddiad cofrestru TAW ddechrau?
 pages.start.date.incorp.para1                                = Mae’n rhaid i chi ddechrau’ch dyddiad cofrestru TAW o ({0})
@@ -475,7 +474,7 @@ pages.start.date.incorp.earlierHead.hint                     = Mae’n rhaid i h
 validation.startDateManIncorp.range.below4y                  = Nodwch ddyddiad nad yw’n fwy na phedair blynedd yn y gorffennol
 validation.startDateManIncorp.error                          = Nodwch ddyddiad dechrau’r cofrestriad
 
-## Turnover Estimate Page
+# Turnover Estimate Page
 pages.turnoverEstimate.heading                              = Beth rydych yn meddwl fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf?
 pages.turnoverEstimate.text                                 = Cofiwch gynnwys yr holl nwyddau a gwasanaethau a werthir nad ydynt wedi’u heithrio rhag TAW. Mae’n rhaid i chi gynnwys nwyddau a gwasanaethau sydd â chyfradd TAW o 0%.
 pages.turnoverEstimate.link                                 = Dysgu rhagor am y nwyddau a’r gwasanaethau sydd wedi’u heithrio rhag TAW
@@ -484,12 +483,11 @@ pages.turnoverEstimate.hint                                 = Er enghraifft, £6
 validation.turnoverEstimate.missing                         = Nodwch y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf
 validation.turnoverEstimate.invalid                         = Nodwch y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf, yn y fformat cywir
 validation.turnoverEstimate.commasNotAllowed                = Ni all y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf, gynnwys atalnodau
-#-----------------------------------------------------------------WELSH CONTENT MISSING-------------------------------------------------------------------
 validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed   = The VAT-taxable turnover, expected for the next 12 months, can only include pounds and pence
 validation.turnoverEstimate.range.above                     = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
 validation.turnoverEstimate.range.below                     = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
 
-## Zero Rated Supplies Page
+# Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = Beth fydd gwerth nwyddau trethadwy cyfradd sero’r busnes dros y 12 mis nesaf?
 pages.zeroRatedSupplies.text                                = Nodwch werth ar gyfer yr holl nwyddau trethadwy cyfradd sero.
 pages.zeroRatedSupplies.summary                             = Beth yw nwyddau trethadwy cyfradd sero?
@@ -500,24 +498,23 @@ pages.zeroRatedSupplies.hint                                = Er enghraifft, £6
 validation.zeroRatedSupplies.missing                        = Nodwch y gwerth yr ydych yn disgwyl i nwyddau trethadwy cyfradd sero y busnes fod yn ystod y 12 mis nesaf
 validation.zeroRatedSupplies.invalid                        = Nodwch werth y nwyddau trethadwy cyfradd sero, a ddisgwylir yn ystod y 12 mis nesaf, yn y fformat cywir
 validation.zeroRatedSupplies.commasNotAllowed               = Ni all gwerth y nwyddau trethadwy cyfradd sero, a ddisgwylir yn ystod y 12 mis nesaf, gynnwys atalnodau
-#------------------------------------------------------------------------WELSH CONTENT MISSING--------------------------------------------------------------------------
 validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed  = The value of zero-rated taxable goods, expected over the next 12 months, can only include pounds and pence
 validation.zeroRatedSupplies.range.above                    = Mae’n rhaid i werth y trosiant trethadwy sydd ar gyfradd sero fod yn llai na neu’n hafal i gyfanswm y trosiant trethadwy
 validation.zeroRatedSupplies.range.below                    = Peidiwch â defnyddio rhifau negyddol, megis -1200
 
-## Vat Charge Expectancy Page
+# Vat Charge Expectancy Page
 pages.vat.charge.expectancy.heading                         = A yw’r busnes yn disgwyl hawlio ad-daliadau TAW yn rheolaidd gan CThEM?
 pages.vat.charge.expectancy.para1                           = Nid yw’r rhan fwyaf o fusnesau’n hawlio ad-daliadau TAW. Mae ond yn bosibl pan fydd y TAW y mae busnes yn ei thalu ar bryniannau sy’n gysylltiedig â’r busnes yn fwy na’r TAW y mae’n ei chodi ar gwsmeriaid.
 pages.pages.vat.charge.expectancy.example                   = Dangoswch enghraifft i mi
 pages.pages.vat.charge.expectancy.example.para1             = Os yw busnes yn gwerthu eitemau cyfradd sero yn bennaf (y TAW arnynt yw 0%), gall dalu mwy o TAW i redeg ei fusnes nag y gall ei chodi. Er enghraifft, mae’r rhan fwyaf o lyfrau ar gyfradd sero, felly efallai y bydd siop lyfrau yn ei chael ei hun yn y sefyllfa hon.
 validation.vat.charge.expectancy.missing                    = Dewiswch ‘Iawn’ os ydych yn disgwyl i'r busnes hawlio ad-daliadau TAW yn rheolaidd gan CThEM
 
-## Exemption Page
+# Exemption Page
 pages.vatExemption.heading                                  = A yw’r busnes yn dymuno gwneud cais am eithriad rhag TAW?
 pages.vatExemption.para1                                    = Efallai na fydd yn rhaid i’r busnes gofrestru ar gyfer TAW os yw’n gwerthu nwyddau neu wasanaethau cyfradd sero yn bennaf neu’n unig.
 validation.vatExemption.missing                             = Dewiswch ‘Iawn’ os yw’r busnes yn dymuno gwneud cais am eithriad rhag TAW
 
-## Vat Return Frequency
+# Vat Return Frequency
 pages.vat.return.frequency.heading                         = Pryd bydd y busnes yn llenwi ei Ffurflenni TAW?
 pages.vat.return.frequency.para                            = Fel arfer, mae busnesau sydd wedi’u cofrestru ar gyfer TAW yn cyflwyno’u Ffurflenni TAW a’u taliadau i Gyllid a Thollau EM 4 gwaith y flwyddyn.
 pages.vat.return.frequency.radio.monthly                   = Bob mis
@@ -533,7 +530,7 @@ pages.vat.return.frequency.details.para2.bullet2           = adennill mwy o TAW 
 pages.vat.return.frequency.aas.link                        = Dysgu rhagor am y Cynllun Cyfrifyddu Blynyddol
 validation.vat.return.frequency.missing                    = Dewiswch pa mor aml y bydd y busnes yn cyflwyno ei Ffurflenni TAW
 
-## Accounting Period Page
+# Accounting Period Page
 pages.accounting.period.heading                             = Pryd rydych chi am i’r busnes gyflwyno ei Ffurflenni TAW?
 pages.accounting.period.para1                               = Fel arfer, caiff Ffurflenni TAW eu gwneud yn chwarterol. Gelwir y cyfnodau Ffurflenni TAW yn gyfnodau TAW gwasgaredig (‘VAT stagger’).
 pages.accounting.period.radio.january                       = Ionawr, Ebrill, Gorffennaf a Hydref
@@ -558,11 +555,11 @@ validation.businessActivity.description.missing               = Nodwch y gweithg
 validation.businessActivity.description.invalid               = Mae’n rhaid i’r gweithgarwch busnes gynnwys llythrennau, rhifau ac atalnodi safonol yn unig. Peidiwch â defnyddio unrhyw gymeriadau arbennig fel @ neu |
 validation.businessActivity.description.maxlen                = Mae’n rhaid i’r gweithgarwch busnes fod yn 250 o gymeriadau neu lai
 
-## Summary Page
+# Summary Page
 pages.summary.heading                                       = Gwiriwch eich atebion cyn anfon eich cais
 pages.summary.continue                                      = Cadarnhau a chyflwyno
 
-## Application Submission Confirmation page
+# Application Submission Confirmation page
 pages.application.submission.confirmation.heading                   = Mae’ch cais wedi’i gyflwyno
 pages.application.submission.confirmation.reference                 = Eich cyfeirnod
 pages.application.submission.confirmation.par1                      = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad. Mae hyn fel arfer yn cymryd oddeutu 20 diwrnod.
@@ -582,14 +579,14 @@ pages.application.submission.confirmation.link3                     = Meddalwedd
 pages.application.submission.confirmation.par3                      = Ni all y cwmni godi TAW ar gwsmeriaid nes bod ganddo ei rif TAW.
 pages.application.submission.confirmation.button                    = Gorffen
 
-## Progress Saved Page
+# Progress Saved Page
 pages.application.progress.saved.heading                            = Cedwir eich cais am 7 diwrnod
 pages.application.progress.saved.para1                              = Ni fyddwch yn gallu cyflwyno’r cais nes eich bod wedi cwblhau’r cais.
 pages.application.progress.saved.para2                              = Gallwch adael y dudalen hon, neu
 pages.application.progress.saved.link                               = fynd yn ôl i’ch cais
 pages.application.progress.saved.inset                              = Dim ond am 7 diwrnod y bydd ceisiadau wedi’u cadw ar gael
 
-## Summary page Applicant details
+# Summary page Applicant details
 cya.applicantDetails.leadPartner.uniqueTaxpayerReference            = Cyfeirnod Unigryw y Trethdalwr ar gyfer y partner arweiniol
 cya.applicantDetails.leadPartner.companyUniqueTaxpayerReference     = Cyfeirnod Unigryw y Trethdalwr ar gyfer cwmni’r partner arweiniol
 cya.applicantDetails.leadPartner.companyRegistrationNumber          = Rhif cofrestru cwmni’r partner arweiniol
@@ -613,7 +610,7 @@ cya.applicantDetails.previousAddress                                = Cyfeiriad 
 cya.applicantDetails.email                                          = Cyfeiriad e-bost
 cya.applicantDetails.telephone                                      = Rhif ffôn
 
-## Summary Page Transactor Details
+# Summary Page Transactor Details
 cya.transactor.isPartOfOrganisation                  = Rhan o sefydliad
 cya.transactor.organisationName                      = Enw’r sefydliad
 cya.transactor.roleInTheBusiness                     = Swydd yn y busnes yn cofrestru ar gyfer TAW
@@ -624,7 +621,7 @@ cya.transactor.homeAddress                           = Cyfeiriad cartref
 cya.transactor.telephoneNumber                       = Rhif ffôn
 cya.transactor.emailAddress                          = Cyfeiriad e-bost
 
-## CYA About the business
+# CYA About the business
 cya.aboutTheBusiness.homeAddress                    = Cyfeiriad y busnes
 cya.aboutTheBusiness.emailBusiness                  = Cyfeiriad e-bost y busnes
 cya.aboutTheBusiness.daytimePhoneBusiness           = Rhif ffôn y busnes yn ystod y dydd
@@ -660,7 +657,7 @@ cya.aboutTheBusiness.sellOrMoveNip                  = Gwerthu neu symud nwyddau 
 cya.aboutTheBusiness.receiveGoodsNip                = Derbyn nwyddau yng Ngogledd Iwerddon o’r UE?
 cya.aboutTheBusiness.valueOfGoods                   = Gwerth y nwyddau:
 
-## Summary Page GRS Details
+# Summary Page GRS Details
 cya.grsDetails.companyNumber                         = Rhif cofrestru’r cwmni
 cya.grsDetails.businessName                          = Enw swyddogol y busnes
 cya.grsDetails.ctutr                                 = Cyfeirnod Unigryw y Trethdalwr
@@ -672,7 +669,7 @@ cya.grsDetails.trustSaPostcode                       = Cod post cofrestredig yr 
 cya.grsDetails.overseasIdentifier                    = Dynodydd treth tramor
 cya.grsDetails.overseasCountry                       = Gwlad dramor
 
-## CYA Registration Details
+# CYA Registration Details
 cya.registrationDetails.startDate                               = Dyddiad dechrau TAW
 cya.registrationDetails.accountingPeriod                        = Pryd hoffech gyflwyno Ffurflenni TAW?
 cya.registrationDetails.accountingPeriod.monthly                = Unwaith y mis
@@ -715,7 +712,7 @@ cya.registrationDetails.paymentMethod.StandingOrder             = Archeb sefydlo
 cya.registrationDetails.taxRep                                  = Ydych chi am benodi cynrychiolydd treth yn y DU ar gyfer y busnes?
 cya.registrationDetails.currentlyTrading                        = Masnachu erbyn y dyddiad cofrestru
 
-## Summary Headings
+# Summary Headings
 cya.heading.eligibility                              = Rheswm dros gofrestru
 cya.heading.transactor                               = Amdanoch chi
 cya.heading.verifyBusiness                           = Cadarnhau’ch busnes
@@ -726,21 +723,21 @@ cya.heading.otherBusinessInvolvements                = Cysylltiadau busnes erail
 cya.heading.vatRegDetails                            = Manylion cofrestru TAW
 cya.heading.obi                                      = {0} o gysylltiadau busnes eraill
 
-## Error Pages
+# Error Pages
 error.error_template.tryagain                        = Rhowch gynnig arall arni
 
-## Individual Affinity
+# Individual Affinity
 page.IndividualAffinityKickOut.heading               = Mae angen i chi ddefnyddio cyfrif treth busnes ar gyfer y gwasanaeth hwn
 page.IndividualAffinityKickOut.p1                    = Er mwyn cofrestru ar gyfer TAW a rheoli’ch TAW ar-lein, mae angen i chi ddefnyddio cyfrif treth busnes. Rydych wedi mewngofnodi i gyfrif ar gyfer treth bersonol.
 page.IndividualAffinityKickOut.signInLink            = Mewngofnodwch i gyfrif treth busnes eich sefydliad
 page.IndividualAffinityKickOut.createLink            = Creu cyfrif treth busnes
 
-## Company Bank Account
+# Company Bank Account
 pages.company.bank.account.heading                   = A oes gan y busnes gyfrif banc neu gymdeithas adeiladu?
 pages.company.bank.account.para                      = Nid oes rhaid i’r cyfrif fod yn gyfrif busnes pwrpasol, ond mae’n rhaid iddo fod ar wahân i gyfrif personol. Byddwn yn defnyddio’r cyfrif hwn ar gyfer ad-daliadau TAW.
 validation.company.bank.account.missing              = Dewiswch ‘Iawn’ os oes gan y busnes gyfrif banc neu gymdeithas adeiladu
 
-## No UK Bank Account
+# No UK Bank Account
 pages.noUKBankAccount.heading                        = Pam na allwch roi manylion cyfrif banc ar gyfer y busnes?
 pages.noUKBankAccount.beingSetup                     = Mae wrthi’n cael ei sefydlu, ond mae’n cymryd sbel
 pages.noUKBankAccount.beingSetupOrNameChange         = Mae’r cyfrif banc yn dal i gael ei sefydlu (er enghraifft, mae’r enw wrthi’n cael ei newid o fod yn unig fasnachwr i fod yn gwmni cyfyngedig)
@@ -750,7 +747,7 @@ pages.noUKBankAccount.accountNotInBusinessName       = Nid yw’r cyfrif banc yn
 pages.noUKBankAccount.dontWantToProvide              = Nid wyf am roi manylion cyfrif banc y busnes
 pages.noUKBankAccount.error                          = Dewiswch pam na allwch roi manylion cyfrif banc ar gyfer y busnes
 
-## Bank Details page
+# Bank Details page
 pages.bankDetails.heading                           = Beth yw manylion cyfrif banc neu gymdeithas adeiladu’r busnes?
 pages.bankDetails.p1                                = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEM yn defnyddio’r cyfrif hwn. Ni fyddwn yn cymryd arian ohono.
 pages.bankDetails.info                              = Mae’n rhaid i chi roi gwybod i ni os bydd manylion eich cyfrif yn newid.
@@ -767,11 +764,11 @@ validation.companyBankAccount.sortCode.missing      = Nodwch god didoli’r cyfr
 validation.companyBankAccount.sortCode.invalid      = Nodwch god didoli dilys ar gyfer y cyfrif
 validation.companyBankAccount.invalidCombination    = Nodwch rif cyfrif banc a chod didoli dilys
 
-## Main Business Activity
+# Main Business Activity
 pages.mainBusinessActivity.heading                        = Pa weithgaredd yw prif ffynhonnell incwm y busnes?
 validation.mainBusinessActivity.missing                   = Dewiswch brif ffynhonnell incwm y busnes
 
-## Confirm SIC
+# Confirm SIC
 pages.confirmsic.heading                                  = Rydych ar fin cadarnhau codau Dosbarthiad Diwydiannol Safonol (SIC) y busnes ar gyfer TAW
 pages.confirmsic.p1                                       = Mae cod SIC yn disgrifio gweithgaredd busnes.
 pages.confirmsic.p2                                       = Mae gan bob busnes un neu fwy o godau SIC o’r adeg pan gofrestrodd gyda Thŷ’r Cwmnïau.
@@ -780,30 +777,30 @@ pages.confirmsic.bullet1                                  = gwirio bod y codau S
 pages.confirmsic.bullet2                                  = ychwanegu unrhyw godau SIC eraill sy’n berthnasol i weithgaredd y busnes
 pages.confirmsic.p4                                       = Byddwn yn eich tywys drwy’r broses hon.
 
-## Compliance - Tell us more about your company page
+# Compliance - Tell us more about your company page
 pages.compliance.introduction.heading                        = Dywedwch ragor wrthym am eich busnes
 pages.compliance.introduction.para1                          = Rydym yn mynd i ofyn ychydig o gwestiynau i chi am eich gweithgareddau busnes fel y gallwn ddeall beth mae’r busnes yn ei wneud.
 
-## Labour Compliance
-## Does Company Provide Workers
+# Labour Compliance
+# Does Company Provide Workers
 pages.labourCompliance.supplyWorkers.heading                 = A ydych yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall?
 pages.labourCompliance.supplyWorkers.3pt.heading             = A yw’r busnes yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall?
 validation.labourCompliance.supplyWorkers.missing            = Dewiswch ‘Iawn’ os ydych yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
 validation.labourCompliance.supplyWorkers.3pt.missing        = Dewiswch ‘Iawn’ os yw’r busnes yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
 
-## Workers
+# Workers
 pages.labourCompliance.workers.heading                       = Faint o weithwyr cyflenwi rydych yn eu cyflenwi?
 pages.labourCompliance.workers.3pt.heading                   = Faint o weithwyr y mae’r busnes yn eu cyflenwi?
 validation.labourCompliance.numberOfWorkers.missing          = Nodwch nifer y gweithwyr rydych yn eu cyflenwi
 validation.labourCompliance.numberOfWorkers.3pt.missing      = Nodwch nifer y gweithwyr y mae’r busnes yn eu cyflenwi
 
-## Intermediary supply
+# Intermediary supply
 pages.labourCompliance.intermediarySupply.heading            = A ydych yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr?
 pages.labourCompliance.intermediarySupply.3pt.heading        = A yw {0} yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr?
 validation.labourCompliance.intermediarySupply.missing       = Dewiswch ‘Iawn’ os ydych yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr
 validation.labourCompliance.intermediarySupply.3pt.missing   = Dewiswch ‘Iawn’ os yw {0} yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr
 
-## Apply For Eori
+# Apply For Eori
 pages.applyForEori.heading                  = Oes angen rhif EORI arnoch?
 pages.applyForEori.p1                       = Mae’n bosibl y bydd angen rhif Cofrestru ac Adnabod Gweithredwyr Economaidd (rhif EORI) ar y busnes os bydd yn symud nwyddau:
 pages.applyForEori.bullet1                  = rhwng Prydain Fawr (Cymru, Lloegr a’r Alban) neu Ynys Manaw ac unrhyw wlad arall (gan gynnwys yr UE)
@@ -816,13 +813,13 @@ pages.applyForEori.p2.bullet2               = mae wedi’i leoli yn Ynysoedd y S
 pages.applyForEori.linkText                 = Rhagor o wybodaeth am rifau EORI
 validation.applyForEori.missing             = Dewiswch ‘Iawn’ os oes angen rhif EORI arnoch
 
-## Applicant Home Address Page
+# Applicant Home Address Page
 pages.applicantHomeAddress.title                           = Beth yw cyfeiriad cartref yr ymgeisydd?
 pages.applicantHomeAddress.heading                         = Beth yw’ch cyfeiriad cartref?
 pages.applicantHomeAddress.different.address               = Cyfeiriad gwahanol
 validation.applicantHomeAddress.missing                    = Nodwch y cyfeiriad
 
-## Applicant Completion Capacity
+# Applicant Completion Capacity
 pages.completionCapacity.title                           = Pwy sy’n cofrestru’r cwmni ar gyfer TAW?
 pages.completionCapacity.heading                         = Pwy sy’n cofrestru’r cwmni ar gyfer TAW?
 pages.completionCapacity.panel.title                     = Beth os yw’r ymgeiswyr hyn o’r cwmni yn anghywir?
@@ -836,20 +833,20 @@ pages.completionCapacity.panel.p3                        = Os ydych yn asiant ar
 pages.completionCapacity.panel.p3.link                   = chofrestru ar gyfer TAW gydag un o wasanaethau eraill CThEM.
 validation.completionCapacity.missing                    = Rhowch wybod i ni pwy sy’n cofrestru’r cwmni ar gyfer TAW
 
-## Role In The Business
+# Role In The Business
 pages.roleInTheBusiness.yourHeading                      = Beth yw’ch swydd yn y busnes?
 pages.roleInTheBusiness.namedHeading                     = Beth yw swydd {0} yn y busnes?
 pages.roleInTheBusiness.radio1                           = Cyfarwyddwr
 pages.roleInTheBusiness.radio2                           = Ysgrifennydd y cwmni
 pages.roleInTheBusiness.error.message                    = Dewiswch y swydd yn y busnes
 
-## Former Name
+# Former Name
 pages.formerName.yourHeading                             = A ydych erioed wedi newid eich enw?
 pages.formerName.namedHeading                            = A yw enw {0} erioed wedi’i newid?
 pages.formerName.married                                 = Gallai hyn fod pe baech wedi priodi neu newid eich enw drwy weithred newid enw.
 validation.formerName.choice.missing                     = Dewiswch ‘Iawn’ os bu newid enw
 
-## Former Name Capture
+# Former Name Capture
 pages.formerNameCapture.yourHeading                      = Beth oedd eich enw blaenorol?
 pages.formerNameCapture.namedHeading                     = Beth oedd enw blaenorol {0}?
 pages.formerNameCapture.first.label                      = Enw cyntaf
@@ -861,7 +858,7 @@ validation.formerNameCapture.last.invalid                = Nodwch enw olaf dilys
 validation.formerNameCapture.first.maxlen                = Nodwch enw gan ddefnyddio 35 o gymeriadau neu lai
 validation.formerNameCapture.last.maxlen                 = Nodwch enw gan ddefnyddio 35 o gymeriadau neu lai
 
-## Former Name Date
+# Former Name Date
 pages.formerNameDate.yourHeading                         = Pryd newidioch eich enw?
 pages.formerNameDate.namedHeading                        = Pryd newidiwyd enw {0}?
 pages.formerNameDate.hint1                               = Er enghraifft, 31 3 2006.
@@ -870,14 +867,13 @@ validation.formerNameDate.missing                        = Nodwch y dyddiad pan 
 validation.formerNameDate.range.below                    = Nodwch ddyddiad sydd ar neu ar ôl y dyddiad geni
 validation.formerNameDate.range.above                    = Nodwch ddyddiad sydd yn y gorffennol
 
-## Previous Address Question
+# Previous Address Question
 pages.previousAddressQuestion.yourHeading                = A ydych wedi byw yn eich cyfeiriad presennol ers tair blynedd neu fwy?
 pages.previousAddressQuestion.namedHeading               = A yw’r cyfeiriad presennol yn gartref i {0} ers tair blynedd neu fwy?
 validation.previousAddressQuestion.missing               = Dewiswch ‘Iawn’ os ydych wedi byw yn eich cyfeiriad presennol ers tair blynedd neu fwy
-#---------------------------------------------------WELSH CONTENT MISSING----------------------------------------------------------
 validation.previousAddressQuestionThirdParty.missing     = Select yes if they have lived at the current address for 3 years or more
 
-## PPOB
+# PPOB
 pages.ppob.title                                        = Beth yw ‘prif leoliad y busnes’?
 pages.ppob.heading                                      = Beth yw ‘prif leoliad y busnes’?
 pages.ppob.p1                                           = Dyma ble mae’r busnes yn gwneud y rhan fwyaf o’i waith.
@@ -890,14 +886,14 @@ pages.ppob.panel.p3                                     = cyfeiriad ‘dan ofal�
 pages.ppob.nonuk.address                                = Cyfeiriad nad yw yn y DU
 validation.ppob.missing                                 = Nodwch y cyfeiriad ar gyfer prif leoliad y busnes
 
-## PPOB Drop Out page
+# PPOB Drop Out page
 pages.ppobdropout.title                                 = Mae’n rhaid i’r cyfeiriad fod yn gyfeiriad yn y DU
 pages.ppobdropout.heading                               = Ni allwch gofrestru ar gyfer TAW gyda’r gwasanaeth hwn
 pages.ppobdropout.p1                                    = Er mwyn defnyddio’r gwasanaeth hwn, mae’n rhaid i’r cyfeiriad lle y mae’r cwmni’n cynnal y rhan fwyaf o’i weithgareddau busnes (ei ‘brif leoliad busnes’) fod yn y DU.
 pages.ppobdropout.p2                                    = Byddwch cystal â
 pages.ppobdropout.url                                   = chofrestru gyda gwasanaeth arall
 
-## Are you interested in FRS Page
+# Are you interested in FRS Page
 pages.frs.join.heading                          = A hoffai’r busnes gofrestru ar gyfer y Cynllun Cyfradd Unffurf?
 pages.frs.join.p1                               = Mae cwmnïau sy’n rhan o’r Cynllun Cyfradd Unffurf yn talu cyfradd sefydlog o TAW yn dibynnu ar ba fath o fusnes ydynt.
 pages.frs.join.listHead                         = Mae busnesau sy’n rhan o’r Cynllun Cyfradd Unffurf:
@@ -918,7 +914,7 @@ pages.frs.join.para2                            = Rhagor o wybodaeth am y
 pages.frs.join.para2.1                          = Cynllun Cyfradd Unffurf TAW
 validation.frs.join.missing                     = Dewiswch ‘Iawn’ os hoffech gofrestru’r busnes ar gyfer y Cynllun Cyfradd Unffurf
 
-## Do you spend less than £1000 Page
+# Do you spend less than £1000 Page
 pages.frs.costsInclusive.heading                          = A fydd y busnes yn gwario mwy na £250 dros y tri mis nesaf ar ‘nwyddau perthnasol’?
 pages.frs.costsInclusive.para1                            = Mae ‘nwyddau perthnasol’ yn eitemau symudol neu’n ddeunyddiau a ddefnyddir yn unswydd i redeg y cwmni. Maent yn cynnwys nwy a thrydan.
 pages.frs.costsInclusive.list.head                        = Peidiwch â chynnwys:
@@ -937,7 +933,7 @@ pages.frs.costsInclusive.para3                            = Rhagor o wybodaeth a
 pages.frs.costsInclusive.para3.1                          = Cynllun Cyfradd Unffurf TAW
 validation.frs.costsInclusive.missing                     = Dewiswch ‘Iawn’ os bydd y busnes yn gwario mwy na £250 dros y tri mis nesaf ar ‘nwyddau perthnasol’
 
-## Estimate Total Sales Page
+# Estimate Total Sales Page
 pages.frs.estimateTotalSales.heading                        = Amcangyfrifwch gyfanswm gwerthiannau’r busnes, gan gynnwys TAW, ar gyfer y tri mis nesaf
 pages.frs.estimateTotalSales.legend                         = Nodwch yr amcangyfrif
 pages.frs.estimateTotalSales.hint                           = Er enghraifft, £600 neu £90000
@@ -947,10 +943,9 @@ validation.frs.estimateTotalSales.range.below               = Nodwch amcangyfrif
 validation.frs.estimateTotalSales.missing                   = Nodwch gyfanswm gwerthiannau amcangyfrifedig y busnes, gan gynnwys TAW, ar gyfer y 3 mis nesaf
 validation.frs.estimateTotalSales.invalid                   = Nodwch gyfanswm gwerthiannau amcangyfrifedig y busnes, gan gynnwys TAW, ar gyfer y 3 mis nesaf, yn y fformat cywir
 validation.estimateTotalSales.commasNotAllowed              = Ni all cyfanswm gwerthiannau amcangyfrifedig y busnes, gan gynnwys TAW, ar gyfer y 3 mis nesaf, gynnwys atalnodau
-#---------------------------------------------------------------------------WELSH CONTENT MISSING-------------------------------------------------------------------------------
 validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed = The business’s estimated total sales, including VAT, for the next 3 months, can only include pounds and pence
 
-## FRS Confirm business sector Page
+# FRS Confirm business sector Page
 pages.frs.confirmBusinessSector.heading                   = Cadarnhewch y math o fusnes ar gyfer y Cynllun Cyfradd Unffurf?
 pages.frs.confirmBusinessSector.para                      = Rydym wedi seilio hyn ar yr hyn rydym eisoes yn ei wybod am y busnes:
 pages.frs.confirmBusinessSector.table.row1.heading        = Math o fusnes
@@ -958,28 +953,28 @@ pages.frs.confirmBusinessSector.exclamationPoint          = Eich cyfrifoldeb cyf
 pages.frs.confirmBusinessSector.changeLink                = Newid y math o fusnes
 validation.frs.confirmBusinessSector.missing              = Dewiswch ‘Iawn’ os hoffech ddefnyddio’r gyfradd hon
 
-## Choose business type
+# Choose business type
 pages.frs.chooseBusinessType.heading      = Dewiswch y prif fath o fusnes
 validation.frs.chooseBusinessType.missing = Dewiswch brif fath o fusnes y busnes
 
-## Do you want to register for FRS Page 16.5% rate
+# Do you want to register for FRS Page 16.5% rate
 pages.frs.registerFor.heading                             = Er mwyn ymuno â’r Cynllun Cyfradd Unffurf, mae’n rhaid i’r busnes ddefnyddio’r gyfradd unffurf o 16.5%
 pages.frs.registerFor.para                                = Mae hyn oherwydd nad yw’r busnes yn gwario digon (gan gynnwys TAW) ar nwyddau perthnasol.
 pages.frs.registerFor.indentText                          = Gall busnesau yn ystod blwyddyn gyntaf eu cofrestriad TAW dynnu 1% ychwanegol oddi ar eu cyfradd unffurf.
 pages.frs.registerFor.subheading                          = A hoffech i’r busnes ymuno â’r Cynllun Cyfradd Unffurf gyda’r gyfradd hon?
 validation.frs.registerFor.missing                        = Dewiswch ‘Iawn’ os hoffech ddefnyddio’r gyfradd unffurf o 16.5%
 
-## Do you want to register for FRS Page business sector rate
+# Do you want to register for FRS Page business sector rate
 pages.frs.registerForWithSector.heading                   = Cyfradd unffurf TAW y busnes yw {0}%
 pages.frs.registerForWithSector.info                      = Gall busnesau yn ystod blwyddyn gyntaf eu cofrestriad TAW dynnu 1% oddi ar eu cyfradd unffurf.
 pages.frs.registerForWithSector.subheading1               = A hoffech i’r busnes ymuno â’r Cynllun Cyfradd Unffurf?
 validation.frs.registerForWithSector.missing              = Dewiswch ‘Iawn’ os hoffech i’r busnes ymuno â’r Cynllun Cyfradd Unffurf
 
-## Do you spend less than 2% of your turn over Page
+# Do you spend less than 2% of your turn over Page
 pages.frs.costsLimited.heading                          = A fydd y busnes yn gwario mwy na {0}, gan gynnwys TAW, ar nwyddau perthnasol dros y tri mis nesaf?
 validation.frs.costsLimited.missing                     = Dewiswch ‘Iawn’ os bydd y busnes yn gwario mwy na £{0}, gan gynnwys TAW, ar nwyddau perthnasol dros y tri mis nesaf
 
-## When do you want to join the Flat Rate Scheme?
+# When do you want to join the Flat Rate Scheme?
 pages.frs.startDate.heading                               = Pryd hoffai’r busnes ymuno â’r Cynllun Cyfradd Unffurf?
 pages.frs.startDate.radio1                                = Ar yr un dyddiad ag y cafodd ei gofrestru ar gyfer TAW
 pages.frs.startDate.radio2                                = Ar ddyddiad gwahanol
@@ -992,17 +987,17 @@ validation.frs.startDate.missing                          = Nodwch y dyddiad yr 
 validation.frs.startDate.range.below.vatStartDate         = Nodwch ddyddiad sydd ar neu ar ôl y dyddiad y cofrestrodd y busnes ar gyfer TAW
 validation.frs.startDate.range.after.maxDate              = Mae’n rhaid i’r dyddiad ymuno fod o fewn y tri mis cyntaf ar ôl cofrestru ar gyfer TAW
 
-## ICL CUSTOM MESSAGES
+# ICL CUSTOM MESSAGES
 pages.icl.heading                                       = Gwirio a chadarnhau codau Dosbarthiad Diwydiannol Safonol (SIC) y cwmni ar gyfer TAW
 pages.icl.lead                                          = Dyma’r wybodaeth sydd gennym yn ein cofnodion. Ni fydd unrhyw newidiadau a wnewch yma’n effeithio ar yr hyn sydd ar gofnod cyhoeddus y cwmni.
 pages.icl.hint                                          = Gwnewch yn siŵr bod codau SIC y cwmni ar gyfer TAW yn adlewyrchu holl weithgareddau busnes y cwmni. Mae’n ei gwneud hi’n gynt ac yn haws prosesu Ffurflenni TAW.
 
-## HONESTY DECLARATION MESSAGES
+# HONESTY DECLARATION MESSAGES
 pages.honesty-declaration.heading                       = Datganiad
 pages.honesty-declaration.paragraph                     = Wrth gyflwyno’r cais hwn i gofrestru ar gyfer TAW, rydych yn gwneud datganiad cyfreithlon bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred. Gall datganiad ffug arwain at erlyniad.
 pages.honesty-declaration.button                        = Derbyn ac yn eich blaen
 
-## CAPTURE EMAIL ADDRESS MESSAGES
+# CAPTURE EMAIL ADDRESS MESSAGES
 capture-email-address.yourHeading                       = Beth yw’ch cyfeiriad e-bost?
 capture-email-address.namedHeading                      = Beth yw cyfeiriad e-bost {0}?
 capture-email-address.paragraph                         = Rydym yn defnyddio hwn i anfon gohebiaeth a diweddariadau atoch ynghylch eich TAW
@@ -1011,7 +1006,7 @@ capture-email-address.error.incorrect_format            = Nodwch gyfeiriad e-bos
 capture-email-address.error.nothing_entered             = Nodwch y cyfeiriad e-bost
 capture-email-address.error.incorrect_length            = Mae’n rhaid i’r cyfeiriad e-bost fod yn 132 o gymeriadau neu lai
 
-## CAPTURE EMAIL PASSCODE MESSAGES
+# CAPTURE EMAIL PASSCODE MESSAGES
 capture-email-passcode.heading                          = Nodwch y cod i gadarnhau’ch cyfeiriad e-bost
 capture-email-passcode.heading.new                      = Nodwch y cod newydd
 capture-email-passcode.paragraph                        = Rydym wedi anfon cod at:
@@ -1029,10 +1024,10 @@ capture-email-passcode.details.para2.provideEmail       = roi cyfeiriad e-bost a
 capture-email-passcode.error.incorrect_passcode         = Nodwch y cod cadarnhau cywir
 capture-email-passcode.error.incorrect_length           = Nodwch y cod cadarnhau sy’n 6 digid
 
-## EMAIL VERIFIED MESSAGES
+# EMAIL VERIFIED MESSAGES
 email-verified.heading                                   = Cyfeiriad e-bost wedi’i gadarnhau
 
-## CAPTURE TELEPHONE NUMBER MESSAGES
+# CAPTURE TELEPHONE NUMBER MESSAGES
 capture-telephone-number.yourHeading                     = Beth yw’ch rhif ffôn?
 capture-telephone-number.namedHeading                    = Beth yw rhif ffôn {0}?
 capture-telephone-number.paragraph                       = Efallai y bydd yn rhaid i ni gysylltu â chi ynghylch y cais.
@@ -1042,13 +1037,13 @@ capture-telephone-number.error.missing                   = Nodwch y rhif ffôn
 capture-telephone-number.error.minlength                 = Mae’n rhaid i’r rhif ffôn gynnwys o leiaf 8 o gymeriadau
 capture-telephone-number.error.maxlength                 = Mae’n rhaid i’r rhif ffôn gynnwys 15 o gymeriadau neu lai
 
-## CONTINUE APPLICATION MESSAGES
+# CONTINUE APPLICATION MESSAGES
 start-new-application.heading                            = A ydych yn dechrau cais newydd?
 start-new-application.radio-yes                          = Iawn
 start-new-application.radio-no                           = Na – rwyf eisoes wedi dechrau un
 start-new-application.error.required                     = Dewiswch ‘Iawn’ os ydych yn dechrau cais newydd
 
-## LAST MONTH OF ACCOUNTING YEAR
+# LAST MONTH OF ACCOUNTING YEAR
 last-month-of-accounting-year.heading                    = Beth fydd y mis olaf ym mlwyddyn gyfrifyddu’r busnes?
 last-month-of-accounting-year.para                       = Fel rhan o’r Cynllun Cyfrifyddu Blynyddol, bydd y Ffurflen TAW yn ddyladwy ddeufis ar ôl y mis olaf ym mlwyddyn gyfrifyddu’r busnes.
 last-month-of-accounting-year.jan                        = Ionawr
@@ -1065,14 +1060,14 @@ last-month-of-accounting-year.nov                        = Tachwedd
 last-month-of-accounting-year.dec                        = Rhagfyr
 last-month-of-accounting-year.error.required             = Dewiswch y mis olaf ym mlwyddyn gyfrifyddu’r busnes
 
-## AAS HOW OFTEN MAKE PAYMENTS
+# AAS HOW OFTEN MAKE PAYMENTS
 aas.paymentFrequency.heading                             = Pa mor aml yr hoffai’r busnes wneud taliadau?
 ass.paymentFrequency.para                                = Fel rhan o’r Cynllun Cyfrifyddu Blynyddol, mae pob taliad naill ai’n 10% o’r bil TAW amcangyfrifedig ar gyfer talwyr misol neu’n 25% ar gyfer talwyr chwarterol. Mae’r swm y bydd y busnes yn ei dalu’n seiliedig ar Ffurflenni TAW blaenorol neu, os nad yw wedi cyflwyno Ffurflen TAW eto, caiff ei amcangyfrif.
 aas.paymentFrequency.quarterly                           = Bob chwarter
 aas.paymentFrequency.monthly                             = Bob mis
 aas.paymentFrequency.notProvided                         = Dewiswch pa mor aml yr hoffai’r busnes wneud taliadau
 
-## AAS HOW WOULD YOU LIKE TO PAY
+# AAS HOW WOULD YOU LIKE TO PAY
 aas.paymentMethod.heading                                = Sut yr hoffai’r busnes dalu TAW?
 aas.paymentMethod.text                                   = Bydd CThEM yn cysylltu â’r busnes os bydd y dulliau talu neu’r manylion banc yn newid yn ystod y flwyddyn gyfrifyddu. Mae hyn er mwyn diogelu’r cyfrif TAW rhag twyll.
 aas.paymentMethod.bacs                                   = BACS (bancio ar y rhyngrwyd) neu Ddebyd Uniongyrchol
@@ -1083,7 +1078,7 @@ aas.paymentMethod.error.required                         = Dewiswch y dull o dal
 aas.paymentMethod.bacs.hiddenContent                     = Er mwyn talu drwy Ddebyd Uniongyrchol, cwblhewch y cofrestriad TAW hwn er mwyn cael y Rhif Cofrestru TAW. Yna, gall y busnes
 aas.paymentMethod.bacs.linkText                          = argraffu a llenwi mandad Debyd Uniongyrchol
 
-## SOLE TRADER - TRADING NAME
+# SOLE TRADER - TRADING NAME
 soleTrader.tradingName.heading                           = Beth yw’ch enw masnachu?
 soleTrader.tradingName.label                             = Nodwch yr enw masnachu
 soleTrader.tradingName.summary                           = Beth yw enw masnachu?
@@ -1094,7 +1089,7 @@ validation.trading-name.invalid                          = Nodwch enw masnachu d
 validation.trading-name.maxlen                           = Nodwch enw masnachu gan ddefnyddio 160 o gymeriadau neu lai
 validation.trading-name.missing                          = Nodwch enw masnachu
 
-## LEAD PARTNER ENTITY TYPE
+# LEAD PARTNER ENTITY TYPE
 pages.leadPartnerEntityType.heading                      = Pa fath o endid yw’r partner arweiniol?
 pages.leadPartnerEntityType.soleTrader                   = Unig fasnachwr
 pages.leadPartnerEntityType.netp                         = Person trethadwy sydd heb ei sefydlu (NETP)
@@ -1106,7 +1101,7 @@ pages.leadPartnerEntityType.cio                          = Sefydliad Corfforedig
 pages.leadPartnerEntityType.regSociety                   = Cymdeithas gofrestredig
 pages.leadPartnerEntityType.missing                      = Dewiswch pa fath o endid yw’r partner arweiniol
 
-## OVERSEAS BANK ACCOUNT
+# OVERSEAS BANK ACCOUNT
 pages.overseasBankAccount.heading                        = Manylion cyfrif banc neu gyfrif cymdeithas adeiladu
 pages.overseasBankAccount.name                           = Yr enw sydd ar y cyfrif
 pages.overseasBankAccount.bic                            = Cod BIC neu SWIFT
@@ -1120,41 +1115,41 @@ validation.overseasBankAccount.bic.invalid               = Nodwch god BIC neu SW
 validation.overseasBankAccount.iban.missing              = Nodwch IBAN
 validation.overseasBankAccount.iban.invalid              = Nodwch IBAN sy’n cynnwys 34 o gymeriadau neu lai
 
-## NETP - SEND GOODS OVERSEAS
+# NETP - SEND GOODS OVERSEAS
 netp.overseas.heading                                    = A fydd y busnes yn anfon nwyddau’n uniongyrchol at gwsmeriaid o wledydd tramor?
 netp.overseas.hint                                       = Yr Alban, Cymru, Gogledd Iwerddon a Lloegr yw’r unig wledydd na chânt eu hystyried yn wledydd tramor at ddibenion TAW.
 validation.overseas.error                                = Dewiswch ‘Iawn’ os yw’r busnes yn anfon nwyddau’n uniongyrchol at gwsmeriaid o wledydd tramor
 
-## SEND EU GOODS
+# SEND EU GOODS
 pages.sendEUGoods.heading                                = A yw’r busnes yn bwriadu anfon nwyddau’n uniongyrchol at gwsmeriaid o’r tu mewn i’r UE?
 validation.sendEUGoods.error                             = Dewiswch ‘Iawn’ os yw’r busnes yn bwriadu anfon nwyddau’n uniongyrchol at gwsmeriaid o’r tu mewn i’r UE
 
-## WAREHOUSE LOCATION
+# WAREHOUSE LOCATION
 pages.netp.warehouseLocation.title                       = Ble mae’r busnes yn storio nwyddau sydd i’w hanfon?
 pages.netp.warehouseLocation.heading                     = Ble mae’r busnes yn storio nwyddau sydd i’w hanfon?
 pages.netp.warehouseLocation.uk                          = O fewn y Deyrnas Unedig
 pages.netp.warehouseLocation.overseas                    = Dramor
 pages.netp.warehouseLocation.error                       = Dewiswch y man lle mae’r busnes yn storio nwyddau sydd i’w hanfon
 
-## DISPATCH FROM WAREHOUSE
+# DISPATCH FROM WAREHOUSE
 pages.dispatchFromWarehouse.heading                      = A fydd y busnes yn anfon nwyddau o warws cofrestredig y Cynllun Diwydrwydd Dyladwy ar gyfer Busnesau Cyflawni (FHDDS)?
 pages.dispatchFromWarehouse.para1                        = Gallwch wirio a yw’r busnes sy’n storio ac yn anfon eich nwyddau yn y DU wedi’i gofrestru gyda’r FHDDS drwy
 pages.dispatchFromWarehouse.link                         = chwilio drwy’r rhestr o fusnesau cofrestredig
 validation.dispatchFromWarehouse.missing                 = Dewiswch ‘Iawn’ os bydd y busnes yn anfon nwyddau o warws cofrestredig y Cynllun Diwydrwydd Dyladwy ar gyfer Busnesau Cyflawni (FHDDS)
 
-## WAREHOUSE NUMBER
+# WAREHOUSE NUMBER
 pages.warehouseNumber.heading                            = Beth yw rhif y Warws Cyflawni?
 pages.warehouseNumber.para1                              = Fel arfer, 4 llythyren wedi’u dilyn gan 11 rhif yw hwn. Er enghraifft, ABCD12345678912.
 validation.warehouseNumber.missing                       = Nodwch rif y Warws Cyflawni
 validation.warehouseNumber.regex                         = Nodwch rif nad yw’n cynnwys cymeriadau arbennig
 validation.warehouseNumber.format                        = Nodwch rif Warws Cyflawni yn y fformat cywir
 
-## WAREHOUSE NAME
+# WAREHOUSE NAME
 pages.warehouseName.heading                              = Beth yw enw busnes y Warws Cyflawni?
 validation.warehouseName.missing                         = Nodwch enw busnes y Warws Cyflawni
 validation.warehouseName.format                          = Nodwch enw busnes sy’n dechrau gyda rhif neu lythyren
 
-## Overseas address capture
+# Overseas address capture
 internationalAddress.home.heading                        = Nodwch eich cyfeiriad cartref
 internationalAddress.home.3pt.heading                    = Nodwch gyfeiriad cartref {0}
 internationalAddress.prev.heading                        = Nodwch eich cyfeiriad cartref blaenorol
@@ -1185,7 +1180,7 @@ internationalAddress.error.postcode.empty                = Nodwch god post {0}
 internationalAddress.error.country                       = Dewiswch wlad
 internationalAddress.error.country.invalid               = Dewiswch wlad
 
-## ATTACHMENT METHOD
+# ATTACHMENT METHOD
 attachmentMethod.title                                    = Sut yr hoffech anfon y dogfennau ychwanegol?
 attachmentMethod.text                                     = Dim ond un dull y gallwch ei ddewis.
 attachmentMethod.options.upload                           = Uwchlwytho’r dogfennau gan ddefnyddio’r gwasanaeth hwn
@@ -1193,8 +1188,8 @@ attachmentMethod.options.email                            = E-bostio copïau at 
 attachmentMethod.options.post                             = Postio copïau at CThEM
 attachmentMethod.error.missing                            = Dewiswch sut yr hoffech anfon copïau o’r dogfennau at CThEM
 
-## MULTIPLE DOCUMENTS REQUIRED
-attachments.multipleDocumentsRequired.title                         = Mae arnom angen rhywfaint o wybodaeth ychwanegol oddi wrthych
+# MULTIPLE DOCUMENTS REQUIRED
+attachments.multipleDocumentsRequired.title                         = You must send us additional documents in order for us to process this VAT application
 attachments.multipleDocumentsRequired.para                          = Er mwyn ein galluogi i fwrw ymlaen â’ch cais, mae arnom angen yr wybodaeth a’r dogfennau canlynol gennych:
 attachments.multipleDocumentsRequired.identityDetails               = Pa ddogfennau adnabod allaf eu darparu?
 attachments.multipleDocumentsRequired.identityEvidence              = dogfennau adnabod sy’n ymwneud â chi
@@ -1205,13 +1200,11 @@ attachments.multipleDocumentsRequired.VAT51.para1                   = ffurflen V
 attachments.multipleDocumentsRequired.VAT51.link                    = wedi’i chwblhau
 attachments.multipleDocumentsRequired.VAT51.para2                   = i roi manylion am y grŵp TAW i ni, gan gynnwys manylion pob is-gwmni.
 attachments.multipleDocumentsRequired.VAT5L.para1                   = ffurflen VAT5L
-#----------------------------------------------------------WELSH CONTENT MISSING-----------------------------------------------------------
 attachments.multipleDocumentsRequired.VAT5L.para2                   = with details of the land and property supplies the business is making
 attachments.multipleDocumentsRequired.VAT5L.link                    = wedi’i chwblhau
 attachments.multipleDocumentsRequired.VAT1TR.para1                  = ffurflen VAT1TR
 attachments.multipleDocumentsRequired.VAT1TR.link                   = wedi’i llenwi
 attachments.multipleDocumentsRequired.VAT1TR.para2                  = â manylion eich cynrychiolydd treth dethol yn y DU.
-#-------------------------------------------------------WELSH CONTENT MISSING--------------------------------------------------------
 attachments.multipleDocumentsRequired.VAT1614.para1                 = a
 attachments.multipleDocumentsRequired.VAT1614A.link                 = VAT1614A
 attachments.multipleDocumentsRequired.VAT1614.para2                 = or
@@ -1219,7 +1212,7 @@ attachments.multipleDocumentsRequired.VAT1614H.link                 = VAT1614H f
 attachments.multipleDocumentsRequired.VAT1614.para3                 = if you have decided to, or want to opt to tax land or buildings
 attachments.multipleDocumentsRequired.supportingDocs.para1          = any supporting documents
 
-## IDENTITY EVIDENCE REQUIRED
+# IDENTITY EVIDENCE REQUIRED
 attachments.identityEvidenceRequired.title                = Mae arnom angen tri darn o wybodaeth ychwanegol gennych fel y gallwn brofi pwy ydych
 attachments.identityEvidenceRequired.evidence             = Mae angen un darn o dystiolaeth sylfaenol arnom sy’n cynnwys copi o lun a gyhoeddwyd gan y llywodraeth a allai gynnwys:
 attachments.identityEvidenceRequired.bullet1              = pasbort
@@ -1233,7 +1226,7 @@ attachments.identityEvidenceRequired.additionalBullet4    = unrhyw ohebiaeth gan
 attachments.identityEvidenceRequired.additionalBullet5    = bil cyfleustodau diweddar
 attachments.identityEvidenceRequired.additionalBullet6    = tystysgrif geni
 
-## DOCUMENTS POST
+# DOCUMENTS POST
 attachments.documentsPost.title                    = Mae angen i chi anfon y dogfennau i’r cyfeiriad CThEM canlynol
 attachments.documentsPost.para                     = Er mwyn i ni allu bwrw ymlaen yn gyflym â’ch cofrestriad TAW, mae angen i chi anfon y dogfennau hyn atom cyn gynted ag y byddwch wedi cyflwyno’r ffurflen gais.
 attachments.documentsPost.line1                    = Ceisiadau am Gofrestriad TAW / VAT Registration Applications
@@ -1246,6 +1239,13 @@ attachments.documentsPost.country                  = United Kingdom
 attachments.uploadingDocument.heading              = Uwchlwytho’r ddogfen
 attachments.uploadingDocument.subheading           = Rydym yn gwirio’ch ffeil.
 attachments.uploadingDocument.status.button.text   = Gwirio statws
+attachments.uploadingDocument.heading.vat5L                  = Uploading the VAT5L
+attachments.uploadingDocument.heading.vat51                  = Uploading the VAT 50/51
+attachments.uploadingDocument.heading.vat2                   = Uploading the VAT2
+attachments.uploadingDocument.heading.vat1tr                 = Uploading the VAT1TR
+attachments.uploadingDocument.heading.supportingDocuments    = Uploading the supporting document
+attachments.uploadingDocument.heading.VAT1614A               = Uploading the VAT1614A
+attachments.uploadingDocument.heading.VAT1614H               = Uploading the VAT1614H
 
 #POSTAL COVER SHEET MESSAGES
 pages.PostalCoverSheet.heading                           = Argraffu llythyr eglurhaol ar gyfer y dogfennau
@@ -1262,7 +1262,7 @@ pages.PostalCoverSheet.panel4                            = HM Revenue and Custom
 pages.PostalCoverSheet.panel5                            = BX9 1WR
 pages.PostalCoverSheet.panel6                            = United Kingdom
 
-## EMAIL ATTACHMENTS
+# EMAIL ATTACHMENTS
 pages.EmailCoverSheet.heading                           = Sut i e-bostio dogfennau at CThEM
 pages.EmailCoverSheet.para                              = Mae’n rhaid i linell pwnc yr e-bost gynnwys eich cyfeirnod Cofrestru ar gyfer TAW. Bydd hyn yn ein galluogi i baru’ch cais ar-lein â’ch dogfennau ategol.
 pages.EmailCoverSheet.panel1                            = Cofrestru ar gyfer cyfeirnod TAW:
@@ -1271,7 +1271,7 @@ pages.EmailCoverSheet.sendHeading                       = Cyfeiriad e-bost
 pages.EmailCoverSheet.sendDocsTo                        = Anfonwch y dogfennau ategol at:
 pages.EmailCoverSheet.attachmentsEmail                  = VATREGBETA@hmrc.gov.uk
 
-## COMMON COVER SHEET MESSAGES
+# COMMON COVER SHEET MESSAGES
 pages.CoverSheet.whatYouMustSend.para              = Mae’n rhaid i chi anfon dogfennau ychwanegol atom er mwyn i ni brosesu’r cais TAW hwn:
 pages.CoverSheet.vat2Start                         = ffurflen VAT2
 pages.CoverSheet.vat2Link                          = wedi’i chwblhau
@@ -1281,7 +1281,6 @@ pages.CoverSheet.vat51Link                         = wedi’i chwblhau
 pages.CoverSheet.vat51End                          = i roi manylion am y grŵp TAW i ni, gan gynnwys manylion pob is-gwmni
 pages.CoverSheet.vat5LStart                        = ffurflen VAT5L
 pages.CoverSheet.vat5LLink                         = wedi’i chwblhau
-#-----------------------------------------------WELSH CONTENT MISSING-----------------------------------------------
 pages.CoverSheet.vat1614.para1                     = a completed
 pages.CoverSheet.vat1614ALink                      = VAT1614A
 pages.CoverSheet.vat1614.para2                     = or
@@ -1291,7 +1290,6 @@ pages.CoverSheet.supportingDocs                    = any supporting documents
 pages.CoverSheet.identityEvidence                  = tair dogfen i gadarnhau pwy ydych
 pages.CoverSheet.identityEvidence.name             = tair dogfen i gadarnhau pwy yw {0}
 pages.CoverSheet.idEvidence.details                = Pa ddogfennau adnabod allaf eu darparu?
-#-------------------------------------WELSH CONTENT MISSING--------------------------------------
 pages.CoverSheet.idEvidence.heading                = The three identity documents you should send
 pages.CoverSheet.idEvidence.para1                  = Cofiwch gynnwys copi o
 pages.CoverSheet.idEvidence.para1Bold              = un
@@ -1312,7 +1310,7 @@ pages.CoverSheet.idEvidence.birthCert              = tystysgrif geni
 pages.CoverSheet.vat1TRStart                       = ffurflen VAT1TR
 pages.CoverSheet.vat1TRLink                        = wedi’i chwblhau
 
-## Northern Ireland Protocol - Receive Goods
+# Northern Ireland Protocol - Receive Goods
 pages.northernIrelandReceiveGoods.heading                = A yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE?
 pages.northernIrelandReceiveGoods.label                  = Beth yw gwerth y nwyddau hyn?
 pages.northernIrelandReceiveGoods.hint                   = Er enghraifft, £600 neu £90000
@@ -1320,7 +1318,6 @@ nip.receiveGoods.missing                                 = Dewiswch ‘Iawn’ o
 validation.northernIrelandReceiveGoods.missing           = Nodwch werth amcangyfrifedig y nwyddau
 validation.northernIrelandReceiveGoods.invalid           = Nodwch werth amcangyfrifedig y nwyddau yn y fformat cywir
 validation.northernIrelandReceiveGoods.commasNotAllowed  = Ni all gwerth amcangyfrifedig y nwyddau gynnwys atalnodau
-#-------------------------------------------------------WELSH CONTENT MISSING------------------------------------------------------------
 validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed = The estimated value of the goods can only include pounds and pence
 
 # NORTHERN IRELAND PROTOCOL - SELL OR MOVE
@@ -1334,7 +1331,6 @@ nip.error.missing                                        = Dewiswch ‘Iawn’ o
 validation.sellOrMoveNip.missing                         = Nodwch werth amcangyfrifedig y nwyddau
 validation.sellOrMoveNip.invalid                         = Nodwch werth amcangyfrifedig y nwyddau yn y fformat cywir
 validation.sellOrMoveNip.commasNotAllowed                = Ni all gwerth amcangyfrifedig y nwyddau gynnwys atalnodau
-#-------------------------------------------------------WELSH CONTENT MISSING------------------------------------------------------------
 validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed   = The estimated value of the goods can only include pounds and pence
 
 pages.EmailDocuments.heading                             = Mae angen i chi anfon y dogfennau i’r cyfeiriad e-bost CThEM canlynol
@@ -1361,13 +1357,12 @@ validation.shortOrgName.invalid                      = Nodwch enw busnes swyddog
 validation.shortOrgName.missing                      = Nodwch enw swyddogol y busnes
 validation.shortOrgName.maxlen                       = Nodwch enw busnes swyddogol gan ddefnyddio 160 o gymeriadau neu lai
 
-## PART OF ORGANISATION
+# PART OF ORGANISATION
 partOfOrganisation.heading                               = A ydych yn rhan o sefydliad?
 partOfOrganisation.indentText                            = Gan eich bod yn cofrestru ar ran rhywun arall, mae angen i ni gasglu’ch manylion er mwyn gwybod ychydig yn fwy amdanoch chi.
 validation.partOfOrganisation.missing                    = Dewiswch ‘Iawn’ os ydych yn rhan o sefydliad
 
-## DECLARATION CAPACITY
-
+# DECLARATION CAPACITY
 declarationCapacity.heading                              = Beth yw’ch swydd yn y busnes rydych yn ei gofrestru ar gyfer TAW?
 declarationCapacity.accountant                           = Cyfrifydd
 declarationCapacity.representative                       = Cynrychiolydd penodedig
@@ -1379,14 +1374,13 @@ validation.declarationCapacity.other.missing             = Nodwch eich swydd yn 
 validation.declarationCapacity.other.invalid             = Nodwch eich swydd heb gymeriadau arbennig
 validation.declarationCapacity.other.maxlen              = Nodwch eich swydd gan ddefnyddio 100 o gymeriadau neu lai
 
-## ORGANISATION NAME
-
+# ORGANISATION NAME
 organisationName.heading                                 = Beth yw enw’r sefydliad rydych yn rhan ohono?
 validation.organisationName.missing                      = Nodwch enw’ch sefydliad
 validation.organisationName.invalid                      = Nodwch enw sefydliad dilys
 validation.organisationName.maxlen                       = Nodwch enw sefydliad sy’n llai na 160 o gymeriadau
 
-## TRANSACTOR TELEPHONE NUMBER
+# TRANSACTOR TELEPHONE NUMBER
 transactorTelephoneNumber.heading                                  = Beth yw’ch rhif ffôn?
 transactorTelephoneNumber.label                                    = Nodwch rif ffôn
 transactorTelephoneNumber.error.invalid                            = Nodwch rif ffôn yn y fformat cywir, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
@@ -1394,7 +1388,7 @@ transactorTelephoneNumber.error.missing                            = Nodwch y rh
 transactorTelephoneNumber.error.minlength                          = Mae’n rhaid i’r rhif ffôn gynnwys o leiaf 8 o gymeriadau
 transactorTelephoneNumber.error.maxlength                          = Mae’n rhaid i’r rhif ffôn gynnwys 15 o gymeriadau neu lai
 
-## AGENT NAME (TRANSACTOR)
+# AGENT NAME (TRANSACTOR)
 agentName.heading                                        = Beth yw’ch enw?
 agentName.firstName                                      = Enw cyntaf
 agentName.lastName                                       = Enw olaf
@@ -1405,61 +1399,60 @@ validation.agentName.lastName.missing                    = Nodwch enw olaf
 validation.agentName.lastName.invalid                    = Nodwch enw olaf dilys
 validation.agentName.lastName.maxLen                     = Nodwch eich enw olaf gan ddefnyddio 35 o gymeriadau neu lai
 
-## TRANSACTOR CAPTURE EMAIL ADDRESS
+# TRANSACTOR CAPTURE EMAIL ADDRESS
 transactorEmail.heading                                  = Beth yw’ch cyfeiriad e-bost?
 transactorEmail.paragraph                                = Byddwn yn anfon cod cadarnhau atoch
 transactorEmail.error.incorrect_format                   = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
 transactorEmail.error.nothing_entered                    = Nodwch eich cyfeiriad e-bost
 transactorEmail.error.incorrect_length                   = Nodwch gyfeiriad e-bost sydd rhwng 3 a 132 o gymeriadau
 
-## TRANSACTOR FULL NAME PAGE
+# TRANSACTOR FULL NAME PAGE
 transactorName.optFullNamePageLabel                      = Ar ran pwy rydych yn cofrestru?
 
-## VAT2 REQUIRED
-pages.vat2Required.heading                               = Mae’n rhaid i chi lenwi ffurflen VAT 2
-pages.vat2Required.para.1                                = Mae’n rhaid i chi nawr
-pages.vat2Required.para.link                             = lawrlwytho’r ffurflen VAT 2
-pages.vat2Required.para.2                                = i roi manylion ychwanegol am y partneriaid sydd wedi’u cynnwys yng nghofrestriad TAW y bartneriaeth hon. Ar ôl i chi orffen y ffurflen hon, mae’n rhaid i chi naill ai uwchlwytho, e-bostio neu bostio copi ohoni at CThEM.
+# VAT2 REQUIRED
+pages.vat2Required.heading                               = You must send us a completed VAT2 form in order for us to process this application
+pages.vat2Required.para.1                                = We need a completed
+pages.vat2Required.para.link                             = VAT2 form
+pages.vat2Required.para.2                                = with details of the partners in the partnership.
 
-## PARTNERSHIP NAME
+# PARTNERSHIP NAME
 partnershipName.heading                                  = Beth yw enw’r bartneriaeth?
 validation.partnershipName.missing                       = Nodwch enw’r bartneriaeth
 validation.partnershipName.maxlen                        = Nodwch enw partneriaeth sydd rhwng 1 a 105 o gymeriadau
 validation.partnershipName.invalid                       = Nodwch enw partneriaeth heb gynnwys cymeriadau arbennig
 
-## SCOTTISH PARTNERSHIP NAME
+# SCOTTISH PARTNERSHIP NAME
 scottishPartnershipName.heading                          = Beth yw enw’r bartneriaeth?
 validation.scottishPartnershipName.missing               = Nodwch enw’r bartneriaeth
 validation.scottishPartnershipName.maxlen                = Nodwch enw partneriaeth sydd rhwng 1 a 105 o gymeriadau
 validation.scottishPartnershipName.invalid               = Nodwch enw partneriaeth heb gynnwys cymeriadau arbennig
 
-## ALREADY SUBMITTED KICKOUT PAGE
+# ALREADY SUBMITTED KICKOUT PAGE
 alreadySubmitted.heading                                 = Rydym eisoes wedi cael cais am gofrestriad TAW ar gyfer y busnes hwn
 alreadySubmitted.para                                    = Gall gymryd hyd at 30 diwrnod i brosesu ceisiadau. Dylech aros i’r cyfnod hwnnw fynd heibio cyn cysylltu â ni.
 
-## VAT51 REQUIRED
+# VAT51 REQUIRED
 pages.vat51Required.heading                              = Mae’n rhaid i chi anfon ffurflen VAT 50/51 wedi’i chwblhau atom er mwyn i ni brosesu’r cais hwn
 pages.vat51Required.para1                                = Mae arnom angen
 pages.vat51Required.link                                 = ffurflen VAT 50/51 wedi’i chwblhau
-pages.vat51Required.para2                                = i roi manylion am y grŵp TAW i ni, gan gynnwys manylion pob is-gwmni.
+pages.vat51Required.para2                                = with details of the VAT group. You should include details of each subsidiary.
 
-## VAT5L REQUIRED
+# VAT5L REQUIRED
 pages.vat5LRequired.heading                              = Mae’n rhaid i chi anfon ffurflen VAT5L wedi’i chwblhau atom er mwyn i ni brosesu’r cais hwn
 pages.vat5LRequired.para1                                = Mae arnom angen
 pages.vat5LRequired.link                                 = ffurflen VAT5L wedi’i chwblhau
-pages.vat5LRequired.para2                                = i gasglu gwybodaeth am yr holl gyflenwadau tir ac eiddo mae’r busnes yn eu gwneud. Ar ôl i chi orffen y ffurflen hon, mae’n rhaid i chi naill ai uwchlwytho, e-bostio neu bostio copi ohoni at CThEM.
-#----------------------------------------------------------------WELSH CONTENT MISSING--------------------------------------------------------------
+pages.vat5LRequired.para2                                = with details of the land and property supplies the business is making.
 pages.vat5LRequired.para3                                = If you have decided to, or want to opt to tax land or buildings, we also need a completed
 pages.vat5LRequired.vat1614A.link                        = VAT1614A
 pages.vat5LRequired.para4                                = or
 pages.vat5LRequired.vat1614H.link                        = VAT1614H form
 pages.vat5LRequired.para5                                = If you have any supporting documents, you need to send these too.
 
-## VAT1TR REQUIRED
+# VAT1TR REQUIRED
 pages.vat1TRRequired.heading                             = Mae’n rhaid i chi anfon ffurflen VAT1TR wedi’i llenwi atom er mwyn i ni brosesu’r cais hwn
-pages.vat1TRRequired.para1                               = Oherwydd eich bod wedi dewis penodi cynrychiolydd treth yn y DU, mae angen i chi lenwi
-pages.vat1TRRequired.link                                = ffurflen VAT1TR
-pages.vat1TRRequired.para2                               = Ar ôl i chi lenwi’r ffurflen, mae’n rhaid i chi naill ai uwchlwytho, e-bostio neu bostio copi atom.
+pages.vat1TRRequired.para1                               = We need a completed
+pages.vat1TRRequired.link                                = VAT1TR form
+pages.vat1TRRequired.para2                               = with details of your chosen UK tax representative.
 
 # APPLICATION REFERENCE PAGE
 applicationReference.heading                             = Dewis cyfeirnod cais
@@ -1469,7 +1462,7 @@ applicationReference.error.missing                       = Nodwch gyfeirnod cais
 applicationReference.error.invalid                       = Nodwch gyfeirnod cais heb gynnwys cymeriadau arbennig
 applicationReference.error.length                        = Nodwch gyfeirnod cais sy’n 100 o gymeriadau neu lai
 
-## SUBMISSION IN PROGRESS
+# SUBMISSION IN PROGRESS
 pages.submissionInProgress.heading                       = Mae’ch cais wrthi’n cael ei brosesu
 pages.submissionInProgress.para1                         = Gall gymryd munud cyn i chi gael cadarnhad bod y cais wedi’i gyflwyno.
 pages.submissionInProgress.retry                         = Ailgynnig
@@ -1484,8 +1477,7 @@ manageRegistrations.attachmentsRequired                  = Angen atodiadau
 manageRegistrations.panel                                = Bydd cofrestriadau sydd ar y gweill dim ond ar gael i’w cwblhau 7 diwrnod o’r diwrnod y gwnaethoch gadw’r cais ddiwethaf.
 manageRegistrations.startNew                             = Creu cais newydd
 
-## TRANSACTOR IDENTITY EVIDENCE REQUIRED
-
+# TRANSACTOR IDENTITY EVIDENCE REQUIRED
 attachments.transactorIdentityEvidenceRequired.title.1                      = Mae’n rhaid i chi anfon tair dogfen hunaniaeth atom ar gyfer {0} er mwyn i ni brosesu’r cais TAW hwn
 attachments.transactorIdentityEvidenceRequired.title.2                      = Mae’n rhaid i chi anfon dogfennau hunaniaeth atom ar gyfer {0} ac ar gyfer {1} er mwyn i ni brosesu’r cais TAW hwn
 attachments.transactorIdentityEvidenceRequired.evidence.start               = Mae arnom angen
@@ -1505,7 +1497,7 @@ attachments.transactorIdentityEvidenceRequired.additionalBullet4            = un
 attachments.transactorIdentityEvidenceRequired.additionalBullet5            = bil cyfleustodau diweddar
 attachments.transactorIdentityEvidenceRequired.additionalBullet6            = tystysgrif geni
 
-## LAND AND PROPERTY
+# LAND AND PROPERTY
 landAndProperty.heading                  = A yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo?
 landAndProperty.p1                       = Os yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo, mae’n rhaid i chi roi gwybod am hyn i CThEM drwy gwblhau
 landAndProperty.link1                    = ffurflen VAT5L
@@ -1513,11 +1505,11 @@ landAndProperty.p2                       = Mae rhai trafodion sy’n ymwneud ag 
 landAndProperty.link2                    = ddarllen yr arweiniad ar dir ac eiddo
 landAndProperty.error.missing            = Dewiswch ‘Iawn’ os yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo
 
-## IMPORTS OR EXPORTS
+# IMPORTS OR EXPORTS
 importsOrExports.heading                   = A fydd y busnes yn masnachu nwyddau sy’n agored i TAW gyda gwledydd y tu allan i’r DU?
 validation.ImportsOrExports.error          = Dewiswch ‘Iawn’ os bydd y busnes yn masnachu nwyddau sy’n agored i TAW gyda gwledydd y tu allan i’r DU
 
-## OTHER BUSINESS INVOLVEMENT
+# OTHER BUSINESS INVOLVEMENT
 otherBusinessInvolvement.heading           = A ydych chi neu unrhyw un o’r partneriaid neu’r cyfarwyddwyr yn y busnes hwn wedi bod yn gysylltiedig ag unrhyw fusnes arall yn ystod y ddwy flynedd ddiwethaf?
 otherBusinessInvolvement.para              = Dewiswch ‘Iawn’ os oes unrhyw un o’r partneriaid neu’r cyfarwyddwyr yn y busnes wedi gweithredu fel unig fasnachwyr, partneriaid neu gyfarwyddwyr mewn unrhyw fusnes arall yn y Deyrnas Unedig neu Ynys Manaw yn ystod y ddwy flynedd ddiwethaf.
 validation.OtherBusinessInvolvement.error  = Dewiswch ‘Iawn’ os bu cysylltiad ag unrhyw fusnes arall yn ystod y ddwy flynedd ddiwethaf
@@ -1549,7 +1541,7 @@ obi.captureUtr.link                                              = Ni allaf ddar
 validation.obi.captureUtr.invalid                                = Nodwch y Cyfeirnod Unigryw y Trethdalwr yn y fformat cywir
 validation.obi.captureUtr.missing                                = Nodwch y Cyfeirnod Unigryw y Trethdalwr
 
-## OTHER BUSINESS ACTIVELY TRADING
+# OTHER BUSINESS ACTIVELY TRADING
 obi.otherBusinessActivelyTrading.heading                         = A yw’r busnes arall yn dal i fod wrthi’n masnachu?
 obi.otherBusinessActivelyTrading.error                           = Dewiswch ‘Iawn’ os yw’r busnes arall yn dal i fod wrthi’n masnachu
 
@@ -1557,7 +1549,7 @@ obi.otherBusinessActivelyTrading.error                           = Dewiswch ‘I
 obi.removeOtherBusiness.heading                  = A ydych yn siŵr eich bod am dynnu {0}?
 validation.obi.removeOtherBusiness.missing       = Dewiswch ‘Iawn’ os ydych am dynnu {0}
 
-## OTHER BUSINESS CHECK ANSWERS
+# OTHER BUSINESS CHECK ANSWERS
 obi.cya.title                                                    = Gwirio’ch atebion
 obi.cya.titleWithName                                            = Newid manylion {0}
 obi.cya.businessName                                             = Enw’r busnes
@@ -1583,7 +1575,6 @@ validation.obi.summary.error               = Dewiswch ‘Iawn’ os oes angen i 
 # DOCUMENT UPLOAD SUMMARY PAGE
 document.upload.summary.heading             = Rydych wedi ychwanegu {0} ddogfen
 document.upload.summary.headingPlural       = Rydych wedi ychwanegu {0} o ddogfennau
-#----------------------------------WELSH CONTENT MISSING-------------------------------------
 document.upload.summary.subHeading          = Do you need to add another supporting document?
 document.upload.summary.hint                = You must add all your supporting documents.
 pending.documents.message                   = Mae angen i chi uwchlwytho dogfen arall
@@ -1593,7 +1584,7 @@ pending.documents.messagePlural             = Mae angen i chi ychwanegu {0} o dd
 document.upload.remove.heading                  = A ydych yn siŵr eich bod am dynnu {0}?
 validation.document.upload.remove.missing       = Dewiswch ‘Iawn’ os ydych am dynnu {0}
 
-# UPLOAD PHOTO DOCUMENT PAGE
+# UPLOAD DOCUMENT PAGE
 fileUpload.uploadDocument.heading                    = Uwchlwytho dogfen
 fileUpload.uploadDocument.hint.primary               = Mae’n rhaid i hyn fod yn basbort, yn drwydded yrru cerdyn-llun neu’n gerdyn adnabod cenedlaethol. Mae’n rhaid i’r ffeil fod ar ffurf JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF neu TXT.
 fileUpload.uploadDocument.hint.primary3pt            = Mae’n rhaid i hyn fod yn basbort, yn drwydded yrru cerdyn-llun neu’n gerdyn adnabod cenedlaethol ar gyfer {0}. Mae’n rhaid i’r ffeil fod ar ffurf JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF neu TXT.
@@ -1615,7 +1606,6 @@ fileUpload.uploadDocument.hint.fileType              = Mae’n rhaid i’r ffeil
 fileUpload.uploadDocument.label                      = Uwchlwytho ffeil
 
 # UPLOAD SUPPLEMENTARY FORMS PAGE
-#--------------------------WELSH CONTENT MISSING----------------------------
 supplementary.uploadDocument.heading.vat5L                  = Upload a VAT5L
 supplementary.uploadDocument.heading.vat51                  = Upload a VAT 50/51
 supplementary.uploadDocument.heading.vat2                   = Upload a VAT2
@@ -1628,7 +1618,6 @@ supplementary.uploadDocument.vat5LLink                      = ffurflen VAT5L wed
 supplementary.uploadDocument.vat51Link                      = ffurflen VAT 50/51 wedi’i chwblhau
 supplementary.uploadDocument.vat2Link                       = ffurflen VAT2 wedi’i chwblhau
 supplementary.uploadDocument.vat1trLink                     = ffurflen VAT1TR wedi’i chwblhau
-#--------------------------WELSH CONTENT MISSING---------------------------
 supplementary.uploadDocument.VAT1614ALink                   = VAT1614A form
 supplementary.uploadDocument.VAT1614HLink                   = VAT1614H form
 
@@ -1661,26 +1650,23 @@ validation.businessWebsiteAddress.invalid            = Nodwch gyfeiriad y wefan 
 validation.businessWebsiteAddress.missing            = Nodwch gyfeiriad gwefan y busnes
 validation.businessWebsiteAddress.maxlen             = Mae’n rhaid i gyfeiriad gwefan y busnes gynnwys 132 o gymeriadau neu lai
 
-## TAX REP PAGE
+# TAX REP PAGE
 taxRep.heading                                       = Ydych chi am benodi cynrychiolydd treth yn y DU ar gyfer y busnes?
 taxRep.para1                                         = Gallwch benodi cynrychiolydd treth i ddelio â materion TAW ar ran y busnes.
 taxRep.para2                                         = Y cynrychiolydd fydd y pwynt cyswllt ar gyfer TAW, a gellir ei wneud yn gyfrifol am unrhyw ddyledion TAW y busnes.
 validation.taxRep.error                              = Dewiswch ‘Iawn’ os hoffech benodi cynrychiolydd treth yn y DU ar gyfer y busnes
 
-# SUPPLY 1614A PAGE
-#-----------------------------------WELSH CONTENT MISSING---------------------------------------
+# SUPPLY 1614A PAGE-
 supply1614A.heading                                     = Do you need to upload a VAT1614A form?
 supply1614A.hint                                        = This is to tell us about an option to tax land and buildings.
 validation.supply1614A.error                            = Select yes if you need to upload a VAT1614A form
 
-# SUPPLY 1614H PAGE
-#-----------------------------------WELSH CONTENT MISSING---------------------------------------
+# SUPPLY 1614H PAGE-
 supply1614H.heading                                     = Do you need to upload a VAT1614H form?
 supply1614H.hint                                        = This is to apply for permission to opt to tax land and buildings.
 validation.supply1614H.error                            = Select yes if you need to upload a VAT1614H form
 
 # SUPPLY SUPPORTING DOCUMENTS PAGE
-#-----------------------------------WELSH CONTENT MISSING--------------------------------------
 supplySupportingDocuments.heading                       = Do you have any supporting documents?
 supplySupportingDocuments.hint                          = These are any land or property documents that may support your VAT5L application. For example, planning permission or solicitors correspondence.
 validation.supplySupportingDocuments.error              = Select yes if you have any supporting documents

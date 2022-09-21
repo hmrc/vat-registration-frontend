@@ -28,7 +28,7 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitc
   val view: MultipleDocumentsRequired = app.injector.instanceOf[MultipleDocumentsRequired]
 
   object ExpectedContent {
-    val heading = "We require some additional information from you"
+    val heading = "You must send us additional documents in order for us to process this VAT application"
     val title = s"$heading - Register for VAT - GOV.UK"
     val para = "To enable us to progress your application further, we need the following information and documents from you:"
     val bullet1 = "identity documents of you"
@@ -38,7 +38,7 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitc
     val vat5LBullet = "a completed VAT5L form (opens in new tab) with details of the land and property supplies the business is making"
     val vat1614Bullet = "a VAT1614A (opens in new tab) or VAT1614H form (opens in new tab) if you have decided to, or want to opt to tax land or buildings"
     val supportingDocsBullet = "any supporting documents"
-    val continue = "Save and continue"
+    val continue = "Continue"
     val transactorName = "Transactor Name"
     val applicantName = "Applicant Name"
     val vat1TRBullet = "a completed VAT1TR form (opens in new tab) with details of your chosen UK tax representative."

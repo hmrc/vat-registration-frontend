@@ -32,9 +32,9 @@ class Vat1TRRequiredViewSpec extends VatRegViewSpec {
   object ExpectedContent {
     val heading = "You must send us a completed VAT1TR form in order for us to process this application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "Because you have chosen to appoint a UK tax representative, you need to complete form VAT1TR (opens in new tab). Once you have completed the form, you must either upload, email or post a copy to us."
-    val link = "form VAT1TR (opens in new tab)"
-    val continue = "Save and continue"
+    val para = "We need a completed VAT1TR form (opens in new tab) with details of your chosen UK tax representative."
+    val link = "VAT1TR form (opens in new tab)"
+    val continue = "Continue"
     val url = "https://www.gov.uk/government/publications/vat-appointment-of-tax-representative-vat1tr"
   }
 
