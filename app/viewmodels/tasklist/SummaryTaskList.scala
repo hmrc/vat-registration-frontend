@@ -34,8 +34,12 @@ class SummaryTaskList @Inject() (vatRegistrationTaskList: VatRegistrationTaskLis
       url= _ => controllers.routes.SummaryController.show.url,
       tagId = "summaryRow",
       checks = _ => Seq(false),
-      prerequisites = _ => Seq(
-        attachmentsTaskListRowBuilder.getOrElse(vatRegistrationTaskList.flatRateSchemeRow)
+      prerequisites = vatScheme => Seq(
+        attachmentsTaskListRowBuilder.getOrElse(
+          vatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme).getOrElse(
+            vatRegistrationTaskList.vatReturnsRow
+          )
+        )
       )
     )
   }
