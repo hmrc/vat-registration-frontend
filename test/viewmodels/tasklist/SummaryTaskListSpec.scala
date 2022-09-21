@@ -41,6 +41,39 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       }
     }
 
+    "FRS and digital attachments prerequisites are not" must {
+      "return TLNotStarted" in {
+        val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
+          turnoverEstimate = Some(200000),
+          overseasCompliance = Some(OverseasCompliance(
+            goodsToOverseas = Some(false),
+            storingGoodsForDispatch = Some(StoringOverseas)
+          )),
+          northernIrelandProtocol = Some(NIPTurnover(
+            goodsToEU = Some(ConditionalValue(answer = false, None)),
+            goodsFromEU = Some(ConditionalValue(answer = false, None)),
+          )),
+          startDate = None
+        )
+
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            startDate = Some(LocalDate.of(2017, 10, 10))
+          )),
+          flatRateScheme = None
+        )
+
+        val row = summaryTaskList.summaryRow(None).build(scheme)
+        row.status mustBe TLNotStarted
+      }
+    }
+
     "FRS prerequisites are met when digital attachments tasklist section not available" must {
       "return TLNotStarted" in {
         val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
@@ -64,8 +97,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
             startDate = Some(LocalDate.of(2017, 10, 10))
-          )),
-          flatRateScheme = Some(validFlatRate)
+          ))
         )
 
         val row = summaryTaskList.summaryRow(None).build(scheme)
@@ -99,7 +131,6 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
-          flatRateScheme = Some(validFlatRate),
           attachments = Some(Attachments(Some(Attached)))
         )
 
