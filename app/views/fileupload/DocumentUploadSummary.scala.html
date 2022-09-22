@@ -28,7 +28,8 @@
         documentUploadSummaryTable: components.DocumentUploadSummaryTable,
         saveProgressButton: components.saveProgressButton,
         button: components.button,
-        yesNoRadio: components.yesNoRadio
+        yesNoRadio: components.yesNoRadio,
+        panelIndent: components.panelIndent
 )
 
 @(form: Form[Boolean], uploadedDocuments: Seq[DocumentUploadSummaryRow], pendingDocumentsCount: Int, supplySupportingDocuments: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -51,9 +52,7 @@
                     if(pendingDocumentsCount > 1) messages("pending.documents.messagePlural", pendingDocumentsCount)
                     else messages("pending.documents.message")
                 ) { pendingDocumentsMessage =>
-                    @p {
-                        @pendingDocumentsMessage
-                    }
+                    @panelIndent(Html(pendingDocumentsMessage))
                 }
             }
 

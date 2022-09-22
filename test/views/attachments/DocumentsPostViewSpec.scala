@@ -30,7 +30,7 @@ class DocumentsPostViewSpec extends VatRegViewSpec {
     val title = s"$heading - Register for VAT - GOV.UK"
     val para1 = "For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form."
     val address = "VAT Registration Applications" + " BT VAT" + " HM Revenue and Customs" + " BX9 1WR" + " United Kingdom"
-    val continue = "Save and continue"
+    val continue = "Continue"
   }
 
   "The charge expectancy (regularly claim refunds) page" must {

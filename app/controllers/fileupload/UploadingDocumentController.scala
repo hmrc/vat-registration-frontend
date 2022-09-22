@@ -41,7 +41,10 @@ class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
     implicit profile =>
-      Future.successful(Ok(uploadingDocument(request.session.get("reference").getOrElse(throw new InternalServerException("Upscan document reference not in session")))))
+      val reference = request.session.get("reference").getOrElse(throw new InternalServerException("Upscan document reference not in session"))
+      upscanService.fetchUpscanFileDetails(profile.registrationId, reference).map{ upscanDetails =>
+        Ok(uploadingDocument(upscanDetails))
+      }
   }
 
   def poll(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>

@@ -40,12 +40,12 @@
             messageKey = messages("pages.vat1TRRequired.link"),
             isExternal = true,
             isButton = false
-        ).
+        )
         @messages("pages.vat1TRRequired.para2")
     }
 
     @form(controllers.attachments.routes.DocumentsRequiredController.submit) {
-        @button("app.common.continue", showSaveProgressButton = true)
+        @button("app.common.continueNoSave", showSaveProgressButton = false)
     }
 
 }

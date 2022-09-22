@@ -31,11 +31,11 @@ class Vat5LRequiredViewSpec extends VatRegViewSpec with FeatureSwitching {
   object ExpectedContent {
     val heading = "You must send us a completed VAT5L form in order for us to process this application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "We need a completed VAT5L form (opens in new tab) to capture all of the land and property supplies that the business is making. Once you have finished this form you must either upload, email or post a copy to us."
+    val para = "We need a completed VAT5L form (opens in new tab) with details of the land and property supplies the business is making."
     val para1614 = "If you have decided to, or want to opt to tax land or buildings, we also need a completed VAT1614A (opens in new tab) or VAT1614H form (opens in new tab)"
     val paraSupportingDocs = "If you have any supporting documents, you need to send these too."
     val link = "VAT5L form (opens in new tab)"
-    val continue = "Save and continue"
+    val continue = "Continue"
     val url = "https://www.gov.uk/government/publications/vat-vat-registration-land-and-property-vat-5l"
   }
 

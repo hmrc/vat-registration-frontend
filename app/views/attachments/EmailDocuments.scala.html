@@ -41,14 +41,10 @@
 
     <div class="govuk-button-group">
         @link(
-        link = if(appConfig.isEnabled(TaskList)) controllers.routes.TaskListController.show.url else controllers.routes.SummaryController.show.url,
-        messageKey = "app.common.continue",
-        isButton = true
+            link = if(appConfig.isEnabled(TaskList)) controllers.routes.TaskListController.show.url else controllers.routes.SummaryController.show.url,
+            messageKey = "app.common.continueNoSave",
+            isButton = true
         )
-
-        @if(appConfig.isEnabled(SaveAndContinueLater)) {
-        @saveProgressButton()
-        }
     </div>
 
 }

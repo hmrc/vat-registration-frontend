@@ -30,11 +30,11 @@ class Vat2RequiredViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view.body)
 
   object ExpectedContent {
-    val heading = "You must complete a VAT 2 form"
+    val heading = "You must send us a completed VAT2 form in order for us to process this application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "You must now download the VAT 2 form (opens in new tab) to provide additional details of the partners included in this partnership’s VAT registration. Once you have finished this form you must either upload, email or post a copy to us."
-    val link = "download the VAT 2 form (opens in new tab)"
-    val continue = "Save and continue"
+    val para = "We need a completed VAT2 form (opens in new tab) with details of the partners in the partnership."
+    val link = "VAT2 form (opens in new tab)"
+    val continue = "Continue"
     val url = "https://www.gov.uk/government/publications/vat-partnership-details-vat2"
   }
 

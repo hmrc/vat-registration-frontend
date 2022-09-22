@@ -29,6 +29,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .upscanApi.fetchUpscanFileDetails(testUpscanDetails(Ready), reference = testReference)
 
       val res = buildClient(path = showUrl, reference = Some(testReference)).get()
 
