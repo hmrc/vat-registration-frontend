@@ -46,8 +46,16 @@ class FormerNameViewSpec extends VatRegViewSpec {
       nonTransactorDoc.heading mustBe Some(heading)
     }
 
+    "have the correct legend for non transactor flow" in {
+      nonTransactorDoc.select(Selectors.legend(1)).text() mustBe heading
+    }
+
     "have the correct heading when the user is a transactor" in {
       transactorDoc.select(Selectors.h1).text mustBe namedHeading
+    }
+
+    "have the correct legend for transactor flow" in {
+      transactorDoc.select(Selectors.legend(1)).text() mustBe namedHeading
     }
 
     "have the correct page title" in new ViewSetup {

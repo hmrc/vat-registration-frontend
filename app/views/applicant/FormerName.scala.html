@@ -45,9 +45,10 @@
 
     @formWithCSRF(action = applicantRoutes.FormerNameController.submit) {
         @yesNoRadio(
-        form = formerNameForm,
-        headingKey = "",
-        isPageHeading = false
+            form = formerNameForm,
+            headingKey = name.fold(messages("pages.formerName.yourHeading"))(name => messages("pages.formerName.namedHeading", name)),
+            isPageHeading = false,
+            classes = "govuk-visually-hidden",
         )
 
         @button(messages("app.common.continue"))
