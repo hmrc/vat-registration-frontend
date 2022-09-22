@@ -63,6 +63,9 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
     "have a single OBI" in new ViewSetup {
       doc.getElementsByTag("tr").size() mustBe 1
     }
+    "have correct table heading" in new ViewSetup {
+      doc.select("th").text() mustBe testCompanyName
+    }
     "have a change link with the correct URL" in new ViewSetup {
       doc.link(1) mustBe Some(Link(ExpectedMessages.changeLink, changeLink.url))
     }
