@@ -30,6 +30,7 @@ class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationF
   val view = app.injector.instanceOf[DocumentUploadSummary]
 
   val testReference = "reference"
+  val testDocument = "test-document"
 
   object ExpectedMessages {
     val heading = "You have added 1 document"
@@ -39,7 +40,7 @@ class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationF
 
   val removeLink: Call = controllers.fileupload.routes.RemoveUploadedDocumentController.submit(testReference)
 
-  val testList = List(DocumentUploadSummaryRow("test-document", removeLink))
+  val testList = List(DocumentUploadSummaryRow(testDocument, removeLink))
 
   "The document upload summary view" must {
     implicit val doc: Document = Jsoup.parse(view(DocumentUploadSummaryForm.form, testList, testList.size, supplySupportingDocuments = false).body)
@@ -52,6 +53,9 @@ class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationF
     }
     "have a single uploaded document" in new ViewSetup {
       doc.getElementsByTag("tr").size() mustBe 1
+    }
+    "have correct table heading" in new ViewSetup {
+      doc.select("th").text() mustBe testDocument
     }
     "have a remove link with the correct URL" in new ViewSetup {
       doc.link(1) mustBe Some(Link(ExpectedMessages.removeLink, removeLink.url))

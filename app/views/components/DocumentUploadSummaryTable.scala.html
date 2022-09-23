@@ -29,5 +29,6 @@
           TableRow(content = Text(summary.documentName), classes = "govuk-!-width-one-half"),
           TableRow(content = HtmlContent(link(summary.removeAction.url, messages("app.common.remove"))))
       )
-    }
+    },
+    firstCellIsHeader = true
 ))
