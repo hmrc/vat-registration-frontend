@@ -24,7 +24,7 @@ import views.html.vatapplication.zero_rated_supplies
 class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
 
   val title = "What will the value of the business’s zero-rated taxable goods be over the next 12 months?"
-  val header = "What will the value of the business’s zero-rated taxable goods be over the next 12 months?"
+  val heading = "What will the value of the business’s zero-rated taxable goods be over the next 12 months?"
   val text = "Enter a value for all of the taxable goods which are zero-rated."
   val summary = "What are zero-rated taxable goods?"
   val details = "Zero-rated are goods which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return."
@@ -42,7 +42,7 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
     }
 
     "have the correct heading" in {
-      doc.select(Selectors.h1).text must include(header)
+      doc.select(Selectors.h1).text must include(heading)
     }
 
     "have the correct text" in {
@@ -59,7 +59,7 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
     }
 
     "have the correct label" in {
-      doc.select(Selectors.label).text must include(label)
+      doc.select(Selectors.label).text must include(heading)
     }
 
     "have the correct button" in {

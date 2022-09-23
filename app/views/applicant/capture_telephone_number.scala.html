@@ -44,7 +44,7 @@
             form = form,
             id = "telephone-number",
             name = "telephone-number",
-            label = messages("capture-telephone-number.label"),
+            label = name.fold(messages("capture-telephone-number.yourHeading"))(name => messages("capture-telephone-number.namedHeading", name)),
             isLabelHidden = true,
             isPageHeading = false,
             classes = Some("govuk-input--width-20")

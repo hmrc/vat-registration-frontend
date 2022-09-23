@@ -23,11 +23,10 @@ import views.html.vatapplication.TurnoverEstimate
 
 class TurnoverEstimateViewSpec extends VatRegViewSpec {
 
-  val header = "What do you think the business’s VAT-taxable turnover will be for the next 12 months?"
-  val title = s"$header - Register for VAT - GOV.UK"
+  val heading = "What do you think the business’s VAT-taxable turnover will be for the next 12 months?"
+  val title = s"$heading - Register for VAT - GOV.UK"
   val text = "Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate."
   val link = "Find out more about which goods and services are exempt from VAT (opens in new tab)"
-  val label = "Turnover estimate"
   val buttonText = "Save and continue"
 
   "Turnver Estimate Page" must {
@@ -40,7 +39,7 @@ class TurnoverEstimateViewSpec extends VatRegViewSpec {
     }
 
     "have the correct heading" in new ViewSetup {
-      doc.heading mustBe Some(header)
+      doc.heading mustBe Some(heading)
     }
 
     "have the correct text" in new ViewSetup {
@@ -52,7 +51,7 @@ class TurnoverEstimateViewSpec extends VatRegViewSpec {
     }
 
     "have the correct label" in new ViewSetup {
-      doc.select(Selectors.label).text must include(label)
+      doc.select(Selectors.label).text must include(heading)
     }
 
     "have the correct button" in new ViewSetup {
