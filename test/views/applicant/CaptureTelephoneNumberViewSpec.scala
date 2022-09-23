@@ -53,6 +53,14 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitchin
       transactorDoc.select(Selectors.h1).text mustBe namedHeading
     }
 
+    "have the correct label" in {
+      doc.select(Selectors.label).text mustBe heading
+    }
+
+    "have the correct label when the user is a transactor" in {
+      transactorDoc.select(Selectors.label).text mustBe namedHeading
+    }
+
     "have the correct paragraph" in {
       doc.getElementById("telephone-number-collection-reason").text mustBe paragraph
     }

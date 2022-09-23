@@ -41,6 +41,10 @@ class TelephoneNumberViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
 
+    "have the correct label" in new ViewSetup {
+      doc.select(Selectors.label).text mustBe ExpectedContent.heading
+    }
+
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
     }
