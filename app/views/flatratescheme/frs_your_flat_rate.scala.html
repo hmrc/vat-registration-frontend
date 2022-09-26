@@ -50,7 +50,7 @@
     @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitYourFlatRate) {
         @yesNoRadio(
             form = registerForFrsForm,
-            headingKey = messages("pages.frs.registerForWithSector.heading"),
+            headingKey = messages("pages.frs.registerForWithSector.heading", percentFormat),
             isPageHeading = false,
             classes = "govuk-visually-hidden"
         )
