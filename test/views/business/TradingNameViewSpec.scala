@@ -50,6 +50,10 @@ class TradingNameViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
 
+    "have correct descriptive label" in new ViewSetup {
+      doc.select("legend").text() mustBe ExpectedContent.heading
+    }
+
     "have a progressive disclosure" in new ViewSetup {
       doc.details mustBe Some(Details(ExpectedContent.detailsSummary, ExpectedContent.detailsContent))
     }

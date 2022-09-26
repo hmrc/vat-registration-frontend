@@ -43,7 +43,7 @@
     @form(action = controllers.business.routes.TradingNameController.submit) {
         @yesNoRadio(
             form = tradingNameForm,
-            headingKey = messages("pages.tradingName.heading"),
+            headingKey = messages("pages.tradingName.heading", companyName),
             isPageHeading = false,
             inline = false,
             classes = "govuk-visually-hidden",
