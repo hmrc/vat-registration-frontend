@@ -1,0 +1,138 @@
+{
+  "businessTypes": [
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "020", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10.5},
+        {"id": "008", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12.5},
+        {"id": "038", "businessType": "Welsh Test Business Data", "currentFRSPercent": 6.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "019", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9.5},
+        {"id": "050", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10.5},
+        {"id": "021", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12},
+        {"id": "046", "businessType": "Welsh Test Business Data", "currentFRSPercent": 13},
+        {"id": "033", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "003", "businessType": "Welsh Test Business Data", "currentFRSPercent": 11},
+        {"id": "016", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10.5},
+        {"id": "006", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12},
+        {"id": "013", "businessType": "Welsh Test Business Data", "currentFRSPercent": 6.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "048", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8.5},
+        {"id": "025", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "017", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9.5},
+        {"id": "022", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "015", "businessType": "Welsh Test Business Data", "currentFRSPercent": 13.5},
+        {"id": "001", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14.5},
+        {"id": "007", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "047", "businessType": "Welsh Test Business Data", "currentFRSPercent": 11}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "014", "businessType": "Welsh Test Business Data", "currentFRSPercent": 13},
+        {"id": "037", "businessType": "Welsh Test Business Data", "currentFRSPercent": 11},
+        {"id": "009", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14.5},
+        {"id": "011", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "028", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9},
+        {"id": "030", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9},
+        {"id": "027", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10.5},
+        {"id": "036", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8.5},
+        {"id": "029", "businessType": "Welsh Test Business Data", "currentFRSPercent": 9.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "032", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "031", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8},
+        {"id": "010", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10.5},
+        {"id": "023", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12},
+        {"id": "018", "businessType": "Welsh Test Business Data", "currentFRSPercent": 13},
+        {"id": "004", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12},
+        {"id": "040", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "024", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14.5},
+        {"id": "026", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14},
+        {"id": "005", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14.5},
+        {"id": "002", "businessType": "Welsh Test Business Data", "currentFRSPercent": 11},
+        {"id": "034", "businessType": "Welsh Test Business Data", "currentFRSPercent": 11},
+        {"id": "051", "businessType": "Welsh Test Business Data", "currentFRSPercent": 11}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "012", "businessType": "Welsh Test Business Data", "currentFRSPercent": 12},
+        {"id": "039", "businessType": "Welsh Test Business Data", "currentFRSPercent": 14}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "041", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8.5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "049", "businessType": "Welsh Test Business Data", "currentFRSPercent": 10},
+        {"id": "035", "businessType": "Welsh Test Business Data", "currentFRSPercent": 5}
+      ]
+    },
+    {
+      "groupLabel": "Welsh Test Data",
+      "categories": [
+        {"id": "052", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8},
+        {"id": "053", "businessType": "Welsh Test Business Data", "currentFRSPercent": 7.5},
+        {"id": "042", "businessType": "Welsh Test Business Data", "currentFRSPercent": 4},
+        {"id": "043", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8},
+        {"id": "045", "businessType": "Welsh Test Business Data", "currentFRSPercent": 6.5},
+        {"id": "044", "businessType": "Welsh Test Business Data", "currentFRSPercent": 7.5},
+        {"id": "054", "businessType": "Welsh Test Business Data", "currentFRSPercent": 8.5}
+      ]
+    }
+  ]
+}

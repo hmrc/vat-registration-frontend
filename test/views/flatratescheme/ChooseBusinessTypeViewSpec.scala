@@ -18,16 +18,21 @@ package views.flatratescheme
 
 import fixtures.FlatRateFixtures
 import forms.ChooseBusinessTypeForm
+import models.{FrsBusinessType, FrsGroup}
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
 import views.html.flatratescheme.choose_business_type
 
-import scala.collection.immutable.ListMap
-
 class ChooseBusinessTypeViewSpec extends VatRegViewSpec with FlatRateFixtures {
 
   val view = app.injector.instanceOf[choose_business_type]
-  val groupings = ListMap("section"-> Seq((businessCategory, "testCategory")))
+  val groupings = Seq(
+    FrsGroup(
+      label = "section",
+      labelCy = "sectionCy",
+      categories = List(FrsBusinessType(businessCategory, "testCategory", "testCategoryCy", 10))
+    )
+  )
   implicit val document = Jsoup.parse(view(ChooseBusinessTypeForm.form(Seq()), groupings).body)
 
   "Choose Business Type view" must {

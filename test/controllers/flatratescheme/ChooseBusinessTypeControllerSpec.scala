@@ -49,7 +49,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(testFlatRate.copy(categoryOfBusiness = None)))
 
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+      when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe OK
@@ -62,7 +62,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(testFlatRate))
 
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+      when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe OK
@@ -81,7 +81,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
     "return BAD_REQUEST with Empty data" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+      when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
       submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe BAD_REQUEST
@@ -93,7 +93,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
         "value" -> "000"
       )
 
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+      when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
       submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe BAD_REQUEST
@@ -105,7 +105,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
         "value" -> "019"
       )
 
-      when(mockConfigConnector.businessTypes).thenReturn(jsonBusinessTypes)
+      when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
       when(mockFlatRateService.saveBusinessType(any())(any(), any()))
         .thenReturn(Future.successful(testFlatRate))

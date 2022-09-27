@@ -40,32 +40,23 @@ class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  lazy val groupingBusinessTypesValues: ListMap[String, Seq[(String, String)]] = ListMap(configConnector.businessTypes.map { jsObj =>
-    (
-      (jsObj \ "groupLabel").as[String],
-      (jsObj \ "categories").as[Seq[JsObject]].map(js => ((js \ "id").as[String], (js \ "businessType").as[String]))
-    )
-  }.sortBy(_._1): _*)
-
-  lazy val businessTypeIds: Seq[String] = groupingBusinessTypesValues.values.toSeq.flatMap(radioValues => radioValues map Function.tupled((id, _) => id))
-
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         for {
           flatRateScheme <- flatRateService.getFlatRate
-          form = ChooseBusinessTypeForm.form(businessTypeIds)
+          form = ChooseBusinessTypeForm.form(configConnector.businessTypes.flatMap(_.categories.map(_.id)))
           formFilled = flatRateScheme.categoryOfBusiness.fold(form)(v => form.fill(v))
         } yield {
-          Ok(chooseBusinessTypeView(formFilled, groupingBusinessTypesValues))
+          Ok(chooseBusinessTypeView(formFilled, configConnector.businessTypes))
         }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        ChooseBusinessTypeForm.form(businessTypeIds).bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(chooseBusinessTypeView(badForm, groupingBusinessTypesValues))),
+        ChooseBusinessTypeForm.form(configConnector.businessTypes.flatMap(_.categories.map(_.id))).bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(chooseBusinessTypeView(badForm, configConnector.businessTypes))),
           data => flatRateService.saveBusinessType(data) map {
             _ => Redirect(controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage)
           }

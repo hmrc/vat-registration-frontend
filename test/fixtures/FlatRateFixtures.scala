@@ -16,16 +16,19 @@
 
 package fixtures
 
+import models.{FlatRateScheme, FrsBusinessType, FrsGroup, Start}
+
 import java.time.LocalDate
-import models.{FlatRateScheme, Start}
-import play.api.libs.json.{JsObject, Json}
 
 trait FlatRateFixtures {
 
   private val flatRatePercentage = BigDecimal(3.14)
   val frsDate = Some(Start(Some(LocalDate.of(2017, 10, 10))))
 
-  val validBusinessSectorView = ("test business sector", flatRatePercentage)
+  val testBusinessTypeLabel = "test"
+  val testBusinessTypeLabelCy = "test"
+  val testBusinessCategory = "id"
+  val testBusinessTypeDetails = FrsBusinessType("id", testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(10))
 
   val validFlatRate = FlatRateScheme(
     Some(true),
@@ -34,7 +37,7 @@ trait FlatRateFixtures {
     Some(true),
     Some(true),
     frsDate,
-    Some("frsId"),
+    Some(testBusinessCategory),
     Some(flatRatePercentage),
     Some(false)
   )
@@ -48,7 +51,7 @@ trait FlatRateFixtures {
     Some(true),
     Some(true),
     frsDate,
-    Some("frsId"),
+    Some(testBusinessCategory),
     Some(defaultFlatRate),
     Some(false)
   )
@@ -108,7 +111,7 @@ trait FlatRateFixtures {
     Some(true),
     Some(false),
     None,
-    Some("frsId"),
+    Some(testBusinessCategory),
     Some(defaultFlatRate),
     Some(false)
   )
@@ -131,25 +134,23 @@ trait FlatRateFixtures {
     percent = None
   )
 
-  val jsonBusinessTypes = Json.parse(
-    s"""
-       |[
-       |  {
-       |    "groupLabel": "Test 1",
-       |    "categories": [
-       |      {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
-       |      {"id": "019", "businessType": "Test BusinessType", "currentFRSPercent": 3},
-       |      {"id": "038", "businessType": "Pubs", "currentFRSPercent": "5"}
-       |    ]
-       |  },
-       |  {
-       |    "groupLabel": "Test 2",
-       |    "categories": [
-       |      {"id": "039", "businessType": "Cafes", "currentFRSPercent": "5"}
-       |    ]
-       |  }
-       |]
-        """.stripMargin).as[Seq[JsObject]]
+  val businessTypes = Seq(
+    FrsGroup(
+      label = "Test 1",
+      labelCy = "Test 1",
+      categories = List(
+        FrsBusinessType(id = "020", label = "Hotel or accommodation", labelCy = "Hotel or accommodation", percentage = 10.5),
+        FrsBusinessType(id = "019", label = "Test BusinessType", labelCy = "Hotel or accommodation", percentage = 3),
+        FrsBusinessType(id = "038", label = "Pubs", labelCy = "Hotel or accommodation", percentage = 5)
+      )
+    ),
+    FrsGroup(
+      label = "Test 2",
+      labelCy = "Test 2",
+      categories = List(
+        FrsBusinessType(id = "039", label = "Cafes", labelCy = "Cafes", percentage = 5)
+      )
+    )
+  )
 
-  val testsector = ("id", "test", BigDecimal(10))
 }

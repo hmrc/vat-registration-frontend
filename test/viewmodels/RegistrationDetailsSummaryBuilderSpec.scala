@@ -17,6 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
+import models.FrsBusinessType
 import models.api.vatapplication.{Annual, Monthly}
 import models.api.{NETP, UkCompany}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
@@ -137,7 +138,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           optUrl = Some(controllers.flatratescheme.routes.StartDateController.show.url))
       ).flatten)
 
-      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn(("Pubs", BigDecimal("6.5")))
+      when(mockConfigConnector.getBusinessType(any())).thenReturn(FrsBusinessType(testBusinessCategory, "Pubs", "Pubs", BigDecimal("6.5")))
 
       val res = Builder.build(testVatScheme)
 
