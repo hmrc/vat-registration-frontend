@@ -57,8 +57,3 @@ class SessionService @Inject()(sessionRepository: SessionRepository,
     }
   }
 }
-
-object SessionService {
-  val leadPartnerEntityKey = "leadPartnerEntity"
-  val scottishPartnershipNameKey = "scottishPartnershipName"
-}

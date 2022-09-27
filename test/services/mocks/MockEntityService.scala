@@ -16,33 +16,38 @@
 
 package services.mocks
 
-import models.PartnerEntity
+import models.Entity
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
-import services.PartnersService
+import services.EntityService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockPartnersService extends MockitoSugar {
+trait MockEntityService extends MockitoSugar {
   self: Suite =>
 
-  val mockPartnersService: PartnersService = mock[PartnersService]
+  val mockEntityService: EntityService = mock[EntityService]
 
-  def mockGetLeadPartner(regId: String)(response: Option[PartnerEntity]): OngoingStubbing[Future[Option[PartnerEntity]]] =
-    when(mockPartnersService.getLeadPartner(
-      ArgumentMatchers.eq(regId)
-    )(ArgumentMatchers.any[HeaderCarrier]
-    )) thenReturn Future.successful(response)
+  def mockGetEntity(regId: String, idx: Int)(response: Option[Entity]): OngoingStubbing[Future[Entity]] = {
+    val getEntityStub = when(mockEntityService.getEntity(
+      ArgumentMatchers.eq(regId),
+      ArgumentMatchers.eq(idx)
+    )(ArgumentMatchers.any[HeaderCarrier]))
+    response match {
+      case Some(entity) => getEntityStub thenReturn Future.successful(entity)
+      case None => getEntityStub thenReturn Future.failed(new RuntimeException("Missing entity"))
+    }
+  }
 
-  def mockUpsertPartner(regId: String, index: Int, partner: PartnerEntity)(response: PartnerEntity): OngoingStubbing[Future[PartnerEntity]] =
-    when(mockPartnersService.upsertPartner(
+  def mockUpsertEntity[T](regId: String, index: Int, data: T)(response: Entity): OngoingStubbing[Future[Entity]] =
+    when(mockEntityService.upsertEntity(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(index),
-      ArgumentMatchers.eq(partner)
+      ArgumentMatchers.eq(data)
     )(ArgumentMatchers.any[HeaderCarrier]
     )) thenReturn Future.successful(response)
 

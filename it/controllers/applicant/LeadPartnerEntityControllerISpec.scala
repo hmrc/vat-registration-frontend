@@ -3,12 +3,11 @@
 package controllers.applicant
 
 import itutil.ControllerISpec
-import models.PartnerEntity
+import models.Entity
 import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
@@ -37,7 +36,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "display the page with pre-pop" in new Setup {
       given()
         .user.isAuthorised()
-        .partnerApi.hasPartners(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(true), None)), idx = Some(1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -54,9 +53,10 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
   s"POST $url" when {
     List(Individual, NETP).foreach { partyType =>
       s"the user selects $partyType" should {
-        "store the partyType in session repo and begin a STI journey" in new Setup {
+        "store the partyType in backend and begin a STI journey" in new Setup {
           given()
             .user.isAuthorised()
+            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -70,9 +70,10 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
       s"the user selects $partyType" should {
-        "store the partyType in session repo and begin an IncorpId journey" in new Setup {
+        "store the partyType in backend and begin an IncorpId journey" in new Setup {
           given()
             .user.isAuthorised()
+            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -86,9 +87,10 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
     List(ScotLtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
       s"the user selects $partyType" should {
-        "store the partyType in session repo and begin an PartnershipId journey" in new Setup {
+        "store the partyType in backend and begin an PartnershipId journey" in new Setup {
           given()
             .user.isAuthorised()
+            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -101,9 +103,10 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     }
 
     s"the user selects $ScotPartnership" should {
-      "store the partyType in session repo and go to ScottishPartnershipName page" in new Setup {
+      "store the partyType in backend and go to ScottishPartnershipName page" in new Setup {
         given()
           .user.isAuthorised()
+          .registrationApi.replaceSection(Entity(None, ScotPartnership, Some(true), None), idx = Some(1))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

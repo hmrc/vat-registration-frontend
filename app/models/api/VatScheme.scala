@@ -32,7 +32,7 @@ case class VatScheme(registrationId: String,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      transactorDetails: Option[TransactorDetails] = None,
                      applicantDetails: Option[ApplicantDetails] = None,
-                     partners: Option[List[PartnerEntity]] = None,
+                     entities: Option[List[Entity]] = None,
                      business: Option[Business] = None,
                      otherBusinessInvolvements: Option[List[OtherBusinessInvolvement]] = None,
                      vatApplication: Option[VatApplication] = None,
@@ -57,7 +57,7 @@ object VatScheme {
         (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
         (__ \ "transactorDetails").readNullable[TransactorDetails] and
         (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
-        (__ \ "partners").readNullable[List[PartnerEntity]] and
+        (__ \ "entities").readNullable[List[Entity]] and
         (__ \ "business").readNullable[Business] and
         (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
         (__ \ "vatApplication").readNullable[VatApplication] and
@@ -93,7 +93,7 @@ object VatScheme {
     (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
     (__ \ "transactorDetails").writeNullable[TransactorDetails] and
     (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and
-    (__ \ "partners").writeNullable[List[PartnerEntity]] and
+    (__ \ "entities").writeNullable[List[Entity]] and
     (__ \ "business").writeNullable[Business] and
     (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]] and
     (__ \ "vatApplication").writeNullable[VatApplication] and

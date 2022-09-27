@@ -17,12 +17,11 @@
 package controllers.applicant
 
 import fixtures.ApplicantDetailsFixtures
-import models.PartnerEntity
+import models.Entity
 import models.api._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import services.SessionService.leadPartnerEntityKey
-import services.mocks.{MockApplicantDetailsService, MockPartnersService}
+import services.mocks.{MockApplicantDetailsService, MockEntityService}
 import testHelpers.ControllerSpec
 import views.html.applicant.lead_partner_entity_type
 
@@ -32,7 +31,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
   with FutureAwaits
   with DefaultAwaitTimeout
   with MockApplicantDetailsService
-  with MockPartnersService
+  with MockEntityService
   with ApplicantDetailsFixtures {
 
   trait Setup {
@@ -41,7 +40,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockSessionService,
       mockApplicantDetailsService,
-      mockPartnersService,
+      mockEntityService,
       view
     )
 
@@ -53,14 +52,14 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
 
   "showLeadPartnerEntityType" should {
     "return OK without prepop" in new Setup {
-      mockGetLeadPartner(regId)(None)
+      mockGetEntity(regId, 1)(None)
       callAuthorised(controller.showLeadPartnerEntityType) {
         status(_) mustBe OK
       }
     }
 
     "return OK with prepop" in new Setup {
-      mockGetLeadPartner(regId)(Some(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+      mockGetEntity(regId, 1)(Some(Entity(Some(testSoleTrader), Individual, Some(true), None)))
       callAuthorised(controller.showLeadPartnerEntityType) {
         status(_) mustBe OK
       }
@@ -70,7 +69,9 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
   "submitLeadPartnerEntity" should {
     "return a redirect for a Sole Trader" in new Setup {
       val soleTrader = "Z1"
-      mockSessionCache[PartyType](leadPartnerEntityKey, Individual)
+      val entity: Entity = Entity(None, Individual, Some(true), None)
+      mockGetEntity(regId, 1)(None)
+      mockUpsertEntity[PartyType](regId, 1, Individual)(entity)
 
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
         status(result) mustBe SEE_OTHER
@@ -80,7 +81,10 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
 
     "return a redirect for NETP" in new Setup {
       val netp = "NETP"
-      mockSessionCache[PartyType](leadPartnerEntityKey, NETP)
+      val entity: Entity = Entity(None, NETP, Some(true), None)
+
+      mockGetEntity(regId, 1)(None)
+      mockUpsertEntity[PartyType](regId, 1, NETP)(entity)
 
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> netp)) { result =>
         status(result) mustBe SEE_OTHER

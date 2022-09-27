@@ -8,11 +8,10 @@ import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import models.external.{BusinessVerificationStatus, BvPass}
-import models.{ApplicantDetails, PartnerEntity}
+import models.{ApplicantDetails, Entity}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import services.SessionService.leadPartnerEntityKey
 
 import scala.concurrent.Future
 
@@ -199,11 +198,10 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getRegistration(fullVatScheme)
+          .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None)), idx = Some(1))
 
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
@@ -217,11 +215,10 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getRegistration(fullVatScheme)
+          .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None)), idx = Some(1))
 
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
@@ -257,14 +254,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
+        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None)), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
 
@@ -280,14 +275,12 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None)), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
 
@@ -303,15 +296,13 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None)), idx = Some(1))
         .registrationApi.replaceSection(validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](Individual),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
 
@@ -326,15 +317,13 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None)), idx = Some(1))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](NETP),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
 
@@ -351,7 +340,7 @@ class SoleTraderIdentificationControllerISpec extends ControllerISpec {
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .partnerApi.isUpdatedWithPartner(PartnerEntity(testSoleTrader, NETP, isLeadPartner = true))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, isLeadPartner = Some(true), None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)

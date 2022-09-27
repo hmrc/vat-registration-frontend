@@ -52,7 +52,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         case Individual | NETP =>
           applicantRoutes.SoleTraderIdentificationController.startJourney.url
         case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership =>
-          vatScheme.partners.flatMap(_.headOption.map(_.partyType)) match {
+          vatScheme.entities.flatMap(_.headOption.map(_.partyType)) match {
             case Some(Individual | NETP) => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url
             case _ => applicantRoutes.IndividualIdentificationController.startJourney.url
           }
@@ -184,8 +184,8 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   }
 
   def generateLeadPartnerSummaryListRows(vatScheme: VatScheme)(implicit messages: Messages): Seq[SummaryListRow] = {
-    val leadPartner: Option[PartnerEntity] = for {
-      partners <- vatScheme.partners
+    val leadPartner: Option[Entity] = for {
+      partners <- vatScheme.entities
       leadPartner <- partners.headOption
     } yield leadPartner
 
@@ -196,15 +196,15 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(applicantRoutes.PartnershipIdController.startPartnerJourney.url)
       }
       val uniqueTaxpayerReference = partner.details match {
-        case soleTrader: SoleTraderIdEntity => optSummaryListRowString(
+        case Some(soleTrader: SoleTraderIdEntity) => optSummaryListRowString(
           questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
           optAnswer = soleTrader.sautr,
           optUrl = url)
-        case partnership: PartnershipIdEntity => optSummaryListRowString(
+        case Some(partnership: PartnershipIdEntity) => optSummaryListRowString(
           questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
           optAnswer = partnership.sautr,
           optUrl = url)
-        case incorporated: IncorporatedEntity => optSummaryListRowString(
+        case Some(incorporated: IncorporatedEntity) => optSummaryListRowString(
           questionId = partner.partyType match {
             case RegSociety => s"$sectionId.leadPartner.uniqueTaxpayerReference"
             case _ => s"$sectionId.leadPartner.companyUniqueTaxpayerReference"
@@ -214,31 +214,31 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         case _ => None
       }
       val companyRegistrationNumber = partner.details match {
-        case partnership: PartnershipIdEntity => optSummaryListRowString(
+        case Some(partnership: PartnershipIdEntity) => optSummaryListRowString(
           questionId = s"$sectionId.leadPartner.companyNumber",
           optAnswer = partnership.companyNumber,
           optUrl = url)
-        case incorporated: IncorporatedEntity => optSummaryListRowString(
+        case Some(incorporated: IncorporatedEntity) => optSummaryListRowString(
           questionId = s"$sectionId.leadPartner.companyRegistrationNumber",
           optAnswer = Some(incorporated.companyNumber),
           optUrl = url)
         case _ => None
       }
       val companyName = partner.details match {
-        case partnership: PartnershipIdEntity
+        case Some(partnership: PartnershipIdEntity)
           if partner.partyType.equals(ScotLtdPartnership) || partner.partyType.equals(LtdLiabilityPartnership) =>
           optSummaryListRowString(
             questionId = s"$sectionId.leadPartner.partnershipName",
             optAnswer = partnership.companyName,
             optUrl = url)
-        case incorporated: IncorporatedEntity => optSummaryListRowString(
+        case Some(incorporated: IncorporatedEntity) => optSummaryListRowString(
           questionId = s"$sectionId.leadPartner.companyName",
           optAnswer = incorporated.companyName,
           optUrl = url)
         case _ => None
       }
       val registeredPostcode = partner.details match {
-        case partnership: PartnershipIdEntity =>
+        case Some(partnership: PartnershipIdEntity) =>
           val questionId = partner.partyType match {
             case ScotLtdPartnership | LtdLiabilityPartnership => s"$sectionId.leadPartner.postcodeForSelfAssessment"
             case _ => s"$sectionId.leadPartner.registeredPostcode"
@@ -249,7 +249,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       val charityHMRCReferenceNumber = optSummaryListRowString(
         questionId = s"$sectionId.leadPartner.charityHMRCReferenceNumber",
         optAnswer = partner.details match {
-          case incorporated: IncorporatedEntity => incorporated.chrn
+          case Some(incorporated: IncorporatedEntity) => incorporated.chrn
           case _ => None
         },
         optUrl = url)

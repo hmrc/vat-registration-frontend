@@ -20,12 +20,12 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
+import models.Partner
 import models.api._
+import models.external.BusinessEntity
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig}
-import models.{Partner, PartnerEntity}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
-import services.SessionService.{leadPartnerEntityKey, scottishPartnershipNameKey}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
@@ -39,7 +39,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
                                         partnershipIdService: PartnershipIdService,
                                         applicantDetailsService: ApplicantDetailsService,
                                         vatRegistrationService: VatRegistrationService,
-                                        partnersService: PartnersService
+                                        entityService: EntityService
                                        )(implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents)
@@ -105,10 +105,8 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
         )
 
         for {
-          partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
-            _.getOrElse(throw new InternalServerException("[PartnershipIdController][startPartnerJourney] no lead partner party type in session during journey start"))
-          )
-          journeyStartUrl <- partnershipIdService.createJourney(journeyConfig, partyType)
+          entity <- entityService.getEntity(profile.registrationId, 1)
+          journeyStartUrl <- partnershipIdService.createJourney(journeyConfig, entity.partyType)
         } yield {
           SeeOther(journeyStartUrl)
         }
@@ -119,18 +117,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           partnerDetails <- partnershipIdService.getDetails(journeyId)
-          partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
-            _.getOrElse(throw new InternalServerException("[PartnershipIdController][partnerCallback] no lead partner party type in session during callback"))
-          )
-          optScottishPartnershipName <- sessionService.fetchAndGet[String](scottishPartnershipNameKey)
-          updatedPartnerDetails <- Future.successful(
-            if (partyType.equals(ScotPartnership)) {
-              partnerDetails.copy(companyName = optScottishPartnershipName)
-            } else {
-              partnerDetails
-            }
-          )
-          _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(updatedPartnerDetails, partyType, isLeadPartner = true))
+          _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, 1, partnerDetails)
         } yield {
           if (isEnabled(TaskList)) {
             Redirect(controllers.routes.TaskListController.show)

@@ -17,14 +17,13 @@
 package controllers.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import services.SessionService.leadPartnerEntityKey
 import controllers.BaseController
-import controllers.business.{routes => businessRoutes}
 import controllers.applicant.{routes => applicantRoutes}
+import controllers.business.{routes => businessRoutes}
 import forms.LeadPartnerForm
 import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, PartnersService, SessionProfile, SessionService}
+import services.{ApplicantDetailsService, EntityService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 import views.html.applicant.lead_partner_entity_type
@@ -35,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
                                             val sessionService: SessionService,
                                             val applicantDetailsService: ApplicantDetailsService,
-                                            partnersService: PartnersService,
+                                            entityService: EntityService,
                                             leadPartnerEntityPage: lead_partner_entity_type
                                            )(implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
@@ -45,11 +44,13 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
   def showLeadPartnerEntityType: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        partnersService.getLeadPartner(profile.registrationId).map { optPartner =>
-          val form = optPartner.map(_.partyType).fold(LeadPartnerForm.form)(LeadPartnerForm.form.fill(_))
-
-          Ok(leadPartnerEntityPage(form))
+        val form = entityService.getEntity(profile.registrationId, 1).map { entity =>
+          LeadPartnerForm.form.fill(entity.partyType)
+        } recoverWith {
+          case _ => Future.successful(LeadPartnerForm.form)
         }
+
+        form.map(f => Ok(leadPartnerEntityPage(f)))
   }
 
   def submitLeadPartnerEntity: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -59,7 +60,7 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
           formWithErrors => Future.successful(BadRequest(leadPartnerEntityPage(formWithErrors))),
           partyType =>
             for {
-              _ <- sessionService.cache[PartyType](leadPartnerEntityKey, partyType)
+              _ <- entityService.upsertEntity[PartyType](profile.registrationId, 1, partyType)
             } yield partyType match {
               case Individual | NETP => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney)
               case UkCompany | RegSociety | CharitableOrg => Redirect(applicantRoutes.IncorpIdController.startPartnerJourney)
@@ -69,6 +70,4 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
             }
         )
   }
-
-
 }

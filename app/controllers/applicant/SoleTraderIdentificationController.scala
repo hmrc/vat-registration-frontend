@@ -20,12 +20,11 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
-import models.PartnerEntity
 import models.api._
+import models.external.BusinessEntity
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
-import services.SessionService.leadPartnerEntityKey
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
@@ -39,7 +38,7 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
                                                    val applicantDetailsService: ApplicantDetailsService,
                                                    soleTraderIdentificationService: SoleTraderIdentificationService,
                                                    vatRegistrationService: VatRegistrationService,
-                                                   partnersService: PartnersService
+                                                   entityService: EntityService
                                                   )(implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
@@ -119,13 +118,8 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
           )
 
           for {
-            partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
-              _.getOrElse(throw new InternalServerException("[SoleTraderIdentificationController][startPartnerJourney] no lead partner party type in session during journey start"))
-            )
-            journeyStartUrl <- soleTraderIdentificationService.startSoleTraderJourney(
-              journeyConfig,
-              partyType
-            )
+            entity <- entityService.getEntity(profile.registrationId, 1)
+            journeyStartUrl <- soleTraderIdentificationService.startSoleTraderJourney(journeyConfig, entity.partyType)
           } yield {
             SeeOther(journeyStartUrl)
           }
@@ -136,12 +130,9 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
       implicit request =>
         implicit profile =>
           for {
-            partyType <- sessionService.fetchAndGet[PartyType](leadPartnerEntityKey).map(
-              _.getOrElse(throw new InternalServerException("[SoleTraderIdentificationController][partnerCallback] no lead partner party type in session during journey start"))
-            )
             (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
             _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
-            _ <- partnersService.upsertPartner(profile.registrationId, 1, PartnerEntity(soleTrader, partyType, isLeadPartner = true))
+            _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, 1, soleTrader)
           } yield {
             if (isEnabled(TaskList)) {
               Redirect(controllers.routes.TaskListController.show)

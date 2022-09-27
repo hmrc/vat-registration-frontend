@@ -20,8 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ScottishPartnershipNameForm
 import play.api.mvc.{Action, AnyContent}
-import services.SessionService.scottishPartnershipNameKey
-import services.{ApplicantDetailsService, SessionProfile, SessionService}
+import services._
 import views.html.business.ScottishPartnershipName
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ScottishPartnershipNameController @Inject()(val sessionService: SessionService,
                                                   val authConnector: AuthClientConnector,
+                                                  val entityService: EntityService,
                                                   val applicantDetailsService: ApplicantDetailsService,
+                                                  val vatRegistrationService: VatRegistrationService,
                                                   view: ScottishPartnershipName)
                                                  (implicit appConfig: FrontendAppConfig,
                                                   val executionContext: ExecutionContext,
@@ -40,8 +41,10 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        sessionService.fetchAndGet[String](scottishPartnershipNameKey).map {
-          case Some(companyName) => Ok(view(ScottishPartnershipNameForm().fill(companyName)))
+        for {
+          entity <- entityService.getEntity(profile.registrationId, 1)
+        } yield entity.optScottishPartnershipName match {
+          case Some(name) => Ok(view(ScottishPartnershipNameForm().fill(name)))
           case None => Ok(view(ScottishPartnershipNameForm()))
         }
   }
@@ -52,9 +55,11 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
         ScottishPartnershipNameForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           companyName => {
-            sessionService.cache[String](scottishPartnershipNameKey, companyName).map(_ =>
+            for {
+              _ <- entityService.upsertEntity[String](profile.registrationId, 1, companyName)
+            } yield {
               Redirect(controllers.applicant.routes.PartnershipIdController.startPartnerJourney)
-            )
+            }
           }
         )
   }
