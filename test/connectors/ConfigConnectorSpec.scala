@@ -17,10 +17,10 @@
 package connectors
 
 import models.api.SicCode
+import models.{FrsBusinessType, FrsGroup}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.Environment
-import play.api.libs.json.{JsObject, Json}
 import testHelpers.{VatMocks, VatRegSpec}
 
 import java.util.MissingResourceException
@@ -33,18 +33,16 @@ class ConfigConnectorSpec extends VatRegSpec with VatMocks {
       mockServicesConfig,
       mockEnvironment
     ) {
-      override lazy val businessTypes: Seq[JsObject] = Seq(
-        Json.parse(
-          """
-            |{
-            |  "groupLabel": "Accommodation and food service activities",
-            |  "categories": [
-            |    {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
-            |    {"id": "008", "businessType": "Catering services including restaurants and takeaways", "currentFRSPercent": 12.5},
-            |    {"id": "038", "businessType": "Pubs", "currentFRSPercent": 6.5}
-            |  ]
-            |}
-          """.stripMargin).as[JsObject]
+      override lazy val businessTypes: Seq[FrsGroup] = Seq(
+        FrsGroup(
+          label = "Accommodation and food service activities",
+          labelCy = "Accommodation and food service activities",
+          categories = List(
+            FrsBusinessType(id = "020", label = "Hotel or accommodation", labelCy = "Hotel or accommodation", percentage = 10.5),
+            FrsBusinessType(id = "008", label = "Catering services including restaurants and takeaways", labelCy = "Catering services including restaurants and takeaways", percentage = 12.5),
+            FrsBusinessType(id = "038", label = "Pubs", labelCy = "Pubs", percentage = 6.5)
+          )
+        )
       )
     }
     val sicCode = SicCode(code = "01490001", description = "Silk worm raising", displayDetails = "Raising of other animals")
@@ -74,13 +72,13 @@ class ConfigConnectorSpec extends VatRegSpec with VatMocks {
       val businessType = "Pubs"
       val percent = 6.5
 
-      connector.getBusinessTypeDetails(id) mustBe(businessType, percent)
+      connector.getBusinessType(id) mustBe FrsBusinessType(id, businessType, businessType, percent)
     }
 
     "does Not return a BusinessSectorView, instead throws an exception" in new Setup {
       val id = "000"
 
-      a[MissingResourceException] mustBe thrownBy(connector.getBusinessTypeDetails(id))
+      a[MissingResourceException] mustBe thrownBy(connector.getBusinessType(id))
     }
   }
 

@@ -16,6 +16,7 @@
 
 package viewmodels
 
+import config.FrontendAppConfig
 import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
@@ -37,7 +38,8 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnector,
                                                   flatRateService: FlatRateService,
-                                                  govukSummaryList: GovukSummaryList) extends FeatureSwitching {
+                                                  govukSummaryList: GovukSummaryList)
+                                                 (implicit appConfig:FrontendAppConfig) extends FeatureSwitching {
 
   val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId = "cya.registrationDetails"
@@ -215,7 +217,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     val businessSectorRow = optSummaryListRowString(
       s"$sectionId.businessSector",
-      optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessTypeDetails(frsId)._1)),
+      optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessType(frsId).businessTypeLabel)),
       Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)
     )
 

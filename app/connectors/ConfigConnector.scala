@@ -16,13 +16,14 @@
 
 package connectors
 
-import java.util.MissingResourceException
-import javax.inject.{Inject, Singleton}
+import models.{FrsBusinessType, FrsGroup}
 import models.api.{Country, SicCode}
 import play.api.Environment
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.util.MissingResourceException
+import javax.inject.{Inject, Singleton}
 import scala.io.Source
 
 @Singleton
@@ -31,15 +32,36 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
 
   private val sicCodePrefix = "sic.codes"
 
-  lazy val businessTypes: Seq[JsObject] = {
-    val frsBusinessTypesFile = "conf/frs-business-types.json"
+  lazy val businessTypes: Seq[FrsGroup] = {
+    val rawData = {
+      val frsBusinessTypesFile = "conf/frs-business-types.json"
 
-    val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
-    val fileContents = bufferedSource.getLines.mkString
-    bufferedSource.close
+      val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
+      val fileContents = bufferedSource.getLines.mkString
+      bufferedSource.close
 
-    val json = Json.parse(fileContents).as[JsObject]
-    (json \ "businessTypes").as[Seq[JsObject]]
+      (Json.parse(fileContents).as[JsObject] \ "businessTypes").as[Seq[JsObject]]
+    }
+    val rawDataCy = {
+      val frsBusinessTypesFile = "conf/frs-business-types-cy.json"
+
+      val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
+      val fileContents = bufferedSource.getLines.mkString
+        .replace("\"groupLabel\"", "\"groupLabelCy\"")
+        .replace("\"businessType\"", "\"businessTypeCy\"")
+      bufferedSource.close
+
+      (Json.parse(fileContents).as[JsObject] \ "businessTypes").as[Seq[JsObject]]
+    }
+
+    rawData.zip(rawDataCy).map { case (json1, json2) =>
+      val categories1 = (json1 \ "categories").as[Seq[JsObject]]
+      val categories2 = (json2 \ "categories").as[Seq[JsObject]]
+      val categoriesMerged = Json.obj(
+        "categories" -> JsArray(categories1.zip(categories2).map { case (categoryJson1, categoryJson2) => categoryJson1 ++ categoryJson2 })
+      )
+      json1 ++ json2 ++ categoriesMerged
+    }.map(_.as[FrsGroup])
   }
 
   lazy val countries: Seq[Country] = {
@@ -67,13 +89,9 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
 
   def getSicCodeFRSCategory(sicCode: String): String = config.getString(s"$sicCodePrefix.${sicCode}001.frsCategory")
 
-  def getBusinessTypeDetails(frsId: String): (String, BigDecimal) = {
-    val businessType = businessTypes.flatMap { jsObj =>
-      (jsObj \ "categories").as[Seq[JsObject]]
-    }.find(jsObj => (jsObj \ "id").as[String] == frsId)
+  def getBusinessType(frsId: String): FrsBusinessType = {
+    val businessType = businessTypes.flatMap(_.categories).find(_.id.equals(frsId))
 
-    businessType.fold(throw new MissingResourceException(s"Missing Business Type for id: $frsId", "ConfigConnector", "id")) { jsObj =>
-      ((jsObj \ "businessType").as[String], (jsObj \ "currentFRSPercent").as[BigDecimal])
-    }
+    businessType.getOrElse(throw new MissingResourceException(s"Missing Business Type for id: $frsId", "ConfigConnector", "id"))
   }
 }

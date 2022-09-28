@@ -39,9 +39,8 @@ class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        flatRateService.retrieveSectorPercent map { sectorPercentage =>
-          val (_, sector, _) = sectorPercentage
-          Ok(view(sector))
+        flatRateService.retrieveBusinessTypeDetails map { businessTypeDetails =>
+          Ok(view(businessTypeDetails.businessTypeLabel))
         } recover {
           case _: MissingResourceException => Redirect(controllers.flatratescheme.routes.ChooseBusinessTypeController.show)
         }

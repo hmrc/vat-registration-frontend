@@ -17,7 +17,6 @@
 package controllers.flatratescheme
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.ConfigConnector
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms._
@@ -126,7 +125,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           view => flatRateService.saveRegister(view.answer) map { _ =>
             if (view.answer) {
               Redirect(controllers.flatratescheme.routes.StartDateController.show)
-            } else if(isEnabled(TaskList)) {
+            } else if (isEnabled(TaskList)) {
               Redirect(controllers.routes.TaskListController.show)
             } else {
               Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
@@ -143,10 +142,9 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
             case Some(useRate) => yourFlatRateForm.fill(YesOrNoAnswer(useRate))
             case None => yourFlatRateForm
           }
-          flatRateService.retrieveSectorPercent map { sectorInfo =>
+          flatRateService.retrieveBusinessTypeDetails.map { businessTypeDetails =>
             val decimalFormat = new DecimalFormat("#0.##")
-            val (_, sector, pct) = sectorInfo
-            Ok(frs_your_flat_rate(sector, decimalFormat.format(pct), form))
+            Ok(frs_your_flat_rate(businessTypeDetails.businessTypeLabel, decimalFormat.format(businessTypeDetails.percentage), form))
           }
         }
   }
@@ -155,16 +153,15 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
     implicit request =>
       implicit profile =>
         yourFlatRateForm.bindFromRequest().fold(
-          badForm => flatRateService.retrieveSectorPercent map { view =>
+          badForm => flatRateService.retrieveBusinessTypeDetails.map { businessTypeDetails =>
             val decimalFormat = new DecimalFormat("#0.##")
-            val (_, sector, pct) = view
-            BadRequest(frs_your_flat_rate(sector, decimalFormat.format(pct), badForm))
+            BadRequest(frs_your_flat_rate(businessTypeDetails.businessTypeLabel, decimalFormat.format(businessTypeDetails.percentage), badForm))
           },
           view => for {
             _ <- flatRateService.saveUseFlatRate(view.answer)
           } yield if (view.answer) {
             Redirect(controllers.flatratescheme.routes.StartDateController.show)
-          } else if(isEnabled(TaskList)) {
+          } else if (isEnabled(TaskList)) {
             Redirect(controllers.routes.TaskListController.show)
           } else {
             Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)

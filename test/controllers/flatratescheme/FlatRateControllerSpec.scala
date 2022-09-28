@@ -211,8 +211,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> "true"
@@ -228,8 +228,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
@@ -246,8 +246,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
         "value" -> "false"
@@ -266,8 +266,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       callAuthorised(controller.yourFlatRatePage) { result =>
         status(result) mustBe 200
@@ -279,8 +279,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitYourFlatRate)
 
     "return 400 with Empty data" in new Setup {
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
 
@@ -290,8 +290,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with Register For Flat Rate Scheme when Yes is selected" in new Setup {
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       when(mockFlatRateService.saveUseFlatRate(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
@@ -307,8 +307,8 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with Register For Flat Rate Scheme when No is selected" in new Setup {
-      when(mockFlatRateService.retrieveSectorPercent(any(), any()))
-        .thenReturn(Future.successful(testsector))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+        .thenReturn(Future.successful(testBusinessTypeDetails))
 
       when(mockFlatRateService.saveUseFlatRate(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))

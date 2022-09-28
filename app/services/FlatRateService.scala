@@ -106,7 +106,8 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    retrieveSectorPercent.flatMap { case (category, _, percent) =>
+    retrieveBusinessTypeDetails.flatMap {
+      case FrsBusinessType(category, _, _, percent) =>
       updateFlatRate { storedData =>
         storedData.copy(
           joinFrs = Some(answer),
@@ -117,18 +118,17 @@ class FlatRateService @Inject()(val s4LService: S4LService,
       }
     }
 
-  def retrieveSectorPercent(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(String, String, BigDecimal)] = {
+  def retrieveBusinessTypeDetails(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FrsBusinessType] = {
     getFlatRate flatMap {
       case FlatRateScheme(_, _, _, _, _, _, Some(sector), _, _) if sector.nonEmpty =>
-        val (label, pct) = configConnector.getBusinessTypeDetails(sector)
-        Future.successful((sector, label, pct))
+        val businessType = configConnector.getBusinessType(sector)
+        Future.successful(businessType)
       case _ =>
         businessService.getBusiness map { businessDetails =>
           businessDetails.mainBusinessActivity match {
             case Some(mainBusinessActivity) =>
               val frsId = configConnector.getSicCodeFRSCategory(mainBusinessActivity.code)
-              val (label, percent) = configConnector.getBusinessTypeDetails(frsId)
-              (frsId, label, percent)
+              configConnector.getBusinessType(frsId)
             case None => throw new IllegalStateException("[FlatRateService] [retrieveSectorPercent] Can't determine main business activity")
           }
         }
@@ -137,7 +137,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def saveUseFlatRate(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
     updateFlatRate { storedData =>
-      val (_, percent) = configConnector.getBusinessTypeDetails(storedData.categoryOfBusiness.get)
+      val percent = configConnector.getBusinessType(storedData.categoryOfBusiness.get).percentage
       storedData.copy(
         joinFrs = Some(answer),
         useThisRate = Some(answer),
@@ -148,12 +148,12 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
 
   def saveConfirmSector(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    retrieveSectorPercent flatMap { sectorPct =>
-      val (sector, _, _) = sectorPct
-      updateFlatRate(storedData => storedData.copy(
-        categoryOfBusiness = Some(sector),
-        percent = if (storedData.categoryOfBusiness.contains(sector)) storedData.percent else None
-      ))
+    retrieveBusinessTypeDetails.flatMap {
+      case FrsBusinessType(sector, _, _, _) =>
+        updateFlatRate(storedData => storedData.copy(
+          categoryOfBusiness = Some(sector),
+          percent = if (storedData.categoryOfBusiness.contains(sector)) storedData.percent else None
+        ))
     }
 
   def clearFrs(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
@@ -202,7 +202,7 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def saveBusinessType(businessType: String)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
     updateFlatRate { storedData =>
-      val percent: BigDecimal = configConnector.getBusinessTypeDetails(businessType)._2
+      val percent: BigDecimal = configConnector.getBusinessType(businessType).percentage
       if (storedData.categoryOfBusiness.contains(businessType) && storedData.percent.contains(percent)) {
         storedData
       } else {

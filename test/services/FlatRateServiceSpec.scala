@@ -16,7 +16,6 @@
 
 package services
 
-import connectors.mocks.MockRegistrationApiConnector
 import models._
 import models.api.SicCode
 import models.api.vatapplication.VatApplication
@@ -82,38 +81,38 @@ class FlatRateServiceSpec extends VatSpec {
 
   "handleView" should {
     "return a Complete model for a full model with business goods and start date and uses rate" in new Setup {
-      val data = FlatRateScheme(Some(true), Some(true), Some(1000L), Some(true), Some(true), frsDate, Some("frsId"), Some(10.5), Some(false))
+      val data = FlatRateScheme(Some(true), Some(true), Some(1000L), Some(true), Some(true), frsDate, Some(testBusinessCategory), Some(10.5), Some(false))
 
       service.handleView(data) mustBe Complete(data)
     }
 
     "return a Complete model for a full model without business goods and start date and uses rate" in new Setup {
-      val data = FlatRateScheme(Some(true), Some(false), Some(150L), Some(true), Some(true), frsDate, Some("frsId"), Some(10.5), Some(false))
-      val expected = FlatRateScheme(Some(true), Some(false), None, None, Some(true), frsDate, Some("frsId"), Some(10.5), Some(true))
+      val data = FlatRateScheme(Some(true), Some(false), Some(150L), Some(true), Some(true), frsDate, Some(testBusinessCategory), Some(10.5), Some(false))
+      val expected = FlatRateScheme(Some(true), Some(false), None, None, Some(true), frsDate, Some(testBusinessCategory), Some(10.5), Some(true))
 
       service.handleView(data) mustBe Complete(expected)
     }
 
     "return a Complete model for a full model with business goods and no 'uses this rate'" in new Setup {
-      val data = FlatRateScheme(Some(false), Some(true), Some(1000L), Some(true), Some(false), None, Some("frsId"), Some(10.5), Some(false))
+      val data = FlatRateScheme(Some(false), Some(true), Some(1000L), Some(true), Some(false), None, Some(testBusinessCategory), Some(10.5), Some(false))
 
       service.handleView(data) mustBe Complete(data)
     }
 
     "return a Complete model for a full model without business goods and no 'uses this rate'" in new Setup {
-      val data = FlatRateScheme(Some(false), Some(false), None, None, Some(false), None, Some("frsId"), Some(10.5), Some(true))
+      val data = FlatRateScheme(Some(false), Some(false), None, None, Some(false), None, Some(testBusinessCategory), Some(10.5), Some(true))
 
       service.handleView(data) mustBe Complete(data)
     }
 
     "return a Complete model for a full model with business goods but no over business goods percent and uses rate" in new Setup {
-      val data = FlatRateScheme(Some(true), Some(true), Some(1000L), Some(false), Some(true), frsDate, Some("frsId"), Some(10.5), Some(true))
+      val data = FlatRateScheme(Some(true), Some(true), Some(1000L), Some(false), Some(true), frsDate, Some(testBusinessCategory), Some(10.5), Some(true))
 
       service.handleView(data) mustBe Complete(data)
     }
 
     "return a Complete model for a full model with business goods but no over business goods percent and no 'uses this rate'" in new Setup {
-      val data = FlatRateScheme(Some(false), Some(true), Some(1000L), Some(false), Some(false), None, Some("frsId"), Some(10.5), Some(true))
+      val data = FlatRateScheme(Some(false), Some(true), Some(1000L), Some(false), Some(false), None, Some(testBusinessCategory), Some(10.5), Some(true))
 
       service.handleView(data) mustBe Complete(data)
     }
@@ -232,6 +231,8 @@ class FlatRateServiceSpec extends VatSpec {
     val testType = "testType"
     val testPercent: BigDecimal = 10.5
 
+    val testBusinessTypeDetails = FrsBusinessType(testCategory, testType, testType, testPercent)
+
     "save that they want to register without business goods, keeping category and percentage" in new Setup() {
       val data: FlatRateScheme = incompleteS4l.copy(overBusinessGoods = Some(false))
 
@@ -242,7 +243,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(Business(mainBusinessActivity = Some(testSicCode))))
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
-      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
+      when(mockConfigConnector.getBusinessType(any())).thenReturn(testBusinessTypeDetails)
 
       await(service.saveRegister(answer = true)) mustBe data.copy(useThisRate = Some(true), categoryOfBusiness = Some(testCategory), percent = Some(testPercent))
     }
@@ -257,7 +258,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(Business(mainBusinessActivity = Some(testSicCode))))
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
-      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
+      when(mockConfigConnector.getBusinessType(any())).thenReturn(testBusinessTypeDetails)
 
       await(service.saveRegister(answer = true)) mustBe
         data.copy(useThisRate = Some(true), categoryOfBusiness = Some(testCategory), percent = Some(testPercent))
@@ -278,7 +279,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(Business(mainBusinessActivity = Some(testSicCode))))
       when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn(testCategory)
-      when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn((testType, testPercent))
+      when(mockConfigConnector.getBusinessType(any())).thenReturn(testBusinessTypeDetails)
 
 
       await(service.saveRegister(answer = false)) mustBe expectedFRS
@@ -291,10 +292,10 @@ class FlatRateServiceSpec extends VatSpec {
     "retrieve a retrieveSectorPercent if one is saved" in new Setup {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(frs1KReg)))
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("test business type", BigDecimal(6.32)))
+      when(mockConfigConnector.getBusinessType(any()))
+        .thenReturn(testBusinessTypeDetails)
 
-      await(service.retrieveSectorPercent) mustBe("frsId", "test business type", BigDecimal(6.32))
+      await(service.retrieveBusinessTypeDetails) mustBe testBusinessTypeDetails
     }
 
     "determine a retrieveSectorPercent if none is saved but main business activity is known" in new Setup {
@@ -305,12 +306,12 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(validBusiness))
 
       when(mockConfigConnector.getSicCodeFRSCategory(any()))
-        .thenReturn("frsId")
+        .thenReturn(testBusinessCategory)
 
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(validBusinessSectorView)
+      when(mockConfigConnector.getBusinessType(any()))
+        .thenReturn(testBusinessTypeDetails)
 
-      await(service.retrieveSectorPercent) mustBe("frsId", validBusinessSectorView._1, validBusinessSectorView._2)
+      await(service.retrieveBusinessTypeDetails) mustBe testBusinessTypeDetails
     }
 
     "fail if no retrieveSectorPercent is saved and main business activity is not known" in new Setup {
@@ -320,10 +321,10 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(s4LVatBusinessWithNoMainBusinessActivity))
 
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(validBusinessSectorView)
+      when(mockConfigConnector.getBusinessType(any()))
+        .thenReturn(testBusinessTypeDetails)
 
-      val exception: IllegalStateException = intercept[IllegalStateException](await(service.retrieveSectorPercent))
+      val exception: IllegalStateException = intercept[IllegalStateException](await(service.retrieveBusinessTypeDetails))
 
       exception.getMessage mustBe "[FlatRateService] [retrieveSectorPercent] Can't determine main business activity"
     }
@@ -333,13 +334,13 @@ class FlatRateServiceSpec extends VatSpec {
     "save the flat rate percentage and Use this rate" when {
       "user selects Yes" in new Setup {
         when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(incompleteS4l.copy(categoryOfBusiness = Some("frsId"), percent = None))))
+          .thenReturn(Future.successful(Some(incompleteS4l.copy(categoryOfBusiness = Some(testBusinessCategory), percent = None))))
         when(mockS4LService.save(any())(any(), any(), any(), any()))
           .thenReturn(Future.successful(dummyCacheMap))
         when(mockConfigConnector.getSicCodeFRSCategory(any()))
-          .thenReturn("frsId")
-        when(mockConfigConnector.getBusinessTypeDetails(any()))
-          .thenReturn(("test", defaultFlatRate))
+          .thenReturn(testBusinessCategory)
+        when(mockConfigConnector.getBusinessType(any()))
+          .thenReturn(FrsBusinessType(testBusinessCategory, testBusinessTypeLabel, testBusinessTypeLabelCy, defaultFlatRate))
 
         await(service.saveUseFlatRate(answer = true)) mustBe incompleteS4l
       }
@@ -349,17 +350,17 @@ class FlatRateServiceSpec extends VatSpec {
           joinFrs = Some(false),
           overBusinessGoods = Some(false),
           useThisRate = Some(false),
-          categoryOfBusiness = Some("frsId"),
+          categoryOfBusiness = Some(testBusinessCategory),
           percent = Some(defaultFlatRate),
           limitedCostTrader = Some(false)
         )
 
         when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(incompleteS4l.copy(overBusinessGoods = Some(false), categoryOfBusiness = Some("frsId"), percent = None))))
+          .thenReturn(Future.successful(Some(incompleteS4l.copy(overBusinessGoods = Some(false), categoryOfBusiness = Some(testBusinessCategory), percent = None))))
         when(mockConfigConnector.getSicCodeFRSCategory(any()))
-          .thenReturn("frsId")
-        when(mockConfigConnector.getBusinessTypeDetails(any()))
-          .thenReturn(("test", defaultFlatRate))
+          .thenReturn(testBusinessCategory)
+        when(mockConfigConnector.getBusinessType(any()))
+          .thenReturn(FrsBusinessType(testBusinessCategory, testBusinessTypeLabel, testBusinessTypeLabelCy, defaultFlatRate))
         when(mockRegistrationApiConnector.replaceSection[FlatRateScheme](any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(expectedFRS))
         when(mockS4LService.clearKey(any(), any(), any()))
@@ -412,20 +413,21 @@ class FlatRateServiceSpec extends VatSpec {
         when(mockBusinessService.getBusiness(any(), any()))
           .thenReturn(Future.successful(Business(mainBusinessActivity = Some(SicCode("sic123", "test description", "")))))
         when(mockConfigConnector.getSicCodeFRSCategory(any())).thenReturn("test321")
-        when(mockConfigConnector.getBusinessTypeDetails(any())).thenReturn(("test321", BigDecimal(1.00)))
+        when(mockConfigConnector.getBusinessType(any()))
+          .thenReturn(FrsBusinessType(testBusinessCategory, testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(1.00)))
 
-        await(service.saveConfirmSector) mustBe incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = Some("test321"))
+        await(service.saveConfirmSector) mustBe incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = Some(testBusinessCategory))
       }
       "lookup main busines activity returns a correct sector & user has full model, sector & percent is the same as previously selected" in new Setup() {
         when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = Some("test"), percent = Some(defaultFlatRate)))))
+          .thenReturn(Future.successful(Some(incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = Some(testBusinessCategory), percent = Some(defaultFlatRate)))))
         when(mockS4LService.save(any())(any(), any(), any(), any()))
           .thenReturn(Future.successful(dummyCacheMap))
-        when(mockConfigConnector.getBusinessTypeDetails(any()))
-          .thenReturn(("test business type", BigDecimal(6.32)))
+        when(mockConfigConnector.getBusinessType(any()))
+          .thenReturn(FrsBusinessType(testBusinessCategory, testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(6.32)))
 
         await(service.saveConfirmSector) mustBe
-          incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = Some("test"), percent = Some(defaultFlatRate))
+          incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), categoryOfBusiness = Some(testBusinessCategory), percent = Some(defaultFlatRate))
       }
     }
   }
@@ -548,8 +550,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), useThisRate = Some(true), categoryOfBusiness = Some("001"), percent = Some(10.5)))))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("003", BigDecimal(3.0)))
+      when(mockConfigConnector.getBusinessType(any()))
+        .thenReturn(FrsBusinessType("003", testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(3.0)))
 
       await(service.saveBusinessType("003")) mustBe incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), useThisRate = None, categoryOfBusiness = Some("003"), percent = None)
     }
@@ -559,8 +561,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), useThisRate = Some(true), categoryOfBusiness = Some("001"), percent = Some(10.5)))))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("001", BigDecimal(3.0)))
+      when(mockConfigConnector.getBusinessType(any()))
+        .thenReturn(FrsBusinessType("001", testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(3.0)))
 
       await(service.saveBusinessType("001")) mustBe incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), useThisRate = None, categoryOfBusiness = Some("001"), percent = None)
     }
@@ -570,8 +572,8 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(Some(incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), useThisRate = Some(true), categoryOfBusiness = Some("001"), percent = Some(10.5)))))
       when(mockS4LService.save(any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockConfigConnector.getBusinessTypeDetails(any()))
-        .thenReturn(("001", BigDecimal(10.5)))
+      when(mockConfigConnector.getBusinessType(any()))
+        .thenReturn(FrsBusinessType("001", testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(10.5)))
 
       await(service.saveBusinessType("001")) mustBe incompleteS4l.copy(estimateTotalSales = Some(1l), overBusinessGoodsPercent = Some(true), useThisRate = Some(true), categoryOfBusiness = Some("001"), percent = Some(10.5))
     }

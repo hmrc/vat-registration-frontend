@@ -14,24 +14,24 @@
  * limitations under the License.
  *@
 
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
 @import config.FrontendAppConfig
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
 
 @this(
-    layout: layouts.layout,
-    errorSummary: components.errorSummary,
-    form: FormWithCSRF,
-    h1: components.h1,
-    inputRadio: components.inputRadio,
-    fieldset: components.fieldset,
-    button: components.button
+        layout: layouts.layout,
+        errorSummary: components.errorSummary,
+        form: FormWithCSRF,
+        h1: components.h1,
+        inputRadio: components.inputRadio,
+        fieldset: components.fieldset,
+        button: components.button
 )
 
 @(
-    chooseBusinessTypeForm: Form[String],
-    groupingBusinessTypes: Map[String, Seq[(String, String)]]
+        chooseBusinessTypeForm: Form[String],
+        frsGroups: Seq[FrsGroup]
 )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(title(chooseBusinessTypeForm, messages("pages.frs.chooseBusinessType.heading"))), backLink = true) {
@@ -41,27 +41,26 @@
     @h1(messages("pages.frs.chooseBusinessType.heading"))
 
     @form(action = controllers.flatratescheme.routes.ChooseBusinessTypeController.submit) {
-        @for((sector, businessTypes) <- groupingBusinessTypes) {
+        @frsGroups.map { frsGroup =>
             @{
                 defining {
-                    businessTypes.collect { case (value, label) =>
+                    frsGroup.categories.map { frsBusinessType =>
                         RadioItem(
-                            content = Text(label),
-                            value = Some(value),
-                            checked = chooseBusinessTypeForm("value").value.contains(value)
+                            content = Text(frsBusinessType.businessTypeLabel),
+                            value = Some(frsBusinessType.id),
+                            checked = chooseBusinessTypeForm("value").value.contains(frsBusinessType.id)
                         )
                     }
-                } {  radioItems =>
+                } { radioItems =>
                     inputRadio(
                         form = chooseBusinessTypeForm,
-                        legend = sector,
+                        legend = frsGroup.groupLabel,
                         items = radioItems,
                         legendAsHeading = false,
                         classes = "govuk-heading-m govuk-!-font-weight-bold"
                     )
                 }
             }
-
         }
 
         @button(messages("app.common.continue"))
