@@ -113,7 +113,7 @@ class TaskListControllerISpec extends ControllerISpec {
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
           applicantDetails = Some(validFullApplicantDetails),
-          partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true)))
+          entities = Some(List(Entity(Some(testSoleTrader), Partnership, isLeadPartner = Some(true), None)))
         )
 
         implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
@@ -148,7 +148,7 @@ class TaskListControllerISpec extends ControllerISpec {
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData),
           applicantDetails = Some(validFullApplicantDetails),
-          partners = Some(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+          entities = Some(List(Entity(Some(testSoleTrader), Individual, isLeadPartner = Some(true), None)))
         )
 
         implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)

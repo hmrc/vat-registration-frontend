@@ -22,11 +22,10 @@ import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
-import models.{ApplicantDetails, Partner, PartnerEntity}
-import play.api.libs.json.{Format, JsObject, JsString, Json}
+import models.{ApplicantDetails, Entity, Partner}
+import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import services.SessionService.{leadPartnerEntityKey, scottishPartnershipNameKey}
 
 import scala.concurrent.Future
 
@@ -252,11 +251,10 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
           .user.isAuthorised()
+          .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName))), idx = Some(1))
 
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
         stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
@@ -285,16 +283,14 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   "GET /partnership-id-partner-callback" must {
     "redirect to the correct controller for Scottish Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
+        val details = testPartnership.copy(companyName = Some(testOtherCompanyName))
         given()
           .user.isAuthorised()
-          .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership.copy(companyName = Some(testOtherCompanyName)), ScotPartnership, isLeadPartner = true))
+          .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), Some(testOtherCompanyName))), idx = Some(1))
+          .registrationApi.replaceSection(Entity(Some(details), ScotPartnership, Some(true), Some(testOtherCompanyName)), idx = Some(1))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](ScotPartnership),
-          scottishPartnershipNameKey -> JsString(testOtherCompanyName),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
 
@@ -312,15 +308,15 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to correct controller for Scottish Limited Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
+        val entity = Entity(None, ScotLtdPartnership, Some(true), Some("company name"))
+
         given()
           .user.isAuthorised()
-          .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership, ScotLtdPartnership, isLeadPartner = true))
+          .registrationApi.getSection(Some(entity), idx = Some(1))
+          .registrationApi.replaceSection(entity.copy(details = Some(testPartnership)), idx = Some(1))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
 
@@ -338,15 +334,15 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
+        val entity = Entity(None, LtdLiabilityPartnership, Some(true), Some("company name"))
+
         given()
           .user.isAuthorised()
-          .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
+          .registrationApi.getSection(Some(entity), idx = Some(1))
+          .registrationApi.replaceSection(entity.copy(details = Some(testPartnership)), idx = Some(1))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](ScotLtdPartnership),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
 
@@ -365,7 +361,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
       given()
         .user.isAuthorised()
-        .partnerApi.isUpdatedWithPartner(PartnerEntity(testPartnership, LtdLiabilityPartnership, isLeadPartner = true))
+        .registrationApi.replaceSection(Entity(Some(testPartnership), LtdLiabilityPartnership, Some(true), None))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
       insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))

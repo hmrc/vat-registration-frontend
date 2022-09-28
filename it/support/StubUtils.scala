@@ -24,7 +24,7 @@ import itutil.IntegrationSpecBase
 import models.api._
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.external.upscan.UpscanDetails
-import models.{ApiKey, PartnerEntity, S4LKey}
+import models.{ApiKey, Entity, S4LKey}
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -47,8 +47,6 @@ trait StubUtils {
     def user = UserStub()
 
     def alfeJourney = JourneyStub()
-
-    def partnerApi = PartnerStub()
 
     def vatRegistration = VatRegistrationStub()
 
@@ -235,20 +233,6 @@ trait StubUtils {
              """.stripMargin
           )))
 
-      builder
-    }
-  }
-
-  case class PartnerStub()(implicit builder: PreconditionBuilder) {
-    def isUpdatedWithPartner[T](t: T)(implicit tFmt: Format[T]): PreconditionBuilder = {
-      stubFor(
-        put(urlPathMatching(s"/vatreg/1/partners/.*"))
-          .willReturn(aResponse().withStatus(CREATED).withBody(tFmt.writes(t).toString())))
-      builder
-    }
-
-    def hasPartners(data: List[PartnerEntity]): PreconditionBuilder = {
-      stubFor(get(urlPathEqualTo(s"/vatreg/1/partners")).willReturn(ok(Json.stringify(Json.toJson(data)))))
       builder
     }
   }

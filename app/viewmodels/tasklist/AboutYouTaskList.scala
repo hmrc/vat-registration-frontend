@@ -39,11 +39,11 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
 
   private def isPartnershipWithIndLeadPartner(scheme: VatScheme): Boolean =
     Seq(Partnership, LtdPartnership, ScotPartnership, ScotLtdPartnership).exists(scheme.partyType.contains) &&
-      scheme.partners.exists(_.filter(_.isLeadPartner)
+      scheme.entities.exists(_.filter(_.isLeadPartner.contains(true))
         .exists(partner => partner.partyType == Individual || partner.partyType == NETP))
 
   // scalastyle:off
-  def personalDetailsRow(implicit profile: CurrentProfile) = TaskListRowBuilder(
+  def personalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = scheme => buildMessageKey("personalDetails", scheme),
     url = scheme => {
       if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
@@ -94,7 +94,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       messageKey = _ => "tasklist.aboutYou.leadPartnerDetails",
       url = _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
       tagId = "leadPartnerDetailsRow",
-      checks = scheme => Seq(scheme.partners.exists(_.exists(_.isLeadPartner))),
+      checks = scheme => Seq(scheme.entities.exists(_.exists(_.isLeadPartner.contains(true)))),
       prerequisites = _ => Seq(verifyBusinessTaskList.businessInfoRow)
     )
   }

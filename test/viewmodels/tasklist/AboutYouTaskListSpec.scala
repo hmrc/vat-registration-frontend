@@ -21,7 +21,7 @@ import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.{EmailAddress, Name}
 import models.view.{FormerNameDateView, PreviousAddressView}
-import models.{ApplicantDetails, CurrentProfile, PartnerEntity}
+import models.{ApplicantDetails, CurrentProfile, Entity}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
@@ -187,7 +187,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
               formerNameDate = Some(FormerNameDateView(testDate))
             )),
-            partners = Some(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+            entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None)))
           )
 
           val res = section.personalDetailsRow.build(scheme)
@@ -205,7 +205,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails)
             )),
-            partners = Some(List(PartnerEntity(testSoleTrader, Individual, isLeadPartner = true)))
+            entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None)))
           )
 
           val res = section.personalDetailsRow.build(scheme)
@@ -229,7 +229,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
               formerNameDate = Some(FormerNameDateView(testDate))
             )),
-            partners = Some(List(PartnerEntity(testSoleTrader, UkCompany, isLeadPartner = true)))
+            entities = Some(List(Entity(Some(testSoleTrader), UkCompany, Some(true), None)))
           )
 
           val res = section.personalDetailsRow.build(scheme)
@@ -249,7 +249,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               hasFormerName = Some(false),
               roleInTheBusiness = testRole
             )),
-            partners = Some(List(PartnerEntity(testSoleTrader, UkCompany, isLeadPartner = true)))
+            entities = Some(List(Entity(Some(testSoleTrader), UkCompany, Some(true), None)))
           )
 
           val res = section.personalDetailsRow.build(scheme)
@@ -305,7 +305,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             personalDetails = None,
             roleInTheBusiness = testRole
           )),
-          partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true)))
+          entities = Some(List(Entity(Some(testSoleTrader), Partnership, Some(true), None)))
         )
         val res = section.personalDetailsRow.build(scheme)
         res.status mustBe TLNotStarted
@@ -450,7 +450,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership)),
           applicantDetails = Some(completeApplicantDetails),
-          partners = Some(List(PartnerEntity(testSoleTrader, Partnership, isLeadPartner = true)))
+          entities = Some(List(Entity(Some(testSoleTrader), Partnership, Some(true), None)))
         )
         val sectionRow = section.buildLeadPartnerRow(scheme).get
         sectionRow.status mustBe TLCompleted

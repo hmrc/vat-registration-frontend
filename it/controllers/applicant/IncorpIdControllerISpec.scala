@@ -21,14 +21,12 @@ import featureswitch.core.config.{StubIncorpIdJourney, TaskList, UseSoleTraderId
 import itutil.ControllerISpec
 import models.api._
 import models.external.IncorporatedEntity
-import models.{ApplicantDetails, PartnerEntity}
+import models.{ApplicantDetails, Entity}
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{CREATED, await, _}
-import services.SessionService.leadPartnerEntityKey
-import uk.gov.hmrc.http.InternalServerException
+import play.api.test.Helpers._
 
 class IncorpIdControllerISpec extends ControllerISpec {
 
@@ -260,12 +258,11 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
   "GET /start-incorp-id-partnership-journey" should {
     "return INTERNAL_SERVER_ERROR if no partyType set" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised()
+        .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertIntoDb(sessionId, Map(
@@ -283,12 +280,10 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
+        .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](UkCompany),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -302,18 +297,15 @@ class IncorpIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the returned journey url for RegSociety" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised()
+        .registrationApi.getSection(Some(Entity(None, RegSociety, Some(true), None)), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](RegSociety),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
 
@@ -326,18 +318,14 @@ class IncorpIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the returned journey url for CharitableOrg" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised()
+        .registrationApi.getSection(Some(Entity(None, CharitableOrg, Some(true), None)), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
 
-      insertIntoDb(sessionId, Map(
-        leadPartnerEntityKey -> Json.toJson[PartyType](CharitableOrg),
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -360,16 +348,14 @@ class IncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .partnerApi.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
+          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None), idx = Some(1))
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](UkCompany),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient(routes.IncorpIdController.partnerCallback("1").url).get()
 
@@ -387,7 +373,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .partnerApi.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None))
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -408,16 +394,14 @@ class IncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .partnerApi.isUpdatedWithPartner(PartnerEntity(testIncorpDetails, UkCompany, isLeadPartner = true))
+          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
+          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None), idx = Some(1))
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-        insertIntoDb(sessionId, Map(
-          leadPartnerEntityKey -> Json.toJson[PartyType](UkCompany),
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = buildClient(routes.IncorpIdController.partnerCallback("1").url).get()
 
