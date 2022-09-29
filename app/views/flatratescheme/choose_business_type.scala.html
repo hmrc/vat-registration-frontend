@@ -46,6 +46,7 @@
                 defining {
                     frsGroup.categories.map { frsBusinessType =>
                         RadioItem(
+                            id = Some(frsBusinessType.id),
                             content = Text(frsBusinessType.businessTypeLabel),
                             value = Some(frsBusinessType.id),
                             checked = chooseBusinessTypeForm("value").value.contains(frsBusinessType.id)
