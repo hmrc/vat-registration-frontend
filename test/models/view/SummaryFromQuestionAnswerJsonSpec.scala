@@ -17,7 +17,8 @@
 package models.view
 
 import fixtures.VatRegistrationFixture
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
@@ -25,12 +26,13 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
 
   def eligibilityCall(uri: String): String = s"http://vatRegEFEUrl/question?pageId=$uri"
 
-  val changeText = "Change"
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
   "summaryReads" should {
     "return a summary with from Full Json" in {
       val res = Json.fromJson[SummaryList](fullEligibilityDataJson)(
-        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)
       )
 
       res.map(_.rows.length).get mustBe 8
@@ -52,7 +54,7 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
       )
 
       val res = Json.fromJson[SummaryList](eligibilityJsonWithQuestionIdDashes)(
-        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)
       )
 
       res.map(_.rows.length).get mustBe 4
@@ -76,7 +78,7 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
       )
 
       val res = Json.fromJson[SummaryList](invalidJson)(
-        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)
       )
 
       res.isError mustBe true
@@ -100,7 +102,7 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
       )
 
       val res = Json.fromJson[SummaryList](invalidJson)(
-        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)
       )
 
       res.isError mustBe true
@@ -120,7 +122,7 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
       )
 
       val res = Json.fromJson[SummaryList](invalidJson)(
-        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, changeText)
+        EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)
       )
 
       res.isError mustBe true
