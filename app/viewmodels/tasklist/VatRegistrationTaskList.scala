@@ -122,7 +122,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         case Some(FlatRateScheme(Some(true), Some(false), _, _, Some(false), _, _, _, _)) => List(true)
         case Some(FlatRateScheme(Some(true), _, _, _, _, _, _, _, _)) => List(true, false)
         case Some(FlatRateScheme(Some(false), _, _, _, _, _, _, _, _)) => List(true)
-        case None | Some(FlatRateScheme(None, None, None, None, None, None, None, None, None)) => List(false)
+        case _ => List(false)
       }
     },
     prerequisites = _ => Seq(vatReturnsRow)
