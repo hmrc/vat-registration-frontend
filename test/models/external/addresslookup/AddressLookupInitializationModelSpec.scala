@@ -140,8 +140,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "line2Label" -> EditPageOptions.line2Label,
       "line3Label" -> EditPageOptions.internationalLine3Label,
       "townLabel" -> EditPageOptions.townLabel,
-      "postcodeLabel" -> EditPageOptions.internationalPostcodeLabel,
       "countryLabel" -> EditPageOptions.countryLabel,
+      "postcodeLabel" -> EditPageOptions.internationalPostcodeLabel,
       "submitLabel" -> EditPageOptions.submitLabel
     ),
     "confirmPageLabels" -> Json.obj(
@@ -177,8 +177,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "line2Label" -> EditPageOptionsCy.line2Label,
       "line3Label" -> EditPageOptionsCy.internationalLine3Label,
       "townLabel" -> EditPageOptionsCy.townLabel,
-      "postcodeLabel" -> EditPageOptionsCy.internationalPostcodeLabel,
       "countryLabel" -> EditPageOptionsCy.countryLabel,
+      "postcodeLabel" -> EditPageOptionsCy.internationalPostcodeLabel,
       "submitLabel" -> EditPageOptionsCy.submitLabel
     ),
     "confirmPageLabels" -> Json.obj(
@@ -236,8 +236,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
           "line1Label" -> EditPageOptions.line1Label,
           "line2Label" -> EditPageOptions.line2Label,
           "line3Label" -> EditPageOptions.line3Label,
-          "postcodeLabel" -> EditPageOptions.postcodeLabel,
           "countryLabel" -> EditPageOptions.countryLabel,
+          "postcodeLabel" -> EditPageOptions.postcodeLabel,
           "submitLabel" -> EditPageOptions.submitLabel
         ),
         "confirmPageLabels" -> Json.obj(
@@ -272,8 +272,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
           "line1Label" -> EditPageOptionsCy.line1Label,
           "line2Label" -> EditPageOptionsCy.line2Label,
           "line3Label" -> EditPageOptionsCy.line3Label,
-          "postcodeLabel" -> EditPageOptionsCy.postcodeLabel,
           "countryLabel" -> EditPageOptionsCy.countryLabel,
+          "postcodeLabel" -> EditPageOptionsCy.postcodeLabel,
           "submitLabel" -> EditPageOptionsCy.submitLabel
         ),
         "confirmPageLabels" -> Json.obj(

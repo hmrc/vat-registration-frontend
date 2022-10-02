@@ -37,7 +37,9 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     val line3 = "Address line 3 (optional)"
     val line4 = "Address line 4 (optional)"
     val line5 = "Address line 5 (optional)"
-    val postcode = "Postcode (optional)"
+    val postcode = "Postcode"
+    val postcodeHint = "You only need to enter a postcode if the address is in the United Kingdom, Guernsey, Jersey or the Isle of Man"
+    val ppobHint = "You only need to enter a postcode if the address is in Guernsey, Jersey or the Isle of Man"
     val country = "Country"
     val saveAndContinue = "Save and continue"
   }
@@ -70,11 +72,18 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     "have a field for line 5" in new ViewSetup {
       doc.textBox("line5") mustBe Some(ExpectedMessages.line5)
     }
+    "have a field for country" in new ViewSetup {
+      doc.select("label[for=country]").toList.headOption.map(_.text) mustBe Some(ExpectedMessages.country)
+    }
     "have a field for postcode" in new ViewSetup {
       doc.textBox("postcode") mustBe Some(ExpectedMessages.postcode)
     }
-    "have a field for country" in new ViewSetup {
-      doc.select("label[for=country]").toList.headOption.map(_.text) mustBe Some(ExpectedMessages.country)
+    "have the correct hint text" in new ViewSetup {
+      doc.hintText mustBe Some(ExpectedMessages.postcodeHint)
+    }
+    "have the correct hint text when on the ppob page" in new ViewSetup {
+      val ppobDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.3pt.heading", name = testTransactorName, isPpob = true).body)
+      ppobDoc.hintText mustBe Some(ExpectedMessages.ppobHint)
     }
     "have a submit button" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedMessages.saveAndContinue)

@@ -44,6 +44,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
   private val headingMessageKey = "internationalAddress.ppob.heading"
   private lazy val submitAction = routes.InternationalPpobAddressController.submit
   private val invalidCountries = Seq("United Kingdom")
+  private val isPpob = true
 
   private val countries: Seq[Country] = configConnector.countries.filter(country => {
     country.name.isDefined && !invalidCountries.contains(country.name.get)
@@ -54,7 +55,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
       for {
         contactDetails <- businessService.getBusiness
         filledForm = contactDetails.ppobAddress.fold(formProvider.form(invalidCountries))(formProvider.form(invalidCountries).fill)
-      } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey))
+      } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey, None, isPpob))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -68,7 +69,9 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
           businessService.updateBusiness(internationalAddress) map { _ =>
             Redirect(routes.BusinessEmailController.show)
           }
-        }
+        },
+        name = None,
+        isPpob = true,
       )
   }
 }

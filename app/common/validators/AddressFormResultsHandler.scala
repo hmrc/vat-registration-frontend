@@ -42,7 +42,8 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
               addressForm: Form[Address],
               submitAction: Call,
               saveContactDetails: Address => Future[Result],
-              name: Option[String] = None
+              name: Option[String] = None,
+              isPpob: Boolean = false
             )(implicit request: Request[AnyContent],
               messages: Messages): Future[Result] = {
 
@@ -54,7 +55,7 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
         } else {
           formWithErrors
         }
-        Future.successful(BadRequest(view(finalForm, countries.flatMap(_.name), submitAction, headingMessageKey, name)))
+        Future.successful(BadRequest(view(finalForm, countries.flatMap(_.name), submitAction, headingMessageKey, name, isPpob)))
       },
       internationalAddress => {
         val maybeCountryName = internationalAddress.country.flatMap(_.name)
@@ -66,7 +67,8 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
             countries = countries.flatMap(_.name),
             submitAction = submitAction,
             headingKey = headingMessageKey,
-            name = name
+            name = name,
+            isPpob = isPpob
           )))
         } else {
           saveContactDetails(internationalAddress)
