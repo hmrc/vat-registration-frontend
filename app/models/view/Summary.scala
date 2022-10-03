@@ -115,21 +115,21 @@ object SummaryListRowUtils {
 
 object EligibilityJsonParser {
 
-  private def eligibilitySummaryRowReads(changeUrl: String => String, changeText: String): Reads[SummaryListRow] = {
+  private def eligibilitySummaryRowReads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryListRow] = {
     (
       (__ \ "question").read[String] and
         (__ \ "answer").read[String] and
         (__ \ "questionId").read[String].map(_.replaceAll("[-](?<=-).*", ""))
       ) ((question, answer, questionId) =>
       SummaryListRow(
-        key = Key(Text(question), "govuk-!-width-one-half"),
-        value = Value(Text(answer)),
+        key = Key(Text(messages(question)), "govuk-!-width-one-half"),
+        value = Value(Text(messages(answer))),
         actions = Some(Actions(
           items = Seq(
             ActionItem(
               href = changeUrl(questionId),
-              content = Text(changeText),
-              visuallyHiddenText = Some(question)
+              content = Text(messages("app.common.change")),
+              visuallyHiddenText = Some(messages(question))
             )
           )
         ))
@@ -137,9 +137,9 @@ object EligibilityJsonParser {
     )
   }
 
-  def eligibilitySummaryListReads(changeUrl: String => String, changeText: String): Reads[SummaryList] = {
+  def eligibilitySummaryListReads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryList] = {
     (__ \ "sections").read(Reads.seq[Seq[SummaryListRow]](
-      (__ \ "data").read(Reads.seq[SummaryListRow](eligibilitySummaryRowReads(changeUrl, changeText)))
+      (__ \ "data").read(Reads.seq[SummaryListRow](eligibilitySummaryRowReads(changeUrl)))
     )).map(rowLists => SummaryList(rowLists.flatten))
   }
 

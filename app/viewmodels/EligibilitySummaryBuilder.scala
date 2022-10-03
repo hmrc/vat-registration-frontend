@@ -34,7 +34,7 @@ class EligibilitySummaryBuilder @Inject()(govukSummaryList: GovukSummaryList)
   private[viewmodels] def eligibilityCall(uri: String): String = s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri"
 
   def build(json: JsValue, regId: String)(implicit messages: Messages): HtmlFormat.Appendable = {
-    json.validate[SummaryList](EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall, messages("app.common.change"))).fold(
+    json.validate[SummaryList](EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)).fold(
       errors => throw new Exception(s"[EligibilitySummaryBuilder] Json could not be parsed with errors: $errors with regId: $regId"),
       list => govukSummaryList(identity(list))
     )
