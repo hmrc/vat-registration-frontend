@@ -196,45 +196,63 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(applicantRoutes.PartnershipIdController.startPartnerJourney.url)
       }
       val uniqueTaxpayerReference = partner.details match {
-        case Some(soleTrader: SoleTraderIdEntity) => optSummaryListRowString(
-          questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
-          optAnswer = soleTrader.sautr,
-          optUrl = url)
-        case Some(partnership: PartnershipIdEntity) => optSummaryListRowString(
-          questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
-          optAnswer = partnership.sautr,
-          optUrl = url)
-        case Some(incorporated: IncorporatedEntity) => optSummaryListRowString(
-          questionId = partner.partyType match {
-            case RegSociety => s"$sectionId.leadPartner.uniqueTaxpayerReference"
-            case _ => s"$sectionId.leadPartner.companyUniqueTaxpayerReference"
-          },
-          optAnswer = incorporated.ctutr,
-          optUrl = url)
+        case Some(soleTrader: SoleTraderIdEntity) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
+            optAnswer = soleTrader.sautr,
+            optUrl = url
+          )
+        case Some(partnership: PartnershipIdEntity) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.uniqueTaxpayerReference",
+            optAnswer = partnership.sautr,
+            optUrl = url
+          )
+        case Some(incorporated: IncorporatedEntity) =>
+          optSummaryListRowString(
+            questionId = partner.partyType match {
+              case RegSociety => s"$sectionId.leadPartner.uniqueTaxpayerReference"
+              case _ => s"$sectionId.leadPartner.companyUniqueTaxpayerReference"
+            },
+            optAnswer = incorporated.ctutr,
+            optUrl = url
+          )
         case _ => None
       }
       val companyRegistrationNumber = partner.details match {
-        case Some(partnership: PartnershipIdEntity) => optSummaryListRowString(
-          questionId = s"$sectionId.leadPartner.companyNumber",
-          optAnswer = partnership.companyNumber,
-          optUrl = url)
-        case Some(incorporated: IncorporatedEntity) => optSummaryListRowString(
-          questionId = s"$sectionId.leadPartner.companyRegistrationNumber",
-          optAnswer = Some(incorporated.companyNumber),
-          optUrl = url)
+        case Some(partnership: PartnershipIdEntity) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.companyNumber",
+            optAnswer = partnership.companyNumber,
+            optUrl = url
+          )
+        case Some(incorporated: IncorporatedEntity) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.companyRegistrationNumber",
+            optAnswer = Some(incorporated.companyNumber),
+            optUrl = url
+          )
         case _ => None
       }
       val companyName = partner.details match {
-        case Some(partnership: PartnershipIdEntity)
-          if partner.partyType.equals(ScotLtdPartnership) || partner.partyType.equals(LtdLiabilityPartnership) =>
+        case Some(partnership: PartnershipIdEntity) if partner.partyType.equals(ScotPartnership) =>
           optSummaryListRowString(
             questionId = s"$sectionId.leadPartner.partnershipName",
             optAnswer = partnership.companyName,
-            optUrl = url)
-        case Some(incorporated: IncorporatedEntity) => optSummaryListRowString(
-          questionId = s"$sectionId.leadPartner.companyName",
-          optAnswer = incorporated.companyName,
-          optUrl = url)
+            optUrl = Some(controllers.business.routes.ScottishPartnershipNameController.show.url)
+          )
+        case Some(partnership: PartnershipIdEntity) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.partnershipName",
+            optAnswer = partnership.companyName,
+            optUrl = url
+          )
+        case Some(incorporated: IncorporatedEntity) =>
+          optSummaryListRowString(
+            questionId = s"$sectionId.leadPartner.companyName",
+            optAnswer = incorporated.companyName,
+            optUrl = url
+          )
         case _ => None
       }
       val registeredPostcode = partner.details match {

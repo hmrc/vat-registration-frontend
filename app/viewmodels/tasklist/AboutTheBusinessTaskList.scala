@@ -18,7 +18,8 @@ package viewmodels.tasklist
 
 import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
-import models.api.VatScheme
+import models.api.{Partnership, ScotPartnership, VatScheme}
+import models.external.{MinorEntity, PartnershipIdEntity}
 import models.{Business, CurrentProfile, OtherBusinessInvolvement}
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -40,18 +41,27 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         scheme.business.exists(_.email.isDefined),
         scheme.business.exists(_.hasWebsite.isDefined),
         scheme.business.exists(_.contactPreference.isDefined)
-      ).++ {
+      ) ++ {
         if (scheme.business.exists(_.hasWebsite.contains(true))) {
           Seq(scheme.business.exists(_.website.isDefined))
         } else {
           Nil
         }
-      }.++ {
+      } ++ {
         if (scheme.business.exists(_.hasTradingName.contains(true)) ||
           !scheme.partyType.exists(Business.tradingNameOptional)) {
           Seq(scheme.business.exists(_.tradingName.isDefined))
         } else {
           Nil
+        }
+      } ++ {
+        // Unincorporated entities have to go through the company/partnership name pages which are handled by the TradingNameResolverController
+        scheme.applicantDetails.flatMap(_.entity) match {
+          case Some(businessEntity: PartnershipIdEntity) if Seq(Partnership, ScotPartnership).exists(scheme.partyType.contains) =>
+            Seq(businessEntity.companyName.isDefined)
+          case Some(businessEntity: MinorEntity) =>
+            Seq(businessEntity.companyName.isDefined)
+          case _ => Nil
         }
       }
     },
