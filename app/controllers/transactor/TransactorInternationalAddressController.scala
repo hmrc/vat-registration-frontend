@@ -16,6 +16,7 @@
 
 package controllers.transactor
 
+import common.validators.AddressFormResultsHandler
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
@@ -27,7 +28,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class TransactorInternationalAddressController @Inject()(val authConnector: AuthConnector,
@@ -35,18 +36,14 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
                                                          transactorDetailsService: TransactorDetailsService,
                                                          configConnector: ConfigConnector,
                                                          view: CaptureInternationalAddress,
-                                                         formProvider: InternationalAddressForm)
+                                                         formProvider: InternationalAddressForm,
+                                                         addressFormResultsHandler: AddressFormResultsHandler)
                                                         (implicit appConfig: FrontendAppConfig,
                                                          val executionContext: ExecutionContext,
                                                          baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   private val headingMessageKey = "internationalAddress.home.heading"
   private lazy val submitAction = routes.TransactorInternationalAddressController.submit
-
-  private val postcodeRequiredCountry = "United Kingdom"
-  private val postcodeField = "postcode"
-  private val countryField = "country"
-  private val postcodeRequiredErrorKey = "internationalAddress.error.postcode.empty"
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -61,35 +58,21 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        val countries = configConnector.countries.flatMap(_.name)
+        val countries = configConnector.countries
 
-        formProvider.form().bindFromRequest.fold(
-          formWithErrors => {
-            val finalForm = if (formWithErrors(countryField).value.contains(postcodeRequiredCountry) && formWithErrors(postcodeField).value.contains("")) {
-              formWithErrors.withError(postcodeField, postcodeRequiredErrorKey)
-            } else {
-              formWithErrors
-            }
-            Future.successful(BadRequest(view(finalForm, countries, submitAction, headingMessageKey)))
-          },
-          internationalAddress => {
-            if (internationalAddress.country.flatMap(_.name).contains(postcodeRequiredCountry) && internationalAddress.postcode.isEmpty) {
-              Future.successful(BadRequest(view(
-                internationalAddressForm = formProvider.form().fill(internationalAddress).withError(postcodeField, postcodeRequiredErrorKey),
-                countries = countries,
-                submitAction = submitAction,
-                headingKey = headingMessageKey
-              )))
-            } else {
-              transactorDetailsService.saveTransactorDetails(internationalAddress) map { _ =>
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  Redirect(routes.TelephoneNumberController.show.url)
-                }
+        addressFormResultsHandler.handle(
+          countries,
+          headingMessageKey,
+          formProvider.form().bindFromRequest,
+          submitAction,
+          internationalAddress =>
+            transactorDetailsService.saveTransactorDetails(internationalAddress) map { _ =>
+              if (isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show.url)
+              } else {
+                Redirect(routes.TelephoneNumberController.show.url)
               }
             }
-          }
         )
   }
 
