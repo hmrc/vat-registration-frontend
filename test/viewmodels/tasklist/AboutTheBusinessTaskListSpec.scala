@@ -17,8 +17,10 @@
 package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
-import models.api.SicCode
-import models.{Business, LabourCompliance}
+import models.api.{Individual, Partnership, SicCode}
+import models.external.Name
+import models.view.FormerNameDateView
+import models.{ApplicantDetails, Business, Entity, LabourCompliance}
 import testHelpers.VatRegSpec
 
 class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
@@ -52,6 +54,20 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails),
         business = Some(Business(ppobAddress = Some(testAddress)))
+      )
+
+      val row = section.businessDetailsRow.build(scheme)
+
+      row.status mustBe TLInProgress
+      row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
+    }
+
+    "be in progress if the prerequesites are complete and there are all answers but companyName not defined for GeneralPartnership" in {
+      val scheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership)),
+        applicantDetails = Some(completeApplicantDetails.copy(entity = Some(testGeneralPartnership))),
+        entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None))),
+        business = Some(validBusiness)
       )
 
       val row = section.businessDetailsRow.build(scheme)
