@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{TaskList, UseSoleTraderIdentification}
 import models.api.{CharitableOrg, RegSociety, UkCompany}
-import models.external.BusinessEntity
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
@@ -37,8 +36,7 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
                                    val sessionService: SessionService,
                                    incorpIdService: IncorpIdService,
                                    applicantDetailsService: ApplicantDetailsService,
-                                   vatRegistrationService: VatRegistrationService,
-                                   entityService: EntityService
+                                   vatRegistrationService: VatRegistrationService
                                   )(implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents)
@@ -80,48 +78,11 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
             Redirect(controllers.routes.TaskListController.show)
           } else {
             if (isTransactor || isEnabled(UseSoleTraderIdentification)) {
-              Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+              Redirect(routes.IndividualIdController.startJourney)
             }
             else {
               Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
             }
-          }
-        }
-  }
-
-  def startPartnerJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        val journeyConfig = IncorpIdJourneyConfig(
-          continueUrl = appConfig.incorpIdPartnerCallbackUrl,
-          optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
-          deskProServiceId = appConfig.contactFormServiceIdentifier,
-          signOutUrl = appConfig.feedbackUrl,
-          accessibilityUrl = appConfig.accessibilityStatementUrl,
-          regime = appConfig.regime,
-          businessVerificationCheck = false,
-          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
-        )
-
-        for {
-          entity <- entityService.getEntity(profile.registrationId, 1)
-          journeyStartUrl <- incorpIdService.createJourney(journeyConfig, entity.partyType)
-        } yield {
-          SeeOther(journeyStartUrl)
-        }
-  }
-
-  def partnerCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        for {
-          incorpDetails <- incorpIdService.getDetails(journeyId)
-          _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, 1, incorpDetails)
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
           }
         }
   }

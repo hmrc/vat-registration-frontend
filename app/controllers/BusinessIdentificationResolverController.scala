@@ -17,7 +17,7 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import controllers.applicant.{routes => applicantRoutes}
+import controllers.grs.{routes => grsRoutes}
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
@@ -44,13 +44,13 @@ class BusinessIdentificationResolverController @Inject()(val sessionService: Ses
         } yield {
           partyType match {
             case Individual | NETP =>
-              Redirect(applicantRoutes.SoleTraderIdentificationController.startJourney)
+              Redirect(grsRoutes.SoleTraderIdController.startJourney)
             case UkCompany | RegSociety | CharitableOrg =>
-              Redirect(applicantRoutes.IncorpIdController.startJourney)
+              Redirect(grsRoutes.IncorpIdController.startJourney)
             case Partnership | ScotPartnership | ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
-              Redirect(applicantRoutes.PartnershipIdController.startJourney)
+              Redirect(grsRoutes.PartnershipIdController.startJourney)
             case UnincorpAssoc | Trust | NonUkNonEstablished =>
-              Redirect(applicantRoutes.MinorEntityIdController.startJourney)
+              Redirect(grsRoutes.MinorEntityIdController.startJourney)
           }
         }
   }

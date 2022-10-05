@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
@@ -22,7 +22,7 @@ import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
-import models.{ApplicantDetails, Entity, Partner}
+import models.{ApplicantDetails, Partner}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -36,7 +36,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   val testJourneyUrl = "/test-journey-url"
 
   val partnershipJourneyUrl = "/partnership-identification/api/general-partnership-journey"
-  val scottishPartnershipJourneyUrl = "/partnership-identification/api/scottish-partnership-journey"
   val retrieveDetailsUrl = s"/partnership-identification/api/journey/$testJourneyId"
 
   val testPostCode = "ZZ1 1ZZ"
@@ -241,135 +240,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
-      }
-    }
-  }
-
-  "GET /start-partnership-id-partner-journey" when {
-    "STI returns a journey ID" must {
-      "redirect to the journey using the ID provided for Partnership" in new Setup {
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName))), idx = Some(1))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
-
-        val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(testJourneyUrl)
-        }
-      }
-
-      "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
-        given().user.isAuthorised()
-        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
-
-        stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
-
-        val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
-
-        whenReady(res) { result =>
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-      }
-    }
-  }
-
-  "GET /partnership-id-partner-callback" must {
-    "redirect to the correct controller for Scottish Partnership" in new Setup {
-      private def verifyCallbackHandler(redirectUrl: String) = {
-        val details = testPartnership.copy(companyName = Some(testOtherCompanyName))
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), Some(testOtherCompanyName))), idx = Some(1))
-          .registrationApi.replaceSection(Entity(Some(details), ScotPartnership, Some(true), Some(testOtherCompanyName)), idx = Some(1))
-
-        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(redirectUrl)
-        }
-      }
-
-      enable(TaskList)
-      verifyCallbackHandler(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyCallbackHandler(applicantRoutes.IndividualIdentificationController.startJourney.url)
-    }
-
-    "redirect to correct controller for Scottish Limited Partnership" in new Setup {
-      private def verifyCallbackHandler(redirectUrl: String) = {
-        val entity = Entity(None, ScotLtdPartnership, Some(true), Some("company name"))
-
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection(Some(entity), idx = Some(1))
-          .registrationApi.replaceSection(entity.copy(details = Some(testPartnership)), idx = Some(1))
-
-        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(redirectUrl)
-        }
-      }
-
-      enable(TaskList)
-      verifyCallbackHandler(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyCallbackHandler(applicantRoutes.IndividualIdentificationController.startJourney.url)
-    }
-
-    "redirect to the individual identification for Limited Liability Partnership" in new Setup {
-      private def verifyCallbackHandler(redirectUrl: String) = {
-        val entity = Entity(None, LtdLiabilityPartnership, Some(true), Some("company name"))
-
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection(Some(entity), idx = Some(1))
-          .registrationApi.replaceSection(entity.copy(details = Some(testPartnership)), idx = Some(1))
-
-        stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(redirectUrl)
-        }
-      }
-
-      enable(TaskList)
-      verifyCallbackHandler(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyCallbackHandler(applicantRoutes.IndividualIdentificationController.startJourney.url)
-    }
-
-    "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.replaceSection(Entity(Some(testPartnership), LtdLiabilityPartnership, Some(true), None))
-
-      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
-
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
-
-      whenReady(res) { result =>
-        result.status mustBe INTERNAL_SERVER_ERROR
+        result.headers(LOCATION) must contain(controllers.grs.routes.IndividualIdController.startJourney.url)
       }
     }
   }

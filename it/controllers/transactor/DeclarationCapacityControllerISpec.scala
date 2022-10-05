@@ -72,7 +72,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         val res = await(buildClient(url).post(Map(declarationCapacity -> accountant)))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(routes.TransactorIdentificationController.startJourney.url)
+        res.header("LOCATION") mustBe Some(controllers.grs.routes.TransactorIdController.startJourney.url)
       }
 
       "return BAD_REQUEST if role selected as other and not set" in new Setup {

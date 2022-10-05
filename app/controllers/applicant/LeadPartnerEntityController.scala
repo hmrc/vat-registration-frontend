@@ -18,8 +18,8 @@ package controllers.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
 import controllers.business.{routes => businessRoutes}
+import controllers.grs.{routes => grsRoutes}
 import forms.LeadPartnerForm
 import models.api._
 import play.api.mvc.{Action, AnyContent}
@@ -62,10 +62,10 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
             for {
               _ <- entityService.upsertEntity[PartyType](profile.registrationId, 1, partyType)
             } yield partyType match {
-              case Individual | NETP => Redirect(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney)
-              case UkCompany | RegSociety | CharitableOrg => Redirect(applicantRoutes.IncorpIdController.startPartnerJourney)
+              case Individual | NETP => Redirect(grsRoutes.PartnerSoleTraderIdController.startPartnerJourney)
+              case UkCompany | RegSociety | CharitableOrg => Redirect(grsRoutes.PartnerIncorpIdController.startPartnerJourney)
               case ScotPartnership => Redirect(businessRoutes.ScottishPartnershipNameController.show)
-              case ScotLtdPartnership | LtdLiabilityPartnership => Redirect(applicantRoutes.PartnershipIdController.startPartnerJourney)
+              case ScotLtdPartnership | LtdLiabilityPartnership => Redirect(grsRoutes.PartnerPartnershipIdController.startPartnerJourney)
               case partyType => throw new InternalServerException(s"[LeadPartnerEntityController][submitLeadPartnerEntity] Submitted invalid lead partner: $partyType")
             }
         )

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers.transactor
+package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
-import models.api.{NETP, NonUkNonEstablished}
+import controllers.applicant.{routes => applicantRoutes}
+import models.api._
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
@@ -30,11 +30,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class TransactorIdentificationController @Inject()(val sessionService: SessionService,
+class IndividualIdController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthConnector,
-                                                   val transactorDetailsService: TransactorDetailsService,
-                                                   vatRegistrationService: VatRegistrationService,
-                                                   soleTraderIdentificationService: SoleTraderIdentificationService
+                                                   val applicantDetailsService: ApplicantDetailsService,
+                                                   soleTraderIdentificationService: SoleTraderIdentificationService,
+                                                   vatRegistrationService: VatRegistrationService
                                                   )(implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
@@ -44,40 +44,48 @@ class TransactorIdentificationController @Inject()(val sessionService: SessionSe
     isAuthenticatedWithProfile() {
       implicit request =>
         implicit profile =>
-          soleTraderIdentificationService.startIndividualJourney(
-            SoleTraderIdJourneyConfig(
-              continueUrl = appConfig.transactorCallbackUrl,
+          for {
+            isTransactor <- vatRegistrationService.isTransactor
+            (fullNamePageLabel, welshFullNamePageLabel) = if (isTransactor) {
+              (
+                messagesApi.translate("transactorName.optFullNamePageLabel", Nil)(Lang("en")),
+                messagesApi.translate("transactorName.optFullNamePageLabel", Nil)(Lang("cy"))
+              )
+            } else {
+              (None, None)
+            }
+            config = SoleTraderIdJourneyConfig(
+              continueUrl = appConfig.individualCallbackUrl,
               optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
+              optFullNamePageLabel = fullNamePageLabel,
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
               regime = appConfig.regime,
               businessVerificationCheck = true,
               labels = Some(JourneyLabels(TranslationLabels(
-                optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy"))
+                optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
+                optFullNamePageLabel = welshFullNamePageLabel
               )))
             )
-          ).map(url => Redirect(url))
+            partyType <- vatRegistrationService.partyType
+            url <- soleTraderIdentificationService.startIndividualJourney(config, Some(partyType))
+          } yield {
+            Redirect(url)
+          }
     }
 
   def callback(journeyId: String): Action[AnyContent] =
     isAuthenticatedWithProfile() { implicit request =>
       implicit profile =>
         for {
-          personalDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
-          _ <- transactorDetailsService.saveTransactorDetails(personalDetails)
+          individualDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
+          _ <- applicantDetailsService.saveApplicantDetails(individualDetails)
           partyType <- vatRegistrationService.partyType
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            partyType match {
-              case NETP | NonUkNonEstablished =>
-                Redirect(routes.TransactorInternationalAddressController.show)
-              case _ =>
-                Redirect(routes.TransactorHomeAddressController.redirectToAlf)
-            }
-          }
+        } yield partyType match {
+          case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership | LtdLiabilityPartnership =>
+            Redirect(applicantRoutes.FormerNameController.show)
+          case _ => Redirect(applicantRoutes.CaptureRoleInTheBusinessController.show)
         }
     }
 }

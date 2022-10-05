@@ -53,7 +53,7 @@ class DeclarationCapacityController @Inject()(view: DeclarationCapacityView,
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           declarationCapacity =>
             transactorDetailsService.saveTransactorDetails(declarationCapacity).map { _ =>
-              Redirect(routes.TransactorIdentificationController.startJourney.url)
+              Redirect(controllers.grs.routes.TransactorIdController.startJourney.url)
             }
         )
   }

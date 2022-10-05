@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import _root_.models._
 import controllers.applicant.{routes => applicantRoutes}
@@ -47,8 +47,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockSessionService,
       mockIncorpIdService,
       mockApplicantDetailsService,
-      vatRegistrationServiceMock,
-      mockEntityService
+      vatRegistrationServiceMock
     )
 
     mockAuthenticated()
@@ -98,7 +97,7 @@ class IncorpIdControllerSpec extends ControllerSpec
     "the UseSoleTraderIdentification feature switch is enabled" should {
       "store the incorporation details and redirect to IndividualIdentification when the response is valid" in new Setup {
         enable(UseSoleTraderIdentification)
-        val onwardUrl = applicantRoutes.IndividualIdentificationController.startJourney.url
+        val onwardUrl = routes.IndividualIdController.startJourney.url
         mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
         mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
         mockIsTransactor(Future(true))

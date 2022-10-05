@@ -17,6 +17,7 @@
 package viewmodels
 
 import controllers.applicant.{routes => applicantRoutes}
+import controllers.grs.{routes => grsRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models._
 import models.api._
@@ -50,16 +51,16 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     val changePersonalDetailsUrl: String = {
       partyType match {
         case Individual | NETP =>
-          applicantRoutes.SoleTraderIdentificationController.startJourney.url
+          grsRoutes.SoleTraderIdController.startJourney.url
         case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership =>
           vatScheme.entities.flatMap(_.headOption.map(_.partyType)) match {
-            case Some(Individual | NETP) => applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url
-            case _ => applicantRoutes.IndividualIdentificationController.startJourney.url
+            case Some(Individual | NETP) => grsRoutes.PartnerSoleTraderIdController.startPartnerJourney.url
+            case _ => grsRoutes.IndividualIdController.startJourney.url
           }
         case Trust | UnincorpAssoc | NonUkNonEstablished | LtdLiabilityPartnership =>
-          applicantRoutes.IndividualIdentificationController.startJourney.url
+          grsRoutes.IndividualIdController.startJourney.url
         case _ if isEnabled(UseSoleTraderIdentification) => //The low volume entities are already set up to use individual flow, incorp id entities are still switched to PDV in prod
-          applicantRoutes.IndividualIdentificationController.startJourney.url
+          grsRoutes.IndividualIdController.startJourney.url
         case _ =>
           applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney.url
       }
@@ -191,9 +192,9 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
 
     leadPartner.map { partner =>
       val url = partner.partyType match {
-        case Individual | NETP => Some(applicantRoutes.SoleTraderIdentificationController.startPartnerJourney.url)
-        case UkCompany | RegSociety | CharitableOrg => Some(applicantRoutes.IncorpIdController.startPartnerJourney.url)
-        case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(applicantRoutes.PartnershipIdController.startPartnerJourney.url)
+        case Individual | NETP => Some(grsRoutes.PartnerSoleTraderIdController.startPartnerJourney.url)
+        case UkCompany | RegSociety | CharitableOrg => Some(grsRoutes.PartnerIncorpIdController.startPartnerJourney.url)
+        case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(grsRoutes.PartnerPartnershipIdController.startPartnerJourney.url)
       }
       val uniqueTaxpayerReference = partner.details match {
         case Some(soleTrader: SoleTraderIdEntity) =>

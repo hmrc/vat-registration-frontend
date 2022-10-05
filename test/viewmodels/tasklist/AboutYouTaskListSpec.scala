@@ -235,7 +235,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           val res = section.personalDetailsRow.build(scheme)
 
           res.status mustBe TLCompleted
-          res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+          res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
         }
         "be not started when the former name answers are missing" in {
           val scheme = emptyVatScheme.copy(
@@ -255,7 +255,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           val res = section.personalDetailsRow.build(scheme)
 
           res.status mustBe TLCompleted
-          res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+          res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
         }
       }
     }
@@ -277,7 +277,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         )
         val res = section.personalDetailsRow.build(scheme)
         res.status mustBe TLCompleted
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
       "be not started when personal details is missing" in {
         val scheme = emptyVatScheme.copy(
@@ -292,7 +292,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         )
         val res = section.personalDetailsRow.build(scheme)
         res.status mustBe TLNotStarted
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
       "be not started when personal details is missing but roleInTheBusiness available as Partner" in {
         val scheme = emptyVatScheme.copy(
@@ -309,7 +309,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         )
         val res = section.personalDetailsRow.build(scheme)
         res.status mustBe TLNotStarted
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
     }
     "the user is a Uk Company" when {
@@ -333,7 +333,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )
           val res = section.personalDetailsRow.build(scheme)
           res.status mustBe TLCompleted
-          res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+          res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
         }
       }
       "the UseSoleTraderIdentification feature switch is disabled" must {
@@ -378,7 +378,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         )
         val res = section.personalDetailsRow.build(scheme)
         res.status mustBe TLCompleted
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
       "must be complete if the user doesn't have a former name and everything else has been provided" in {
         val scheme = emptyVatScheme.copy(
@@ -397,7 +397,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val res = section.personalDetailsRow.build(scheme)
 
         res.status mustBe TLCompleted
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
       "must be in progress if some required answers are missing" in {
         val scheme = emptyVatScheme.copy(
@@ -415,7 +415,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val res = section.personalDetailsRow.build(scheme)
 
         res.status mustBe TLInProgress
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
       "must be not started if some all answers are missing" in {
         val scheme = emptyVatScheme.copy(
@@ -429,7 +429,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val res = section.personalDetailsRow.build(scheme)
 
         res.status mustBe TLNotStarted
-        res.url mustBe controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
     }
     "some or all pre-requisites are not met" must {

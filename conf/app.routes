@@ -204,34 +204,34 @@ GET         /current-address/changePreviousAddress                    controller
 GET         /current-address/acceptFromTxm                            controllers.applicant.PreviousAddressController.addressLookupCallback(id: String ?= "")
 
 ## Incorp ID Pages
-GET         /start-incorp-id-journey                                  controllers.applicant.IncorpIdController.startJourney
-GET         /incorp-id-callback                                       controllers.applicant.IncorpIdController.incorpIdCallback(journeyId)
-GET         /start-incorp-id-partner-journey                          controllers.applicant.IncorpIdController.startPartnerJourney
-GET         /incorp-id-partner-callback                               controllers.applicant.IncorpIdController.partnerCallback(journeyId)
+GET         /start-incorp-id-journey                                  controllers.grs.IncorpIdController.startJourney
+GET         /incorp-id-callback                                       controllers.grs.IncorpIdController.incorpIdCallback(journeyId)
+GET         /start-incorp-id-partner-journey                          controllers.grs.PartnerIncorpIdController.startPartnerJourney
+GET         /incorp-id-partner-callback                               controllers.grs.PartnerIncorpIdController.partnerCallback(journeyId)
 
 ## Personal Details Validation Pages
 GET         /start-personal-details-validation-journey                controllers.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
 GET         /personal-details-validation-callback                     controllers.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
 
 ## Sole Trader Identification Journey
-GET         /start-sti-journey                                        controllers.applicant.SoleTraderIdentificationController.startJourney
-GET         /sti-callback                                             controllers.applicant.SoleTraderIdentificationController.callback(journeyId)
-GET         /start-sti-individual-journey                             controllers.applicant.IndividualIdentificationController.startJourney
-GET         /sti-individual-callback                                  controllers.applicant.IndividualIdentificationController.callback(journeyId)
-GET         /start-sti-partner-journey                                controllers.applicant.SoleTraderIdentificationController.startPartnerJourney
-GET         /sti-partner-callback                                     controllers.applicant.SoleTraderIdentificationController.partnerCallback(journeyId: String)
-GET         /start-sti-transactor-journey                             controllers.transactor.TransactorIdentificationController.startJourney
-GET         /sti-transactor-callback                                  controllers.transactor.TransactorIdentificationController.callback(journeyId)
+GET         /start-sti-journey                                        controllers.grs.SoleTraderIdController.startJourney
+GET         /sti-callback                                             controllers.grs.SoleTraderIdController.callback(journeyId)
+GET         /start-sti-individual-journey                             controllers.grs.IndividualIdController.startJourney
+GET         /sti-individual-callback                                  controllers.grs.IndividualIdController.callback(journeyId)
+GET         /start-sti-partner-journey                                controllers.grs.PartnerSoleTraderIdController.startPartnerJourney
+GET         /sti-partner-callback                                     controllers.grs.PartnerSoleTraderIdController.partnerCallback(journeyId: String)
+GET         /start-sti-transactor-journey                             controllers.grs.TransactorIdController.startJourney
+GET         /sti-transactor-callback                                  controllers.grs.TransactorIdController.callback(journeyId)
 
 ## Partnership ID Pages
-GET         /start-partnership-id-journey                             controllers.applicant.PartnershipIdController.startJourney
-GET         /partnership-id-callback                                  controllers.applicant.PartnershipIdController.callback(journeyId)
-GET         /start-partnership-id-partner-journey                     controllers.applicant.PartnershipIdController.startPartnerJourney
-GET         /partnership-id-partner-callback                          controllers.applicant.PartnershipIdController.partnerCallback(journeyId)
+GET         /start-partnership-id-journey                             controllers.grs.PartnershipIdController.startJourney
+GET         /partnership-id-callback                                  controllers.grs.PartnershipIdController.callback(journeyId)
+GET         /start-partnership-id-partner-journey                     controllers.grs.PartnerPartnershipIdController.startPartnerJourney
+GET         /partnership-id-partner-callback                          controllers.grs.PartnerPartnershipIdController.partnerCallback(journeyId)
 
 ## Minor Entity ID Pages
-GET         /start-minor-entity-id-journey                            controllers.applicant.MinorEntityIdController.startJourney
-GET         /minor-entity-id-callback                                 controllers.applicant.MinorEntityIdController.callback(journeyId)
+GET         /start-minor-entity-id-journey                            controllers.grs.MinorEntityIdController.startJourney
+GET         /minor-entity-id-callback                                 controllers.grs.MinorEntityIdController.callback(journeyId)
 
 ## Email Verification Pages
 GET         /email-address                                            controllers.applicant.CaptureEmailAddressController.show

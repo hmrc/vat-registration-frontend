@@ -85,20 +85,20 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
       if (isAgent) {
         Some(controllers.transactor.routes.AgentNameController.show.url)
       } else {
-        Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+        Some(controllers.grs.routes.TransactorIdController.startJourney.url)
       }
     )
 
     val dateOfBirth = optSummaryListRowString(
       s"$sectionId.dateOfBirth",
       transactorDetails.personalDetails.flatMap(_.dateOfBirth.map(_.format(presentationFormatter))),
-      Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+      Some(controllers.grs.routes.TransactorIdController.startJourney.url)
     )
 
     val nino = optSummaryListRowString(
       s"$sectionId.nino",
       transactorDetails.personalDetails.flatMap(_.nino),
-      Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+      Some(controllers.grs.routes.TransactorIdController.startJourney.url)
     )
 
     val homeAddress = optSummaryListRowSeq(

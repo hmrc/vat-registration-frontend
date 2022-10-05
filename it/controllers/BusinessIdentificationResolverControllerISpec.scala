@@ -2,7 +2,7 @@
 
 package controllers
 
-import controllers.applicant.{routes => applicantRoutes}
+import controllers.grs.{routes => grsRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
@@ -29,7 +29,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         val response: Future[WSResponse] = buildClient(url).get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.IncorpIdController.startJourney.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(grsRoutes.IncorpIdController.startJourney.url)
         }
       }
     }
@@ -45,7 +45,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         val response: Future[WSResponse] = buildClient(url).get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.PartnershipIdController.startJourney.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(grsRoutes.PartnershipIdController.startJourney.url)
         }
       }
     }
@@ -61,7 +61,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         val response: Future[WSResponse] = buildClient(url).get()
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(grsRoutes.MinorEntityIdController.startJourney.url)
         }
       }
     }
@@ -77,7 +77,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(grsRoutes.SoleTraderIdController.startJourney.url)
       }
       disable(UseSoleTraderIdentification)
     }

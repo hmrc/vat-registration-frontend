@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
@@ -76,7 +76,7 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
           if (isEnabled(TaskList)) {
             Redirect(controllers.routes.TaskListController.show)
           } else {
-            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+            Redirect(routes.IndividualIdController.startJourney)
           }
         }
   }
