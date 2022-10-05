@@ -16,10 +16,10 @@
 
 package connectors
 
-import models.{FrsBusinessType, FrsGroup}
 import models.api.{Country, SicCode}
+import models.{FrsBusinessType, FrsGroup}
 import play.api.Environment
-import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.util.MissingResourceException
@@ -33,35 +33,13 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
   private val sicCodePrefix = "sic.codes"
 
   lazy val businessTypes: Seq[FrsGroup] = {
-    val rawData = {
-      val frsBusinessTypesFile = "conf/frs-business-types.json"
+    val frsBusinessTypesFile = "conf/frs-business-types.json"
 
-      val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
-      val fileContents = bufferedSource.getLines.mkString
-      bufferedSource.close
+    val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
+    val fileContents = bufferedSource.getLines.mkString
+    bufferedSource.close
 
-      (Json.parse(fileContents).as[JsObject] \ "businessTypes").as[Seq[JsObject]]
-    }
-    val rawDataCy = {
-      val frsBusinessTypesFile = "conf/frs-business-types-cy.json"
-
-      val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
-      val fileContents = bufferedSource.getLines.mkString
-        .replace("\"groupLabel\"", "\"groupLabelCy\"")
-        .replace("\"businessType\"", "\"businessTypeCy\"")
-      bufferedSource.close
-
-      (Json.parse(fileContents).as[JsObject] \ "businessTypes").as[Seq[JsObject]]
-    }
-
-    rawData.zip(rawDataCy).map { case (json1, json2) =>
-      val categories1 = (json1 \ "categories").as[Seq[JsObject]]
-      val categories2 = (json2 \ "categories").as[Seq[JsObject]]
-      val categoriesMerged = Json.obj(
-        "categories" -> JsArray(categories1.zip(categories2).map { case (categoryJson1, categoryJson2) => categoryJson1 ++ categoryJson2 })
-      )
-      json1 ++ json2 ++ categoriesMerged
-    }.map(_.as[FrsGroup])
+    (Json.parse(fileContents).as[JsObject] \ "businessTypes").as[Seq[FrsGroup]]
   }
 
   lazy val countries: Seq[Country] = {

@@ -2,136 +2,152 @@
   "businessTypes": [
     {
       "groupLabel": "Accommodation and food service activities",
+      "groupLabelCy": "Gweithgareddau mewn perthynas â gwasanaethau llety a bwyd",
       "categories": [
-        {"id": "020", "businessType": "Hotel or accommodation", "currentFRSPercent": 10.5},
-        {"id": "008", "businessType": "Catering services including restaurants and takeaways", "currentFRSPercent": 12.5},
-        {"id": "038", "businessType": "Pubs", "currentFRSPercent": 6.5}
+        {"id": "020", "businessType": "Hotel or accommodation", "businessTypeCy": "Gwesty neu lety", "currentFRSPercent": 10.5},
+        {"id": "008", "businessType": "Catering services including restaurants and takeaways", "businessTypeCy": "Gwasanaethau arlwyo, gan gynnwys bwytai a siopau tecawê", "currentFRSPercent": 12.5},
+        {"id": "038", "businessType": "Pubs", "businessTypeCy": "Tafarn", "currentFRSPercent": 6.5}
       ]
     },
     {
       "groupLabel": "Administrative and support service activities",
+      "groupLabelCy": "Gweithgareddau mewn perthynas â gwasanaethau cymorth a gweinyddol",
       "categories": [
-        {"id": "019", "businessType": "Hiring or renting goods", "currentFRSPercent": 9.5},
-        {"id": "050", "businessType": "Travel agency", "currentFRSPercent": 10.5},
-        {"id": "021", "businessType": "Investigation or security", "currentFRSPercent": 12},
-        {"id": "046", "businessType": "Secretarial services", "currentFRSPercent": 13},
-        {"id": "033", "businessType": "Packaging", "currentFRSPercent": 9}
+        {"id": "019", "businessType": "Hiring or renting goods", "businessTypeCy": "Llogi neu rentu nwyddau", "currentFRSPercent": 9.5},
+        {"id": "050", "businessType": "Travel agency", "businessTypeCy": "Asiantaeth deithio", "currentFRSPercent": 10.5},
+        {"id": "021", "businessType": "Investigation or security", "businessTypeCy": "Ymchwilio neu ddiogelwch", "currentFRSPercent": 12},
+        {"id": "046", "businessType": "Secretarial services", "businessTypeCy": "Gwasanaethau ysgrifenyddol", "currentFRSPercent": 13},
+        {"id": "033", "businessType": "Packaging", "businessTypeCy": "Pecynnu", "currentFRSPercent": 9}
       ]
     },
     {
       "groupLabel": "Agriculture, Forestry and fishing",
+      "groupLabelCy": "Amaeth, Coedwigaeth a Physgota",
       "categories": [
-        {"id": "003", "businessType": "Agricultural services", "currentFRSPercent": 11},
-        {"id": "016", "businessType": "Forestry or fishing", "currentFRSPercent": 10.5},
-        {"id": "006", "businessType": "Boarding or care of animals", "currentFRSPercent": 12},
-        {"id": "013", "businessType": "Farming or agriculture not listed elsewhere", "currentFRSPercent": 6.5}
+        {"id": "003", "businessType": "Agricultural services", "businessTypeCy": "Gwasanaethau amaethyddol", "currentFRSPercent": 11},
+        {"id": "016", "businessType": "Forestry or fishing", "businessTypeCy": "Coedwigaeth neu bysgota", "currentFRSPercent": 10.5},
+        {"id": "006", "businessType": "Boarding or care of animals", "businessTypeCy": "Lletya neu ofalu am anifeiliaid", "currentFRSPercent": 12},
+        {"id": "013", "businessType": "Farming or agriculture not listed elsewhere", "businessTypeCy": "Gwasanaethau ffermio neu amaethyddiaeth nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 6.5}
       ]
     },
     {
       "groupLabel": "Arts, entertainment and recreation",
+      "groupLabelCy": "Celfyddydau, adloniant a hamdden",
       "categories": [
-        {"id": "048", "businessType": "Sport or recreation", "currentFRSPercent": 8.5},
-        {"id": "025", "businessType": "Library, archive, museum or other cultural activity", "currentFRSPercent": 9.5}
+        {"id": "048", "businessType": "Sport or recreation", "businessTypeCy": "Chwaraeon neu hamdden", "currentFRSPercent": 8.5},
+        {"id": "025", "businessType": "Library, archive, museum or other cultural activity", "businessTypeCy": "Llyfrgell, archif, amgueddfa neu weithgaredd diwylliannol arall", "currentFRSPercent": 9.5}
       ]
     },
     {
       "groupLabel": "Construction",
+      "groupLabelCy": "Adeiladu",
       "categories": [
-        {"id": "017", "businessType": "General building or construction services", "currentFRSPercent": 9.5},
-        {"id": "022", "businessType": "Labour-only building or construction services", "currentFRSPercent": 14.5}
+        {"id": "017", "businessType": "General building or construction services", "businessTypeCy": "Gwasanaethau adeiladu cyffredinol", "currentFRSPercent": 9.5},
+        {"id": "022", "businessType": "Labour-only building or construction services", "businessTypeCy": "Gwasanaethau adeiladu – llafur yn unig", "currentFRSPercent": 14.5}
       ]
     },
     {
       "groupLabel": "Financial and insurance activities",
+      "groupLabelCy": "Gweithgareddau ariannol ac yswiriant",
       "categories": [
-        {"id": "015", "businessType": "Financial services", "currentFRSPercent": 13.5},
-        {"id": "001", "businessType": "Accountancy or book-keeping", "currentFRSPercent": 14.5},
-        {"id": "007", "businessType": "Business services not listed elsewhere", "currentFRSPercent": 12}
+        {"id": "015", "businessType": "Financial services", "businessTypeCy": "Gwasanaethau ariannol", "currentFRSPercent": 13.5},
+        {"id": "001", "businessType": "Accountancy or book-keeping", "businessTypeCy": "Cyfrifyddiaeth neu gadw cyfrifon", "currentFRSPercent": 14.5},
+        {"id": "007", "businessType": "Business services not listed elsewhere", "businessTypeCy": "Gwasanaethau busnes nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 12}
       ]
     },
     {
       "groupLabel": "Human health and social work activities",
+      "groupLabelCy": "Gweithgareddau mewn perthynas â Iechyd dynol a gwaith cymdeithasol",
       "categories": [
-        {"id": "047", "businessType": "Social work", "currentFRSPercent": 11}
+        {"id": "047", "businessType": "Social work", "businessTypeCy": "Gwaith cymdeithasol", "currentFRSPercent": 11}
       ]
     },
     {
       "groupLabel": "Information and communication",
+      "groupLabelCy": "Gwybodaeth a chyfathrebu",
       "categories": [
-        {"id": "014", "businessType": "Film, radio, television or video production", "currentFRSPercent": 13},
-        {"id": "037", "businessType": "Publishing", "currentFRSPercent": 11},
-        {"id": "009", "businessType": "Computer and IT consultancy or data processing", "currentFRSPercent": 14.5},
-        {"id": "011", "businessType": "Entertainment or journalism", "currentFRSPercent": 12.5}
+        {"id": "014", "businessType": "Film, radio, television or video production", "businessTypeCy": "Cynhyrchu ffilm, radio, teledu neu fideo", "currentFRSPercent": 13},
+        {"id": "037", "businessType": "Publishing", "businessTypeCy": "Cyhoeddi", "currentFRSPercent": 11},
+        {"id": "009", "businessType": "Computer and IT consultancy or data processing", "businessTypeCy": "Ymgynghori ynghylch cyfrifiaduron a TG neu brosesu data", "currentFRSPercent": 14.5},
+        {"id": "011", "businessType": "Entertainment or journalism", "businessTypeCy": "Adloniant neu newyddiaduraeth", "currentFRSPercent": 12.5}
       ]
     },
     {
       "groupLabel": "Manufacturing",
+      "groupLabelCy": "Gweithgynhyrchu",
       "categories": [
-        {"id": "028", "businessType": "Manufacturing food", "currentFRSPercent": 9},
-        {"id": "030", "businessType": "Manufacturing yarn, textiles or clothing", "currentFRSPercent": 9},
-        {"id": "027", "businessType": "Manufacturing fabricated metal products", "currentFRSPercent": 10.5},
-        {"id": "036", "businessType": "Printing", "currentFRSPercent": 8.5},
-        {"id": "029", "businessType": "Manufacturing not listed elsewhere", "currentFRSPercent": 9.5}
+        {"id": "028", "businessType": "Manufacturing food", "businessTypeCy": "Gweithgynhyrchu bwyd", "currentFRSPercent": 9},
+        {"id": "030", "businessType": "Manufacturing yarn, textiles or clothing", "businessTypeCy": "Gweithgynhyrchu edafedd, tecstilau neu ddillad", "currentFRSPercent": 9},
+        {"id": "027", "businessType": "Manufacturing fabricated metal products", "businessTypeCy": "Gweithgynhyrchu cynhyrchion metel gwneuthuredig", "currentFRSPercent": 10.5},
+        {"id": "036", "businessType": "Printing", "businessTypeCy": "Argraffu", "currentFRSPercent": 8.5},
+        {"id": "029", "businessType": "Manufacturing not listed elsewhere", "businessTypeCy": "Gwasanaethau gweithgynhyrchu nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 9.5}
       ]
     },
     {
       "groupLabel": "Mining and quarrying",
+      "groupLabelCy": "Mwyngloddio a chwarelu",
       "categories": [
-        {"id": "032", "businessType": "Mining or quarrying", "currentFRSPercent": 10}
+        {"id": "032", "businessType": "Mining or quarrying", "businessTypeCy": "Mwyngloddio neu chwarelu", "currentFRSPercent": 10}
       ]
     },
     {
       "groupLabel": "Other service activities",
+      "groupLabelCy": "Gweithgareddau mewn perthynas â gwasanaeth eraill",
       "categories": [
-        {"id": "031", "businessType": "Membership organisation", "currentFRSPercent": 8},
-        {"id": "010", "businessType": "Computer repair services", "currentFRSPercent": 10.5},
-        {"id": "023", "businessType": "Laundry or dry-cleaning services", "currentFRSPercent": 12},
-        {"id": "018", "businessType": "Hairdressing or other beauty treatment services", "currentFRSPercent": 13},
-        {"id": "004", "businessType": "Any other activity not listed elsewhere", "currentFRSPercent": 12},
-        {"id": "040", "businessType": "Repairing personal or household goods", "currentFRSPercent": 10}
+        {"id": "031", "businessType": "Membership organisation", "businessTypeCy": "Sefydliad aelodaeth", "currentFRSPercent": 8},
+        {"id": "010", "businessType": "Computer repair services", "businessTypeCy": "Gwasanaethau trwsio cyfrifiaduron", "currentFRSPercent": 10.5},
+        {"id": "023", "businessType": "Laundry or dry-cleaning services", "businessTypeCy": "Gwasanaethau golchdy neu sychlanhau", "currentFRSPercent": 12},
+        {"id": "018", "businessType": "Hairdressing or other beauty treatment services", "businessTypeCy": "Gwasanaethau trin gwallt neu driniaethau harddwch eraill", "currentFRSPercent": 13},
+        {"id": "004", "businessType": "Any other activity not listed elsewhere", "businessTypeCy": "Unrhyw weithgaredd arall nad yw wedi’i restru yn unman arall", "currentFRSPercent": 12},
+        {"id": "040", "businessType": "Repairing personal or household goods", "businessTypeCy": "Trwsio nwyddau personol neu nwyddau’\u0092r cartref", "currentFRSPercent": 10}
       ]
     },
     {
       "groupLabel": "Professional, scientific and technical activities",
+      "groupLabelCy": "Gweithgareddau technegol, gwyddonol a phroffesiynol",
       "categories": [
-        {"id": "024", "businessType": "Lawyer or legal services", "currentFRSPercent": 14.5},
-        {"id": "026", "businessType": "Management consultancy", "currentFRSPercent": 14},
-        {"id": "005", "businessType": "Architect, civil and structural engineer or surveyor", "currentFRSPercent": 14.5},
-        {"id": "002", "businessType": "Advertising", "currentFRSPercent": 11},
-        {"id": "034", "businessType": "Photography", "currentFRSPercent": 11},
-        {"id": "051", "businessType": "Veterinary medicine", "currentFRSPercent": 11}
+        {"id": "024", "businessType": "Lawyer or legal services", "businessTypeCy": "Cyfreithiwr neu wasanaethau cyfreithiol", "currentFRSPercent": 14.5},
+        {"id": "026", "businessType": "Management consultancy", "businessTypeCy": "Ymgynghori ym maes rheoli", "currentFRSPercent": 14},
+        {"id": "005", "businessType": "Architect, civil and structural engineer or surveyor", "businessTypeCy": "Pensaer, peiriannydd sifil a strwythurol neu syrfëwr", "currentFRSPercent": 14.5},
+        {"id": "002", "businessType": "Advertising", "businessTypeCy": "Hysbysebu", "currentFRSPercent": 11},
+        {"id": "034", "businessType": "Photography", "businessTypeCy": "Ffotograffiaeth", "currentFRSPercent": 11},
+        {"id": "051", "businessType": "Veterinary medicine", "businessTypeCy": "Meddyginiaeth filfeddygol", "currentFRSPercent": 11}
       ]
     },
     {
       "groupLabel": "Real estate activities",
+      "groupLabelCy": "Gweithgareddau eiddo diriaethol",
       "categories": [
-        {"id": "012", "businessType": "Estate agency or property management services", "currentFRSPercent": 12},
-        {"id": "039", "businessType": "Real estate activity not listed elsewhere", "currentFRSPercent": 14}
+        {"id": "012", "businessType": "Estate agency or property management services", "businessTypeCy": "Gwasanaethau gwerthu neu osod eiddo, neu wasanaethau rheoli eiddo", "currentFRSPercent": 12},
+        {"id": "039", "businessType": "Real estate activity not listed elsewhere", "businessTypeCy": "Gweithgaredd eiddo diriaethol nad yw wedi’i restru yn unman arall", "currentFRSPercent": 14}
       ]
     },
     {
       "groupLabel": "Repair of motor vehicles and motorcycles",
+      "groupLabelCy": "Trwsio cerbydau modur a beiciau modur",
       "categories": [
-        {"id": "041", "businessType": "Repairing vehicles", "currentFRSPercent": 8.5}
+        {"id": "041", "businessType": "Repairing vehicles", "businessTypeCy": "Trwsio cerbydau", "currentFRSPercent": 8.5}
       ]
     },
     {
       "groupLabel": "Transportation and storage",
+      "groupLabelCy": "Cludo a storio",
       "categories": [
-        {"id": "049", "businessType": "Transport or storage, including couriers, freight, removals and taxis", "currentFRSPercent": 10},
-        {"id": "035", "businessType": "Post offices", "currentFRSPercent": 5}
+        {"id": "049", "businessType": "Transport or storage, including couriers, freight, removals and taxis", "businessTypeCy": "Cludo neu storio, gan gynnwys gwasanaethau cludo, llwytho, symud a thacsis", "currentFRSPercent": 10},
+        {"id": "035", "businessType": "Post offices", "businessTypeCy": "Swyddfeydd Post", "currentFRSPercent": 5}
       ]
     },
     {
       "groupLabel": "Wholesale and retail trade",
+      "groupLabelCy": "Masnach gyfanwerthu a manwerthu",
       "categories": [
-        {"id": "052", "businessType": "Wholesaling agricultural products", "currentFRSPercent": 8},
-        {"id": "053", "businessType": "Wholesaling food", "currentFRSPercent": 7.5},
-        {"id": "042", "businessType": "Retailing food, confectionery, tobacco, newspapers or children's clothing", "currentFRSPercent": 4},
-        {"id": "043", "businessType": "Retailing pharmaceuticals, medical goods, cosmetics or toiletries", "currentFRSPercent": 8},
-        {"id": "045", "businessType": "Retailing vehicles or fuel", "currentFRSPercent": 6.5},
-        {"id": "044", "businessType": "Retailing not listed elsewhere", "currentFRSPercent": 7.5},
-        {"id": "054", "businessType": "Wholesaling not listed elsewhere", "currentFRSPercent": 8.5}
+        {"id": "052", "businessType": "Wholesaling agricultural products", "businessTypeCy": "Cyfanwerthu nwyddau amaethyddol", "currentFRSPercent": 8},
+        {"id": "053", "businessType": "Wholesaling food", "businessTypeCy": "Cyfanwerthu bwyd", "currentFRSPercent": 7.5},
+        {"id": "042", "businessType": "Retailing food, confectionery, tobacco, newspapers or children's clothing", "businessTypeCy": "Manwerthu bwyd, melysion, tybaco, papurau newydd neu ddillad plant", "currentFRSPercent": 4},
+        {"id": "043", "businessType": "Retailing pharmaceuticals, medical goods, cosmetics or toiletries", "businessTypeCy": "Manwerthu deunydd fferyllol, nwyddau meddygol, colur neu bethau ymolchi", "currentFRSPercent": 8},
+        {"id": "045", "businessType": "Retailing vehicles or fuel", "businessTypeCy": "Manwerthu cerbydau neu danwydd", "currentFRSPercent": 6.5},
+        {"id": "044", "businessType": "Retailing not listed elsewhere", "businessTypeCy": "Gwasanaethau manwerthu nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 7.5},
+        {"id": "054", "businessType": "Wholesaling not listed elsewhere", "businessTypeCy": "Gwasanaethau cyfanwerthu nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 8.5}
       ]
     }
   ]
