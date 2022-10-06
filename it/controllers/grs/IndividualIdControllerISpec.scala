@@ -1,18 +1,18 @@
 
-package controllers.applicant
+package controllers.grs
 
 import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{EligibilitySubmissionData, LtdLiabilityPartnership, LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership, UkCompany}
+import models.api._
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class IndividualIdentificationControllerISpec extends ControllerISpec {
+class IndividualIdControllerISpec extends ControllerISpec {
 
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val testJourneyId = "1"

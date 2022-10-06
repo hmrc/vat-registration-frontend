@@ -63,7 +63,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.SoleTraderIdentificationController.startPartnerJourney.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startPartnerJourney.url)
         }
       }
     }
@@ -80,7 +80,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.IncorpIdController.startPartnerJourney.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerIncorpIdController.startPartnerJourney.url)
         }
       }
     }
@@ -97,7 +97,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnershipIdController.startPartnerJourney.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerPartnershipIdController.startPartnerJourney.url)
         }
       }
     }

@@ -106,17 +106,17 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             TestContent.fullName,
             Some(testFirstName + " " + testLastName),
-            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.dateOfBirth,
             Some(testDateOfBirth.format(Builder.presentationFormatter)),
-            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.nino,
             Some(testNino),
-            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowSeq(
             TestContent.homeAddress,
@@ -170,17 +170,17 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             TestContent.fullName,
             Some(testFirstName + " " + testLastName),
-            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.dateOfBirth,
             Some(testDateOfBirth.format(Builder.presentationFormatter)),
-            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowString(
             TestContent.nino,
             Some(testNino),
-            Some(controllers.transactor.routes.TransactorIdentificationController.startJourney.url)
+            Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowSeq(
             TestContent.homeAddress,

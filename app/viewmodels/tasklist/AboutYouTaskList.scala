@@ -52,7 +52,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
         if (scheme.partyType.contains(UkCompany) && !isEnabled(UseSoleTraderIdentification)) {
           controllers.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
         } else {
-          controllers.applicant.routes.IndividualIdentificationController.startJourney.url
+          controllers.grs.routes.IndividualIdController.startJourney.url
         }
       }
     },

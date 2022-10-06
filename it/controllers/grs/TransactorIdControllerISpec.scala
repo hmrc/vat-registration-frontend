@@ -1,7 +1,8 @@
 
-package controllers.transactor
+package controllers.grs
 
 import config.FrontendAppConfig
+import controllers.transactor.routes
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.TransactorDetails
@@ -13,7 +14,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class TransactorIdentificationControllerISpec extends ControllerISpec {
+class TransactorIdControllerISpec extends ControllerISpec {
 
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val testJourneyId = "1"
@@ -92,7 +93,7 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorHomeAddressController.redirectToAlf.url)
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
         }
       }
 
@@ -112,7 +113,7 @@ class TransactorIdentificationControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(routes.TransactorInternationalAddressController.show.url)
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.transactor.routes.TransactorInternationalAddressController.show.url)
         }
       }
     }

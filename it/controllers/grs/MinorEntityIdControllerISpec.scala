@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import config.FrontendAppConfig
-import controllers.applicant.{routes => applicantRoutes}
+import controllers.grs.{routes => grsRoutes}
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.ApplicantDetails
@@ -369,7 +369,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
 
@@ -391,7 +391,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
     }
@@ -415,7 +415,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
 
@@ -437,7 +437,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
     }
@@ -461,7 +461,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
 
@@ -483,7 +483,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(applicantRoutes.IndividualIdentificationController.startJourney.url)
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
     }

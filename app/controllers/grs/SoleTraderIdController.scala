@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import models.api._
-import models.external.BusinessEntity
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
@@ -33,12 +32,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SoleTraderIdentificationController @Inject()(val sessionService: SessionService,
+class SoleTraderIdController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthConnector,
                                                    val applicantDetailsService: ApplicantDetailsService,
                                                    soleTraderIdentificationService: SoleTraderIdentificationService,
-                                                   vatRegistrationService: VatRegistrationService,
-                                                   entityService: EntityService
+                                                   vatRegistrationService: VatRegistrationService
                                                   )(implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
@@ -79,7 +77,7 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
                 Redirect(url)
               }
             case partyType => throw new InternalServerException(
-              s"[SoleTraderIdentificationController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
+              s"[SoleTraderIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}"
             )
           }
     }
@@ -98,47 +96,5 @@ class SoleTraderIdentificationController @Inject()(val sessionService: SessionSe
             Redirect(applicantRoutes.FormerNameController.show)
           }
         }
-    }
-
-  def startPartnerJourney: Action[AnyContent] =
-    isAuthenticatedWithProfile() {
-      implicit request =>
-        implicit profile =>
-          val journeyConfig = SoleTraderIdJourneyConfig(
-            continueUrl = appConfig.leadPartnerCallbackUrl,
-            optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
-            deskProServiceId = appConfig.contactFormServiceIdentifier,
-            signOutUrl = appConfig.feedbackUrl,
-            accessibilityUrl = appConfig.accessibilityStatementUrl,
-            regime = appConfig.regime,
-            businessVerificationCheck = false,
-            labels = Some(JourneyLabels(TranslationLabels(
-              optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy"))
-            )))
-          )
-
-          for {
-            entity <- entityService.getEntity(profile.registrationId, 1)
-            journeyStartUrl <- soleTraderIdentificationService.startSoleTraderJourney(journeyConfig, entity.partyType)
-          } yield {
-            SeeOther(journeyStartUrl)
-          }
-    }
-
-  def partnerCallback(journeyId: String): Action[AnyContent] =
-    isAuthenticatedWithProfile() {
-      implicit request =>
-        implicit profile =>
-          for {
-            (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-            _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
-            _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, 1, soleTrader)
-          } yield {
-            if (isEnabled(TaskList)) {
-              Redirect(controllers.routes.TaskListController.show)
-            } else {
-              Redirect(applicantRoutes.FormerNameController.show)
-            }
-          }
     }
 }

@@ -58,7 +58,7 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
             for {
               _ <- entityService.upsertEntity[String](profile.registrationId, 1, companyName)
             } yield {
-              Redirect(controllers.applicant.routes.PartnershipIdController.startPartnerJourney)
+              Redirect(controllers.grs.routes.PartnerPartnershipIdController.startPartnerJourney)
             }
           }
         )

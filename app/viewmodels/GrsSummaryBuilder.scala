@@ -17,7 +17,7 @@
 package viewmodels
 
 import connectors.ConfigConnector
-import controllers.applicant.{routes => applicantRoutes}
+import controllers.grs.{routes => grsRoutes}
 import featureswitch.core.config._
 import models.api._
 import models.external._
@@ -51,8 +51,8 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       applicantDetails.entity.flatMap {
-        case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney.url)
-        case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
+        case _: IncorporatedEntity => Some(grsRoutes.IncorpIdController.startJourney.url)
+        case _: PartnershipIdEntity => Some(grsRoutes.PartnershipIdController.startJourney.url)
         case _ => None
       }
     )
@@ -66,11 +66,11 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       applicantDetails.entity.flatMap {
-        case _: IncorporatedEntity => Some(applicantRoutes.IncorpIdController.startJourney.url)
-        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case _: IncorporatedEntity => Some(grsRoutes.IncorpIdController.startJourney.url)
+        case _: MinorEntity => Some(grsRoutes.MinorEntityIdController.startJourney.url)
         case _: PartnershipIdEntity if List(Partnership, ScotPartnership).contains(partyType) =>
           Some(controllers.business.routes.PartnershipNameController.show.url)
-        case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
+        case _: PartnershipIdEntity => Some(grsRoutes.PartnershipIdController.startJourney.url)
         case _ => None
       }
     )
@@ -83,8 +83,8 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       applicantDetails.entity.flatMap {
-        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
-        case _ => Some(applicantRoutes.IncorpIdController.startJourney.url)
+        case _: MinorEntity => Some(grsRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(grsRoutes.IncorpIdController.startJourney.url)
       }
     )
 
@@ -97,9 +97,9 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       applicantDetails.entity.flatMap {
-        case _: SoleTraderIdEntity => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
-        case _: MinorEntity => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
-        case _: PartnershipIdEntity => Some(applicantRoutes.PartnershipIdController.startJourney.url)
+        case _: SoleTraderIdEntity => Some(grsRoutes.SoleTraderIdController.startJourney.url)
+        case _: MinorEntity => Some(grsRoutes.MinorEntityIdController.startJourney.url)
+        case _: PartnershipIdEntity => Some(grsRoutes.PartnershipIdController.startJourney.url)
         case _ => None
       }
     )
@@ -113,7 +113,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case partnership: PartnershipIdEntity => partnership.postCode
         case _ => None
       },
-      Some(applicantRoutes.PartnershipIdController.startJourney.url)
+      Some(grsRoutes.PartnershipIdController.startJourney.url)
     )
 
     val minorEntityPostcode = optSummaryListRowString(
@@ -126,7 +126,7 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case minorEntity: MinorEntity => minorEntity.postCode
         case _ => None
       },
-      Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+      Some(grsRoutes.MinorEntityIdController.startJourney.url)
     )
 
     val overseasIdentifier = optSummaryListRowString(
@@ -137,8 +137,8 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       partyType match {
-        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
-        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
+        case NonUkNonEstablished => Some(grsRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(grsRoutes.SoleTraderIdController.startJourney.url)
       }
     )
 
@@ -156,8 +156,8 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       partyType match {
-        case NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
-        case _ => Some(applicantRoutes.SoleTraderIdentificationController.startJourney.url)
+        case NonUkNonEstablished => Some(grsRoutes.MinorEntityIdController.startJourney.url)
+        case _ => Some(grsRoutes.SoleTraderIdController.startJourney.url)
       }
     )
 
@@ -169,8 +169,8 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
         case _ => None
       },
       partyType match {
-        case CharitableOrg => Some(applicantRoutes.IncorpIdController.startJourney.url)
-        case Trust | UnincorpAssoc | NonUkNonEstablished => Some(applicantRoutes.MinorEntityIdController.startJourney.url)
+        case CharitableOrg => Some(grsRoutes.IncorpIdController.startJourney.url)
+        case Trust | UnincorpAssoc | NonUkNonEstablished => Some(grsRoutes.MinorEntityIdController.startJourney.url)
         case _ => None
       }
     )

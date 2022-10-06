@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
@@ -22,7 +22,6 @@ import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import models.Partner
 import models.api._
-import models.external.BusinessEntity
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
@@ -31,15 +30,14 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class PartnershipIdController @Inject()(val authConnector: AuthConnector,
                                         val sessionService: SessionService,
                                         partnershipIdService: PartnershipIdService,
                                         applicantDetailsService: ApplicantDetailsService,
-                                        vatRegistrationService: VatRegistrationService,
-                                        entityService: EntityService
+                                        vatRegistrationService: VatRegistrationService
                                        )(implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents)
@@ -83,46 +81,9 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
             Redirect(controllers.routes.TaskListController.show)
           } else {
             partyType match {
-              case LtdLiabilityPartnership => Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
+              case LtdLiabilityPartnership => Redirect(routes.IndividualIdController.startJourney)
               case _ => Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
             }
-          }
-        }
-  }
-
-  def startPartnerJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        val journeyConfig = PartnershipIdJourneyConfig(
-          continueUrl = appConfig.partnershipIdPartnerCallbackUrl,
-          optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
-          deskProServiceId = appConfig.contactFormServiceIdentifier,
-          signOutUrl = appConfig.feedbackUrl,
-          accessibilityUrl = appConfig.accessibilityStatementUrl,
-          regime = appConfig.regime,
-          businessVerificationCheck = false,
-          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
-        )
-
-        for {
-          entity <- entityService.getEntity(profile.registrationId, 1)
-          journeyStartUrl <- partnershipIdService.createJourney(journeyConfig, entity.partyType)
-        } yield {
-          SeeOther(journeyStartUrl)
-        }
-  }
-
-  def partnerCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request =>
-      implicit profile =>
-        for {
-          partnerDetails <- partnershipIdService.getDetails(journeyId)
-          _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, 1, partnerDetails)
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            Redirect(applicantRoutes.IndividualIdentificationController.startJourney)
           }
         }
   }

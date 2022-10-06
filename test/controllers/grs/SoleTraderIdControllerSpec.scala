@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.applicant
+package controllers.grs
 
 import fixtures.VatRegistrationFixture
 import models.api._
@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.InternalServerException
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SoleTraderIdentificationControllerSpec extends ControllerSpec
+class SoleTraderIdControllerSpec extends ControllerSpec
   with MockApplicantDetailsService
   with MockSoleTraderIdService
   with MockVatRegistrationService
@@ -53,13 +53,12 @@ class SoleTraderIdentificationControllerSpec extends ControllerSpec
       )))
     )
 
-    object Controller extends SoleTraderIdentificationController(
+    object Controller extends SoleTraderIdController(
       mockSessionService,
       mockAuthClientConnector,
       mockApplicantDetailsService,
       mockSoleTraderIdService,
-      vatRegistrationServiceMock,
-      mockEntityService
+      vatRegistrationServiceMock
     )
 
     mockAuthenticated()
