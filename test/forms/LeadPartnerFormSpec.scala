@@ -23,7 +23,9 @@ import testHelpers.VatRegSpec
 
 class LeadPartnerFormSpec extends VatRegSpec {
 
-  val form: Form[PartyType] = LeadPartnerForm()
+  implicit val errorKey: String = "pages.leadPartnerEntityType.missing"
+
+  val form: Form[PartyType] = LeadPartnerForm.form
 
   "LeadPartnerForm" should {
 
@@ -54,7 +56,7 @@ class LeadPartnerFormSpec extends VatRegSpec {
 
       invalidEntityTypes map { value =>
         val res = form.bind(Json.obj(LeadPartnerForm.leadPartnerEntityType -> value))
-        res.errors.head mustBe FormError(LeadPartnerForm.leadPartnerEntityType, Seq(LeadPartnerForm.leadPartnerError), Seq())
+        res.errors.head mustBe FormError(LeadPartnerForm.leadPartnerEntityType, Seq(errorKey), Seq())
       }
     }
   }

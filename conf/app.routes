@@ -338,6 +338,10 @@ POST        /trading-name-not-incorporated                            controller
 GET         /lead-partner-entity                                      controllers.applicant.LeadPartnerEntityController.showLeadPartnerEntityType
 POST        /lead-partner-entity                                      controllers.applicant.LeadPartnerEntityController.submitLeadPartnerEntity
 
+## BusinessLeadPartnerEntityController
+GET         /business-type-in-partnership                            controllers.applicant.BusinessLeadPartnerEntityController.showPartnerEntityType
+POST        /business-type-in-partnership                            controllers.applicant.BusinessLeadPartnerEntityController.submitPartnerEntity
+
 ## PartyTypeResolverController
 GET         /resolve-party-type                                       controllers.TradingNameResolverController.resolve
 

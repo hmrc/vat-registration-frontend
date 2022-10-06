@@ -31,6 +31,7 @@ getHelp.linkText                        = Is this page not working properly? (op
 date.day                                = Day
 date.month                              = Month
 date.year                               = Year
+radio.item.divider.or                   = or
 
 tasklist.heading                        = Register for VAT
 tasklist.button                         = Check answers and submit
@@ -1087,16 +1088,23 @@ validation.trading-name.maxlen                           = Enter a trading name 
 validation.trading-name.missing                          = Enter a trading name
 
 # LEAD PARTNER ENTITY TYPE
-pages.leadPartnerEntityType.heading                      = What type of entity is the lead partner?
-pages.leadPartnerEntityType.soleTrader                   = Sole trader
-pages.leadPartnerEntityType.netp                         = Non-established taxable person (NETP)
-pages.leadPartnerEntityType.ukCompany                    = UK company
-pages.leadPartnerEntityType.scotPartner                  = Scottish partnership
-pages.leadPartnerEntityType.scotLimPartner               = Scottish limited partnership
-pages.leadPartnerEntityType.limLiaPartner                = Limited liability partnership
-pages.leadPartnerEntityType.cio                          = Charitable Incorporated Organisation (CIO)
-pages.leadPartnerEntityType.regSociety                   = Registered society
-pages.leadPartnerEntityType.missing                      = Select the entity type of the lead partner
+pages.leadPartnerEntityType.heading                      = What type of partner are you?
+pages.leadPartnerEntityType.heading.3pt                  = What type of partner is the lead partner?
+pages.leadPartnerEntityType.soleTrader                   = An actual person
+pages.leadPartnerEntityType.business                     = A business
+pages.leadPartnerEntityType.missing                      = Select the type of partner you are
+
+# BUSINESS LEAD PARTNER ENTITY TYPE
+pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
+pages.businessLeadPartnerEntityType.heading.3pt          = What type of business is the lead partner within the partnership?
+pages.businessLeadPartnerEntityType.netp                 = Non-established taxable person (NETP)
+pages.businessLeadPartnerEntityType.ukCompany            = UK company
+pages.businessLeadPartnerEntityType.scotPartner          = Scottish partnership
+pages.businessLeadPartnerEntityType.scotLimPartner       = Scottish limited partnership
+pages.businessLeadPartnerEntityType.limLiaPartner        = Limited liability partnership
+pages.businessLeadPartnerEntityType.cio                  = Charitable Incorporated Organisation (CIO)
+pages.businessLeadPartnerEntityType.regSociety           = Registered society
+pages.businessLeadPartnerEntityType.missing              = Select the business type of the lead partner
 
 # OVERSEAS BANK ACCOUNT
 pages.overseasBankAccount.heading                        = Bank or building society account details
