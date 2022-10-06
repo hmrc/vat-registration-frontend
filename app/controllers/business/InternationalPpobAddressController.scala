@@ -71,7 +71,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
           }
         },
         name = None,
-        isPpob = true,
+        isPpob = true
       )
   }
 }
