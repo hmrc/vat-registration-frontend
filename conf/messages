@@ -1411,8 +1411,10 @@ transactorEmail.error.incorrect_format                   = Enter an email addres
 transactorEmail.error.nothing_entered                    = Enter your email address
 transactorEmail.error.incorrect_length                   = Enter an email address that is between 3 and 132 characters
 
-# TRANSACTOR FULL NAME PAGE
+# GRS FULL NAME PAGE
 transactorName.optFullNamePageLabel                      = Who are you registering on behalf of?
+transactorName.leadPartner.optFullNamePageLabel          = What is the name of the lead partner?
+soleTraderName.partner.optFullNamePageLabel              = What is the name of the {0} partner?
 
 # VAT2 REQUIRED
 pages.vat2Required.heading                               = You must send us a completed VAT2 form in order for us to process this application
@@ -1752,3 +1754,9 @@ eligibility.cya.taxableSuppliesInUk                                 = Has the bu
 eligibility.cya.zeroRatedSales.business                             = Does the business sell mainly zero-rated goods or services?
 eligibility.cya.zeroRatedSales.partnership                          = Does the partnership sell mainly zero-rated goods or services?
 eligibility.cya.vatExemption                                        = Does the business want to apply for a VAT exemption?
+
+# PARTNER SCOTTISH PARTNERSHIP NAME
+partner.scottishPartnershipName.heading                             = What is the name of the partnership?
+validation.partner.scottishPartnershipName.missing                  = Enter the name of the partnership
+validation.partner.scottishPartnershipName.maxlen                   = Enter a partnership name that is between 1 and 105 characters
+validation.partner.scottishPartnershipName.invalid                  = Enter a partnership name that does not contain special characters

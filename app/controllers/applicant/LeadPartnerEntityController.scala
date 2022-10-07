@@ -21,6 +21,7 @@ import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import controllers.grs.{routes => grsRoutes}
 import forms.LeadPartnerForm
+import models.Entity.leadEntityIndex
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -48,15 +49,15 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           isTransactor <- vatRegistrationService.isTransactor
-          form <- entityService.getEntity(profile.registrationId, 1).map { entity =>
-            if (isBusinessPartyType(entity.partyType)) {
-              LeadPartnerForm.form.fill(BusinessEntity)
-            } else {
-              LeadPartnerForm.form.fill(entity.partyType)
-            }
-          } recoverWith {
-            case _ => Future.successful(LeadPartnerForm.form)
-          }
+          optEntity <- entityService.getEntity(profile.registrationId, leadEntityIndex)
+          form = optEntity
+            .fold(LeadPartnerForm.form)(entity =>
+              if (isBusinessPartyType(entity.partyType)) {
+                LeadPartnerForm.form.fill(BusinessEntity)
+              } else {
+                LeadPartnerForm.form.fill(entity.partyType)
+              }
+            )
         } yield Ok(leadPartnerEntityPage(form, isTransactor))
   }
 
@@ -69,11 +70,10 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
             formWithErrors => Future.successful(BadRequest(leadPartnerEntityPage(formWithErrors, isTransactor))),
             {
               case partyType@Individual =>
-                entityService.upsertEntity[PartyType](profile.registrationId, 1, partyType).map(_ => {
-                  Redirect(grsRoutes.PartnerSoleTraderIdController.startPartnerJourney)
-                })
+                entityService.upsertEntity[PartyType](profile.registrationId, leadEntityIndex, partyType).map { _ =>
+                  Redirect(grsRoutes.PartnerSoleTraderIdController.startJourney(leadEntityIndex))
+                }
               case _ => Future.successful(Redirect(applicantRoutes.BusinessLeadPartnerEntityController.showPartnerEntityType))
-
             }
           )
         } yield result

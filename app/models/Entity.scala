@@ -24,10 +24,10 @@ import play.api.libs.json._
 case class Entity(details: Option[BusinessEntity],
                   partyType: PartyType,
                   isLeadPartner: Option[Boolean],
-                  optScottishPartnershipName: Option[String]
-                 )
+                  optScottishPartnershipName: Option[String])
 
 object Entity {
+  val leadEntityIndex = 1
   val reads: Reads[Entity] =
     (__ \ "partyType").read[PartyType].flatMap { partyType =>
       (

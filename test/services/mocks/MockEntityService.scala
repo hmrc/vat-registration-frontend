@@ -32,15 +32,12 @@ trait MockEntityService extends MockitoSugar {
 
   val mockEntityService: EntityService = mock[EntityService]
 
-  def mockGetEntity(regId: String, idx: Int)(response: Option[Entity]): OngoingStubbing[Future[Entity]] = {
-    val getEntityStub = when(mockEntityService.getEntity(
+  def mockGetEntity(regId: String, idx: Int)(response: Option[Entity]): OngoingStubbing[Future[Option[Entity]]] = {
+    when(mockEntityService.getEntity(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(idx)
-    )(ArgumentMatchers.any[HeaderCarrier]))
-    response match {
-      case Some(entity) => getEntityStub thenReturn Future.successful(entity)
-      case None => getEntityStub thenReturn Future.failed(new RuntimeException("Missing entity"))
-    }
+    )(ArgumentMatchers.any[HeaderCarrier]
+    )) thenReturn Future.successful(response)
   }
 
   def mockUpsertEntity[T](regId: String, index: Int, data: T)(response: Entity): OngoingStubbing[Future[Entity]] =

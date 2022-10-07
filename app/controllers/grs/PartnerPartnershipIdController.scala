@@ -18,13 +18,17 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import controllers.partners.PartnerIndexValidation
 import featureswitch.core.config.TaskList
+import models.Entity
+import models.Entity.leadEntityIndex
 import models.external.BusinessEntity
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -33,45 +37,53 @@ import scala.concurrent.ExecutionContext
 class PartnerPartnershipIdController @Inject()(val authConnector: AuthConnector,
                                                val sessionService: SessionService,
                                                partnershipIdService: PartnershipIdService,
-                                               entityService: EntityService
+                                               val entityService: EntityService
                                               )(implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
                                                 baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with PartnerIndexValidation {
 
-  def startPartnerJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startJourney(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        val journeyConfig = PartnershipIdJourneyConfig(
-          continueUrl = appConfig.partnershipIdPartnerCallbackUrl,
-          optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
-          deskProServiceId = appConfig.contactFormServiceIdentifier,
-          signOutUrl = appConfig.feedbackUrl,
-          accessibilityUrl = appConfig.accessibilityStatementUrl,
-          regime = appConfig.regime,
-          businessVerificationCheck = false,
-          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
-        )
+        validateIndex(index, routes.PartnerPartnershipIdController.startJourney, minIndex = 1) {
+          case Some(Entity(_, partyType, _, _)) =>
+            val journeyConfig = PartnershipIdJourneyConfig(
+              continueUrl = appConfig.partnershipIdPartnerCallbackUrl(index),
+              optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
+              deskProServiceId = appConfig.contactFormServiceIdentifier,
+              signOutUrl = appConfig.feedbackUrl,
+              accessibilityUrl = appConfig.accessibilityStatementUrl,
+              regime = appConfig.regime,
+              businessVerificationCheck = false,
+              labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
+            )
 
-        for {
-          entity <- entityService.getEntity(profile.registrationId, 1)
-          journeyStartUrl <- partnershipIdService.createJourney(journeyConfig, entity.partyType)
-        } yield {
-          SeeOther(journeyStartUrl)
+            partnershipIdService.createJourney(journeyConfig, partyType).map { journeyStartUrl =>
+              SeeOther(journeyStartUrl)
+            }
+          case _ =>
+            throw new InternalServerException(s"[PartnerPartnershipIdController] Missing entity with partyType for entity: $index")
         }
   }
 
-  def partnerCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def callback(index: Int, journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        for {
-          partnerDetails <- partnershipIdService.getDetails(journeyId)
-          _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, 1, partnerDetails)
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            Redirect(routes.IndividualIdController.startJourney)
+        validateIndexSubmit(index, routes.PartnerPartnershipIdController.startJourney, minIndex = 1) {
+          for {
+            partnerDetails <- partnershipIdService.getDetails(journeyId)
+            _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, index, partnerDetails)
+          } yield {
+            if (index == leadEntityIndex) {
+              if (isEnabled(TaskList)) {
+                Redirect(controllers.routes.TaskListController.show)
+              } else {
+                Redirect(routes.IndividualIdController.startJourney)
+              }
+            } else {
+              NotImplemented
+            }
           }
         }
   }

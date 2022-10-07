@@ -110,23 +110,23 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Last Name",
             optAnswer = Some("testLastName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
             optAnswer = Some("1 January 2020"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "National Insurance number",
             optAnswer = Some("AB123456C"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Role in the business",
             optAnswer = Some("Director"),
@@ -180,23 +180,23 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Last Name",
             optAnswer = Some("testLastName"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
             optAnswer = Some("1 January 2020"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "National Insurance number",
             optAnswer = Some("AB123456C"),
-            optUrl = Some("/register-for-vat/start-sti-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Role in the business",
             optAnswer = Some("Director"),
@@ -250,15 +250,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s company Unique Taxpayer Reference",
             optAnswer = Some("testCtUtr"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company registration number",
             optAnswer = Some("testCrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company name",
             optAnswer = Some("testCompanyName"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
@@ -328,11 +328,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s registered postcode",
             optAnswer = Some("AA11AA"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
@@ -407,19 +407,19 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company number",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s Partnership name",
             optAnswer = Some("testPartnershipName"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s registered postcode for self assessment",
             optAnswer = Some("AA11AA"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
@@ -494,19 +494,19 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company number",
             optAnswer = Some("1234567890"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s Partnership name",
             optAnswer = Some("testPartnershipName"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s registered postcode for self assessment",
             optAnswer = Some("AA11AA"),
-            optUrl = Some("/register-for-vat/start-partnership-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
@@ -576,15 +576,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s company registration number",
             optAnswer = Some("testCrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company name",
             optAnswer = Some("testCompanyName"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "Charity’s HMRC reference number",
             optAnswer = Some("testChrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),
@@ -654,15 +654,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("testCtUtr"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company registration number",
             optAnswer = Some("testCrn"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "Lead partner’s company name",
             optAnswer = Some("testCompanyName"),
-            optUrl = Some("/register-for-vat/start-incorp-id-partner-journey")),
+            optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
             questionId = "First Name",
             optAnswer = Some("testFirstName"),

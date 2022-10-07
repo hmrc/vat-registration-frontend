@@ -65,7 +65,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(Individual))))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startPartnerJourney.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startJourney(1).url)
       }
     }
 

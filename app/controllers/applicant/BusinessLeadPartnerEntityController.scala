@@ -21,9 +21,10 @@ import controllers.BaseController
 import controllers.business.{routes => businessRoutes}
 import controllers.grs.{routes => grsRoutes}
 import forms.LeadPartnerForm
+import models.Entity.leadEntityIndex
 import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, EntityService, SessionProfile, SessionService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 import views.html.applicant.partnership_business_entity_type
@@ -37,9 +38,9 @@ class BusinessLeadPartnerEntityController @Inject()(val authConnector: AuthConne
                                                     entityService: EntityService,
                                                     vatRegistrationService: VatRegistrationService,
                                                     businessLeadPartnerEntityPage: partnership_business_entity_type
-                                           )(implicit appConfig: FrontendAppConfig,
-                                             val executionContext: ExecutionContext,
-                                             baseControllerComponents: BaseControllerComponents)
+                                                   )(implicit appConfig: FrontendAppConfig,
+                                                     val executionContext: ExecutionContext,
+                                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   implicit val errorKey: String = "pages.businessLeadPartnerEntityType.missing"
@@ -49,11 +50,11 @@ class BusinessLeadPartnerEntityController @Inject()(val authConnector: AuthConne
       implicit profile =>
         for {
           isTransactor <- vatRegistrationService.isTransactor
-          form <- entityService.getEntity(profile.registrationId, 1).map(entity => {
-            LeadPartnerForm.form.fill(entity.partyType)
-          }) recoverWith {
-            case _ => Future.successful(LeadPartnerForm.form)
-          }
+          optEntity <- entityService.getEntity(profile.registrationId, leadEntityIndex)
+          form = optEntity
+            .fold(LeadPartnerForm.form)(entity =>
+              LeadPartnerForm.form.fill(entity.partyType)
+            )
         } yield Ok(businessLeadPartnerEntityPage(form, isTransactor))
   }
 
@@ -66,11 +67,11 @@ class BusinessLeadPartnerEntityController @Inject()(val authConnector: AuthConne
             formWithErrors => Future.successful(BadRequest(businessLeadPartnerEntityPage(formWithErrors, isTransactor))),
             partyType =>
               for {
-                _ <- entityService.upsertEntity[PartyType](profile.registrationId, 1, partyType)
+                _ <- entityService.upsertEntity[PartyType](profile.registrationId, leadEntityIndex, partyType)
               } yield partyType match {
-                case UkCompany | RegSociety | CharitableOrg => Redirect(grsRoutes.PartnerIncorpIdController.startPartnerJourney)
+                case UkCompany | RegSociety | CharitableOrg => Redirect(grsRoutes.PartnerIncorpIdController.startJourney(leadEntityIndex))
                 case ScotPartnership => Redirect(businessRoutes.ScottishPartnershipNameController.show)
-                case ScotLtdPartnership | LtdLiabilityPartnership => Redirect(grsRoutes.PartnerPartnershipIdController.startPartnerJourney)
+                case ScotLtdPartnership | LtdLiabilityPartnership => Redirect(grsRoutes.PartnerPartnershipIdController.startJourney(leadEntityIndex))
                 case partyType => throw new InternalServerException(s"[BusinessLeadPartnerEntityController][submitPartnerEntity] Submitted invalid lead business partner: $partyType")
               }
           )

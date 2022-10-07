@@ -32,20 +32,33 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
   val incorpDetailsJson: JsValue = Json.toJson(testIncorpDetails)(IncorporatedEntity.apiFormat)
 
-  "GET /start-incorp-id-partnership-journey" should {
+  "GET /partner/index/start-incorp-id-journey" should {
+    "redirect to task list if the lead partner questions are not started yet" in new Setup {
+      disable(StubIncorpIdJourney)
+
+      given()
+        .user.isAuthorised()
+        .registrationApi.getListSection[Entity](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
+
+      res.status mustBe SEE_OTHER
+      res.header(LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+    }
+
     "return INTERNAL_SERVER_ERROR if no partyType set" in new Setup {
       disable(StubIncorpIdJourney)
 
       given()
         .user.isAuthorised()
-        .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None))))
 
-      insertIntoDb(sessionId, Map(
-        "CurrentProfile" -> Json.toJson(currentProfile)
-      ))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startPartnerJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(2).url).get)
+
       res.status mustBe INTERNAL_SERVER_ERROR
     }
 
@@ -56,8 +69,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -66,7 +78,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/limited-company-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startPartnerJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -77,8 +89,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getSection(Some(Entity(None, RegSociety, Some(true), None)), idx = Some(1))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
+        .registrationApi.getListSection(Some(List(Entity(None, RegSociety, Some(true), None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -87,7 +98,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startPartnerJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -98,8 +109,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getSection(Some(Entity(None, CharitableOrg, Some(true), None)), idx = Some(1))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
+        .registrationApi.getListSection(Some(List(Entity(None, CharitableOrg, Some(true), None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -108,14 +118,14 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startPartnerJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
     }
   }
 
-  "GET /incorp-id-partner-callback" when {
+  "GET /partner/index/incorp-id-callback" when {
     "the Task List is enabled" should {
       "redirect to the Task List" in new Setup {
         disable(StubIncorpIdJourney)
@@ -126,14 +136,12 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
           .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None), idx = Some(1))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient(routes.PartnerIncorpIdController.partnerCallback("1").url).get()
+        val res = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -149,9 +157,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[Entity](None, idx = Some(1))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
@@ -159,7 +165,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
           "CurrentProfile" -> Json.toJson(currentProfile)
         ))
 
-        val res: WSResponse = await(buildClient(routes.PartnerIncorpIdController.partnerCallback("1").url).get())
+        val res: WSResponse = await(buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get())
         res.status mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -172,14 +178,12 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
           .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None), idx = Some(1))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient(routes.PartnerIncorpIdController.partnerCallback("1").url).get()
+        val res = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER

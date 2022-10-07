@@ -68,18 +68,22 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
 
   val partnershipApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
 
-  "GET /start-partnership-id-partner-journey" when {
+  def getUrl(index: Int = 1): String = routes.PartnerPartnershipIdController.startJourney(index).url
+
+  val callbackUrl: String = routes.PartnerPartnershipIdController.callback(1, testJourneyId).url
+
+  s"GET ${getUrl()}" when {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName))), idx = Some(1))
+          .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName)))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
+        val res: Future[WSResponse] = buildClient(getUrl()).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -87,13 +91,30 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         }
       }
 
-      "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+      "redirect to task list when attempting to update lead partner without partyType" in new Setup {
         given().user.isAuthorised()
         insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
         stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-partnership-id-partner-journey").get()
+        val res: Future[WSResponse] = buildClient(getUrl(2)).get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+        }
+      }
+
+      "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName)))))
+
+        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+
+        stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
+
+        val res: Future[WSResponse] = buildClient(getUrl(2)).get()
 
         whenReady(res) { result =>
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -102,7 +123,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET /partnership-id-partner-callback" must {
+  s"GET $callbackUrl" must {
     "redirect to the correct controller for Scottish Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
         val details = testPartnership.copy(companyName = Some(testOtherCompanyName))
@@ -114,7 +135,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -140,7 +161,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -166,7 +187,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+        val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -183,12 +204,11 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.replaceSection(Entity(Some(testPartnership), LtdLiabilityPartnership, Some(true), None))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
       insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-partner-callback?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe INTERNAL_SERVER_ERROR

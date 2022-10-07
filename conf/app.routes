@@ -206,8 +206,8 @@ GET         /current-address/acceptFromTxm                            controller
 ## Incorp ID Pages
 GET         /start-incorp-id-journey                                  controllers.grs.IncorpIdController.startJourney
 GET         /incorp-id-callback                                       controllers.grs.IncorpIdController.incorpIdCallback(journeyId)
-GET         /start-incorp-id-partner-journey                          controllers.grs.PartnerIncorpIdController.startPartnerJourney
-GET         /incorp-id-partner-callback                               controllers.grs.PartnerIncorpIdController.partnerCallback(journeyId)
+GET         /partner/:index/start-incorp-id-journey                  controllers.grs.PartnerIncorpIdController.startJourney(index: Int)
+GET         /partner/:index/incorp-id-callback                       controllers.grs.PartnerIncorpIdController.callback(index: Int, journeyId: String)
 
 ## Personal Details Validation Pages
 GET         /start-personal-details-validation-journey                controllers.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
@@ -218,16 +218,16 @@ GET         /start-sti-journey                                        controller
 GET         /sti-callback                                             controllers.grs.SoleTraderIdController.callback(journeyId)
 GET         /start-sti-individual-journey                             controllers.grs.IndividualIdController.startJourney
 GET         /sti-individual-callback                                  controllers.grs.IndividualIdController.callback(journeyId)
-GET         /start-sti-partner-journey                                controllers.grs.PartnerSoleTraderIdController.startPartnerJourney
-GET         /sti-partner-callback                                     controllers.grs.PartnerSoleTraderIdController.partnerCallback(journeyId: String)
+GET         /partner/:index/start-sti-journey                        controllers.grs.PartnerSoleTraderIdController.startJourney(index: Int)
+GET         /partner/:index/sti-callback                             controllers.grs.PartnerSoleTraderIdController.callback(index: Int, journeyId: String)
 GET         /start-sti-transactor-journey                             controllers.grs.TransactorIdController.startJourney
 GET         /sti-transactor-callback                                  controllers.grs.TransactorIdController.callback(journeyId)
 
 ## Partnership ID Pages
 GET         /start-partnership-id-journey                             controllers.grs.PartnershipIdController.startJourney
 GET         /partnership-id-callback                                  controllers.grs.PartnershipIdController.callback(journeyId)
-GET         /start-partnership-id-partner-journey                     controllers.grs.PartnerPartnershipIdController.startPartnerJourney
-GET         /partnership-id-partner-callback                          controllers.grs.PartnerPartnershipIdController.partnerCallback(journeyId)
+GET         /partner/:index/start-partnership-id-journey             controllers.grs.PartnerPartnershipIdController.startJourney(index: Int)
+GET         /partner/:index/partnership-id-callback                  controllers.grs.PartnerPartnershipIdController.callback(index: Int, journeyId: String)
 
 ## Minor Entity ID Pages
 GET         /start-minor-entity-id-journey                            controllers.grs.MinorEntityIdController.startJourney
@@ -566,3 +566,7 @@ POST        /supply-1614h                                             controller
 ## Supply Supporting Documents Page
 GET         /supply-supporting-documents                              controllers.fileupload.SupplySupportingDocumentsController.show
 POST        /supply-supporting-documents                              controllers.fileupload.SupplySupportingDocumentsController.submit
+
+## Partner Scottish Partnership Name Page
+GET         /partner/:index/scottish-partnership-name                 controllers.partners.PartnerScottishPartnershipNameController.show(index: Int)
+POST        /partner/:index/scottish-partnership-name                 controllers.partners.PartnerScottishPartnershipNameController.submit(index: Int)

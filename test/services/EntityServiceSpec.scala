@@ -54,15 +54,13 @@ class EntityServiceSpec extends VatRegSpec {
     "return a partner" in {
       mockGetSection(testRegId, Some(testPartner))
       val result = service.getEntity(testRegId, 1)
-      await(result) mustBe testPartner
+      await(result) mustBe Some(testPartner)
     }
 
     "return no partner" in {
       mockGetSection(testRegId, None)
       val result = service.getEntity(testRegId, 1)
-      intercept[InternalServerException] {
-        await(result)
-      }
+      await(result) mustBe None
     }
   }
 
