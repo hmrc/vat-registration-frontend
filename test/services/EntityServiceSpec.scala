@@ -31,8 +31,8 @@ class EntityServiceSpec extends VatRegSpec {
     mockRegistrationApiConnector
   )
 
-  val testLeadPartner: Entity = Entity(Some(testSoleTrader), Individual, Some(true), None)
-  val testPartner: Entity = Entity(Some(testLimitedCompany), UkCompany, Some(false), None)
+  val testLeadPartner: Entity = Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)
+  val testPartner: Entity = Entity(Some(testLimitedCompany), UkCompany, Some(false), None, None, None, None)
   val testPartners: List[Entity] = List(testLeadPartner, testPartner)
   val index = 1
 

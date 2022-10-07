@@ -38,7 +38,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(true), None)), idx = Some(1))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)), idx = Some(1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -58,7 +58,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.replaceSection(Entity(None, Individual, Some(true), None), idx = Some(1))
+          .registrationApi.replaceSection(Entity(None, Individual, Some(true), None, None, None, None), idx = Some(1))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

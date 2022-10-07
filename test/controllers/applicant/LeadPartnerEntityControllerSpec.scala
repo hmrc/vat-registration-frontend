@@ -65,7 +65,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
     }
 
     "return OK with prepop" in new Setup {
-      mockGetEntity(regId, 1)(Some(Entity(Some(testSoleTrader), Individual, Some(true), None)))
+      mockGetEntity(regId, 1)(Some(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)))
       when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
       callAuthorised(controller.showLeadPartnerEntityType) {
         status(_) mustBe OK
@@ -76,7 +76,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
   "submitLeadPartnerEntity" should {
     "return a redirect for a individual" in new Setup {
       val soleTrader = "Z1"
-      val entity: Entity = Entity(None, Individual, Some(true), None)
+      val entity: Entity = Entity(None, Individual, Some(true), None, None, None, None)
       mockGetEntity(regId, 1)(None)
       when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
       mockUpsertEntity[PartyType](regId, 1, Individual)(entity)

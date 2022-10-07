@@ -18,9 +18,7 @@ package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
 import models.api.{Individual, Partnership, SicCode}
-import models.external.Name
-import models.view.FormerNameDateView
-import models.{ApplicantDetails, Business, Entity, LabourCompliance}
+import models.{Business, Entity, LabourCompliance}
 import testHelpers.VatRegSpec
 
 class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
@@ -66,7 +64,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership)),
         applicantDetails = Some(completeApplicantDetails.copy(entity = Some(testGeneralPartnership))),
-        entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None))),
+        entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None))),
         business = Some(validBusiness)
       )
 

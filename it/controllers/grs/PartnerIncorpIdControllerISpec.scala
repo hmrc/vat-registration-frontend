@@ -53,7 +53,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None))))
+        .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None, None, None, None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -69,7 +69,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None))))
+        .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None, None, None, None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -89,7 +89,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getListSection(Some(List(Entity(None, RegSociety, Some(true), None))))
+        .registrationApi.getListSection(Some(List(Entity(None, RegSociety, Some(true), None, None, None, None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -109,7 +109,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .registrationApi.getListSection(Some(List(Entity(None, CharitableOrg, Some(true), None))))
+        .registrationApi.getListSection(Some(List(Entity(None, CharitableOrg, Some(true), None, None, None, None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -134,8 +134,8 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
-          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None), idx = Some(1))
+          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
+          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None), idx = Some(1))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
@@ -176,8 +176,8 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
-          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None), idx = Some(1))
+          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
+          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None), idx = Some(1))
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 

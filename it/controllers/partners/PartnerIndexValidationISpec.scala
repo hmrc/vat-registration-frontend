@@ -64,7 +64,7 @@ class PartnerIndexValidationISpec extends ControllerISpec {
     }
 
     "redirect to max possible index if index is too high" in {
-      val entityList = List(Entity(None, Individual, None, None))
+      val entityList = List(Entity(None, Individual, None, None, None, None, None))
       given().registrationApi.getListSection[Entity](Some(entityList))
 
       val response = await(TestController.validateIndex(entityList.length + 2, testCall)(testFunction))
@@ -73,7 +73,7 @@ class PartnerIndexValidationISpec extends ControllerISpec {
     }
 
     "return the page show function if all checks pass" in {
-      val entityList = List(Entity(None, Individual, None, None))
+      val entityList = List(Entity(None, Individual, None, None, None, None, None))
       given().registrationApi.getListSection[Entity](Some(entityList))
 
       val response = await(TestController.validateIndex(2, testCall)(testFunction))
@@ -83,14 +83,14 @@ class PartnerIndexValidationISpec extends ControllerISpec {
 
     "return the page show function with the relevant entity for prepop if all checks pass" in {
       val entityList = List(
-        Entity(None, UkCompany, None, None),
-        Entity(None, Individual, None, None)
+        Entity(None, UkCompany, None, None, None, None, None),
+        Entity(None, Individual, None, None, None, None, None)
       )
       given().registrationApi.getListSection[Entity](Some(entityList))
 
       val response = await(TestController.validateIndex(2, testCall)(testFunction))
 
-      response mustBe Ok(Some(Entity(None, Individual, None, None)).toString)
+      response mustBe Ok(Some(Entity(None, Individual, None, None, None, None, None)).toString)
     }
   }
 
@@ -108,7 +108,7 @@ class PartnerIndexValidationISpec extends ControllerISpec {
     }
 
     "return the page show function if all checks pass" in {
-      val entityList = List(Entity(None, Individual, None, None))
+      val entityList = List(Entity(None, Individual, None, None, None, None, None))
       given().registrationApi.getListSection[Entity](Some(entityList))
 
       val response = await(TestController.validateIndexSubmit(2, testCall)(Future.successful(Ok(""))))
