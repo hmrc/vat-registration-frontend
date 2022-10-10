@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.grs
 
@@ -39,19 +54,23 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
     )
   )
 
-  "GET /start-sti-partner-journey" when {
+  def getUrl(index: Int = 1): String = routes.PartnerSoleTraderIdController.startJourney(index).url
+
+  val callbackUrl: String = routes.PartnerSoleTraderIdController.callback(1, testJourneyId).url
+
+  s"GET ${getUrl()}" when {
     "STI returns a journey ID" must {
       "redirect to the journey using the ID provided when the applicant is a Sole Trader" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None)), idx = Some(1))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
+          .registrationApi.getListSection(Some(List(Entity(None, Individual, Some(true), None))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
+        val res: Future[WSResponse] = buildClient(getUrl()).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -61,14 +80,14 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided when the applicant is a NETP" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None)), idx = Some(1))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
+          .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
+        val res: Future[WSResponse] = buildClient(getUrl()).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -76,15 +95,31 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         }
       }
 
-      "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
+      "redirect to task list if questions have been answered for lead partner" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
+          .registrationApi.getListSection[Entity](None)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
         insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
-        stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
-        val res: Future[WSResponse] = buildClient("/start-sti-partner-journey").get()
+        val res: Future[WSResponse] = buildClient(getUrl()).get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+        }
+      }
+
+      "return INTERNAL_SERVER_ERROR if no party type available" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
+          .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None))))
+
+        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+
+        val res: Future[WSResponse] = buildClient(getUrl(2)).get()
 
         whenReady(res) { result =>
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -93,7 +128,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET /sti-partner-callback" must {
+  s"GET $callbackUrl" must {
     "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
@@ -108,7 +143,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -129,7 +164,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -151,7 +186,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -172,7 +207,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -184,16 +219,12 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, isLeadPartner = Some(true), None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-partner-callback?journeyId=$testJourneyId").get()
+      val res: Future[WSResponse] = buildClient(callbackUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe INTERNAL_SERVER_ERROR

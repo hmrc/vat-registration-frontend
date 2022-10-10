@@ -19,6 +19,7 @@ package viewmodels
 import controllers.applicant.{routes => applicantRoutes}
 import controllers.grs.{routes => grsRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import models.Entity.leadEntityIndex
 import models._
 import models.api._
 import models.external.{IncorporatedEntity, PartnershipIdEntity, SoleTraderIdEntity}
@@ -54,7 +55,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           grsRoutes.SoleTraderIdController.startJourney.url
         case Partnership | ScotPartnership | LtdPartnership | ScotLtdPartnership =>
           vatScheme.entities.flatMap(_.headOption.map(_.partyType)) match {
-            case Some(Individual | NETP) => grsRoutes.PartnerSoleTraderIdController.startPartnerJourney.url
+            case Some(Individual | NETP) => grsRoutes.PartnerSoleTraderIdController.startJourney(leadEntityIndex).url
             case _ => grsRoutes.IndividualIdController.startJourney.url
           }
         case Trust | UnincorpAssoc | NonUkNonEstablished | LtdLiabilityPartnership =>
@@ -192,9 +193,9 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
 
     leadPartner.map { partner =>
       val url = partner.partyType match {
-        case Individual | NETP => Some(grsRoutes.PartnerSoleTraderIdController.startPartnerJourney.url)
-        case UkCompany | RegSociety | CharitableOrg => Some(grsRoutes.PartnerIncorpIdController.startPartnerJourney.url)
-        case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(grsRoutes.PartnerPartnershipIdController.startPartnerJourney.url)
+        case Individual | NETP => Some(grsRoutes.PartnerSoleTraderIdController.startJourney(leadEntityIndex).url)
+        case UkCompany | RegSociety | CharitableOrg => Some(grsRoutes.PartnerIncorpIdController.startJourney(leadEntityIndex).url)
+        case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(grsRoutes.PartnerPartnershipIdController.startJourney(leadEntityIndex).url)
       }
       val uniqueTaxpayerReference = partner.details match {
         case Some(soleTrader: SoleTraderIdEntity) =>

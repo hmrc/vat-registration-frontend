@@ -70,7 +70,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
       val res: WSResponse = await(buildClient("/scottish-partnership-name").post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> testCompanyName)))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerPartnershipIdController.startPartnerJourney.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerPartnershipIdController.startJourney(1).url)
     }
 
     "return BAD_REQUEST for missing partnership name" in new Setup {

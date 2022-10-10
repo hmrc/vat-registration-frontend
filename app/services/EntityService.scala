@@ -18,6 +18,7 @@ package services
 
 import connectors.RegistrationApiConnector
 import models.Entity
+import models.Entity.leadEntityIndex
 import models.api.{PartyType, ScotPartnership}
 import models.external.{BusinessEntity, PartnershipIdEntity}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -34,19 +35,18 @@ class EntityService @Inject()(val s4LService: S4LService,
     registrationApiConnector.getListSection[Entity](regId)
   }
 
-  def getEntity(regId: String, idx: Int)(implicit hc: HeaderCarrier): Future[Entity] =
-    registrationApiConnector.getSection[Entity](regId, Some(idx)).map(_.getOrElse(
-      throw new InternalServerException(s"Missing entity for at index '$idx'")
-    ))
+  def getEntity(regId: String, idx: Int)(implicit hc: HeaderCarrier): Future[Option[Entity]] =
+    registrationApiConnector.getSection[Entity](regId, Some(idx))
 
   def upsertEntity[T](regId: String, index: Int, data: T)(implicit hc: HeaderCarrier): Future[Entity] = {
     for {
-      entity <- getEntity(regId, index).recoverWith {
-        case ex => data match {
-          case partyType: PartyType => Future.successful(Entity(None, partyType, Some(true), None))
-          case _ => throw ex
+      entity <- getEntity(regId, index).map(_.getOrElse {
+        data match {
+          case partyType: PartyType if index == leadEntityIndex => Entity(None, partyType, Some(true), None)
+          case partyType: PartyType => Entity(None, partyType, Some(false), None)
+          case _ => throw new InternalServerException(s"[EntityService] Attempted to update an entity without a stored partyType, index: $index")
         }
-      }
+      })
       result <- registrationApiConnector.replaceSection(regId, updateEntityModel(data, entity), Some(index))
     } yield result
   }

@@ -152,7 +152,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def incorpIdCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-callback"
 
-  def incorpIdPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/incorp-id-partner-callback"
+  def incorpIdPartnerCallbackUrl(index: Int): String = s"$hostUrl/register-for-vat/partner/$index/incorp-id-callback"
 
   // Personal Details Validation Section
 
@@ -207,7 +207,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def transactorCallbackUrl: String = s"$hostUrl/register-for-vat/sti-transactor-callback"
 
-  def leadPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/sti-partner-callback"
+  def leadPartnerCallbackUrl(index: Int): String = s"$hostUrl/register-for-vat/partner/$index/sti-callback"
 
   // Partnership Identification Section
 
@@ -237,7 +237,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def partnershipIdCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-callback"
 
-  def partnershipIdPartnerCallbackUrl: String = s"$hostUrl/register-for-vat/partnership-id-partner-callback"
+  def partnershipIdPartnerCallbackUrl(index: Int): String = s"$hostUrl/register-for-vat/partner/$index/partnership-id-callback"
 
   // Minor Entity Identification Section
 
@@ -335,4 +335,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val upscanInterval = 2000
   lazy val VATRateDifferentGoodsURL = "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"
   lazy val vat1trLink = "https://www.gov.uk/government/publications/vat-appointment-of-tax-representative-vat1tr"
+
+  lazy val maxPartnerCount: Int = servicesConfig.getInt("indexedSection.max.partner")
 }

@@ -37,3 +37,19 @@ object ScottishPartnershipNameForm {
   )
 
 }
+
+object PartnerScottishPartnershipNameForm {
+  val scottishPartnershipNameKey = "scottishPartnershipName"
+  implicit val errorCode: ErrorCode = s"partner.$scottishPartnershipNameKey"
+  val regex: Regex = """^[A-Za-z0-9 '’‘()\[\]{}<>!«»"ʺ˝ˮ?/\\+=%#*&$€£_\-@¥.,:;]+$""".r
+
+  def apply(): Form[String] = Form(
+    single(
+      scottishPartnershipNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+        nonEmptyValidText(regex),
+        maxLenText(105)
+      ))
+    )
+  )
+
+}

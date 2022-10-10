@@ -83,7 +83,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
 
       submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startPartnerJourney.url)
+        redirectLocation(result) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startJourney(1).url)
       }
     }
 

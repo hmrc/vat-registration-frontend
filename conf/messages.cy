@@ -1412,8 +1412,10 @@ transactorEmail.error.incorrect_format                   = Nodwch gyfeiriad e-bo
 transactorEmail.error.nothing_entered                    = Nodwch eich cyfeiriad e-bost
 transactorEmail.error.incorrect_length                   = Nodwch gyfeiriad e-bost sydd rhwng 3 a 132 o gymeriadau
 
-# TRANSACTOR FULL NAME PAGE
+# GRS FULL NAME PAGE
 transactorName.optFullNamePageLabel                      = Ar ran pwy rydych yn cofrestru?
+transactorName.leadPartner.optFullNamePageLabel          = What is the name of the lead partner?
+soleTraderName.partner.optFullNamePageLabel              = What is the name of the {0} partner?
 
 # VAT2 REQUIRED
 pages.vat2Required.heading                               = You must send us a completed VAT2 form in order for us to process this application
@@ -1752,3 +1754,9 @@ eligibility.cya.taxableSuppliesInUk                                 = A yw’r b
 eligibility.cya.zeroRatedSales.business                             = A yw’r busnes yn gwerthu nwyddau neu wasanaethau cyfradd sero gan fwyaf?
 eligibility.cya.zeroRatedSales.partnership                          = A yw’r bartneriaeth yn gwerthu nwyddau neu wasanaethau cyfradd sero gan fwyaf?
 eligibility.cya.vatExemption                                        = A hoffai’r busnes wneud cais am eithriad rhag TAW?
+
+# PARTNER SCOTTISH PARTNERSHIP NAME
+partner.scottishPartnershipName.heading                             = Beth yw enw’r bartneriaeth?
+validation.partner.scottishPartnershipName.missing                  = Nodwch enw’r bartneriaeth
+validation.partner.scottishPartnershipName.maxlen                   = Nodwch enw partneriaeth sydd rhwng 1 a 105 o gymeriadau
+validation.partner.scottishPartnershipName.invalid                  = Nodwch enw partneriaeth heb gynnwys cymeriadau arbennig

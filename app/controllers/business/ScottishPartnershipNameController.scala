@@ -19,6 +19,7 @@ package controllers.business
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ScottishPartnershipNameForm
+import models.Entity.leadEntityIndex
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.business.ScottishPartnershipName
@@ -42,8 +43,9 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
     implicit request =>
       implicit profile =>
         for {
-          entity <- entityService.getEntity(profile.registrationId, 1)
-        } yield entity.optScottishPartnershipName match {
+          optEntity <- entityService.getEntity(profile.registrationId, leadEntityIndex)
+          optScottishPartnershipName = optEntity.flatMap(_.optScottishPartnershipName)
+        } yield optScottishPartnershipName match {
           case Some(name) => Ok(view(ScottishPartnershipNameForm().fill(name)))
           case None => Ok(view(ScottishPartnershipNameForm()))
         }
@@ -56,9 +58,9 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           companyName => {
             for {
-              _ <- entityService.upsertEntity[String](profile.registrationId, 1, companyName)
+              _ <- entityService.upsertEntity[String](profile.registrationId, leadEntityIndex, companyName)
             } yield {
-              Redirect(controllers.grs.routes.PartnerPartnershipIdController.startPartnerJourney)
+              Redirect(controllers.grs.routes.PartnerPartnershipIdController.startJourney(leadEntityIndex))
             }
           }
         )
