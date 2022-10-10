@@ -31,6 +31,7 @@ getHelp.linkText                        = A yw’r dudalen hon yn gweithio’n i
 date.day                                = Diwrnod
 date.month                              = Mis
 date.year                               = Blwyddyn
+radio.item.divider.or                   = neu
 
 tasklist.heading                                    = Cofrestru ar gyfer TAW
 tasklist.button                                     = Gwirio atebion a chyflwyno
@@ -1087,16 +1088,23 @@ validation.trading-name.maxlen                           = Nodwch enw masnachu g
 validation.trading-name.missing                          = Nodwch enw masnachu
 
 # LEAD PARTNER ENTITY TYPE
-pages.leadPartnerEntityType.heading                      = Pa fath o endid yw’r partner arweiniol?
-pages.leadPartnerEntityType.soleTrader                   = Unig fasnachwr
-pages.leadPartnerEntityType.netp                         = Person trethadwy sydd heb ei sefydlu (NETP)
-pages.leadPartnerEntityType.ukCompany                    = Cwmni yn y DU
-pages.leadPartnerEntityType.scotPartner                  = Partneriaeth yn yr Alban
-pages.leadPartnerEntityType.scotLimPartner               = Partneriaeth gyfyngedig yn yr Alban
-pages.leadPartnerEntityType.limLiaPartner                = Partneriaeth atebolrwydd cyfyngedig
-pages.leadPartnerEntityType.cio                          = Sefydliad Corfforedig Elusennol
-pages.leadPartnerEntityType.regSociety                   = Cymdeithas gofrestredig
-pages.leadPartnerEntityType.missing                      = Dewiswch pa fath o endid yw’r partner arweiniol
+pages.leadPartnerEntityType.heading                      = What type of partner are you?
+pages.leadPartnerEntityType.heading.3pt                  = What type of partner is the lead partner?
+pages.leadPartnerEntityType.soleTrader                   = An actual person
+pages.leadPartnerEntityType.business                     = A business
+pages.leadPartnerEntityType.missing                      = Select the type of partner you are
+
+# BUSINESS LEAD PARTNER ENTITY TYPE
+pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
+pages.businessLeadPartnerEntityType.heading.3pt          = What type of business is the lead partner within the partnership?
+pages.businessLeadPartnerEntityType.netp                 = Person trethadwy sydd heb ei sefydlu (NETP)
+pages.businessLeadPartnerEntityType.ukCompany            = Cwmni yn y DU
+pages.businessLeadPartnerEntityType.scotPartner          = Partneriaeth yn yr Alban
+pages.businessLeadPartnerEntityType.scotLimPartner       = Partneriaeth gyfyngedig yn yr Alban
+pages.businessLeadPartnerEntityType.limLiaPartner        = Partneriaeth atebolrwydd cyfyngedig
+pages.businessLeadPartnerEntityType.cio                  = Sefydliad Corfforedig Elusennol
+pages.businessLeadPartnerEntityType.regSociety           = Cymdeithas gofrestredig
+pages.businessLeadPartnerEntityType.missing              = Select the business type of the lead partner
 
 # OVERSEAS BANK ACCOUNT
 pages.overseasBankAccount.heading                        = Manylion cyfrif banc neu gyfrif cymdeithas adeiladu

@@ -39,6 +39,7 @@ case object AdminDivision extends PartyType
 case object Individual extends PartyType
 case object Invalid extends PartyType
 case object NETP extends PartyType
+case object BusinessEntity extends PartyType
 
 object PartyType {
 
@@ -60,7 +61,11 @@ object PartyType {
     TaxGroups -> "64",
     AdminDivision -> "65",
     Individual -> "Z1",
-    NETP -> "NETP"
+    NETP -> "NETP",
+
+    // This is only used for navigation between lead and business partner pages. Form submission doesn't persist
+    // this selection to backend, but only persist the actual business entity type.
+    BusinessEntity -> "BusinessEntity"
   )
 
   val inverseStati = stati.map(_.swap).withDefaultValue(Invalid)

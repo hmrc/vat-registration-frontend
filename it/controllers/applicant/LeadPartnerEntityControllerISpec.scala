@@ -21,6 +21,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "display the page" in new Setup {
       given()
         .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -36,6 +37,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
     "display the page with pre-pop" in new Setup {
       given()
         .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(true), None)), idx = Some(1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -51,69 +53,34 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" when {
-    List(Individual, NETP).foreach { partyType =>
-      s"the user selects $partyType" should {
-        "store the partyType in backend and begin a STI journey" in new Setup {
-          given()
-            .user.isAuthorised()
-            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startPartnerJourney.url)
-        }
-      }
-    }
-
-    List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
-      s"the user selects $partyType" should {
-        "store the partyType in backend and begin an IncorpId journey" in new Setup {
-          given()
-            .user.isAuthorised()
-            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerIncorpIdController.startPartnerJourney.url)
-        }
-      }
-    }
-
-    List(ScotLtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
-      s"the user selects $partyType" should {
-        "store the partyType in backend and begin an PartnershipId journey" in new Setup {
-          given()
-            .user.isAuthorised()
-            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(partyType))))
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerPartnershipIdController.startPartnerJourney.url)
-        }
-      }
-    }
-
-    s"the user selects $ScotPartnership" should {
-      "store the partyType in backend and go to ScottishPartnershipName page" in new Setup {
+    s"the user selects a individual person party type" should {
+      "store the partyType in backend and begin a STI journey" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.replaceSection(Entity(None, ScotPartnership, Some(true), None), idx = Some(1))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.replaceSection(Entity(None, Individual, Some(true), None), idx = Some(1))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(ScotPartnership))))
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(Individual))))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ScottishPartnershipNameController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startPartnerJourney.url)
+      }
+    }
+
+    s"the user selects a business party type" should {
+      "not store the partyType in backend and begin a business party type selection" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(BusinessEntity))))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessLeadPartnerEntityController.showPartnerEntityType.url)
       }
     }
 

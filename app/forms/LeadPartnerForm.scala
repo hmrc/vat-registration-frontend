@@ -25,15 +25,7 @@ object LeadPartnerForm {
 
   val leadPartnerEntityType: String = "value"
 
-  val leadPartnerError = "pages.leadPartnerEntityType.missing"
-
-  def apply(): Form[PartyType] = Form(
-    single(
-      leadPartnerEntityType -> of(formatter)
-    )
-  )
-
-  def formatter: Formatter[PartyType] = new Formatter[PartyType] {
+  def formatter(implicit leadPartnerError: String): Formatter[PartyType] = new Formatter[PartyType] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], PartyType] = {
       data.get(key).map(value => PartyType.inverseStati(value)) match {
         case Some(Invalid) => Left(Seq(FormError(key, leadPartnerError)))
@@ -46,7 +38,7 @@ object LeadPartnerForm {
       Map(key -> PartyType.stati(value))
   }
 
-  def form: Form[PartyType] = Form(
+  def form(implicit leadPartnerError: String): Form[PartyType] = Form(
     single(
       leadPartnerEntityType -> of(formatter)
     )
