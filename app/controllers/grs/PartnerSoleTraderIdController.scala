@@ -51,7 +51,7 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
       implicit request =>
         implicit profile =>
           validateIndex(index, routes.PartnerSoleTraderIdController.startJourney, minIndex = 1) {
-            case Some(Entity(_, partyType, _, _)) =>
+            case Some(Entity(_, partyType, _, _, _, _, _)) =>
               for {
                 isTransactor <- vatRegistrationService.isTransactor
                 (fullNamePageLabel, welshFullNamePageLabel) = if (isTransactor && index == leadEntityIndex) {

@@ -42,8 +42,8 @@ class EntityService @Inject()(val s4LService: S4LService,
     for {
       entity <- getEntity(regId, index).map(_.getOrElse {
         data match {
-          case partyType: PartyType if index == leadEntityIndex => Entity(None, partyType, Some(true), None)
-          case partyType: PartyType => Entity(None, partyType, Some(false), None)
+          case partyType: PartyType if index == leadEntityIndex => Entity(None, partyType, Some(true), None, None, None, None)
+          case partyType: PartyType => Entity(None, partyType, Some(false), None, None, None, None)
           case _ => throw new InternalServerException(s"[EntityService] Attempted to update an entity without a stored partyType, index: $index")
         }
       })

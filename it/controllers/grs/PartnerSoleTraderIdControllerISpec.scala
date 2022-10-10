@@ -64,7 +64,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
-          .registrationApi.getListSection(Some(List(Entity(None, Individual, Some(true), None))))
+          .registrationApi.getListSection(Some(List(Entity(None, Individual, Some(true), None, None, None, None))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -81,7 +81,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
-          .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None))))
+          .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None, None, None, None))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -115,7 +115,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
-          .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None))))
+          .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None, None, None, None))))
 
         insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
@@ -136,8 +136,8 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None)), idx = Some(1))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None), idx = Some(1))
+        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None, None, None, None)), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -157,8 +157,8 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None)), idx = Some(1))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None), idx = Some(1))
+        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None, None, None, None)), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -178,9 +178,9 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None)), idx = Some(1))
+        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection(validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
@@ -199,9 +199,9 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None)), idx = Some(1))
+        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)

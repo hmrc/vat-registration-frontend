@@ -47,7 +47,7 @@ class PartnerIncorpIdController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerIncorpIdController.startJourney, minIndex = 1) {
-          case Some(Entity(_, partyType, _, _)) =>
+          case Some(Entity(_, partyType, _, _, _, _, _)) =>
             val journeyConfig = IncorpIdJourneyConfig(
               continueUrl = appConfig.incorpIdPartnerCallbackUrl(index),
               optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),

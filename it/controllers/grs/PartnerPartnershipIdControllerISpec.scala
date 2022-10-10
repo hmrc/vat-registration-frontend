@@ -77,7 +77,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided for Partnership" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName)))))
+          .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -108,7 +108,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
       "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName)))))
+          .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None))))
 
         insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
@@ -129,8 +129,8 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         val details = testPartnership.copy(companyName = Some(testOtherCompanyName))
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), Some(testOtherCompanyName))), idx = Some(1))
-          .registrationApi.replaceSection(Entity(Some(details), ScotPartnership, Some(true), Some(testOtherCompanyName)), idx = Some(1))
+          .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None)), idx = Some(1))
+          .registrationApi.replaceSection(Entity(Some(details), ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None), idx = Some(1))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -151,7 +151,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to correct controller for Scottish Limited Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
-        val entity = Entity(None, ScotLtdPartnership, Some(true), Some("company name"))
+        val entity = Entity(None, ScotLtdPartnership, Some(true), Some("company name"), None, None, None)
 
         given()
           .user.isAuthorised()
@@ -177,7 +177,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
-        val entity = Entity(None, LtdLiabilityPartnership, Some(true), Some("company name"))
+        val entity = Entity(None, LtdLiabilityPartnership, Some(true), Some("company name"), None, None, None)
 
         given()
           .user.isAuthorised()

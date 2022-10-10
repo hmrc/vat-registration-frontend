@@ -101,7 +101,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     }
     "called with Individual lead partner" must {
       "return the summary list for Individual" in new Setup {
-        val testLeadPartnerIndividual: Entity = Entity(Some(testSoleTrader), Individual, Some(true), None)
+        val testLeadPartnerIndividual: Entity = Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)
         val vatScheme: VatScheme = validVatScheme.copy(
           entities = Some(List(testLeadPartnerIndividual)),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
@@ -171,7 +171,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     }
     "called with NETP lead partner" must {
       "return the summary list for NETP" in new Setup {
-        val testLeadPartnerNetp: Entity = Entity(Some(testSoleTrader), NETP, Some(true), None)
+        val testLeadPartnerNetp: Entity = Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None)
         val vatScheme: VatScheme = validVatScheme.copy(
           entities = Some(List(testLeadPartnerNetp)),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
@@ -241,7 +241,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     }
     "called with Limited company lead partner" must {
       "return the summary list for Limited company" in new Setup {
-        val testLeadPartnerLtdCompany: Entity = Entity(Some(testLimitedCompany), UkCompany, Some(true), None)
+        val testLeadPartnerLtdCompany: Entity = Entity(Some(testLimitedCompany), UkCompany, Some(true), None, None, None, None)
         val vatScheme: VatScheme = validVatScheme.copy(
           entities = Some(List(testLeadPartnerLtdCompany)),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
@@ -319,7 +319,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     }
     "called with Scottish partnership lead partner" must {
       "return the summary list for Scottish partnership" in new Setup {
-        val testLeadPartnerScotPartnership: Entity = Entity(Some(testGeneralPartnership), ScotPartnership, Some(true), None)
+        val testLeadPartnerScotPartnership: Entity = Entity(Some(testGeneralPartnership), ScotPartnership, Some(true), None, None, None, None)
         val vatScheme: VatScheme = validVatScheme.copy(
           entities = Some(List(testLeadPartnerScotPartnership)),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
@@ -397,6 +397,9 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           Some(testGeneralPartnership.copy(companyNumber = Some("1234567890"), companyName = Some("testPartnershipName"))),
           ScotLtdPartnership,
           Some(true),
+          None,
+          None,
+          None,
           None
         )
         val vatScheme: VatScheme = validVatScheme.copy(
@@ -484,6 +487,9 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           Some(testGeneralPartnership.copy(companyNumber = Some("1234567890"), companyName = Some("testPartnershipName"))),
           LtdLiabilityPartnership,
           Some(true),
+          None,
+          None,
+          None,
           None
         )
         val vatScheme: VatScheme = validVatScheme.copy(
@@ -567,7 +573,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     }
     "called with Charitable org lead partner" must {
       "return the summary list for Charitable org" in new Setup {
-        val testLeadPartnerCharitableOrg: Entity = Entity(Some(testCharitableOrganisation), CharitableOrg, Some(true), None)
+        val testLeadPartnerCharitableOrg: Entity = Entity(Some(testCharitableOrganisation), CharitableOrg, Some(true), None, None, None, None)
         val vatScheme: VatScheme = validVatScheme.copy(
           entities = Some(List(testLeadPartnerCharitableOrg)),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
@@ -645,7 +651,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     }
     "called with Registered society lead partner" must {
       "return the summary list for Registered society" in new Setup {
-        val testLeadPartnerLtdCompany: Entity = Entity(Some(testRegisteredSociety), RegSociety, Some(true), None)
+        val testLeadPartnerLtdCompany: Entity = Entity(Some(testRegisteredSociety), RegSociety, Some(true), None, None, None, None)
         val vatScheme: VatScheme = validVatScheme.copy(
           entities = Some(List(testLeadPartnerLtdCompany)),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))

@@ -16,7 +16,7 @@
 
 package models
 
-import models.api.{PartyType, ScotPartnership}
+import models.api.{Address, PartyType, ScotPartnership}
 import models.external.{BusinessEntity, PartnershipIdEntity}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -24,7 +24,11 @@ import play.api.libs.json._
 case class Entity(details: Option[BusinessEntity],
                   partyType: PartyType,
                   isLeadPartner: Option[Boolean],
-                  optScottishPartnershipName: Option[String])
+                  optScottishPartnershipName: Option[String],
+                  address: Option[Address],
+                  email: Option[String],
+                  telephoneNumber: Option[String]
+                 )
 
 object Entity {
   val leadEntityIndex = 1
@@ -33,8 +37,11 @@ object Entity {
       (
         (__ \ "details").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
         (__ \ "isLeadPartner").readNullable[Boolean] and
-        (__ \ "optScottishPartnershipName").readNullable[String]
-      ) { (optDetails, optIsLeadPartner, optScottishPartnershipName) =>
+        (__ \ "optScottishPartnershipName").readNullable[String] and
+        (__ \ "address").readNullable[Address] and
+        (__ \ "email").readNullable[String] and
+        (__ \ "telephoneNumber").readNullable[String]
+      ) { (optDetails, optIsLeadPartner, optScottishPartnershipName, address, email, telephoneNumber) =>
         val updatedDetails = optDetails.map {
           case details: PartnershipIdEntity if partyType.equals(ScotPartnership) => details.copy(companyName = optScottishPartnershipName)
           case notScottishPartnership => notScottishPartnership
@@ -44,7 +51,10 @@ object Entity {
           updatedDetails,
           partyType,
           optIsLeadPartner,
-          optScottishPartnershipName
+          optScottishPartnershipName,
+          address,
+          email,
+          telephoneNumber
         )
       }
     }

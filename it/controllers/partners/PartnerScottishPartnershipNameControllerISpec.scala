@@ -36,7 +36,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(List(
-        Entity(Some(testSoleTrader), Individual, Some(true), None)
+        Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)
       )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -54,8 +54,8 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(List(
-        Entity(Some(testSoleTrader), Individual, Some(true), None),
-        Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(scottishPartnershipName))
+        Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
+        Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(scottishPartnershipName), None, None, None)
       )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -88,8 +88,8 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
     "update the backend and redirect to partner Partnership id" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None)), idx = Some(2))
-        .registrationApi.replaceSection[Entity](Entity(None, ScotPartnership, Some(true), Some(testCompanyName)), idx = Some(2))
+        .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(2))
+        .registrationApi.replaceSection[Entity](Entity(None, ScotPartnership, Some(true), Some(testCompanyName), None, None, None), idx = Some(2))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -38,7 +38,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.getSection[Entity](Some(Entity(None, UkCompany, Some(true), None)), idx = Some(1))
+        .registrationApi.getSection[Entity](Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,7 +60,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
           given()
             .user.isAuthorised()
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
+            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None, None, None, None), idx = Some(1))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -78,7 +78,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
           given()
             .user.isAuthorised()
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None), idx = Some(1))
+            .registrationApi.replaceSection(Entity(None, partyType, Some(true), None, None, None, None), idx = Some(1))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,7 +95,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.replaceSection(Entity(None, ScotPartnership, Some(true), None), idx = Some(1))
+          .registrationApi.replaceSection(Entity(None, ScotPartnership, Some(true), None, None, None, None), idx = Some(1))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
