@@ -19,20 +19,22 @@ package controllers.grs
 import controllers.grs.{routes => grsRoutes}
 import featureswitch.core.config.{StubIncorpIdJourney, TaskList}
 import itutil.ControllerISpec
+import models.Entity
 import models.api._
 import models.external.IncorporatedEntity
-import models.{ApplicantDetails, Entity}
-import play.api.libs.json.{Format, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
+import scala.concurrent.Future
+
 class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
   val incorpDetailsJson: JsValue = Json.toJson(testIncorpDetails)(IncorporatedEntity.apiFormat)
 
-  "GET /partner/index/start-incorp-id-journey" should {
+  "GET /partner/index/start-incorp-id-journey" must {
     "redirect to task list if the lead partner questions are not started yet" in new Setup {
       disable(StubIncorpIdJourney)
 
@@ -126,12 +128,11 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
   }
 
   "GET /partner/index/incorp-id-callback" when {
-    "the Task List is enabled" should {
+    "the Task List is enabled" must {
       "redirect to the Task List" in new Setup {
         disable(StubIncorpIdJourney)
         enable(TaskList)
 
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
@@ -141,7 +142,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
+        val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -149,12 +150,11 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         }
       }
     }
-    "the Task List is disabled" should {
+    "the Task List is disabled" must {
       "return INTERNAL_SERVER_ERROR if no partyType set" in new Setup {
         disable(StubIncorpIdJourney)
         disable(TaskList)
 
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .registrationApi.getSection[Entity](None, idx = Some(1))
@@ -173,7 +173,6 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         disable(StubIncorpIdJourney)
         disable(TaskList)
 
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
@@ -183,7 +182,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
+        val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -192,6 +191,25 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
       }
     }
 
+    "the index is bigger than 1" must {
+      "redirect to ALF for partner flow" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(false), None, None, None, None)), idx = Some(2))
+          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(false), None, None, None, None), idx = Some(2))
+
+        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(2, "1").url).get()
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(controllers.partners.routes.PartnerAddressController.redirectToAlf(2).url)
+        }
+      }
+    }
   }
 
 }

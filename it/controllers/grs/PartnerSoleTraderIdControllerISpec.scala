@@ -56,7 +56,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
 
   def getUrl(index: Int = 1): String = routes.PartnerSoleTraderIdController.startJourney(index).url
 
-  val callbackUrl: String = routes.PartnerSoleTraderIdController.callback(1, testJourneyId).url
+  def callbackUrl(index: Int = 1): String = routes.PartnerSoleTraderIdController.callback(index, testJourneyId).url
 
   s"GET ${getUrl()}" when {
     "STI returns a journey ID" must {
@@ -128,7 +128,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
     }
   }
 
-  s"GET $callbackUrl" must {
+  s"GET ${callbackUrl()}" must {
     "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
@@ -143,7 +143,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(callbackUrl).get()
+      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -164,7 +164,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(callbackUrl).get()
+      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -186,7 +186,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(callbackUrl).get()
+      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -207,7 +207,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(callbackUrl).get()
+      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -224,10 +224,28 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
       insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
-      val res: Future[WSResponse] = buildClient(callbackUrl).get()
+      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
       whenReady(res) { result =>
         result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+
+    "redirect to the partner ALF flow for index above 1" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None, None, None, None)), idx = Some(2))
+        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None), idx = Some(2))
+
+      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(callbackUrl(2)).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(controllers.partners.routes.PartnerAddressController.redirectToAlf(2).url)
       }
     }
   }

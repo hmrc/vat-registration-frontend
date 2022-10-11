@@ -19,7 +19,7 @@ package services
 import connectors.RegistrationApiConnector
 import models.Entity
 import models.Entity.leadEntityIndex
-import models.api.{PartyType, ScotPartnership}
+import models.api.{Address, PartyType, ScotPartnership}
 import models.external.{BusinessEntity, PartnershipIdEntity}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
@@ -68,6 +68,7 @@ class EntityService @Inject()(val s4LService: S4LService,
           entity
         }
       case scottishPartnershipName: String => entity.copy(optScottishPartnershipName = Some(scottishPartnershipName))
+      case address: Address => entity.copy(address = Some(address))
     }
   }
 

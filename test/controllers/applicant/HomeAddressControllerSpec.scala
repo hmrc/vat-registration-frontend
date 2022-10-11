@@ -70,7 +70,7 @@ class HomeAddressControllerSpec extends ControllerSpec
     "non transactor journey" should {
       "redirect to ALF with default journeyId" in new Setup {
         mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
-        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(homeAddress), any(), ArgumentMatchers.eq(false))(any()))
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(homeAddress), any(), ArgumentMatchers.eq(false), any())(any()))
           .thenReturn(Future.successful(Call("GET", "TxM")))
         when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
@@ -82,7 +82,7 @@ class HomeAddressControllerSpec extends ControllerSpec
     "transactor journey" should {
       "redirect to ALF with applicant journeyId" in new Setup {
         mockGetApplicantDetails(currentProfile)(partialIncompleteApplicantDetails)
-        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(applicantAddress), any(), ArgumentMatchers.eq(false))(any()))
+        when(mockAddressLookupService.getJourneyUrl(ArgumentMatchers.eq(applicantAddress), any(), ArgumentMatchers.eq(false), any())(any()))
           .thenReturn(Future.successful(Call("GET", "TxM")))
         when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(true))
 

@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig, messages: MessagesApi) {
 
-  def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call, useUkMode: Boolean): AddressLookupConfigurationModel = {
+  def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call, useUkMode: Boolean, optName: Option[String] = None): AddressLookupConfigurationModel = {
     val english = Lang("en")
     val welsh = Lang("cy")
 
@@ -54,8 +54,8 @@ class AddressLookupConfiguration @Inject()(implicit appConfig: FrontendAppConfig
         )
       ),
       labels = AddressMessageLanguageModel(
-        en = AddressMessagesModel.forJourney(journeyId.toString, english, useUkMode),
-        cy = AddressMessagesModel.forJourney(journeyId.toString, welsh, useUkMode)
+        en = AddressMessagesModel.forJourney(journeyId.toString, english, useUkMode, optName),
+        cy = AddressMessagesModel.forJourney(journeyId.toString, welsh, useUkMode, optName)
       )
     )
   }
