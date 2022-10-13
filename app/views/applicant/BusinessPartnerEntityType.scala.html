@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
+@import models.Entity.leadEntityIndex
 
 @this(
         layout: layout,
@@ -30,14 +31,25 @@
         inputRadio: inputRadio
 )
 
-@(form: Form[PartyType], isTransactor: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(form: Form[PartyType], isTransactor: Boolean, index: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@defining(if (isTransactor) messages("pages.businessLeadPartnerEntityType.heading.3pt") else messages("pages.businessLeadPartnerEntityType.heading")) { headingMessage =>
+@defining(
+    if (isTransactor) {
+        if (index == leadEntityIndex) messages("pages.businessLeadPartnerEntityType.heading.3pt")
+        else messages("pages.businessPartnerEntityType.heading", messages(s"ordinals.$index").toLowerCase)
+    } else messages("pages.businessLeadPartnerEntityType.heading")
+) { headingMessage =>
     @layout(pageTitle = Some(title(form, headingMessage))) {
 
         @errorSummary(form.errors)
 
-        @formWithCSRF(action = controllers.applicant.routes.BusinessLeadPartnerEntityController.submitPartnerEntity, 'autoComplete -> "off") {
+        @formWithCSRF(
+            action = if (index == leadEntityIndex) {
+                controllers.applicant.routes.BusinessLeadPartnerEntityController.submitPartnerEntity
+            } else {
+                controllers.partners.routes.BusinessPartnerEntityTypeController.submitPartnerType(index)
+            }, 'autoComplete -> "off"
+        ) {
             @inputRadio(
                 form = form,
                 legend = headingMessage,

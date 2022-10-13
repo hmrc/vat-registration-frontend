@@ -1,13 +1,13 @@
 
 package pages.applicant
 
-import forms.LeadPartnerForm
+import forms.PartnerForm
 import helpers.A11ySpec
 import views.html.applicant.lead_partner_entity_type
 
 class LeadPartnerEntityTypeA11ySpec extends A11ySpec {
   val view = app.injector.instanceOf[lead_partner_entity_type]
-  val form = LeadPartnerForm.form
+  val form = PartnerForm.form
 
   "the lead partner entity type page" when {
     "the page is rendered without errors" must {

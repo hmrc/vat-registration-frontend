@@ -20,14 +20,14 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.business.{routes => businessRoutes}
 import controllers.grs.{routes => grsRoutes}
-import forms.LeadPartnerForm
+import forms.PartnerForm
 import models.Entity.leadEntityIndex
 import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
-import views.html.applicant.partnership_business_entity_type
+import views.html.applicant.BusinessPartnerEntityType
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,13 +37,11 @@ class BusinessLeadPartnerEntityController @Inject()(val authConnector: AuthConne
                                                     val applicantDetailsService: ApplicantDetailsService,
                                                     entityService: EntityService,
                                                     vatRegistrationService: VatRegistrationService,
-                                                    businessLeadPartnerEntityPage: partnership_business_entity_type
+                                                    businessLeadPartnerEntityPage: BusinessPartnerEntityType
                                                    )(implicit appConfig: FrontendAppConfig,
                                                      val executionContext: ExecutionContext,
                                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
-
-  implicit val errorKey: String = "pages.businessLeadPartnerEntityType.missing"
 
   def showPartnerEntityType: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
@@ -51,11 +49,12 @@ class BusinessLeadPartnerEntityController @Inject()(val authConnector: AuthConne
         for {
           isTransactor <- vatRegistrationService.isTransactor
           optEntity <- entityService.getEntity(profile.registrationId, leadEntityIndex)
+          errorKey = if (isTransactor) "pages.businessLeadPartnerEntityType.missing.3pt" else "pages.businessLeadPartnerEntityType.missing"
           form = optEntity
-            .fold(LeadPartnerForm.form)(entity =>
-              LeadPartnerForm.form.fill(entity.partyType)
+            .fold(PartnerForm.form(errorKey))(entity =>
+              PartnerForm.form(errorKey).fill(entity.partyType)
             )
-        } yield Ok(businessLeadPartnerEntityPage(form, isTransactor))
+        } yield Ok(businessLeadPartnerEntityPage(form, isTransactor, leadEntityIndex))
   }
 
   def submitPartnerEntity: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -63,8 +62,9 @@ class BusinessLeadPartnerEntityController @Inject()(val authConnector: AuthConne
       implicit profile =>
         for {
           isTransactor <- vatRegistrationService.isTransactor
-          result <- LeadPartnerForm.form.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(businessLeadPartnerEntityPage(formWithErrors, isTransactor))),
+          errorKey = if (isTransactor) "pages.businessLeadPartnerEntityType.missing.3pt" else "pages.businessLeadPartnerEntityType.missing"
+          result <- PartnerForm.form(errorKey).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(businessLeadPartnerEntityPage(formWithErrors, isTransactor, leadEntityIndex))),
             partyType =>
               for {
                 _ <- entityService.upsertEntity[PartyType](profile.registrationId, leadEntityIndex, partyType)

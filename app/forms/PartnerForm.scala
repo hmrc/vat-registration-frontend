@@ -21,16 +21,16 @@ import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
 
-object LeadPartnerForm {
+object PartnerForm {
 
   val leadPartnerEntityType: String = "value"
 
-  def formatter(implicit leadPartnerError: String): Formatter[PartyType] = new Formatter[PartyType] {
+  def formatter(implicit error: String): Formatter[PartyType] = new Formatter[PartyType] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], PartyType] = {
       data.get(key).map(value => PartyType.inverseStati(value)) match {
-        case Some(Invalid) => Left(Seq(FormError(key, leadPartnerError)))
+        case Some(Invalid) => Left(Seq(FormError(key, error)))
         case Some(value) => Right(value)
-        case _ => Left(Seq(FormError(key, leadPartnerError)))
+        case _ => Left(Seq(FormError(key, error)))
       }
     }
 
@@ -38,7 +38,7 @@ object LeadPartnerForm {
       Map(key -> PartyType.stati(value))
   }
 
-  def form(implicit leadPartnerError: String): Form[PartyType] = Form(
+  def form(implicit error: String): Form[PartyType] = Form(
     single(
       leadPartnerEntityType -> of(formatter)
     )

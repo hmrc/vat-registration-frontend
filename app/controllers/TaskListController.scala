@@ -43,7 +43,6 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    transactorDetailsService: TransactorDetailsService,
                                    businessService: BusinessService,
                                    vatApplicationService: VatApplicationService,
-                                   bankAccountDetailsService: BankAccountDetailsService,
                                    flatRateService: FlatRateService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,

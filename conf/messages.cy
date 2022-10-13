@@ -58,6 +58,7 @@ tasklist.aboutBusinessContact.contactDetails        = Ei fanylion cyswllt
 tasklist.aboutBusinessContact.personalDetails       = Ei wybodaeth bersonol
 tasklist.aboutBusinessContact.heading               = Ynglŷn â’r cyswllt busnes
 tasklist.aboutTheBusiness.heading                   = Ynglŷn â’r busnes
+tasklist.aboutTheBusiness.partnersDetail            = Partners within a partnership
 tasklist.aboutTheBusiness.businessDetails           = Manylion y busnes
 tasklist.aboutTheBusiness.businessActivities        = Gweithgareddau busnes
 tasklist.aboutTheBusiness.otherBusinessInvolvements = Cysylltiadau busnes eraill
@@ -1093,6 +1094,9 @@ pages.leadPartnerEntityType.heading.3pt                  = What type of partner 
 pages.leadPartnerEntityType.soleTrader                   = An actual person
 pages.leadPartnerEntityType.business                     = A business
 pages.leadPartnerEntityType.missing                      = Select the type of partner you are
+pages.leadPartnerEntityType.missing.3pt                  = Select the type of lead partner
+pages.partnerEntityType.heading                          = What type of partner is the {0} partner?
+pages.partnerEntityType.missing                          = Select the partner type
 
 # BUSINESS LEAD PARTNER ENTITY TYPE
 pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
@@ -1105,6 +1109,9 @@ pages.businessLeadPartnerEntityType.limLiaPartner        = Partneriaeth atebolrw
 pages.businessLeadPartnerEntityType.cio                  = Sefydliad Corfforedig Elusennol
 pages.businessLeadPartnerEntityType.regSociety           = Cymdeithas gofrestredig
 pages.businessLeadPartnerEntityType.missing              = Select the business type of the lead partner
+pages.businessLeadPartnerEntityType.missing.3pt          = Select the type of business the lead partner is within the partnership
+pages.businessPartnerEntityType.missing                  = Select the partner’s business type within the partnership
+pages.businessPartnerEntityType.heading                  = What type of business is the {0} partner within the partnership?
 
 # OVERSEAS BANK ACCOUNT
 pages.overseasBankAccount.heading                        = Manylion cyfrif banc neu gyfrif cymdeithas adeiladu
@@ -1165,8 +1172,8 @@ internationalAddress.line3                               = Cyfeiriad – llinell
 internationalAddress.line4                               = Cyfeiriad – llinell 4 (dewisol)
 internationalAddress.line5                               = Cyfeiriad – llinell 5 (dewisol)
 internationalAddress.postcode                            = Cod post
-internationalAddress.hint                                = Dim ond os yw’r cyfeiriad yn y Deyrnas Unedig, neu ar Guernsey, Jersey neu Ynys Manaw y mae angen i chi nodi cod post
-internationalAddress.ppobHint                            = Dim ond os yw’r cyfeiriad yn neu Guernsey, Jersey neu Ynys Manaw y mae angen i chi nodi cod post
+internationalAddress.hint                                = You only need to enter a postcode if the address is in the United Kingdom, Guernsey, Jersey or the Isle of Man
+internationalAddress.ppobHint                            = You only need to enter a postcode if the address is in Guernsey, Jersey or the Isle of Man
 internationalAddress.country                             = Gwlad
 internationalAddress.country.default                     = Dewiswch wlad
 internationalAddress.error.line1.empty                   = Nodwch linell 1 y cyfeiriad

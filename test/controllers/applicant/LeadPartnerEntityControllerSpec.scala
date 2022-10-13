@@ -25,7 +25,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{MockApplicantDetailsService, MockEntityService}
 import testHelpers.ControllerSpec
-import views.html.applicant.lead_partner_entity_type
+import views.html.applicant.PartnerEntityType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
   with ApplicantDetailsFixtures {
 
   trait Setup {
-    val view: lead_partner_entity_type = app.injector.instanceOf[lead_partner_entity_type]
+    val view: PartnerEntityType = app.injector.instanceOf[PartnerEntityType]
     val controller: LeadPartnerEntityController = new LeadPartnerEntityController(
       mockAuthClientConnector,
       mockSessionService,
