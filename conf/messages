@@ -1846,3 +1846,7 @@ partner.scottishPartnershipName.heading                             = What is th
 validation.partner.scottishPartnershipName.missing                  = Enter the name of the partnership
 validation.partner.scottishPartnershipName.maxlen                   = Enter a partnership name that is between 1 and 105 characters
 validation.partner.scottishPartnershipName.invalid                  = Enter a partnership name that does not contain special characters
+
+# PARTNER TELEPHONE NUMBER
+partner.telephoneNumber.heading                                     = What is {0}’s telephone number?
+partner.telephoneNumber.hint                                        = Enter a UK telephone number

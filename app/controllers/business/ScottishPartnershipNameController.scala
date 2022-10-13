@@ -23,6 +23,7 @@ import models.Entity.leadEntityIndex
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.business.ScottishPartnershipName
+import services.EntityService.{ScottishPartnershipName => ScotPartnershipName}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,7 +59,7 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           companyName => {
             for {
-              _ <- entityService.upsertEntity[String](profile.registrationId, leadEntityIndex, companyName)
+              _ <- entityService.upsertEntity[ScotPartnershipName](profile.registrationId, leadEntityIndex, ScotPartnershipName(companyName))
             } yield {
               Redirect(controllers.grs.routes.PartnerPartnershipIdController.startJourney(leadEntityIndex))
             }

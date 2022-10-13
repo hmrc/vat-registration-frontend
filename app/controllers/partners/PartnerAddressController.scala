@@ -68,7 +68,7 @@ class PartnerAddressController @Inject()(val sessionService: SessionService,
           for {
             address <- addressLookupService.getAddressById(id)
             _ <- entityService.upsertEntity[Address](profile.registrationId, index, address.normalise())
-          } yield NotImplemented
+          } yield Redirect(routes.PartnerTelephoneNumberController.show(index))
         }
   }
 }

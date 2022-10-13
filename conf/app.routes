@@ -582,3 +582,7 @@ POST        /partner/:index/scottish-partnership-name                 controller
 ## Partner Address Alf
 GET         /partner/:index/address                                   controllers.partners.PartnerAddressController.redirectToAlf(index: Int)
 GET         /partner/:index/addressCallback                           controllers.partners.PartnerAddressController.addressLookupCallback(index: Int, id: String ?= "")
+
+## Partner Telephone Number Page
+GET         /partner/:index/partner-telephone                         controllers.partners.PartnerTelephoneNumberController.show(index: Int)
+POST        /partner/:index/partner-telephone                         controllers.partners.PartnerTelephoneNumberController.submit(index: Int)

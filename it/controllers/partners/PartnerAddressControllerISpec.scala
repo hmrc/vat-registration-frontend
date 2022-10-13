@@ -120,7 +120,8 @@ class PartnerAddressControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(callbackUrl(2)).get()
 
       whenReady(response) { res =>
-        res.status mustBe NOT_IMPLEMENTED
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerTelephoneNumberController.show(2).url)
       }
     }
   }
