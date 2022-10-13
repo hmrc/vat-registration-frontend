@@ -342,6 +342,14 @@ POST        /lead-partner-entity                                      controller
 GET         /business-type-in-partnership                            controllers.applicant.BusinessLeadPartnerEntityController.showPartnerEntityType
 POST        /business-type-in-partnership                            controllers.applicant.BusinessLeadPartnerEntityController.submitPartnerEntity
 
+## PartnerEntityTypeController
+GET         /partner/:index/partner-type                             controllers.partners.PartnerEntityTypeController.showPartnerType(index: Int)
+POST        /partner/:index/partner-type                             controllers.partners.PartnerEntityTypeController.submitPartnerType(index: Int)
+
+## BusinessPartnerEntityTypeController
+GET         /partner/:index/business-type-in-partnership             controllers.partners.BusinessPartnerEntityTypeController.showPartnerType(index: Int)
+POST        /partner/:index/business-type-in-partnership             controllers.partners.BusinessPartnerEntityTypeController.submitPartnerType(index: Int)
+
 ## PartyTypeResolverController
 GET         /resolve-party-type                                       controllers.TradingNameResolverController.resolve
 

@@ -16,17 +16,87 @@
 
 package viewmodels.tasklist
 
+import controllers.partners.PartnerIndexValidation
+import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching}
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, Partnership, SicCode}
+import models.api.{Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
 import testHelpers.VatRegSpec
 
-class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
   val section: AboutTheBusinessTaskList = app.injector.instanceOf[AboutTheBusinessTaskList]
 
+  "Additional partners row when DigitalPartnerFlow FS enabled" must {
+    val expectedRowUrl = controllers.partners.routes.PartnerEntityTypeController.showPartnerType(PartnerIndexValidation.minPartnerIndex).url
+
+    "not be shown for non-partnership party type" in {
+      val maybePartnersDetail = section.buildPartnersDetailRow(emptyVatScheme)
+      maybePartnersDetail mustBe None
+    }
+
+    "be TLCannotStart if the prerequisites are not complete" in {
+      enable(DigitalPartnerFlow)
+      val scheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(
+          validEligibilitySubmissionData.copy(partyType = ScotPartnership)
+        )
+      )
+
+      val maybePartnersDetail = section.buildPartnersDetailRow(scheme)
+      maybePartnersDetail must not be None
+
+      val row = maybePartnersDetail.get.build(scheme)
+      row.status mustBe TLCannotStart
+      row.url mustBe expectedRowUrl
+      disable(DigitalPartnerFlow)
+    }
+
+    "be TLNotStarted if the prerequisites are complete but there are no answers" in {
+      enable(DigitalPartnerFlow)
+      val scheme = validVatScheme.copy(
+        eligibilitySubmissionData = Some(
+          validEligibilitySubmissionData.copy(partyType = ScotPartnership)
+        ),
+        entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)))
+      )
+
+      val maybePartnersDetail = section.buildPartnersDetailRow(scheme)
+      maybePartnersDetail must not be None
+
+      val row = maybePartnersDetail.get.build(scheme)
+
+      row.status mustBe TLNotStarted
+      row.url mustBe expectedRowUrl
+      disable(DigitalPartnerFlow)
+    }
+
+    "be TLCompleted if the prerequisites are complete and there are all answers" in {
+      enable(DigitalPartnerFlow)
+      val scheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(
+          validEligibilitySubmissionData.copy(partyType = ScotPartnership)
+        ),
+        applicantDetails = Some(completeApplicantDetails),
+        business = Some(validBusiness),
+        entities = Some(List(
+          Entity(None, Individual, Some(true), None, None, None, None),
+          Entity(Some(testSoleTrader), Individual, Some(false), None, Some(testAddress), Some("test@test.com"), Some("12334483"))
+        ))
+      )
+
+      val maybePartnersDetail = section.buildPartnersDetailRow(scheme)
+      maybePartnersDetail must not be None
+
+      val row = maybePartnersDetail.get.build(scheme)
+      row.status mustBe TLCompleted
+      row.url mustBe expectedRowUrl
+      disable(DigitalPartnerFlow)
+    }
+  }
+
   "The business details row" must {
-    "be cannot start if the prerequesites are not complete" in {
+    "be cannot start if the prerequisites are not complete" in {
       val scheme = emptyVatScheme
 
       val row = section.businessDetailsRow.build(scheme)
@@ -35,7 +105,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
-    "be not started if the prerequesites are complete but there are no answers" in {
+    "be not started if the prerequisites are complete but there are no answers" in {
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails)
@@ -47,7 +117,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
-    "be in progress if the prerequesites are complete and there are some answers" in {
+    "be in progress if the prerequisites are complete and there are some answers" in {
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails),
@@ -60,21 +130,20 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
-    "be in progress if the prerequesites are complete and there are all answers but companyName not defined for GeneralPartnership" in {
+    "be in progress if the prerequisites are complete and there are all answers but companyName not defined for GeneralPartnership" in {
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership)),
         applicantDetails = Some(completeApplicantDetails.copy(entity = Some(testGeneralPartnership))),
         entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None))),
         business = Some(validBusiness)
       )
-
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
     }
 
-    "be completed if the prerequesites are complete and there are all answers" in {
+    "be completed if the prerequisites are complete and there are all answers" in {
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails),

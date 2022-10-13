@@ -21,11 +21,11 @@ import play.api.data.{Form, FormError}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
-class LeadPartnerFormSpec extends VatRegSpec {
+class PartnerFormSpec extends VatRegSpec {
 
   implicit val errorKey: String = "pages.leadPartnerEntityType.missing"
 
-  val form: Form[PartyType] = LeadPartnerForm.form
+  val form: Form[PartyType] = PartnerForm.form
 
   "LeadPartnerForm" should {
 
@@ -43,7 +43,7 @@ class LeadPartnerFormSpec extends VatRegSpec {
 
       validEntityTypes map {
         case (value, expected) =>
-          val res = form.bind(Json.obj(LeadPartnerForm.leadPartnerEntityType -> value))
+          val res = form.bind(Json.obj(PartnerForm.leadPartnerEntityType -> value))
           res.get mustBe expected
       }
     }
@@ -55,8 +55,8 @@ class LeadPartnerFormSpec extends VatRegSpec {
       )
 
       invalidEntityTypes map { value =>
-        val res = form.bind(Json.obj(LeadPartnerForm.leadPartnerEntityType -> value))
-        res.errors.head mustBe FormError(LeadPartnerForm.leadPartnerEntityType, Seq(errorKey), Seq())
+        val res = form.bind(Json.obj(PartnerForm.leadPartnerEntityType -> value))
+        res.errors.head mustBe FormError(PartnerForm.leadPartnerEntityType, Seq(errorKey), Seq())
       }
     }
   }

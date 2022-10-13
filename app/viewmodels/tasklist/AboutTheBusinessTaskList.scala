@@ -17,18 +17,43 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
-import models.api.{Partnership, ScotPartnership, VatScheme}
+import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
+import models.api.{LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership, VatScheme}
 import models.external.{MinorEntity, PartnershipIdEntity}
-import models.{Business, CurrentProfile, OtherBusinessInvolvement}
+import models.{Business, CurrentProfile, Entity, OtherBusinessInvolvement}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import services.BusinessService
+import controllers.partners.PartnerIndexValidation.minPartnerIndex
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService) extends FeatureSwitching {
+
+  //scalastyle:off
+  def buildPartnersDetailRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListRowBuilder] = {
+    vatScheme.partyType match {
+      case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) if isEnabled(DigitalPartnerFlow) =>
+        Some(
+          TaskListRowBuilder(
+            messageKey = _ => "tasklist.aboutTheBusiness.partnersDetail",
+            url = _ => controllers.partners.routes.PartnerEntityTypeController.showPartnerType(minPartnerIndex).url,
+            tagId = "partnersDetailRow",
+            checks = scheme => Seq(
+              scheme.entities.flatMap(_.find(_.isLeadPartner.contains(false))) match {
+                case Some(Entity(Some(_), partyType, Some(_), None, Some(_), Some(_), Some(_))) if partyType != ScotPartnership => true
+                case Some(Entity(Some(_), partyType, Some(_), Some(_), Some(_), Some(_), Some(_))) if partyType == ScotPartnership => true
+                case _ => false
+              }
+            ),
+            prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
+          )
+        )
+      case _ =>
+        None
+    }
+  }
 
   def businessDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
@@ -65,7 +90,9 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         }
       }
     },
-    prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
+    prerequisites = vatScheme => {
+      Seq(buildPartnersDetailRow(vatScheme).getOrElse(aboutYouTaskList.contactDetailsRow))
+    }
   )
 
   def businessActivitiesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
@@ -138,10 +165,10 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
     TaskListSection(
       heading = messages("tasklist.aboutTheBusiness.heading"),
       rows = Seq(
-        businessDetailsRow.build(vatScheme),
-        businessActivitiesRow.build(vatScheme)
-      ).++ {
-        if (isEnabled(OBI_FS)) Seq(otherBusinessInvolvementsRow.build(vatScheme)) else Nil
-      }
+        buildPartnersDetailRow(vatScheme).map(_.build(vatScheme)),
+        Some(businessDetailsRow.build(vatScheme)),
+        Some(businessActivitiesRow.build(vatScheme)),
+        if (isEnabled(OBI_FS)) Some(otherBusinessInvolvementsRow.build(vatScheme)) else None
+      ).flatten
     )
 }
