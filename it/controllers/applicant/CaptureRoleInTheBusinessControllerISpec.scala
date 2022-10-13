@@ -5,7 +5,7 @@ import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
-import models.{ApplicantDetails, Director, Trustee}
+import models.{ApplicantDetails, BoardMember, Director}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -53,12 +53,12 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(roleInTheBusiness = Some(Trustee)))
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(roleInTheBusiness = Some(BoardMember)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient("/role-in-the-business").post(Map("value" -> "trustee")))
+        val res = await(buildClient("/role-in-the-business").post(Map("value" -> "boardMember")))
         res.status mustBe BAD_REQUEST
       }
     }

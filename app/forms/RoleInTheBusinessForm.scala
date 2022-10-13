@@ -16,7 +16,7 @@
 
 package forms
 
-import models.{CompanySecretary, Director, RoleInTheBusiness}
+import models.{CompanySecretary, Director, RoleInTheBusiness, Trustee}
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
@@ -29,6 +29,8 @@ object RoleInTheBusinessForm {
   val director: String = "director"
 
   val companySecretary: String = "companySecretary"
+
+  val trustee: String = "trustee"
 
   val roleInTheBusinessError: String = "pages.roleInTheBusiness.error.message"
 
@@ -43,6 +45,7 @@ object RoleInTheBusinessForm {
       data.get(key) match {
         case Some(`director`) => Right(Director)
         case Some(`companySecretary`) => Right(CompanySecretary)
+        case Some(`trustee`) => Right(Trustee)
         case _ => Left(Seq(FormError(key, roleInTheBusinessError)))
       }
     }
@@ -51,6 +54,7 @@ object RoleInTheBusinessForm {
       val stringValue = value match {
         case Director => director
         case CompanySecretary => companySecretary
+        case Trustee => trustee
       }
       Map(key -> stringValue)
     }

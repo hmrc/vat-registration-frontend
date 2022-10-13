@@ -838,6 +838,7 @@ pages.roleInTheBusiness.yourHeading                      = Beth yw’ch swydd yn
 pages.roleInTheBusiness.namedHeading                     = Beth yw swydd {0} yn y busnes?
 pages.roleInTheBusiness.radio1                           = Cyfarwyddwr
 pages.roleInTheBusiness.radio2                           = Ysgrifennydd y cwmni
+pages.roleInTheBusiness.radio3                           = Ymddiriedolwr
 pages.roleInTheBusiness.error.message                    = Dewiswch y swydd yn y busnes
 
 # Former Name
