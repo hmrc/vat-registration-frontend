@@ -368,6 +368,77 @@ addressLookup.transactorAddress.confirmPage.submitLabel            = Continue
 addressLookup.transactorAddress.countryPicker.title                = Find your home address
 addressLookup.transactorAddress.countryPicker.heading              = Find your home address
 
+# individualPartner
+addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
+addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
+addressLookup.individualPartner.lookupPage.filterLabel             = Property name or number
+addressLookup.individualPartner.lookupPage.submitLabel             = Continue
+addressLookup.individualPartner.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
+
+addressLookup.individualPartner.selectPage.title                   = Choose the address
+addressLookup.individualPartner.selectPage.heading                 = Choose the address
+addressLookup.individualPartner.selectPage.editAddressLinkText     = Enter address manually
+addressLookup.individualPartner.selectPage.submitLabel             = Continue
+
+addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
+addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
+addressLookup.individualPartner.editPage.line1Label                = Address line 1
+addressLookup.individualPartner.editPage.line2Label                = Address line 2
+addressLookup.individualPartner.editPage.line3Label                = Address line 3
+addressLookup.individualPartner.editPage.postcodeLabel             = Postcode
+addressLookup.individualPartner.editPage.countryLabel              = Country
+addressLookup.individualPartner.editPage.submitLabel               = Continue
+
+addressLookup.individualPartner.confirmPage.title                  = Confirm {0}’s home address
+addressLookup.individualPartner.confirmPage.heading                = Confirm {0}’s home address
+addressLookup.individualPartner.confirmPage.changeLinkText         = Edit this address
+addressLookup.individualPartner.confirmPage.submitLabel            = Continue
+
+addressLookup.individualPartner.countryPicker.title                = Where is {0}’s home address?
+addressLookup.individualPartner.countryPicker.heading              = Where is {0}’s home address?
+
+# international.individualPartner
+international.addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
+international.addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
+international.addressLookup.individualPartner.editPage.line1Label                = Address line 1
+international.addressLookup.individualPartner.editPage.line2Label                = Address line 2
+international.addressLookup.individualPartner.editPage.line3Label                = Address line 3 (optional)
+international.addressLookup.individualPartner.editPage.townLabel                 = Town/City
+international.addressLookup.individualPartner.editPage.postcodeLabel             = Postcode (optional)
+international.addressLookup.individualPartner.editPage.countryLabel              = Country
+international.addressLookup.individualPartner.editPage.submitLabel               = Continue
+
+international.addressLookup.individualPartner.confirmPage.title                  = Confirm {0}’s home address
+international.addressLookup.individualPartner.confirmPage.heading                = Confirm {0}’s home address
+international.addressLookup.individualPartner.confirmPage.changeLinkText         = Edit this address
+international.addressLookup.individualPartner.confirmPage.submitLabel            = Continue
+
+# companyPartner
+addressLookup.companyPartner.lookupPage.title                   = Find {0}’s registered office address
+addressLookup.companyPartner.lookupPage.heading                 = Find {0}’s registered office address
+addressLookup.companyPartner.lookupPage.filterLabel             = Property name or number
+addressLookup.companyPartner.lookupPage.submitLabel             = Continue
+addressLookup.companyPartner.lookupPage.manualAddressLinkText   = The address does not have a UK postcode
+
+addressLookup.companyPartner.selectPage.title                   = Choose the address
+addressLookup.companyPartner.selectPage.heading                 = Choose the address
+addressLookup.companyPartner.selectPage.editAddressLinkText     = Enter address manually
+addressLookup.companyPartner.selectPage.submitLabel             = Continue
+
+addressLookup.companyPartner.editPage.title                     = Enter {0}’s registered office address
+addressLookup.companyPartner.editPage.heading                   = Enter {0}’s registered office address
+addressLookup.companyPartner.editPage.line1Label                = Address line 1
+addressLookup.companyPartner.editPage.line2Label                = Address line 2
+addressLookup.companyPartner.editPage.line3Label                = Address line 3
+addressLookup.companyPartner.editPage.postcodeLabel             = Postcode
+addressLookup.companyPartner.editPage.countryLabel              = Country
+addressLookup.companyPartner.editPage.submitLabel               = Continue
+
+addressLookup.companyPartner.confirmPage.title                  = Confirm {0}’s registered office address
+addressLookup.companyPartner.confirmPage.heading                = Confirm {0}’s registered office address
+addressLookup.companyPartner.confirmPage.changeLinkText         = Edit this address
+addressLookup.companyPartner.confirmPage.submitLabel            = Continue
+
 #Timeout Page
 pages.timeout.heading                   = Your session has timed out due to inactivity
 pages.timeout.body.one                  = Your answers have been saved.

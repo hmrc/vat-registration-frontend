@@ -17,10 +17,12 @@
 package common.enums
 
 object AddressLookupJourneyIdentifier extends Enumeration {
-  val homeAddress                       = Value
-  val applicantAddress                  = Value
-  val addressThreeYearsOrLess           = Value
-  val applicantAddressThreeYearsOrLess  = Value
-  val businessActivities                = Value
-  val transactorAddress       = Value
+  val homeAddress = Value
+  val applicantAddress = Value
+  val addressThreeYearsOrLess = Value
+  val applicantAddressThreeYearsOrLess = Value
+  val businessActivities = Value
+  val transactorAddress = Value
+  val individualPartner = Value
+  val companyPartner = Value
 }

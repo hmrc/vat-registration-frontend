@@ -368,6 +368,77 @@ addressLookup.transactorAddress.confirmPage.submitLabel            = Yn eich bla
 addressLookup.transactorAddress.countryPicker.title                = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.transactorAddress.countryPicker.heading              = Dewch o hyd i’ch cyfeiriad cartref
 
+# individualPartner
+addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
+addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
+addressLookup.individualPartner.lookupPage.filterLabel             = Enw neu rif yr eiddo
+addressLookup.individualPartner.lookupPage.submitLabel             = Yn eich blaen
+addressLookup.individualPartner.lookupPage.manualAddressLinkText   = Nid oes gan y cyfeiriad god post yn y DU
+
+addressLookup.individualPartner.selectPage.title                   = Choose the address
+addressLookup.individualPartner.selectPage.heading                 = Choose the address
+addressLookup.individualPartner.selectPage.editAddressLinkText     = Nodwch y cyfeiriad â llaw
+addressLookup.individualPartner.selectPage.submitLabel             = Yn eich blaen
+
+addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
+addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
+addressLookup.individualPartner.editPage.line1Label                = Cyfeiriad – llinell 1
+addressLookup.individualPartner.editPage.line2Label                = Cyfeiriad – llinell 2
+addressLookup.individualPartner.editPage.line3Label                = Cyfeiriad – llinell 3
+addressLookup.individualPartner.editPage.postcodeLabel             = Cod post
+addressLookup.individualPartner.editPage.countryLabel              = Gwlad
+addressLookup.individualPartner.editPage.submitLabel               = Yn eich blaen
+
+addressLookup.individualPartner.confirmPage.title                  = Confirm {0}’s home address
+addressLookup.individualPartner.confirmPage.heading                = Confirm {0}’s home address
+addressLookup.individualPartner.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
+addressLookup.individualPartner.confirmPage.submitLabel            = Yn eich blaen
+
+addressLookup.individualPartner.countryPicker.title                = Where is {0}’s home address?
+addressLookup.individualPartner.countryPicker.heading              = Where is {0}’s home address?
+
+# international.individualPartner
+international.addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
+international.addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
+international.addressLookup.individualPartner.editPage.line1Label                = Cyfeiriad – llinell 1
+international.addressLookup.individualPartner.editPage.line2Label                = Cyfeiriad – llinell 2
+international.addressLookup.individualPartner.editPage.line3Label                = Cyfeiriad – llinell 3 (dewisol)
+international.addressLookup.individualPartner.editPage.townLabel                 = Cod post (dewisol)
+international.addressLookup.individualPartner.editPage.postcodeLabel             = Tref/Dinas
+international.addressLookup.individualPartner.editPage.countryLabel              = Gwlad
+international.addressLookup.individualPartner.editPage.submitLabel               = Yn eich blaen
+
+international.addressLookup.individualPartner.confirmPage.title                  = Confirm {0}’s home address
+international.addressLookup.individualPartner.confirmPage.heading                = Confirm {0}’s home address
+international.addressLookup.individualPartner.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
+international.addressLookup.individualPartner.confirmPage.submitLabel            = Yn eich blaen
+
+# companyPartner
+addressLookup.companyPartner.lookupPage.title                   = Find {0}’s registered office address
+addressLookup.companyPartner.lookupPage.heading                 = Find {0}’s registered office address
+addressLookup.companyPartner.lookupPage.filterLabel             = Enw neu rif yr eiddo
+addressLookup.companyPartner.lookupPage.submitLabel             = Yn eich blaen
+addressLookup.companyPartner.lookupPage.manualAddressLinkText   = Nid oes gan y cyfeiriad god post yn y DU
+
+addressLookup.companyPartner.selectPage.title                   = Choose the address
+addressLookup.companyPartner.selectPage.heading                 = Choose the address
+addressLookup.companyPartner.selectPage.editAddressLinkText     = Nodwch y cyfeiriad â llaw
+addressLookup.companyPartner.selectPage.submitLabel             = Yn eich blaen
+
+addressLookup.companyPartner.editPage.title                     = Enter {0}’s registered office address
+addressLookup.companyPartner.editPage.heading                   = Enter {0}’s registered office address
+addressLookup.companyPartner.editPage.line1Label                = Cyfeiriad – llinell 1
+addressLookup.companyPartner.editPage.line2Label                = Cyfeiriad – llinell 2
+addressLookup.companyPartner.editPage.line3Label                = Cyfeiriad – llinell 3
+addressLookup.companyPartner.editPage.postcodeLabel             = Cod post
+addressLookup.companyPartner.editPage.countryLabel              = Gwlad
+addressLookup.companyPartner.editPage.submitLabel               = Yn eich blaen
+
+addressLookup.companyPartner.confirmPage.title                  = Confirm {0}’s registered office address
+addressLookup.companyPartner.confirmPage.heading                = Confirm {0}’s registered office address
+addressLookup.companyPartner.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
+addressLookup.companyPartner.confirmPage.submitLabel            = Yn eich blaen
+
 #Timeout Page
 pages.timeout.heading                   = Mae’ch sesiwn wedi dod i ben oherwydd anweithgarwch
 pages.timeout.body.one                  = Mae’ch atebion wedi’u cadw.

@@ -27,8 +27,7 @@ case class Entity(details: Option[BusinessEntity],
                   optScottishPartnershipName: Option[String],
                   address: Option[Address],
                   email: Option[String],
-                  telephoneNumber: Option[String]
-                 )
+                  telephoneNumber: Option[String])
 
 object Entity {
   val leadEntityIndex = 1

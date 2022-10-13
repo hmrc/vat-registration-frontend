@@ -82,7 +82,7 @@ class PartnerIncorpIdController @Inject()(val authConnector: AuthConnector,
                 Redirect(routes.IndividualIdController.startJourney)
               }
             } else {
-              NotImplemented
+              Redirect(controllers.partners.routes.PartnerAddressController.redirectToAlf(index))
             }
           }
         }

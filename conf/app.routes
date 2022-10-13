@@ -206,8 +206,8 @@ GET         /current-address/acceptFromTxm                            controller
 ## Incorp ID Pages
 GET         /start-incorp-id-journey                                  controllers.grs.IncorpIdController.startJourney
 GET         /incorp-id-callback                                       controllers.grs.IncorpIdController.incorpIdCallback(journeyId)
-GET         /partner/:index/start-incorp-id-journey                  controllers.grs.PartnerIncorpIdController.startJourney(index: Int)
-GET         /partner/:index/incorp-id-callback                       controllers.grs.PartnerIncorpIdController.callback(index: Int, journeyId: String)
+GET         /partner/:index/start-incorp-id-journey                   controllers.grs.PartnerIncorpIdController.startJourney(index: Int)
+GET         /partner/:index/incorp-id-callback                        controllers.grs.PartnerIncorpIdController.callback(index: Int, journeyId: String)
 
 ## Personal Details Validation Pages
 GET         /start-personal-details-validation-journey                controllers.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
@@ -218,16 +218,16 @@ GET         /start-sti-journey                                        controller
 GET         /sti-callback                                             controllers.grs.SoleTraderIdController.callback(journeyId)
 GET         /start-sti-individual-journey                             controllers.grs.IndividualIdController.startJourney
 GET         /sti-individual-callback                                  controllers.grs.IndividualIdController.callback(journeyId)
-GET         /partner/:index/start-sti-journey                        controllers.grs.PartnerSoleTraderIdController.startJourney(index: Int)
-GET         /partner/:index/sti-callback                             controllers.grs.PartnerSoleTraderIdController.callback(index: Int, journeyId: String)
+GET         /partner/:index/start-sti-journey                         controllers.grs.PartnerSoleTraderIdController.startJourney(index: Int)
+GET         /partner/:index/sti-callback                              controllers.grs.PartnerSoleTraderIdController.callback(index: Int, journeyId: String)
 GET         /start-sti-transactor-journey                             controllers.grs.TransactorIdController.startJourney
 GET         /sti-transactor-callback                                  controllers.grs.TransactorIdController.callback(journeyId)
 
 ## Partnership ID Pages
 GET         /start-partnership-id-journey                             controllers.grs.PartnershipIdController.startJourney
 GET         /partnership-id-callback                                  controllers.grs.PartnershipIdController.callback(journeyId)
-GET         /partner/:index/start-partnership-id-journey             controllers.grs.PartnerPartnershipIdController.startJourney(index: Int)
-GET         /partner/:index/partnership-id-callback                  controllers.grs.PartnerPartnershipIdController.callback(index: Int, journeyId: String)
+GET         /partner/:index/start-partnership-id-journey              controllers.grs.PartnerPartnershipIdController.startJourney(index: Int)
+GET         /partner/:index/partnership-id-callback                   controllers.grs.PartnerPartnershipIdController.callback(index: Int, journeyId: String)
 
 ## Minor Entity ID Pages
 GET         /start-minor-entity-id-journey                            controllers.grs.MinorEntityIdController.startJourney
@@ -339,8 +339,8 @@ GET         /lead-partner-entity                                      controller
 POST        /lead-partner-entity                                      controllers.applicant.LeadPartnerEntityController.submitLeadPartnerEntity
 
 ## BusinessLeadPartnerEntityController
-GET         /business-type-in-partnership                            controllers.applicant.BusinessLeadPartnerEntityController.showPartnerEntityType
-POST        /business-type-in-partnership                            controllers.applicant.BusinessLeadPartnerEntityController.submitPartnerEntity
+GET         /business-type-in-partnership                             controllers.applicant.BusinessLeadPartnerEntityController.showPartnerEntityType
+POST        /business-type-in-partnership                             controllers.applicant.BusinessLeadPartnerEntityController.submitPartnerEntity
 
 ## PartnerEntityTypeController
 GET         /partner/:index/partner-type                             controllers.partners.PartnerEntityTypeController.showPartnerType(index: Int)
@@ -578,3 +578,7 @@ POST        /supply-supporting-documents                              controller
 ## Partner Scottish Partnership Name Page
 GET         /partner/:index/scottish-partnership-name                 controllers.partners.PartnerScottishPartnershipNameController.show(index: Int)
 POST        /partner/:index/scottish-partnership-name                 controllers.partners.PartnerScottishPartnershipNameController.submit(index: Int)
+
+## Partner Address Alf
+GET         /partner/:index/address                                   controllers.partners.PartnerAddressController.redirectToAlf(index: Int)
+GET         /partner/:index/addressCallback                           controllers.partners.PartnerAddressController.addressLookupCallback(index: Int, id: String ?= "")

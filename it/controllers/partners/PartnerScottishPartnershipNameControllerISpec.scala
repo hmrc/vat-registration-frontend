@@ -55,7 +55,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(List(
         Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
-        Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(scottishPartnershipName), None, None, None)
+        Entity(Some(testSoleTrader), ScotPartnership, Some(false), Some(scottishPartnershipName), None, None, None)
       )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

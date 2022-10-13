@@ -32,17 +32,17 @@ case class AddressMessagesModel(appLevelLabels: AppLevelMessagesModel,
 object AddressMessagesModel {
   implicit val writes: Writes[AddressMessagesModel] = Json.writes[AddressMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang, useUkMode: Boolean = false)
+  def forJourney(journeyId: String, lang: Lang, useUkMode: Boolean = false, optName: Option[String] = None)
                 (implicit messagesApi: MessagesApi): AddressMessagesModel = {
 
     AddressMessagesModel(
       appLevelLabels = AppLevelMessagesModel.forLang(lang),
-      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang),
+      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang, optName),
       selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang),
-      editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang),
-      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang),
-      countryPickerLabels = if (useUkMode) None else Some(CountryPickerMessagesModel.forJourney(journeyId, lang)),
-      international = InternationalAddressMessagesModel.forJourney(journeyId, lang)
+      editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang, msgPrefix = None, optName),
+      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang, msgPrefix = None, optName),
+      countryPickerLabels = if (useUkMode) None else Some(CountryPickerMessagesModel.forJourney(journeyId, lang, optName)),
+      international = InternationalAddressMessagesModel.forJourney(journeyId, lang, optName)
     )
   }
 }

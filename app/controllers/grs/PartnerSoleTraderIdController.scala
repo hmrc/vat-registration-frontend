@@ -107,7 +107,7 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
                   Redirect(applicantRoutes.FormerNameController.show)
                 }
               } else {
-                NotImplemented
+                Redirect(controllers.partners.routes.PartnerAddressController.redirectToAlf(index))
               }
             }
           }

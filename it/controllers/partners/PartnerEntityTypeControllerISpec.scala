@@ -1,6 +1,6 @@
 
 
-package controllers.grs
+package controllers.partners
 
 import itutil.ControllerISpec
 import models.Entity

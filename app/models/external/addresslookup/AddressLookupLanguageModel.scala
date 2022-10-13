@@ -50,15 +50,15 @@ case class LookupPageMessagesModel(title: Option[String],
                                    noResultsFoundMessage: Option[String],
                                    resultLimitExceededMessage: Option[String],
                                    manualAddressLinkText: Option[String]
-                                )
+                                  )
 
 object LookupPageMessagesModel {
   implicit val writes: Writes[LookupPageMessagesModel] = Json.writes[LookupPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): LookupPageMessagesModel = {
-    LookupPageMessagesModel (
-      title = MessageOption(s"addressLookup.$journeyId.lookupPage.title", lang),
-      heading = MessageOption(s"addressLookup.$journeyId.lookupPage.heading", lang),
+  def forJourney(journeyId: String, lang: Lang, optName: Option[String] = None)(implicit messagesApi: MessagesApi): LookupPageMessagesModel = {
+    LookupPageMessagesModel(
+      title = MessageOption(s"addressLookup.$journeyId.lookupPage.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"addressLookup.$journeyId.lookupPage.heading", lang, optName.toSeq: _*),
       filterLabel = MessageOption(s"addressLookup.$journeyId.lookupPage.filterLabel", lang),
       postcodeLabel = MessageOption(s"addressLookup.$journeyId.LookupPage.postcodeLabel", lang),
       submitLabel = MessageOption(s"addressLookup.$journeyId.lookupPage.submitLabel", lang),
@@ -75,10 +75,10 @@ case class CountryPickerMessagesModel(title: Option[String],
 object CountryPickerMessagesModel {
   implicit val writes: Writes[CountryPickerMessagesModel] = Json.writes[CountryPickerMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): CountryPickerMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, optName: Option[String] = None)(implicit messagesApi: MessagesApi): CountryPickerMessagesModel = {
     CountryPickerMessagesModel(
-      title = MessageOption(s"addressLookup.$journeyId.countryPicker.title", lang),
-      heading = MessageOption(s"addressLookup.$journeyId.countryPicker.heading", lang)
+      title = MessageOption(s"addressLookup.$journeyId.countryPicker.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"addressLookup.$journeyId.countryPicker.heading", lang, optName.toSeq: _*)
     )
   }
 }
@@ -89,16 +89,15 @@ case class SelectPageMessagesModel(title: Option[String],
                                    proposalListLabel: Option[String],
                                    submitLabel: Option[String],
                                    searchAgainLinkText: Option[String],
-                                   editAddressLinkText: Option[String]
-                                  )
+                                   editAddressLinkText: Option[String])
 
 object SelectPageMessagesModel {
   implicit val writes: Writes[SelectPageMessagesModel] = Json.writes[SelectPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)(implicit messagesApi: MessagesApi): SelectPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, optName: Option[String] = None)(implicit messagesApi: MessagesApi): SelectPageMessagesModel = {
     SelectPageMessagesModel(
-      title = MessageOption(s"addressLookup.$journeyId.selectPage.title", lang),
-      heading = MessageOption(s"addressLookup.$journeyId.selectPage.heading", lang),
+      title = MessageOption(s"addressLookup.$journeyId.selectPage.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"addressLookup.$journeyId.selectPage.heading", lang, optName.toSeq: _*),
       headingWithPostcode = MessageOption(s"addressLookup.$journeyId.selectPage.headingWithPostcode", lang),
       proposalListLabel = MessageOption(s"addressLookup.$journeyId.selectPage.proposalListLabel", lang),
       submitLabel = MessageOption(s"addressLookup.$journeyId.selectPage.submitLabel", lang),
@@ -116,19 +115,18 @@ case class EditPageMessagesModel(title: Option[String],
                                  line3Label: Option[String],
                                  postcodeLabel: Option[String],
                                  countryLabel: Option[String],
-                                 submitLabel: Option[String]
-                                )
+                                 submitLabel: Option[String])
 
 object EditPageMessagesModel {
   implicit val writes: Writes[EditPageMessagesModel] = Json.writes[EditPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None)(implicit messagesApi: MessagesApi): EditPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None, optName: Option[String] = None)(implicit messagesApi: MessagesApi): EditPageMessagesModel = {
     val section = s"addressLookup.$journeyId.editPage"
     val sectionPrefix = msgPrefix.fold(section)(prefix => s"$prefix.$section")
 
     EditPageMessagesModel(
-      title = MessageOption(s"$sectionPrefix.title", lang),
-      heading = MessageOption(s"$sectionPrefix.heading", lang),
+      title = MessageOption(s"$sectionPrefix.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"$sectionPrefix.heading", lang, optName.toSeq: _*),
       line1Label = MessageOption(s"$sectionPrefix.line1Label", lang),
       line2Label = MessageOption(s"$sectionPrefix.line2Label", lang),
       line3Label = MessageOption(s"$sectionPrefix.line3Label", lang),
@@ -147,19 +145,18 @@ case class ConfirmPageMessagesModel(title: Option[String],
                                     submitLabel: Option[String],
                                     searchAgainLinkText: Option[String],
                                     changeLinkText: Option[String],
-                                    confirmChangeText: Option[String]
-                                   )
+                                    confirmChangeText: Option[String])
 
 object ConfirmPageMessagesModel {
   implicit val writes: Writes[ConfirmPageMessagesModel] = Json.writes[ConfirmPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None)(implicit messagesApi: MessagesApi): ConfirmPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None, optName: Option[String] = None)(implicit messagesApi: MessagesApi): ConfirmPageMessagesModel = {
     val section = s"addressLookup.$journeyId.confirmPage"
     val sectionPrefix = msgPrefix.fold(section)(prefix => s"$prefix.$section")
 
     ConfirmPageMessagesModel(
-      title = MessageOption(s"$sectionPrefix.title", lang),
-      heading = MessageOption(s"$sectionPrefix.heading", lang),
+      title = MessageOption(s"$sectionPrefix.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"$sectionPrefix.heading", lang, optName.toSeq: _*),
       infoMessage = MessageOption(s"$sectionPrefix.infoMessage", lang),
       infoSubheading = MessageOption(s"$sectionPrefix.infoSubheading", lang),
       submitLabel = MessageOption(s"$sectionPrefix.submitLabel", lang),

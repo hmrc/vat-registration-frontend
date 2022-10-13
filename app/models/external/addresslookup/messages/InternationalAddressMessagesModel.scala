@@ -21,24 +21,23 @@ import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, Writes}
 
 case class InternationalAddressMessagesModel(appLevelLabels: AppLevelMessagesModel,
-                                lookupPageLabels: LookupPageMessagesModel,
-                                selectPageLabels: SelectPageMessagesModel,
-                                editPageLabels: EditPageMessagesModel,
-                                confirmPageLabels: ConfirmPageMessagesModel
-                               )
+                                             lookupPageLabels: LookupPageMessagesModel,
+                                             selectPageLabels: SelectPageMessagesModel,
+                                             editPageLabels: EditPageMessagesModel,
+                                             confirmPageLabels: ConfirmPageMessagesModel)
 
 object InternationalAddressMessagesModel {
   implicit val writes: Writes[InternationalAddressMessagesModel] = Json.writes[InternationalAddressMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang)
+  def forJourney(journeyId: String, lang: Lang, optName: Option[String] = None)
                 (implicit messagesApi: MessagesApi): InternationalAddressMessagesModel = {
 
     InternationalAddressMessagesModel(
       appLevelLabels = AppLevelMessagesModel.forLang(lang),
       lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang),
       selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang),
-      editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang,  msgPrefix = Some("international")),
-      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang,  msgPrefix = Some("international"))
+      editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang, msgPrefix = Some("international"), optName),
+      confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang, msgPrefix = Some("international"), optName)
     )
   }
 }

@@ -70,7 +70,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
 
   def getUrl(index: Int = 1): String = routes.PartnerPartnershipIdController.startJourney(index).url
 
-  val callbackUrl: String = routes.PartnerPartnershipIdController.callback(1, testJourneyId).url
+  def callbackUrl(index: Int = 1): String = routes.PartnerPartnershipIdController.callback(index, testJourneyId).url
 
   s"GET ${getUrl()}" when {
     "STI returns a journey ID" must {
@@ -123,7 +123,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
     }
   }
 
-  s"GET $callbackUrl" must {
+  s"GET ${callbackUrl()}" must {
     "redirect to the correct controller for Scottish Partnership" in new Setup {
       private def verifyCallbackHandler(redirectUrl: String) = {
         val details = testPartnership.copy(companyName = Some(testOtherCompanyName))
@@ -135,7 +135,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(callbackUrl).get()
+        val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -161,7 +161,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(callbackUrl).get()
+        val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -187,7 +187,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(callbackUrl).get()
+        val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -208,10 +208,30 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
       insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
-      val res: Future[WSResponse] = buildClient(callbackUrl).get()
+      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
       whenReady(res) { result =>
         result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "redirect to the partner ALF journey for index above 1" in new Setup {
+      val testScottishName = "testScottishName"
+      val entity: Entity = Entity(None, ScotPartnership, Some(false), Some(testScottishName), None, None, None)
+
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection(Some(entity), idx = Some(2))
+        .registrationApi.replaceSection(entity.copy(details = Some(testPartnership.copy(companyName = Some(testScottishName)))), idx = Some(2))
+
+      stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient(callbackUrl(2)).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(controllers.partners.routes.PartnerAddressController.redirectToAlf(2).url)
       }
     }
   }
