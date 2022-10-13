@@ -838,6 +838,7 @@ pages.roleInTheBusiness.yourHeading                      = What is your role in 
 pages.roleInTheBusiness.namedHeading                     = What is {0}’s role in the business?
 pages.roleInTheBusiness.radio1                           = Director
 pages.roleInTheBusiness.radio2                           = Company secretary
+pages.roleInTheBusiness.radio3                           = Trustee
 pages.roleInTheBusiness.error.message                    = Select the role within the business
 
 # Former Name

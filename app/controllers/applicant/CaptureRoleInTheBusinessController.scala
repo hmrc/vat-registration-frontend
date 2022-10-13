@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.RoleInTheBusinessForm
+import models.api.Trust
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -45,7 +46,9 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.roleInTheBusiness.fold(RoleInTheBusinessForm())(RoleInTheBusinessForm().fill)
           name <- applicantDetailsService.getTransactorApplicantName
-        } yield Ok(view(filledForm, name))
+          eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
+          isTrust = eligibilitySubmissionData.partyType.equals(Trust)
+        } yield Ok(view(filledForm, name, isTrust))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
@@ -53,9 +56,11 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
       implicit profile =>
         RoleInTheBusinessForm().bindFromRequest().fold(
           formWithErrors =>
-            applicantDetailsService.getTransactorApplicantName.map { name =>
-              BadRequest(view(formWithErrors, name))
-            },
+            for {
+              name <- applicantDetailsService.getTransactorApplicantName
+              eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
+              isTrust = eligibilitySubmissionData.partyType.equals(Trust)
+            } yield BadRequest(view(formWithErrors, name, isTrust)),
           roleInTheBusiness =>
             applicantDetailsService.saveApplicantDetails(roleInTheBusiness).map { _ =>
               Redirect(routes.FormerNameController.show)
