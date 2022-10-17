@@ -36,7 +36,7 @@ class Vat5LRequiredController @Inject()(view: Vat5LRequired,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
-      implicit profile =>
+      _ =>
         Future.successful(Ok(view()))
   }
 

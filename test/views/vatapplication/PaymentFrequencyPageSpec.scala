@@ -21,7 +21,6 @@ import models.api.vatapplication.PaymentFrequency
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.libs.json.Json
 import views.VatRegViewSpec
 import views.html.vatapplication.payment_frequency
 
@@ -68,7 +67,7 @@ class PaymentFrequencyPageSpec extends VatRegViewSpec {
     }
 
     "show the correct error message if a value isn't selected" in new ViewSetup()(
-      doc = asDocument(PaymentFrequencyForm().bind(Json.obj("value" -> "")))
+      doc = asDocument(PaymentFrequencyForm().bind(Map("value" -> "")))
     ) {
       doc.hasErrorSummary mustBe true
       doc.errorSummaryLinks must contain(Link(ExpectedMessages.error, "#value"))

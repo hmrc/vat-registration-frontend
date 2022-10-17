@@ -37,7 +37,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "value" -> DateSelection.calculated_date.toString
       )
 
-      form.bind(data).get mustBe(calculated_date, None)
+      form.bind(data).get mustBe((calculated_date, None))
     }
 
     "Fail to bind successfully for no selection" in {
@@ -72,7 +72,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "date.year" -> testYear.toString
       )
 
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(testYear, 5, 5)))
+      form.bind(data).get mustBe((specific_date, Some(LocalDate.of(testYear, 5, 5))))
     }
 
     "Bind successfully if the specified date is on the incorporation date" in {
@@ -82,7 +82,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "date.month" -> s"${incorpDate.getMonthValue}",
         "date.year" -> s"${incorpDate.getYear}"
       )
-      form.bind(data).get mustBe(specific_date, Some(incorpDate))
+      form.bind(data).get mustBe((specific_date, Some(incorpDate)))
     }
 
     "Bind successfully if the specified date is on the calculated date" in {
@@ -92,7 +92,7 @@ class MandatoryDateFormSpec extends VatRegSpec {
         "date.month" -> calculatedDate.getMonthValue.toString,
         "date.year" -> calculatedDate.getYear.toString
       )
-      form.bind(data).get mustBe(specific_date, Some(calculatedDate))
+      form.bind(data).get mustBe((specific_date, Some(calculatedDate)))
     }
 
     "Fail to bind if the date specified is before the incorp date" in {

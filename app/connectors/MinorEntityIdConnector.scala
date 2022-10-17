@@ -37,6 +37,7 @@ class MinorEntityIdConnector @Inject()(httpClient: HttpClient, config: FrontendA
       case UnincorpAssoc => config.startUnincorpAssocJourneyUrl
       case Trust => config.startTrustJourneyUrl
       case NonUkNonEstablished => config.startNonUKCompanyJourneyUrl
+      case _ => throw new InternalServerException(s"Party type $partyType is not a valid minor entity party type")
     }
 
     httpClient.POST(url, journeyConfig).map {

@@ -73,8 +73,7 @@ class RegistrationApiConnector @Inject()(val http: HttpClient,
     http.PUT[T, T](url, section)
   }
 
-  def deleteSection[T: ApiKey](regId: String, idx: Option[Int] = None)(implicit hc: HeaderCarrier, format: Format[T]): Future[Boolean] = {
-
+  def deleteSection[T: ApiKey](regId: String, idx: Option[Int] = None)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val url = appendIndexToUrl(s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}", idx)
 
     http.DELETE[HttpResponse](url).map {

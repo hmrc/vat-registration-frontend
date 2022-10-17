@@ -24,8 +24,6 @@ import models.api._
 import models.external.IncorporatedEntity
 import play.api.libs.json.{Format, JsValue, Json}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 class IncorpIdControllerISpec extends ControllerISpec {
@@ -34,8 +32,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
   "GET /start-incorp-id-journey" should {
     "redirect to the returned journey url for UkCompany" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()
@@ -56,8 +52,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the returned journey url for RegSociety" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()
@@ -78,8 +72,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the returned journey url for CharitableOrg" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()

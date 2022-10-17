@@ -16,13 +16,13 @@
 
 package controllers.applicant
 
-import akka.actor.TypedActor.dispatcher
 import fixtures.ApplicantDetailsFixtures
 import models.Director
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.applicant.role_in_the_business
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
@@ -32,6 +32,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
   with MockApplicantDetailsService
   with ApplicantDetailsFixtures
   with MockVatRegistrationService {
+
 
   trait Setup {
     val view: role_in_the_business = app.injector.instanceOf[role_in_the_business]

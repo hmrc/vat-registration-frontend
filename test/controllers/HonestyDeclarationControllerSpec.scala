@@ -21,7 +21,6 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.ControllerSpec
-import uk.gov.hmrc.http.HttpResponse
 import views.html.honesty_declaration
 
 import scala.concurrent.ExecutionContext.Implicits.global

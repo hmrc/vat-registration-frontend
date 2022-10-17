@@ -17,10 +17,8 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.api.{Trust, UkCompany}
-import models.{ApplicantDetails, Business}
+import models.Business
 import play.api.http.HeaderNames
-import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -31,7 +29,6 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
 
   "show Business Telephone Number page" should {
     "return OK" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
 
@@ -46,7 +43,6 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
 
   "submit Business Telephone Number page" should {
     "return SEE_OTHER" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
       given()
         .user.isAuthorised()
         .s4lContainer[Business].contains(Business())
@@ -62,7 +58,6 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
       given()
         .user.isAuthorised()
         .s4lContainer[Business].contains(Business())

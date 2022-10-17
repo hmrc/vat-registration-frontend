@@ -17,7 +17,6 @@
 package forms
 
 import models.api._
-import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
 class AttachmentMethodFormSpec extends VatRegSpec {
@@ -27,21 +26,21 @@ class AttachmentMethodFormSpec extends VatRegSpec {
   "The attachment method form" must {
     "bind" when {
       "upload is selected" in {
-        val res = form().bind(Json.obj("value" -> "2"))
+        val res = form().bind(Map("value" -> "2"))
         res.value mustBe Some(Attached)
       }
       "post is selected" in {
-        val res = form().bind(Json.obj("value" -> "3"))
+        val res = form().bind(Map("value" -> "3"))
         res.value mustBe Some(Post)
       }
       "email is selected" in {
-        val res = form().bind(Json.obj("value" -> "email"))
+        val res = form().bind(Map("value" -> "email"))
         res.value mustBe Some(EmailMethod)
       }
     }
     "return a form error" when {
       "nothing is selected" in {
-        val res = form().bind(Json.obj())
+        val res = form().bind(Map.empty[String, String])
         res.error("value").map(_.message) mustBe Some("attachmentMethod.error.missing")
       }
     }

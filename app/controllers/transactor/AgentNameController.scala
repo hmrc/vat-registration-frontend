@@ -44,7 +44,7 @@ class AgentNameController @Inject()(val authConnector: AuthConnector,
     for {
       transactorDetails <- transactorDetailsService.getTransactorDetails
       optPersonalDetails = transactorDetails.personalDetails
-      filledForm = optPersonalDetails.fold(form())(details => form().fill(details.firstName, details.lastName))
+      filledForm = optPersonalDetails.fold(form())(details => form().fill((details.firstName, details.lastName)))
     } yield Ok(view(filledForm))
   }
 

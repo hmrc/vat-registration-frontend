@@ -43,7 +43,7 @@ class TransactorIdController @Inject()(val sessionService: SessionService,
   def startJourney(): Action[AnyContent] =
     isAuthenticatedWithProfile() {
       implicit request =>
-        implicit profile =>
+        _ =>
           soleTraderIdentificationService.startIndividualJourney(
             SoleTraderIdJourneyConfig(
               continueUrl = appConfig.transactorCallbackUrl,

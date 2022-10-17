@@ -16,12 +16,9 @@
 
 package viewmodels.tasklist
 
-import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import models.CurrentProfile
 import models.api._
-import play.api.i18n.Messages
-import play.api.mvc.Request
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
@@ -162,10 +159,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
   }
 
   def build(vatScheme: VatScheme)
-           (implicit request: Request[_],
-            profile: CurrentProfile,
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection =
+           (implicit profile: CurrentProfile): TaskListSection =
     TaskListSection(
       heading = buildMessageKey("heading", vatScheme),
       rows = Seq(

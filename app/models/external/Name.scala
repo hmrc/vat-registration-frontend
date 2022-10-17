@@ -19,7 +19,7 @@ package models.external
 
 import cats.Show
 import cats.Show.show
-import org.apache.commons.lang3.text.WordUtils
+import org.apache.commons.text.WordUtils
 import play.api.libs.json._
 
 case class Name(first: Option[String],

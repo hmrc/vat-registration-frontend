@@ -21,7 +21,7 @@ import controllers.BaseController
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import models.CurrentProfile
 import models.ModelKeys.SIC_CODES_KEY
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, Result}
 import services._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -75,7 +75,7 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
         }
   }
 
-  private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, messages: Messages): Future[Result] = {
+  private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[Result] = {
     if (isEnabled(StubIcl)) {
       Future.successful(Redirect(controllers.test.routes.SicStubController.show))
     } else {

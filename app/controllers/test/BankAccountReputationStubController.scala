@@ -21,10 +21,9 @@ import play.api.mvc.{Action, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class BankAccountReputationStubController @Inject()(mcc: MessagesControllerComponents)
-                                                   (implicit ec: ExecutionContext) extends FrontendController(mcc) {
+class BankAccountReputationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def validateBankDetails(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val sortCode = (request.body \\ "sortCode").head.as[String]

@@ -81,6 +81,7 @@ class SummaryControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show.url)
@@ -98,6 +99,7 @@ class SummaryControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.alreadySubmitted.url)
@@ -115,6 +117,7 @@ class SummaryControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SubmissionInProgressController.show.url)
@@ -132,6 +135,7 @@ class SummaryControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.submissionFailed.url)
@@ -149,6 +153,7 @@ class SummaryControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.submissionRetryable.url)
@@ -166,6 +171,7 @@ class SummaryControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.contact.url)

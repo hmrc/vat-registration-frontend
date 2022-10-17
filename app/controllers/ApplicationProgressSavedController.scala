@@ -36,7 +36,7 @@ class ApplicationProgressSavedController @Inject()(val vatApplicationService: Va
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      implicit profile =>
+      _ =>
         Future.successful(Ok(applicationProgressSavedView()))
   }
 

@@ -196,6 +196,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         case Individual | NETP => Some(grsRoutes.PartnerSoleTraderIdController.startJourney(leadEntityIndex).url)
         case UkCompany | RegSociety | CharitableOrg => Some(grsRoutes.PartnerIncorpIdController.startJourney(leadEntityIndex).url)
         case ScotPartnership | ScotLtdPartnership | LtdLiabilityPartnership => Some(grsRoutes.PartnerPartnershipIdController.startJourney(leadEntityIndex).url)
+        case _ => None
       }
       val uniqueTaxpayerReference = partner.details match {
         case Some(soleTrader: SoleTraderIdEntity) =>

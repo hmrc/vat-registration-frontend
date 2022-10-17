@@ -18,7 +18,6 @@ package forms
 
 import models.api.vatapplication.{BACS, BankGIRO, CHAPS, StandingOrder}
 import play.api.data.FormError
-import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
 class PaymentMethodFormSpec extends VatRegSpec {
@@ -37,7 +36,7 @@ class PaymentMethodFormSpec extends VatRegSpec {
 
         validValues map {
           case (value, expected) =>
-            val res = form.bind(Json.obj(PaymentMethodForm.paymentMethod -> value))
+            val res = form.bind(Map(PaymentMethodForm.paymentMethod -> value))
             res.get mustBe expected
         }
       }
@@ -48,7 +47,7 @@ class PaymentMethodFormSpec extends VatRegSpec {
         )
 
         invalidValues map { value =>
-          val res = form.bind(Json.obj(PaymentMethodForm.paymentMethod -> value))
+          val res = form.bind(Map(PaymentMethodForm.paymentMethod -> value))
           res.errors.head mustBe FormError(PaymentMethodForm.paymentMethod, Seq("aas.paymentMethod.error.required"), Seq())
         }
       }

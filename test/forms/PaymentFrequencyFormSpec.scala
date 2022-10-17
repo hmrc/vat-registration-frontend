@@ -18,7 +18,6 @@ package forms
 
 import models.api.vatapplication._
 import play.api.data.{Form, FormError}
-import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
 class PaymentFrequencyFormSpec extends VatRegSpec {
@@ -35,7 +34,7 @@ class PaymentFrequencyFormSpec extends VatRegSpec {
 
         validValues.map {
           case (value, expected) =>
-            val res = form.bind(Json.obj(PaymentFrequencyForm.paymentFrequency -> value))
+            val res = form.bind(Map(PaymentFrequencyForm.paymentFrequency -> value))
             res.get mustBe expected
         }
       }
@@ -47,7 +46,7 @@ class PaymentFrequencyFormSpec extends VatRegSpec {
         )
 
         invalidValues map { value =>
-          val res = form.bind(Json.obj(PaymentFrequencyForm.paymentFrequency -> value))
+          val res = form.bind(Map(PaymentFrequencyForm.paymentFrequency -> value))
           res.errors.head mustBe FormError(PaymentFrequencyForm.paymentFrequency, Seq("aas.paymentFrequency.notProvided"), Seq())
         }
       }

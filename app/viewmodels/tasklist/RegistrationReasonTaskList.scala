@@ -19,7 +19,6 @@ package viewmodels.tasklist
 import config.FrontendAppConfig
 import models.api.VatScheme
 import play.api.i18n.Messages
-import play.api.mvc.Request
 
 import javax.inject.{Inject, Singleton}
 
@@ -36,10 +35,7 @@ class RegistrationReasonTaskList @Inject()(appConfig: FrontendAppConfig) {
     prerequisites = _ => Seq()
   )
 
-  def build(vatScheme: VatScheme)
-           (implicit request: Request[_],
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection =
+  def build(vatScheme: VatScheme)(implicit messages: Messages): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.eligibility.heading"),
       rows = Seq(registrationReasonRow(vatScheme.registrationId).build(vatScheme))

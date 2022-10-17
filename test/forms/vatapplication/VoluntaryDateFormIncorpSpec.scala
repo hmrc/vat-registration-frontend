@@ -48,7 +48,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
         "value"  -> "company_registration_date",
         "startDate"       -> ""
       )
-      form.bind(data).get mustBe (company_registration_date, None)
+      form.bind(data).get mustBe ((company_registration_date, None))
     }
 
     "Bind successfully for a business start date selection" in {
@@ -56,7 +56,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
         "value"  -> "business_start_date",
         "startDate"       -> ""
       )
-      form.bind(data).get mustBe (business_start_date, None)
+      form.bind(data).get mustBe ((business_start_date, None))
     }
 
     "Bind successfully for a valid specific date selection" in {
@@ -66,7 +66,7 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
         "startDate.month" -> "1",
         "startDate.year"  -> "2021"
       )
-      form.bind(data).get mustBe(specific_date, Some(LocalDate.of(2021, 1, 5)))
+      form.bind(data).get mustBe((specific_date, Some(LocalDate.of(2021, 1, 5))))
     }
 
     "Fail to bind successfully for no selection" in {

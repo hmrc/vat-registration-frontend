@@ -27,8 +27,8 @@ trait ClientHelper extends AuthHelper {
 
   implicit class RichClient(req: WSRequest) {
     def withSessionCookieHeader(userId: String = defaultUser): WSRequest =
-      req.withHeaders(HeaderNames.COOKIE -> getSessionCookie(userId = userId))
+      req.withHttpHeaders(HeaderNames.COOKIE -> getSessionCookie(userId = userId))
 
-    def withCSRFTokenHeader: WSRequest = req.withHeaders("Csrf-Token" -> "nocheck")
+    def withCSRFTokenHeader: WSRequest = req.withHttpHeaders("Csrf-Token" -> "nocheck")
   }
 }

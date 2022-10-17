@@ -40,7 +40,7 @@ object SicStubSelection {
   implicit val format = Format[SicStubSelection](
     Reads[SicStubSelection] {
       case JsString(`single`) => JsSuccess(SingleSicCode)
-      case JsString(singleCompliance) => JsSuccess(SingleSicCodeCompliance)
+      case JsString(`singleCompliance`) => JsSuccess(SingleSicCodeCompliance)
       case JsString(`multipleNoCompliance`) => JsSuccess(MultipleSicCodeNoCompliance)
       case JsString(`multipleCompliance`) => JsSuccess(MultipleSicCodeCompliance)
       case JsString(`custom`) => JsSuccess(CustomSicCodes)

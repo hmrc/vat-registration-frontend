@@ -16,13 +16,11 @@
 
 package viewmodels.tasklist
 
-import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaxRepPage}
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
-import play.api.mvc.Request
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
@@ -128,12 +126,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     prerequisites = _ => Seq(vatReturnsRow)
   )
 
-  def build(vatScheme: VatScheme)
-           (implicit request: Request[_],
-            profile: CurrentProfile,
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection = {
-
+  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
@@ -144,7 +137,6 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         resolveFlatRateSchemeRow(vatScheme).map(_.build(vatScheme))
       ).flatten
     )
-  }
 
   private def resolveBankDetailsRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
     if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow)

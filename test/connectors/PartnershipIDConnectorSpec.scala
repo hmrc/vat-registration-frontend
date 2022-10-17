@@ -104,7 +104,7 @@ class PartnershipIDConnectorSpec extends VatRegSpec {
       val invalidGeneralPartnershipJson = {
         Json.toJson(testGeneralPartnership).as[JsObject] - "sautr"
       }
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("sautr" -> invalidGeneralPartnershipJson))))
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Json.stringify(Json.obj("sautr" -> invalidGeneralPartnershipJson))))
 
       intercept[InternalServerException] {
         await(connector.getDetails(testJourneyId))

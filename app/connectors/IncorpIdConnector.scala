@@ -22,7 +22,7 @@ import models.external.IncorporatedEntity
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsError, JsSuccess, JsValue}
-import uk.gov.hmrc.http.HttpReads.Implicits.{readFromJson, readRaw}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
@@ -36,6 +36,7 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
       case UkCompany => config.startUkCompanyIncorpJourneyUrl()
       case RegSociety => config.startRegSocietyIncorpIdJourneyUrl()
       case CharitableOrg => config.startCharitableOrgIncorpIdJourneyUrl()
+      case _ => throw new InternalServerException(s"Party type $partyType is not a valid incorporated entity party type")
     }
 
     httpClient.POST(url, journeyConfig).map {

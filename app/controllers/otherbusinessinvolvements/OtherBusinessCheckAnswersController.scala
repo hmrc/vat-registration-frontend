@@ -55,7 +55,7 @@ class OtherBusinessCheckAnswersController @Inject()(val bcc: BaseControllerCompo
     }
   }
 
-  def submit(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def submit(): Action[AnyContent] = isAuthenticatedWithProfile() { _ => _ =>
     Future.successful(Redirect(routes.ObiSummaryController.show))
   }
 

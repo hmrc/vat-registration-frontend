@@ -110,7 +110,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
         mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
         val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-        res mustBe(testPersonalDetails, testSoleTrader)
+        res mustBe((testPersonalDetails, testSoleTrader))
       }
     }
     "overseas details are returned" must {
@@ -138,14 +138,14 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
         mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, testSTIResponse.toString()))
         val res = await(connector.retrieveSoleTraderDetails(testJourneyId))
-        res mustBe(testPersonalDetails, testSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("1234", "ES"))))
+        res mustBe((testPersonalDetails, testSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("1234", "ES")))))
       }
     }
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {
       val invalidTransactorJson = {
         Json.toJson(testPersonalDetails).as[JsObject] - "firstName"
       }
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("personalDetails" -> invalidTransactorJson))))
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson))))
 
       intercept[InternalServerException] {
         await(connector.retrieveSoleTraderDetails(testJourneyId))
@@ -218,7 +218,7 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
       val invalidTransactorJson = {
         Json.toJson(testPersonalDetails).as[JsObject] - "firstName"
       }
-      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Some(Json.obj("personalDetails" -> invalidTransactorJson))))
+      mockHttpGET(retrieveDetailsUrl, HttpResponse(OK, Json.stringify(Json.obj("personalDetails" -> invalidTransactorJson))))
 
       intercept[InternalServerException] {
         await(connector.retrieveIndividualDetails(testJourneyId))

@@ -17,7 +17,6 @@
 package viewmodels
 
 import common.enums.VatRegStatus
-import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import models.api.VatSchemeHeader
 import play.api.i18n.Messages
@@ -31,8 +30,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-class ManageRegistrationsBuilder @Inject()(appConfig: FrontendAppConfig,
-                                           govukTag: GovukTag) extends FeatureSwitching {
+class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSwitching {
 
   private final val GREY = "govuk-tag--grey"
   private final val YELLOW = "govuk-tag--yellow"

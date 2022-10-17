@@ -19,7 +19,6 @@ package connectors
 import config.FrontendAppConfig
 import models.api.trafficmanagement.{ClearTrafficManagementError, ClearTrafficManagementResponse, RegistrationInformation, TrafficManagementCleared}
 import play.api.http.Status._
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}

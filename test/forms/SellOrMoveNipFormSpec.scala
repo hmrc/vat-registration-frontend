@@ -44,7 +44,7 @@ class SellOrMoveNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
     "validate that sellOrMoveNip is valid" in {
       val form = sellOrMoveNipForm.bind(Map(SellOrMoveNipForm.yesNo -> validYesNo, SellOrMoveNipForm.inputAmount -> testValidSellOrMoveNip)).value
 
-      form mustBe Some(true, Some(validSellOrMoveNip))
+      form mustBe Some((true, Some(validSellOrMoveNip)))
     }
 
     "validate that missing yesNo answer fails" in {

@@ -37,9 +37,8 @@ class SubmissionInProgressController @Inject()(view: SubmissionInProgress,
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request =>
-      implicit profile =>
-        Future.successful(Ok(view()))
+    implicit request =>_ =>
+      Future.successful(Ok(view()))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {

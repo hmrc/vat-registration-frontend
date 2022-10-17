@@ -94,7 +94,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
 
       val res = await(Service.retrieveSoleTraderDetails(testJourneyUrl))
 
-      res mustBe(testPersonalDetails, testSoleTrader)
+      res mustBe((testPersonalDetails, testSoleTrader))
     }
   }
 

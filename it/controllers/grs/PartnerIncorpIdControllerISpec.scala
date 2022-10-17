@@ -24,8 +24,6 @@ import models.api._
 import models.external.IncorporatedEntity
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -65,8 +63,6 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the returned journey url for UkCompany" in new Setup {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       disable(StubIncorpIdJourney)
 
       given()

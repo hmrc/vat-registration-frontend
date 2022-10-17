@@ -158,7 +158,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
       val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testPersonalDetails.copy(score = Some(1)), testSoleTrader)
+      res mustBe((testPersonalDetails.copy(score = Some(1)), testSoleTrader))
     }
 
     "return transactor details for NETP when STI returns OK" in new Setup {
@@ -185,7 +185,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
       val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testNetpPersonalDetails, testNetpSoleTrader)
+      res mustBe((testNetpPersonalDetails, testNetpSoleTrader))
     }
 
     "return transactor details for NETP when an overseas identifier is returned" in new Setup {
@@ -216,7 +216,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
       val res: (PersonalDetails, SoleTraderIdEntity) = await(connector.retrieveSoleTraderDetails(testJourneyId))
 
-      res mustBe(testNetpPersonalDetails, testNetpSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("123456789", "FR"))))
+      res mustBe((testNetpPersonalDetails, testNetpSoleTrader.copy(overseas = Some(OverseasIdentifierDetails("123456789", "FR")))))
     }
 
     "throw an InternalServerException when relevant fields are missing OK" in new Setup {

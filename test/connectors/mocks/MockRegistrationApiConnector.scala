@@ -69,8 +69,7 @@ trait MockRegistrationApiConnector {
       idx = ArgumentMatchers.any[Option[Int]]
     )(
       any[ApiKey[T]],
-      any[HeaderCarrier],
-      any[Format[T]]
+      any[HeaderCarrier]
     )).thenReturn(Future.successful(true))
 
 }

@@ -16,11 +16,9 @@
 
 package viewmodels.tasklist
 
-import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
-import play.api.mvc.Request
 
 import javax.inject.{Inject, Singleton}
 
@@ -43,11 +41,7 @@ class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationR
       }
   )
 
-  def build(vatScheme: VatScheme)
-           (implicit request: Request[_],
-            profile: CurrentProfile,
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection =
+  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.verifyBusiness.heading"),
       rows = Seq(businessInfoRow.build(vatScheme))

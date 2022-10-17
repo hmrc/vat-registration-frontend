@@ -16,11 +16,9 @@
 
 package viewmodels.tasklist
 
-import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
-import play.api.mvc.Request
 
 import javax.inject.Inject
 
@@ -45,14 +43,9 @@ class SummaryTaskList @Inject() (vatRegistrationTaskList: VatRegistrationTaskLis
   }
 
   def build(vatScheme: VatScheme, attachmentsTaskListRowBuilder: Option[TaskListRowBuilder])
-           (implicit request: Request[_],
-            profile: CurrentProfile,
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection = {
-
+           (implicit profile: CurrentProfile, messages: Messages): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.cya.heading"),
       rows = Seq(summaryRow(attachmentsTaskListRowBuilder).build(vatScheme))
     )
-  }
 }
