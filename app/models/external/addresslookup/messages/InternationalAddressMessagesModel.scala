@@ -34,8 +34,8 @@ object InternationalAddressMessagesModel {
 
     InternationalAddressMessagesModel(
       appLevelLabels = AppLevelMessagesModel.forLang(lang),
-      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang),
-      selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang),
+      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang, msgPrefix = Some("international"), optName),
+      selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang, msgPrefix = Some("international"), optName),
       editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang, msgPrefix = Some("international"), optName),
       confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang, msgPrefix = Some("international"), optName)
     )

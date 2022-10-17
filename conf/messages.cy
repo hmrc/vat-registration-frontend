@@ -398,6 +398,12 @@ addressLookup.individualPartner.countryPicker.title                = Where is {0
 addressLookup.individualPartner.countryPicker.heading              = Where is {0}’s home address?
 
 # international.individualPartner
+international.addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
+international.addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
+international.addressLookup.individualPartner.lookupPage.filterLabel             = Enw neu rif yr eiddo
+international.addressLookup.individualPartner.lookupPage.submitLabel             = Yn eich blaen
+international.addressLookup.individualPartner.lookupPage.manualAddressLinkText   = Nodwch eich cyfeiriad â llaw
+
 international.addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
 international.addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
 international.addressLookup.individualPartner.editPage.line1Label                = Cyfeiriad – llinell 1

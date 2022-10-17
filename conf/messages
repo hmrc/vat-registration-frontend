@@ -398,6 +398,12 @@ addressLookup.individualPartner.countryPicker.title                = Where is {0
 addressLookup.individualPartner.countryPicker.heading              = Where is {0}’s home address?
 
 # international.individualPartner
+international.addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
+international.addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
+international.addressLookup.individualPartner.lookupPage.filterLabel             = Property name or number
+international.addressLookup.individualPartner.lookupPage.submitLabel             = Continue
+international.addressLookup.individualPartner.lookupPage.manualAddressLinkText   = Enter your address manually
+
 international.addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
 international.addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
 international.addressLookup.individualPartner.editPage.line1Label                = Address line 1

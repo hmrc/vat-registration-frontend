@@ -37,8 +37,8 @@ object AddressMessagesModel {
 
     AddressMessagesModel(
       appLevelLabels = AppLevelMessagesModel.forLang(lang),
-      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang, optName),
-      selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang),
+      lookupPageLabels = LookupPageMessagesModel.forJourney(journeyId, lang, msgPrefix = None, optName),
+      selectPageLabels = SelectPageMessagesModel.forJourney(journeyId, lang, msgPrefix = None, optName),
       editPageLabels = EditPageMessagesModel.forJourney(journeyId, lang, msgPrefix = None, optName),
       confirmPageLabels = ConfirmPageMessagesModel.forJourney(journeyId, lang, msgPrefix = None, optName),
       countryPickerLabels = if (useUkMode) None else Some(CountryPickerMessagesModel.forJourney(journeyId, lang, optName)),
