@@ -18,9 +18,9 @@ package viewmodels.tasklist
 
 import featureswitch.core.config.{FeatureSwitching, TaxRepPage}
 import fixtures.VatRegistrationFixture
+import models._
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
-import models._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 

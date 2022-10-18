@@ -152,7 +152,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "return BAD_REQUEST" in new Setup {
         given
           .user.isAuthorised()
-          .registrationApi.replaceSection[Attachments](Attachments(Some(Other)))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(OtherAttachmentMethod)))
 
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

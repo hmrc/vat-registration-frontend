@@ -16,9 +16,9 @@
 
 package models.api
 
-import java.time.LocalDate
-
 import play.api.libs.json.{Json, OFormat}
+
+import java.time.LocalDate
 
 case class Threshold(mandatoryRegistration: Boolean,
                      thresholdPreviousThirtyDays: Option[LocalDate] = None,

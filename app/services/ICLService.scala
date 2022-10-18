@@ -17,13 +17,13 @@
 package services
 
 import connectors.{ICLConnector, VatRegistrationConnector}
-import javax.inject.{Inject, Singleton}
 import models.CurrentProfile
 import models.api.SicCode
 import play.api.libs.json.{JsObject, Json, OWrites}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

@@ -18,11 +18,10 @@ package controllers.test
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{S4LService, SessionProfile, SessionService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

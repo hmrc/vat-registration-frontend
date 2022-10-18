@@ -23,7 +23,7 @@ import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.GroupRegistration
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.http.InternalServerException
 import views.html.flatratescheme.frs_join
 

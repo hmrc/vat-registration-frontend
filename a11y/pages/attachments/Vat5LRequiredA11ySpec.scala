@@ -3,7 +3,7 @@
 package pages.attachments
 
 import helpers.A11ySpec
-import views.html.attachments.{Vat2Required, Vat5LRequired}
+import views.html.attachments.Vat5LRequired
 
 class Vat5LRequiredA11ySpec extends A11ySpec {
 

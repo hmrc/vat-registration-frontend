@@ -16,7 +16,7 @@
 
 package models.external.addresslookup.messages
 
-import models.external.addresslookup.{AppLevelMessagesModel, ConfirmPageMessagesModel, CountryPickerMessagesModel, EditPageMessagesModel, LookupPageMessagesModel, SelectPageMessagesModel}
+import models.external.addresslookup._
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.libs.json.{Json, Writes}
 

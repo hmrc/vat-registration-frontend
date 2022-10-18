@@ -17,10 +17,10 @@
 package services
 
 import connectors.{RequestEmailVerificationPasscodeConnector, VerifyEmailVerificationPasscodeConnector}
-import javax.inject.{Inject, Singleton}
 import models.external.{RequestEmailPasscodeResult, VerifyEmailPasscodeResult}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

@@ -16,13 +16,12 @@
 
 package common.validators
 
-import models.api.Country
 import config.FrontendAppConfig
+import models.api.Country
+import org.scalatest.matchers.must.Matchers
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 import views.html.CaptureInternationalAddress
-
-import testHelpers.VatRegSpec
-import org.scalatest.matchers.must.Matchers
 
 class AddressFormResultsHandlerSpec extends VatRegSpec with Matchers {
 

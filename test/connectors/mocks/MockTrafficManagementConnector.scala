@@ -18,11 +18,11 @@ package connectors.mocks
 
 import connectors.TrafficManagementConnector
 import models.api.trafficmanagement.ClearTrafficManagementResponse
-import org.scalatest.Suite
-import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
-import org.mockito.ArgumentMatchers.any
+import org.scalatest.Suite
+import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future

@@ -19,9 +19,9 @@ package views.transactor
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
+import play.api.data.Forms._
 import views.VatRegViewSpec
 import views.html.transactor.AgentNameView
-import play.api.data.Forms._
 
 class AgentNameViewSpec extends VatRegViewSpec {
 

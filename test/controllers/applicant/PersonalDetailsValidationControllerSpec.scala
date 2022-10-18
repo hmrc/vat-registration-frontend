@@ -16,12 +16,9 @@
 
 package controllers.applicant
 
-import java.time.LocalDate
 import _root_.models._
-import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, StubPersonalDetailsValidation}
 import fixtures.VatRegistrationFixture
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, TimeServiceMock}

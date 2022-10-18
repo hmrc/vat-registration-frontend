@@ -32,7 +32,7 @@ object Attachments {
 
 sealed trait AttachmentMethod
 
-case object Other extends AttachmentMethod
+case object OtherAttachmentMethod extends AttachmentMethod
 
 case object Attached extends AttachmentMethod
 
@@ -42,7 +42,7 @@ case object EmailMethod extends AttachmentMethod
 
 object AttachmentMethod {
   val map: Map[AttachmentMethod, String] = Map(
-    Other -> "1",
+    OtherAttachmentMethod -> "1",
     Attached -> "2",
     Post -> "3",
     EmailMethod -> "email"

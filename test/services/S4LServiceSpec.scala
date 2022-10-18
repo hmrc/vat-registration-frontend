@@ -16,9 +16,8 @@
 
 package services
 
-import fixtures.VatRegistrationFixture
 import models.api.UkCompany
-import models.{ApplicantDetails, _}
+import models._
 import play.api.libs.json.{Reads, Writes}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap

@@ -17,14 +17,12 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.PersonalDetails
+import play.api.http.Status.OK
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
-import models.PersonalDetails
-import models.PersonalDetails._
-import play.api.http.Status.OK
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException}
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

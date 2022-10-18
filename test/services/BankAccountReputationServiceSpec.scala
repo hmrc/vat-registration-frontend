@@ -24,7 +24,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json._
 import testHelpers.{S4LMockSugar, VatRegSpec}
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 

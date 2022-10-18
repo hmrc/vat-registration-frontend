@@ -16,7 +16,6 @@
 
 package controllers.sicandcompliance
 
-import controllers.business
 import helpers.RequestsFinder
 import itutil.ControllerISpec
 import models.Business.s4lKey
@@ -24,7 +23,6 @@ import models._
 import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Helpers._
 
 class SicControllerISpec extends ControllerISpec with RequestsFinder {

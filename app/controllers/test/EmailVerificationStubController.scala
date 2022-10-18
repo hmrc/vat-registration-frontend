@@ -16,10 +16,11 @@
 
 package controllers.test
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponents)

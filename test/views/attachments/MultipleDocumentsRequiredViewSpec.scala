@@ -16,12 +16,12 @@
 
 package views.attachments
 
-import models.api.{IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT5L}
+import featureswitch.core.config._
+import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.MultipleDocumentsRequired
-import featureswitch.core.config._
 
 class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitching {
 

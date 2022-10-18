@@ -64,7 +64,7 @@ object DeclarationCapacityForm {
         case Some(`representative`) => Right(Representative)
         case Some(`boardMember`) => Right(BoardMember)
         case Some(`authorisedEmployee`) => Right(AuthorisedEmployee)
-        case Some(`other`) => Right(Other)
+        case Some(`other`) => Right(OtherDeclarationCapacity)
         case _ => Left(Seq(FormError(key, declarationCapacityMissing)))
       }
     }
@@ -75,7 +75,7 @@ object DeclarationCapacityForm {
         case Representative => representative
         case BoardMember => boardMember
         case AuthorisedEmployee => authorisedEmployee
-        case Other => other
+        case OtherDeclarationCapacity => other
       }
       Map(key -> stringValue)
     }

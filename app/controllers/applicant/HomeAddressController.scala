@@ -20,13 +20,12 @@ import common.enums.AddressLookupJourneyIdentifier.{applicantAddress, homeAddres
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
-
-import javax.inject.{Inject, Singleton}
 import models.view.HomeAddressView
 import play.api.mvc.{Action, AnyContent}
-import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

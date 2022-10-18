@@ -21,14 +21,13 @@ import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.TelephoneNumberForm
 import models.TelephoneNumber
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.capture_telephone_number
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,

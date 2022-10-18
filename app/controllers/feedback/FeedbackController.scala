@@ -16,14 +16,13 @@
 
 package controllers.feedback
 
-import java.net.URLEncoder
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
 
+import java.net.URLEncoder
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

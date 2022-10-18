@@ -19,7 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EmailAddressForm
-import models.external.{AlreadyVerifiedEmailAddress, EmailAddress, EmailVerified, MaxEmailsExceeded, RequestEmailPasscodeSuccessful}
+import models.external._
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector

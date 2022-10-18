@@ -16,10 +16,11 @@
 
 package featureswitch.core.config
 
-import javax.inject.Singleton
+import featureswitch.core.models.FeatureSwitch
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import featureswitch.core.models.FeatureSwitch
+
+import javax.inject.Singleton
 
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {

@@ -18,8 +18,8 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import featureswitch.core.config.{FullAgentJourney, MultipleRegistrations, SaveAndContinueLater, TaskList, TrafficManagementPredicate}
 import controllers.transactor.{routes => transactorRoutes}
+import featureswitch.core.config._
 import itutil.ControllerISpec
 import models.api.trafficmanagement.{OTRS, VatReg}
 import models.api.{EligibilitySubmissionData, VatSchemeHeader}

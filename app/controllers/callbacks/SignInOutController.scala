@@ -16,15 +16,14 @@
 
 package controllers.callbacks
 
-import java.io.File
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import views.html.errors.TimeoutView
 
+import java.io.File
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

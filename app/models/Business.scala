@@ -16,7 +16,7 @@
 
 package models
 
-import models.api.{Address, CharitableOrg, LtdLiabilityPartnership, LtdPartnership, NonUkNonEstablished, Partnership, PartyType, RegSociety, ScotLtdPartnership, ScotPartnership, SicCode, Trust, UkCompany, UnincorpAssoc}
+import models.api._
 import play.api.libs.json.{Json, OFormat}
 
 case class Business(hasTradingName: Option[Boolean] = None,

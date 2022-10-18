@@ -16,7 +16,6 @@
 
 package controllers.flatratescheme
 
-import controllers.routes
 import fixtures.FlatRateFixtures
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -26,8 +25,8 @@ import testHelpers.ControllerSpec
 import views.html.flatratescheme.frs_confirm_business_sector
 
 import java.util.MissingResourceException
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtures {
 

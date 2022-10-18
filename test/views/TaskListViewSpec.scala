@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import viewmodels.tasklist.{TLCompleted, TaskListSection, TaskListSectionRow}
 import views.html.TaskList
+
 import scala.collection.JavaConverters._
 
 class TaskListViewSpec extends VatRegViewSpec {

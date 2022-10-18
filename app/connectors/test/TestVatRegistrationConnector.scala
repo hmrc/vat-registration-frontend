@@ -17,7 +17,6 @@
 package connectors.test
 
 import connectors._
-import models.CurrentProfile
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw

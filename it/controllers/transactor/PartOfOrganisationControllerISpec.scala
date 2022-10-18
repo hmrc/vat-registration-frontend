@@ -1,14 +1,15 @@
 
 package controllers.transactor
 
-import forms.PartOfOrganisationForm._
 import controllers.transactor.{routes => transactorRoutes}
+import forms.PartOfOrganisationForm._
 import itutil.ControllerISpec
 import models._
 import play.api.http.HeaderNames
-import scala.concurrent.Future
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class PartOfOrganisationControllerISpec extends ControllerISpec {
 

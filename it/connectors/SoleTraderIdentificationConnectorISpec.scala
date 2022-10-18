@@ -20,8 +20,8 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.PersonalDetails
 import models.api.Individual
-import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
 import models.external.soletraderid.{OverseasIdentifierDetails, SoleTraderIdJourneyConfig}
+import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs

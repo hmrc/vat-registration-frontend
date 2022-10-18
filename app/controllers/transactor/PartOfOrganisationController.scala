@@ -18,11 +18,11 @@ package controllers.transactor
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import controllers.transactor.{routes => transactorRoutes}
 import forms.PartOfOrganisationForm
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.PartOfOrganisation
 import services.{SessionProfile, SessionService, TransactorDetailsService}
-import controllers.transactor.{routes => transactorRoutes}
 import views.html.transactor.PartOfOrganisationView
 
 import javax.inject.{Inject, Singleton}

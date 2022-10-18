@@ -19,7 +19,7 @@ package services
 import connectors.BankAccountReputationConnector
 import models.BankAccountDetails
 import models.api.BankAccountDetailsStatus
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Json
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}

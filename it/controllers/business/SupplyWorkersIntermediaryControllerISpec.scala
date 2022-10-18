@@ -4,7 +4,7 @@ package controllers.business
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import itutil.ControllerISpec
 import models.api._
-import models.{ApplicantDetails, Business, LabourCompliance}
+import models.{Business, LabourCompliance}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 

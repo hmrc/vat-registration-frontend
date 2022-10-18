@@ -18,7 +18,6 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.vatapplication.VoluntaryDateForm
 import models._
 import play.api.mvc.{Action, AnyContent}

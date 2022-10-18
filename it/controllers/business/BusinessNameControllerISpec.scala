@@ -19,7 +19,7 @@ package controllers.business
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.{EligibilitySubmissionData, Trust, UkCompany}
-import models.external.{BusinessEntity, MinorEntity}
+import models.external.BusinessEntity
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse

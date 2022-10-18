@@ -18,6 +18,7 @@ package featureswitch.api.services
 
 import featureswitch.core.config.{FeatureSwitchRegistry, FeatureSwitching}
 import featureswitch.core.models.FeatureSwitchSetting
+
 import javax.inject.{Inject, Singleton}
 
 @Singleton

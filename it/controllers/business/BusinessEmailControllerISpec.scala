@@ -6,7 +6,6 @@ import itutil.ControllerISpec
 import models.Business
 import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
-import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 

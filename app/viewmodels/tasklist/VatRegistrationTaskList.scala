@@ -17,7 +17,7 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, TaxRepPage, OtherBusinessInvolvement}
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaxRepPage}
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
 import models.api.{NETP, NonUkNonEstablished, VatScheme}

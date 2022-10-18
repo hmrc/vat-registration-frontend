@@ -20,6 +20,7 @@ import forms.FormValidation.{ErrorCode, maxLenText, nonEmptyValidText, removeNew
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
+
 import scala.util.matching.Regex
 
 object ScottishPartnershipNameForm {

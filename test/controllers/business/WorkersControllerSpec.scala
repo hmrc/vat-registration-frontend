@@ -19,9 +19,7 @@ package controllers.business
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, NonUkNonEstablished, UkCompany}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import models.api.{NonUkNonEstablished, UkCompany}
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{BusinessServiceMock, MockVatRegistrationService}

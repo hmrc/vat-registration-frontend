@@ -17,10 +17,10 @@
 package services
 
 import connectors.PersonalDetailsValidationConnector
-import javax.inject.{Inject, Singleton}
 import models.PersonalDetails
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

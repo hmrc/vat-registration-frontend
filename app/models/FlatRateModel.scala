@@ -16,9 +16,9 @@
 
 package models
 
-import java.time.LocalDate
-
 import play.api.libs.json._
+
+import java.time.LocalDate
 
 object FRSDateChoice extends Enumeration {
   type FRSDateChoice = Value

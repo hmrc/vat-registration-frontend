@@ -23,8 +23,7 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
-import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment, Enrolments, InsufficientConfidenceLevel, InvalidBearerToken}
+import uk.gov.hmrc.auth.core._
 
 import scala.concurrent.Future
 

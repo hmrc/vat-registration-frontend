@@ -20,11 +20,11 @@ import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import featureswitch.frontend.services.FeatureSwitchRetrievalService
 import featureswitch.frontend.views.html.feature_switch
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

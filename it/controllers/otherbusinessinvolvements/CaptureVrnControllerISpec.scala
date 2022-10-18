@@ -16,7 +16,7 @@
 
 package controllers.otherbusinessinvolvements
 
-import forms.otherbusinessinvolvements.{CaptureVrnForm, OtherBusinessNameForm}
+import forms.otherbusinessinvolvements.CaptureVrnForm
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{OtherBusinessInvolvement, S4LKey}

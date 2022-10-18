@@ -30,7 +30,7 @@ case object BoardMember extends DeclarationCapacity with RoleInTheBusiness
 case object AccountantAgent extends DeclarationCapacity
 case object Representative extends DeclarationCapacity
 case object AuthorisedEmployee extends DeclarationCapacity
-case object Other extends DeclarationCapacity with RoleInTheBusiness
+case object OtherDeclarationCapacity extends DeclarationCapacity with RoleInTheBusiness
 case object HmrcOfficer extends DeclarationCapacity
 case object FinancialController extends RoleInTheBusiness
 
@@ -44,7 +44,7 @@ object RoleInTheBusiness {
     BoardMember -> "05",
     Trustee -> "06",
     FinancialController -> "07",
-    Other -> "08"
+    OtherDeclarationCapacity -> "08"
   )
 
   val inverseStati: Map[String, RoleInTheBusiness] = stati.map(_.swap)
@@ -70,7 +70,7 @@ object DeclarationCapacity {
     AccountantAgent -> "07",
     Representative -> "08",
     AuthorisedEmployee -> "09",
-    Other -> "10",
+    OtherDeclarationCapacity -> "10",
     HmrcOfficer -> "11"
   )
 

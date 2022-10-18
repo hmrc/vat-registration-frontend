@@ -19,7 +19,7 @@ package controllers.attachments
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
-import models.api.{IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
+import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
 

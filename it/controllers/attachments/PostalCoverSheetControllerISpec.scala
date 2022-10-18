@@ -22,7 +22,7 @@ import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import models.{ApiKey, ApplicantDetails, TransactorDetails}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future

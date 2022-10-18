@@ -24,7 +24,7 @@ import itutil.IntegrationSpecBase
 import models.api._
 import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.external.upscan.UpscanDetails
-import models.{ApiKey, Entity, S4LKey}
+import models.{ApiKey, S4LKey}
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded

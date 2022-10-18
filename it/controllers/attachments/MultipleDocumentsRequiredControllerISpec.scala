@@ -4,7 +4,7 @@ package controllers.attachments
 import itutil.ControllerISpec
 import models.api._
 import models.{ApplicantDetails, TransactorDetails}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {

@@ -18,6 +18,7 @@ package featureswitch.frontend.config
 
 import config.FrontendAppConfig
 import featureswitch.frontend.models.FeatureSwitchProvider
+
 import javax.inject.{Inject, Singleton}
 
 @Singleton

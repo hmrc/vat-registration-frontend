@@ -20,8 +20,8 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.OrganisationNameForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, TransactorDetailsService}
 import services.TransactorDetailsService._
+import services.{SessionProfile, SessionService, TransactorDetailsService}
 import views.html.transactor.OrganisationName
 
 import javax.inject.{Inject, Singleton}

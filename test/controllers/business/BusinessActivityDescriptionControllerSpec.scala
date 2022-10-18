@@ -17,7 +17,6 @@
 package controllers.business
 
 import fixtures.VatRegistrationFixture
-import models.api.SicCode
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.sicandcompliance.business_activity_description

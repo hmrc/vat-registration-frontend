@@ -19,7 +19,7 @@ package viewmodels
 import config.FrontendAppConfig
 import models.api._
 import models.view.SummaryListRowUtils.{optSummaryListRowSeq, optSummaryListRowString}
-import models.{Other, _}
+import models._
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
@@ -61,7 +61,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
     email = Some(testEmail),
     emailVerified = Some(true),
     address = Some(testAddress),
-    declarationCapacity = Some(DeclarationCapacityAnswer(Other, Some(testOtherDeclarationCapacity)))
+    declarationCapacity = Some(DeclarationCapacityAnswer(OtherDeclarationCapacity, Some(testOtherDeclarationCapacity)))
   )
 
   object TestContent {

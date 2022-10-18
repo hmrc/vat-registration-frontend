@@ -17,13 +17,12 @@
 package featureswitch.frontend.connectors
 
 import featureswitch.core.models.FeatureSwitchSetting
-
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Reads}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

@@ -2,7 +2,7 @@
 package pages.applicant
 
 import controllers.applicant.routes
-import forms.{EmailPasscodeForm, TelephoneNumberForm}
+import forms.TelephoneNumberForm
 import helpers.A11ySpec
 import views.html.applicant.capture_telephone_number
 

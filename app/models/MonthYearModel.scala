@@ -19,7 +19,6 @@ package models
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, ResolverStyle}
 import java.time.temporal.TemporalAdjusters
-
 import scala.util.Try
 
 

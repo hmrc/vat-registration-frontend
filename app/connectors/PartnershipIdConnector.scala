@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.api.{Partnership, PartyType, Trust}
+import models.api.PartyType
 import models.external.PartnershipIdEntity
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}

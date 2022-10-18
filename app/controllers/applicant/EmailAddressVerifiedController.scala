@@ -18,13 +18,12 @@ package controllers.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.email_verified
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmailAddressVerifiedController @Inject()(view: email_verified,

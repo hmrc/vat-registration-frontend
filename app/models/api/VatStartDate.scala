@@ -16,9 +16,9 @@
 
 package models.api
 
-import java.time.LocalDate
-
 import play.api.libs.json._
+
+import java.time.LocalDate
 
 
 case class VatStartDate(selection: String, startDate: Option[LocalDate])

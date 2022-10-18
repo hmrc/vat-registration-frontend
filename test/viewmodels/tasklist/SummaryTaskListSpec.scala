@@ -16,13 +16,13 @@
 
 package viewmodels.tasklist
 
-import models.{ConditionalValue, NIPTurnover, Voluntary}
-import testHelpers.VatRegSpec
 import fixtures.VatRegistrationFixture
-import models.api.{Attached, Attachments, IdentityEvidence, NETP, VAT2}
+import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
+import models.{ConditionalValue, NIPTurnover, Voluntary}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
+import testHelpers.VatRegSpec
 
 import java.time.LocalDate
 import scala.concurrent.Future

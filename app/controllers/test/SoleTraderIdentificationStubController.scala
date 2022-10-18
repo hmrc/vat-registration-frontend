@@ -16,7 +16,7 @@
 
 package controllers.test
 
-import models.api.{Individual, NonUkNonEstablished, Partnership, PartyType, NETP => PartyTypeNETP}
+import models.api.{Individual, NonUkNonEstablished, PartyType, NETP => PartyTypeNETP}
 import models.external.soletraderid.SoleTraderIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.libs.json.{JsObject, JsString, Json}

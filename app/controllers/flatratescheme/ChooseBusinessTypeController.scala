@@ -20,14 +20,12 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
 import forms.ChooseBusinessTypeForm
-import play.api.libs.json.JsObject
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.flatratescheme.choose_business_type
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.immutable.ListMap
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

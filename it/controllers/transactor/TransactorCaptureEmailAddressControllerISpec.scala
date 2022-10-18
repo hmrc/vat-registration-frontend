@@ -18,8 +18,8 @@ package controllers.transactor
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.{AuthorisedEmployee, DeclarationCapacityAnswer, TransactorDetails}
 import models.api.EligibilitySubmissionData
+import models.{AuthorisedEmployee, DeclarationCapacityAnswer, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse

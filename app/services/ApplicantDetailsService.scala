@@ -18,15 +18,14 @@ package services
 
 import config.Logging
 import connectors.RegistrationApiConnector
+import models._
 import models.external._
 import models.view._
-import models._
 import play.api.libs.json.{Format, Reads, Writes}
 import services.ApplicantDetailsService.HasFormerName
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
-import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 

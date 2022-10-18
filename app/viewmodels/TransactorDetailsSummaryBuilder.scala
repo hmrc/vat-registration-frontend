@@ -18,7 +18,7 @@ package viewmodels
 
 import featureswitch.core.config.FeatureSwitching
 import models._
-import models.api.{Address, NETP, NonUkNonEstablished, PartyType, VatScheme}
+import models.api._
 import models.view.SummaryListRowUtils._
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -74,7 +74,7 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
         case DeclarationCapacityAnswer(Representative, _) => Some("declarationCapacity.representative")
         case DeclarationCapacityAnswer(BoardMember, _) => Some("declarationCapacity.boardMember")
         case DeclarationCapacityAnswer(AuthorisedEmployee, _) => Some("declarationCapacity.authorisedEmployee")
-        case DeclarationCapacityAnswer(Other, role) => role
+        case DeclarationCapacityAnswer(OtherDeclarationCapacity, role) => role
       },
       Some(controllers.transactor.routes.DeclarationCapacityController.show.url)
     )

@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.InternalServerException
 import views.html.fileupload.UploadingDocument
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument,

@@ -22,7 +22,6 @@ import models.external.MinorEntity
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}
 import play.api.libs.json.{JsError, JsSuccess}
-import play.filters.csrf.AddCSRFToken
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 

@@ -16,18 +16,17 @@
 
 package forms
 
-import java.time.LocalDate
-import java.time.format.{DateTimeFormatter, ResolverStyle}
-
 import models.{DateModel, MonthYearModel}
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isNotBlank
 import play.api.data.format.Formatter
-import play.api.data.validation.{Constraint, _}
+import play.api.data.validation._
 import play.api.data.{FieldMapping, FormError, Forms, Mapping}
 import play.api.libs.json.Reads.email
 import play.api.libs.json.{JsString, JsSuccess}
 
+import java.time.LocalDate
+import java.time.format.{DateTimeFormatter, ResolverStyle}
 import scala.util.matching.Regex
 import scala.util.{Failure, Success, Try}
 

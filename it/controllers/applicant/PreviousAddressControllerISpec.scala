@@ -9,7 +9,7 @@ import models.external.{EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, HomeAddressView, PreviousAddressView}
 import models.{ApplicantDetails, Director, TelephoneNumber}
 import play.api.http.HeaderNames
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 

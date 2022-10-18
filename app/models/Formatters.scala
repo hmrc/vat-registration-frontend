@@ -16,9 +16,9 @@
 
 package models
 
-import java.text.Normalizer
-
 import play.api.libs.json._
+
+import java.text.Normalizer
 
 object Formatters {
 

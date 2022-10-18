@@ -17,8 +17,8 @@
 package viewmodels.tasklist
 
 import fixtures.VatRegistrationFixture
-import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
 import models.api._
+import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
 import models.{ConditionalValue, GroupRegistration, NIPTurnover}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
