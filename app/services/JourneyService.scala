@@ -17,13 +17,11 @@
 package services
 
 import config.FrontendAppConfig
+import models.CurrentProfile
+import play.api.libs.json.Format
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
-import models.{ApiKey, CurrentProfile}
-import models.api.EligibilitySubmissionData
-import play.api.libs.json.Format
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

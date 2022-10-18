@@ -20,11 +20,10 @@ import featureswitch.core.models.FeatureSwitchSetting
 import featureswitch.frontend.config.FeatureSwitchProviderConfig
 import featureswitch.frontend.connectors.FeatureSwitchApiConnector
 import featureswitch.frontend.models.FeatureSwitchProvider
-import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.matching.Regex
 
 class FeatureSwitchRetrievalService @Inject()(featureSwitchConfig: FeatureSwitchProviderConfig,
                                               featureSwitchApiConnector: FeatureSwitchApiConnector)

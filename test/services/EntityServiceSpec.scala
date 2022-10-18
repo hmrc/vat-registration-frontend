@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import models.Entity
 import models.api.{Individual, ScotPartnership, UkCompany}
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.InternalServerException
 
 class EntityServiceSpec extends VatRegSpec {
 

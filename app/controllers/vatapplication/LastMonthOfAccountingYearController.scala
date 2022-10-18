@@ -21,7 +21,7 @@ import controllers.BaseController
 import forms.AnnualStaggerForm
 import models.api.vatapplication.AnnualStagger
 import play.api.mvc.{Action, AnyContent}
-import services.{VatApplicationService, SessionProfile, SessionService}
+import services.{SessionProfile, SessionService, VatApplicationService}
 import views.html.vatapplication.last_month_of_accounting_year
 
 import javax.inject.{Inject, Singleton}

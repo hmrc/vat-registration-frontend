@@ -19,10 +19,11 @@ package featureswitch.api.controllers
 import featureswitch.api.services.FeatureSwitchService
 import featureswitch.core.config.FeatureSwitching
 import featureswitch.core.models.FeatureSwitchSetting
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class FeatureSwitchApiController @Inject()(config: Configuration,

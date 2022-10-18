@@ -2,9 +2,9 @@
 package itutil
 
 import featureswitch.core.config.FeatureSwitching
-import helpers.RequestsFinder
 import fixtures.ITRegistrationFixtures
-import org.scalatest.{Suite, TestSuite}
+import helpers.RequestsFinder
+import org.scalatest.TestSuite
 import org.scalatest.concurrent.ScalaFutures
 import support.AppAndStubs
 

@@ -17,7 +17,6 @@
 package forms
 
 import forms.FormValidation.{mandatory, matchesRegex}
-
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints.maxLength

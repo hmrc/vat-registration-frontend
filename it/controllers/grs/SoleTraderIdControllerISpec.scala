@@ -6,9 +6,9 @@ import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
+import models.ApplicantDetails
 import models.api._
 import models.external.{BusinessVerificationStatus, BvPass}
-import models.{ApplicantDetails, Entity}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._

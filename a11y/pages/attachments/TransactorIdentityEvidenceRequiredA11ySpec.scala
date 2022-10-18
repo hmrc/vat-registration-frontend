@@ -3,8 +3,7 @@
 package pages.attachments
 
 import helpers.A11ySpec
-import models.api._
-import views.html.attachments.{MultipleDocumentsRequired, TransactorIdentityEvidenceRequired}
+import views.html.attachments.TransactorIdentityEvidenceRequired
 
 class TransactorIdentityEvidenceRequiredA11ySpec extends A11ySpec {
 

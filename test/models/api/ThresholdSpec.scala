@@ -16,10 +16,10 @@
 
 package models.api
 
-import java.time.LocalDate
-
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsObject, JsString, JsSuccess, Json}
+
+import java.time.LocalDate
 
 class ThresholdSpec extends PlaySpec {
 

@@ -16,12 +16,12 @@
 
 package controllers.test
 
-import java.time.LocalDate
-
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class PersonalDetailsValidationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {

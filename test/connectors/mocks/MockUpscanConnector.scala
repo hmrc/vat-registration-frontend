@@ -27,7 +27,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
-import scala.concurrent.Future.successful
 
 trait MockUpscanConnector extends MockitoSugar {
   self: Suite =>

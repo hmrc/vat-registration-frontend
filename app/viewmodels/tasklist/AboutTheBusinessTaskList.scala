@@ -17,14 +17,14 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+import controllers.partners.PartnerIndexValidation.minPartnerIndex
 import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
-import models.api.{LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership, VatScheme}
+import models.api._
 import models.external.{MinorEntity, PartnershipIdEntity}
 import models.{Business, CurrentProfile, Entity, OtherBusinessInvolvement}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import services.BusinessService
-import controllers.partners.PartnerIndexValidation.minPartnerIndex
 
 import javax.inject.{Inject, Singleton}
 

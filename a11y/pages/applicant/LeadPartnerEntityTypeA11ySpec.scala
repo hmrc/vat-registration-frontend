@@ -3,7 +3,6 @@ package pages.applicant
 
 import forms.PartnerForm
 import helpers.A11ySpec
-import views.html.applicant.lead_partner_entity_type
 
 class LeadPartnerEntityTypeA11ySpec extends A11ySpec {
   val view = app.injector.instanceOf[lead_partner_entity_type]

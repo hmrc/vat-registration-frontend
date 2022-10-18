@@ -17,7 +17,7 @@
 package models
 
 import models.api.{Address, SicCode}
-import play.api.libs.json.{Format, JsObject, Json}
+import play.api.libs.json.{JsObject, Json}
 import testHelpers.VatRegSpec
 
 class BusinessSpec extends VatRegSpec {

@@ -17,15 +17,15 @@
 package services
 
 import connectors.TrafficManagementConnector
-import models.api.trafficmanagement.{ClearTrafficManagementError, Draft, OTRS, RegistrationInformation, TrafficManagementCleared, VatReg}
+import models.api.trafficmanagement._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
+import play.api.test.Helpers._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
 import scala.concurrent.Future
-import play.api.test.Helpers._
 
 class TrafficManagementServiceSpec extends VatRegSpec {
 

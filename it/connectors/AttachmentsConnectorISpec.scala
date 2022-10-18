@@ -37,7 +37,7 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
   val attachmentUrl = "/vatreg/1/attachments"
 
   val testStoreAttachmentsOtherResponseJson: JsObject = Json.obj(
-    "method" -> Some(Other).toString,
+    "method" -> Some(OtherAttachmentMethod).toString,
   )
   val testStoreAttachmentsAttachedResponseJson: JsObject = Json.obj(
     "method" -> Some(Attached).toString,

@@ -17,7 +17,7 @@
 package views.attachments
 
 import featureswitch.core.config.{FeatureSwitching, OptionToTax}
-import models.api.{AttachmentType, IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
+import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec

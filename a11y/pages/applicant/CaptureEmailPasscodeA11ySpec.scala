@@ -1,7 +1,6 @@
 
 package pages.applicant
 
-import controllers.applicant.routes
 import forms.EmailPasscodeForm
 import helpers.A11ySpec
 import views.html.applicant.capture_email_passcode

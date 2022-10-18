@@ -18,11 +18,9 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import connectors.RegistrationApiConnector.honestyDeclarationKey
 import controllers.transactor.{routes => transactorRoutes}
 import featureswitch.core.config._
 import forms.StartNewApplicationForm
-import models.ApiKey
 import models.api.EligibilitySubmissionData
 import play.api.mvc._
 import services._

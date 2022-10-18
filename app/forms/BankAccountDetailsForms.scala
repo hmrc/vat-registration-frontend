@@ -18,12 +18,9 @@ package forms
 
 import forms.FormValidation._
 import models.BankAccountDetails
-import models.api.{BankAccountDetailsStatus, IndeterminateStatus}
+import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.{Form, Mapping}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
-
-import scala.util.matching.Regex
 
 object HasCompanyBankAccountForm extends RequiredBooleanForm {
 

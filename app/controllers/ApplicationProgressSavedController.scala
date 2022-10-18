@@ -18,7 +18,7 @@ package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc.{Action, AnyContent}
-import services.{VatApplicationService, SessionProfile, SessionService}
+import services.{SessionProfile, SessionService, VatApplicationService}
 import views.html.application_progress_saved
 
 import javax.inject.{Inject, Singleton}

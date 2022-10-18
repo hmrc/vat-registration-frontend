@@ -17,8 +17,8 @@
 package controllers.errors
 
 import itutil.ControllerISpec
-import models.{ApplicantDetails, TransactorDetails}
 import models.api.{EligibilitySubmissionData, UkCompany}
+import models.{ApplicantDetails, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.test.Helpers._

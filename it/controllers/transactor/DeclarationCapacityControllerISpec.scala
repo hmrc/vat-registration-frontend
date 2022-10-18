@@ -3,7 +3,7 @@ package controllers.transactor
 
 import forms.DeclarationCapacityForm.{accountant, declarationCapacity, otherRole}
 import itutil.ControllerISpec
-import models.{DeclarationCapacityAnswer, Other, TransactorDetails}
+import models.{DeclarationCapacityAnswer, OtherDeclarationCapacity, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -16,7 +16,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
 
   val testOtherRole = "testOtherRole"
   val testDetails = TransactorDetails(
-    declarationCapacity = Some(DeclarationCapacityAnswer(Other, Some("testOtherRole")))
+    declarationCapacity = Some(DeclarationCapacityAnswer(OtherDeclarationCapacity, Some("testOtherRole")))
   )
 
   s"GET $url" should {

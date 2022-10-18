@@ -19,7 +19,7 @@ package controllers.attachments
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, VatRegistrationService}
+import services.{SessionProfile, SessionService}
 import views.html.attachments.EmailDocuments
 
 import javax.inject.{Inject, Singleton}

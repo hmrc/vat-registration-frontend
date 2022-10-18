@@ -33,7 +33,7 @@ class AttachmentsConnectorSpec extends VatRegSpec {
   val testEmptyAttachmentList: List[AttachmentType] = List[AttachmentType]()
 
   val testStoreAttachmentsOtherResponseJson: JsObject = Json.obj(
-    "method" -> Some(Other).toString,
+    "method" -> Some(OtherAttachmentMethod).toString,
   )
   val testStoreAttachmentsAttachedResponseJson: JsObject = Json.obj(
     "method" -> Some(Attached).toString,

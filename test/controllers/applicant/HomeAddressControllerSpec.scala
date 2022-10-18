@@ -19,17 +19,17 @@ package controllers.applicant
 import common.enums.AddressLookupJourneyIdentifier.{applicantAddress, homeAddress}
 import controllers.applicant.{routes => applicantRoutes}
 import fixtures.ApplicantDetailsFixtures
-import models.{ApplicantDetails, TelephoneNumber}
 import models.api.Address
 import models.external.{EmailAddress, EmailVerified, Name}
 import models.view.HomeAddressView
+import models.{ApplicantDetails, TelephoneNumber}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.Call
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import services.mocks.MockApplicantDetailsService
 import testHelpers.ControllerSpec
-import org.mockito.ArgumentMatchers
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -19,12 +19,11 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, PersonalDetailsValidationService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

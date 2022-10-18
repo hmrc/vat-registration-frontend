@@ -18,7 +18,7 @@ package views
 
 import config.FrontendAppConfig
 import org.jsoup.nodes.{Document, Element}
-import org.jsoup.select.{Elements, NodeFilter}
+import org.jsoup.select.Elements
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}

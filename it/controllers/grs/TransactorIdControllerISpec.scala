@@ -2,7 +2,6 @@
 package controllers.grs
 
 import config.FrontendAppConfig
-import controllers.transactor.routes
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.TransactorDetails

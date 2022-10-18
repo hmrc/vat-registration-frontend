@@ -16,8 +16,9 @@
 
 package config.startup
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.crypto.ApplicationCrypto
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class VerifyCrypto @Inject()(applicationCrypto: ApplicationCrypto) {

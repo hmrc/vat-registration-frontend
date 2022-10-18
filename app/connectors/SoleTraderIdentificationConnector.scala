@@ -21,7 +21,6 @@ import models.PersonalDetails
 import models.api.PartyType
 import models.external.SoleTraderIdEntity
 import models.external.soletraderid.SoleTraderIdJourneyConfig
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw

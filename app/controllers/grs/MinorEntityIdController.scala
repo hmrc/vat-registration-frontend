@@ -18,7 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.minorentityid.{JourneyLabels, MinorEntityIdJourneyConfig}

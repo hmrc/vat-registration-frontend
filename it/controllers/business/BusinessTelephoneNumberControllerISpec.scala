@@ -20,7 +20,7 @@ import itutil.ControllerISpec
 import models.api.{Trust, UkCompany}
 import models.{ApplicantDetails, Business}
 import play.api.http.HeaderNames
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 

@@ -18,7 +18,6 @@ package fixtures
 
 import models.external.addresslookup._
 import models.external.addresslookup.messages.{AddressMessagesModel, InternationalAddressMessagesModel}
-
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 
 object AddressLookupConstants {

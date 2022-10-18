@@ -19,11 +19,11 @@ package services
 import common.enums.AddressLookupJourneyIdentifier
 import config.AddressLookupConfiguration
 import connectors.AddressLookupConnector
-import javax.inject.{Inject, Singleton}
 import models.api.Address
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

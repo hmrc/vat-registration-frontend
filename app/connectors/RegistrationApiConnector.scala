@@ -16,7 +16,6 @@
 
 package connectors
 
-import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import models._
 import play.api.http.Status._

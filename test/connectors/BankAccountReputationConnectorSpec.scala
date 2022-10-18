@@ -21,7 +21,6 @@ import models.BankAccountDetails
 import org.mockito.Mockito._
 import org.mockito._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
-import play.api.libs.json.JsValue
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException, Upstream5xxResponse}
 

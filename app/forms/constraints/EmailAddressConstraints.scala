@@ -18,7 +18,6 @@ package forms.constraints
 
 import forms.constraints.utils.ValidationHelper.{validate, validateNot}
 import play.api.data.validation.Constraint
-import play.api.i18n.Messages
 
 object EmailAddressConstraints {
 

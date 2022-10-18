@@ -23,7 +23,6 @@ import play.api.http.HeaderNames._
 import play.api.http.HttpVerbs._
 import play.api.mvc.Call
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

@@ -3,7 +3,6 @@ package pages.transactor
 
 import forms.DeclarationCapacityForm
 import helpers.A11ySpec
-import play.api.libs.json.Json
 import views.html.transactor.DeclarationCapacityView
 
 class DeclarationCapacityA11ySpec extends A11ySpec {

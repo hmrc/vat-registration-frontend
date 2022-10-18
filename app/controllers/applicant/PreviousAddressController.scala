@@ -24,8 +24,8 @@ import featureswitch.core.config.TaskList
 import forms.PreviousAddressForm
 import models.api.{NETP, NonUkNonEstablished}
 import models.view.PreviousAddressView
-import play.api.mvc.{Action, AnyContent, WrappedRequest}
-import services.{AddressLookupService, ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
+import play.api.mvc.{Action, AnyContent}
+import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.previous_address
 

@@ -20,10 +20,10 @@ import fixtures.VatRegistrationFixture
 import models.Business
 import models.api.Address
 import org.mockito.ArgumentMatchers
-import testHelpers.{ControllerSpec, FutureAssertions}
-import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito._
 import play.api.mvc.Call
+import testHelpers.{ControllerSpec, FutureAssertions}
 
 import scala.concurrent.Future
 

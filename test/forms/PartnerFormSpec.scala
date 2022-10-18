@@ -16,7 +16,7 @@
 
 package forms
 
-import models.api.{CharitableOrg, Individual, LtdLiabilityPartnership, NonUkNonEstablished, PartyType, RegSociety, ScotLtdPartnership, ScotPartnership, UkCompany}
+import models.api._
 import play.api.data.{Form, FormError}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec

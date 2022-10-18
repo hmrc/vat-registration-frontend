@@ -17,9 +17,9 @@ package itutil
 
 import org.scalatest._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import org.scalatest.matchers.must.Matchers
 
 trait IntegrationSpecBase extends AnyWordSpec
   with GivenWhenThen

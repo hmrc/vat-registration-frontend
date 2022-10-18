@@ -19,10 +19,10 @@ package connectors
 
 import config.FrontendAppConfig
 import models.BankAccountDetails
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import play.api.http.Status.OK
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

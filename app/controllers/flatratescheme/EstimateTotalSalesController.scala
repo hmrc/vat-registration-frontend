@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EstimateTotalSalesForm
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionService, _}
+import services._
 import views.html.flatratescheme.estimate_total_sales
 
 import javax.inject.{Inject, Singleton}

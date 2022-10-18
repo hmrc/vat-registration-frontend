@@ -25,7 +25,6 @@ import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionService, TimeService, VatApplicationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.time.workingdays.BankHolidaySet
 import views.html.flatratescheme.frs_start_date
 
 import java.time.LocalDate

@@ -15,8 +15,6 @@
  */
 package itutil
 
-import java.time.LocalDateTime
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
@@ -26,8 +24,9 @@ import play.api.Application
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.Protected
-import uk.gov.hmrc.crypto.CryptoWithKeysFromConfig
+import uk.gov.hmrc.crypto.{CryptoWithKeysFromConfig, Protected}
+
+import java.time.LocalDateTime
 
 object WiremockHelper {
   val wiremockPort = 11111

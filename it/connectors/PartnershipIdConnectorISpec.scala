@@ -18,7 +18,7 @@ package connectors
 
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.{LtdLiabilityPartnership, LtdPartnership, Partnership, ScotLtdPartnership, ScotPartnership}
+import models.api._
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}

@@ -2,13 +2,11 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.TaskList
 import helpers.RequestsFinder
 import itutil.ControllerISpec
-import models.{Business, ModelKeys}
-import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
+import models.Business
+import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsString, JsValue, Json}
 import play.api.test.Helpers._
 
 class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsFinder {

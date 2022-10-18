@@ -16,11 +16,9 @@
 
 package controllers.applicant
 
-import java.time.LocalDate
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, TaskList}
 import fixtures.ApplicantDetailsFixtures
-import models.ApplicantDetails
 import models.api.{NETP, UkCompany}
 import models.external.Name
 import models.view.FormerNameDateView
@@ -29,6 +27,7 @@ import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
 import views.html.applicant.former_name_date
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

@@ -16,11 +16,11 @@
 
 package models.view
 
-import java.time.LocalDate
-
 import models.DateModel
 import models.api.Address
 import play.api.libs.json.Json
+
+import java.time.LocalDate
 
 
 case class FormerNameDateView(date: LocalDate)

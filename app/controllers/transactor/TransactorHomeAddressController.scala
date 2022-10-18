@@ -16,7 +16,7 @@
 
 package controllers.transactor
 
-import common.enums.AddressLookupJourneyIdentifier.{homeAddress, transactorAddress}
+import common.enums.AddressLookupJourneyIdentifier.transactorAddress
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList

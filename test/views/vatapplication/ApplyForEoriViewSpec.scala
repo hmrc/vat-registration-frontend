@@ -21,6 +21,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import views.VatRegViewSpec
 import views.html.vatapplication.apply_for_eori
+
 import scala.collection.JavaConverters._
 
 class ApplyForEoriViewSpec extends VatRegViewSpec {

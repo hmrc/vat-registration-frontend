@@ -4,7 +4,7 @@ package controllers.business
 import featureswitch.core.config.{LandAndProperty, TaskList}
 import forms.ContactPreferenceForm
 import itutil.ControllerISpec
-import models.{Business, ContactPreference, Email, Letter}
+import models.{Business, Email, Letter}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse

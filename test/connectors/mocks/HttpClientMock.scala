@@ -18,10 +18,10 @@ package connectors.mocks
 
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
+import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
-import org.mockito.{ArgumentMatchers => Matchers}
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -17,7 +17,6 @@
 package config
 
 import com.google.inject.AbstractModule
-import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 
 class Module extends AbstractModule {

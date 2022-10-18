@@ -17,7 +17,7 @@
 package services
 
 import connectors.TrafficManagementConnector
-import models.api.trafficmanagement.{ClearTrafficManagementResponse, Draft, OTRS, RegistrationInformation, VatReg}
+import models.api.trafficmanagement._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import javax.inject.{Inject, Singleton}

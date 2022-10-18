@@ -18,7 +18,7 @@ package viewmodels
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, TaskList}
+import featureswitch.core.config.FeatureSwitching
 import models.api.VatSchemeHeader
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -28,7 +28,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, TableRow}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
 
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 

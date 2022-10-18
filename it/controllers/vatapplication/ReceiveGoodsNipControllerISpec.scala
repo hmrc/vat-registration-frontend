@@ -17,8 +17,8 @@
 package controllers.vatapplication
 
 import itutil.ControllerISpec
-import models.api.vatapplication.VatApplication
 import models.api._
+import models.api.vatapplication.VatApplication
 import models.{ConditionalValue, NIPTurnover, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames

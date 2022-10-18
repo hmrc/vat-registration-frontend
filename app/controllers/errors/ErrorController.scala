@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
-import views.html.errors.{AlreadySubmittedKickout, SubmissionFailed, SubmissionRetryableView, ContactView}
+import views.html.errors.{AlreadySubmittedKickout, ContactView, SubmissionFailed, SubmissionRetryableView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

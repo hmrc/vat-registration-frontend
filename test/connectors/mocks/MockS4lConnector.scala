@@ -20,11 +20,11 @@ import connectors.S4LConnector
 import models.S4LKey
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
+import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import org.mockito.{ArgumentMatchers => Matchers}
 
 import scala.concurrent.Future
 

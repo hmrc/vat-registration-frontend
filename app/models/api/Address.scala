@@ -17,8 +17,8 @@
 package models.api
 
 import cats.Show.show
-import models.view.HomeAddressView
 import models.api.Address.inlineShow.inline
+import models.view.HomeAddressView
 import models.view.vatContact.ppob.PpobView
 import models.{ApiModelTransformer => MT}
 import org.apache.commons.lang3.text.WordUtils
