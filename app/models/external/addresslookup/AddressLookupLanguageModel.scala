@@ -49,22 +49,24 @@ case class LookupPageMessagesModel(title: Option[String],
                                    submitLabel: Option[String],
                                    noResultsFoundMessage: Option[String],
                                    resultLimitExceededMessage: Option[String],
-                                   manualAddressLinkText: Option[String]
-                                  )
+                                   manualAddressLinkText: Option[String])
 
 object LookupPageMessagesModel {
   implicit val writes: Writes[LookupPageMessagesModel] = Json.writes[LookupPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang, optName: Option[String] = None)(implicit messagesApi: MessagesApi): LookupPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None, optName: Option[String] = None)(implicit messagesApi: MessagesApi): LookupPageMessagesModel = {
+    val section = s"addressLookup.$journeyId.lookupPage"
+    val sectionPrefix = msgPrefix.fold(section)(prefix => s"$prefix.$section")
+
     LookupPageMessagesModel(
-      title = MessageOption(s"addressLookup.$journeyId.lookupPage.title", lang, optName.toSeq: _*),
-      heading = MessageOption(s"addressLookup.$journeyId.lookupPage.heading", lang, optName.toSeq: _*),
-      filterLabel = MessageOption(s"addressLookup.$journeyId.lookupPage.filterLabel", lang),
-      postcodeLabel = MessageOption(s"addressLookup.$journeyId.LookupPage.postcodeLabel", lang),
-      submitLabel = MessageOption(s"addressLookup.$journeyId.lookupPage.submitLabel", lang),
-      noResultsFoundMessage = MessageOption(s"addressLookup.$journeyId.lookupPage.noResultsFoundMessage", lang),
-      resultLimitExceededMessage = MessageOption(s"addressLookup.$journeyId.lookupPage.resultLimitExceededMessage", lang),
-      manualAddressLinkText = MessageOption(s"addressLookup.$journeyId.lookupPage.manualAddressLinkText", lang)
+      title = MessageOption(s"$sectionPrefix.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"$sectionPrefix.heading", lang, optName.toSeq: _*),
+      filterLabel = MessageOption(s"$sectionPrefix.filterLabel", lang),
+      postcodeLabel = MessageOption(s"$sectionPrefix.postcodeLabel", lang),
+      submitLabel = MessageOption(s"$sectionPrefix.submitLabel", lang),
+      noResultsFoundMessage = MessageOption(s"$sectionPrefix.noResultsFoundMessage", lang),
+      resultLimitExceededMessage = MessageOption(s"$sectionPrefix.resultLimitExceededMessage", lang),
+      manualAddressLinkText = MessageOption(s"$sectionPrefix.manualAddressLinkText", lang)
     )
   }
 }
@@ -94,15 +96,18 @@ case class SelectPageMessagesModel(title: Option[String],
 object SelectPageMessagesModel {
   implicit val writes: Writes[SelectPageMessagesModel] = Json.writes[SelectPageMessagesModel]
 
-  def forJourney(journeyId: String, lang: Lang, optName: Option[String] = None)(implicit messagesApi: MessagesApi): SelectPageMessagesModel = {
+  def forJourney(journeyId: String, lang: Lang, msgPrefix: Option[String] = None, optName: Option[String] = None)(implicit messagesApi: MessagesApi): SelectPageMessagesModel = {
+    val section = s"addressLookup.$journeyId.selectPage"
+    val sectionPrefix = msgPrefix.fold(section)(prefix => s"$prefix.$section")
+
     SelectPageMessagesModel(
-      title = MessageOption(s"addressLookup.$journeyId.selectPage.title", lang, optName.toSeq: _*),
-      heading = MessageOption(s"addressLookup.$journeyId.selectPage.heading", lang, optName.toSeq: _*),
-      headingWithPostcode = MessageOption(s"addressLookup.$journeyId.selectPage.headingWithPostcode", lang),
-      proposalListLabel = MessageOption(s"addressLookup.$journeyId.selectPage.proposalListLabel", lang),
-      submitLabel = MessageOption(s"addressLookup.$journeyId.selectPage.submitLabel", lang),
-      searchAgainLinkText = MessageOption(s"addressLookup.$journeyId.selectPage.searchAgainLinkText", lang),
-      editAddressLinkText = MessageOption(s"addressLookup.$journeyId.selectPage.editAddressLinkText", lang)
+      title = MessageOption(s"$sectionPrefix.title", lang, optName.toSeq: _*),
+      heading = MessageOption(s"$sectionPrefix.heading", lang, optName.toSeq: _*),
+      headingWithPostcode = MessageOption(s"$sectionPrefix.headingWithPostcode", lang),
+      proposalListLabel = MessageOption(s"$sectionPrefix.proposalListLabel", lang),
+      submitLabel = MessageOption(s"$sectionPrefix.submitLabel", lang),
+      searchAgainLinkText = MessageOption(s"$sectionPrefix.searchAgainLinkText", lang),
+      editAddressLinkText = MessageOption(s"$sectionPrefix.editAddressLinkText", lang)
     )
   }
 }

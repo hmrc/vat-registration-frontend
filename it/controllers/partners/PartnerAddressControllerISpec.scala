@@ -19,6 +19,7 @@ package controllers.partners
 import itutil.ControllerISpec
 import models.Entity
 import models.api.{Individual, UkCompany}
+import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -69,7 +70,7 @@ class PartnerAddressControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an error if entity is missing entirely" in new Setup {
+    "redirect to first entity loop page if entity is missing entirely" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(List(
@@ -81,11 +82,12 @@ class PartnerAddressControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(2).url)
       }
     }
 
-    "return an error if entity is missing business details" in new Setup {
+    "redirect to first entity loop page if entity is missing business details" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(List(
@@ -98,7 +100,8 @@ class PartnerAddressControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(2).url)
       }
     }
   }

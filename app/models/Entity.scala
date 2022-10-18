@@ -17,7 +17,7 @@
 package models
 
 import models.api.{Address, PartyType, ScotPartnership}
-import models.external.{BusinessEntity, PartnershipIdEntity}
+import models.external.{BusinessEntity, IncorporatedEntity, PartnershipIdEntity, SoleTraderIdEntity}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -27,7 +27,14 @@ case class Entity(details: Option[BusinessEntity],
                   optScottishPartnershipName: Option[String],
                   address: Option[Address],
                   email: Option[String],
-                  telephoneNumber: Option[String])
+                  telephoneNumber: Option[String]) {
+  def displayName: Option[String] = details match {
+    case Some(soleTrader: SoleTraderIdEntity) => Some(soleTrader.firstName)
+    case Some(incorpBusiness: IncorporatedEntity) => incorpBusiness.companyName
+    case Some(partnershipBusiness: PartnershipIdEntity) => partnershipBusiness.companyName
+    case _ => None
+  }
+}
 
 object Entity {
   val leadEntityIndex = 1

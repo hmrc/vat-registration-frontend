@@ -121,17 +121,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "phaseBannerHtml" -> "This is a new service. Help us improve it - send your <a href=\"https://www.tax.service.gov.uk/register-for-vat/feedback\">feedback</a>."
     ),
     "lookupPageLabels" -> Json.obj(
-      "title" -> LookupPageOptions.title,
-      "heading" -> LookupPageOptions.heading,
-      "filterLabel" -> LookupPageOptions.filterLabel,
-      "submitLabel" -> LookupPageOptions.submitLabel,
-      "manualAddressLinkText" -> LookupPageOptions.manualAddressLinkText
     ),
     "selectPageLabels" -> Json.obj(
-      "title" -> SelectPageOptions.title,
-      "heading" -> SelectPageOptions.heading,
-      "submitLabel" -> SelectPageOptions.submitLabel,
-      "editAddressLinkText" -> SelectPageOptions.editAddressLinkText
     ),
     "editPageLabels" -> Json.obj(
       "title" -> EditPageOptions.title,
@@ -158,17 +149,8 @@ class AddressLookupInitializationModelSpec extends VatRegSpec {
       "phaseBannerHtml" -> "Gwasanaeth newydd yw hwn. Helpwch ni i’w wella – anfonwch eich <a href=\"https://www.tax.service.gov.uk/register-for-vat/feedback\">adborth</a>."
     ),
     "lookupPageLabels" -> Json.obj(
-      "title" -> LookupPageOptionsCy.title,
-      "heading" -> LookupPageOptionsCy.heading,
-      "filterLabel" -> LookupPageOptionsCy.filterLabel,
-      "submitLabel" -> LookupPageOptionsCy.submitLabel,
-      "manualAddressLinkText" -> LookupPageOptionsCy.manualAddressLinkText
     ),
     "selectPageLabels" -> Json.obj(
-      "title" -> SelectPageOptionsCy.title,
-      "heading" -> SelectPageOptionsCy.heading,
-      "submitLabel" -> SelectPageOptionsCy.submitLabel,
-      "editAddressLinkText" -> SelectPageOptionsCy.editAddressLinkText
     ),
     "editPageLabels" -> Json.obj(
       "title" -> EditPageOptionsCy.title,

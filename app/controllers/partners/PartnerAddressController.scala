@@ -19,52 +19,45 @@ package controllers.partners
 import common.enums.AddressLookupJourneyIdentifier.{companyPartner, individualPartner}
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.Entity
-import models.api.{Address, Individual}
-import models.external.{IncorporatedEntity, PartnershipIdEntity, SoleTraderIdEntity}
+import models.api.Address
+import models.external.SoleTraderIdEntity
 import play.api.mvc.{Action, AnyContent}
 import services._
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PartnerAddressController @Inject()(val sessionService: SessionService,
-                                            val authConnector: AuthClientConnector,
-                                            val entityService: EntityService,
-                                            val applicantDetailsService: ApplicantDetailsService,
-                                            val vatRegistrationService: VatRegistrationService,
-                                            addressLookupService: AddressLookupService)
-                                           (implicit appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
+                                         val authConnector: AuthClientConnector,
+                                         val entityService: EntityService,
+                                         val applicantDetailsService: ApplicantDetailsService,
+                                         val vatRegistrationService: VatRegistrationService,
+                                         addressLookupService: AddressLookupService)
+                                        (implicit appConfig: FrontendAppConfig,
+                                         val executionContext: ExecutionContext,
+                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
   def redirectToAlf(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerAddressController.redirectToAlf) {
-          case Some(Entity(Some(soleTrader: SoleTraderIdEntity), Individual, _, _, _, _, _)) =>
-            addressLookupService.getJourneyUrl(
-              individualPartner,
-              routes.PartnerAddressController.addressLookupCallback(index),
-              optName = Some(soleTrader.firstName)
-            ).map(Redirect)
-          case Some(Entity(Some(business), _, _, _, _, _, _)) =>
-            val companyName = business match {
-              case incorpBusiness: IncorporatedEntity => incorpBusiness.companyName
-              case partnershipBusiness: PartnershipIdEntity => partnershipBusiness.companyName
+          case Some(entity) if entity.displayName.isDefined =>
+            val isCompany = entity.details match {
+              case Some(_: SoleTraderIdEntity) => false
+              case _ => true
             }
 
             addressLookupService.getJourneyUrl(
-              companyPartner,
+              if (isCompany) companyPartner else individualPartner,
               routes.PartnerAddressController.addressLookupCallback(index),
-              useUkMode = true,
-              optName = companyName
+              useUkMode = isCompany,
+              optName = entity.displayName
             ).map(Redirect)
           case _ =>
-            throw new InternalServerException("[PartnerAddressController] Attempted to go down partner alf journey without capturing partyType or passing GRS")
+            logger.warn("[PartnerAddressController] Attempted to go down partner alf journey without capturing partyType or passing GRS")
+            Future.successful(Redirect(routes.PartnerEntityTypeController.showPartnerType(index)))
         }
   }
 
