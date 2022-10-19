@@ -40,17 +40,21 @@ class SoleTraderIdControllerSpec extends ControllerSpec
 
     val soleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
       continueUrl = appConfig.soleTraderCallbackUrl,
-      optServiceName = Some("Register for VAT"),
-      optFullNamePageLabel = Some("Who are you registering on behalf of?"),
       deskProServiceId = "vrs",
       signOutUrl = appConfig.feedbackUrl,
       accessibilityUrl = appConfig.accessibilityStatementUrl,
       regime = appConfig.regime,
       businessVerificationCheck = true,
-      labels = Some(JourneyLabels(TranslationLabels(
-        optFullNamePageLabel = Some("Ar ran pwy rydych yn cofrestru?"),
-        optServiceName = Some("Cofrestru ar gyfer TAW")
-      )))
+      labels = Some(JourneyLabels(
+        en = TranslationLabels(
+          optFullNamePageLabel = Some("Who are you registering on behalf of?"),
+          optServiceName = Some("Register for VAT")
+        ),
+        cy = TranslationLabels(
+          optFullNamePageLabel = Some("Ar ran pwy rydych yn cofrestru?"),
+          optServiceName = Some("Cofrestru ar gyfer TAW")
+        )
+      ))
     )
 
     object Controller extends SoleTraderIdController(

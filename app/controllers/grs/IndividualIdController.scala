@@ -31,13 +31,13 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class IndividualIdController @Inject()(val sessionService: SessionService,
-                                                   val authConnector: AuthConnector,
-                                                   val applicantDetailsService: ApplicantDetailsService,
-                                                   soleTraderIdentificationService: SoleTraderIdentificationService,
-                                                   vatRegistrationService: VatRegistrationService
-                                                  )(implicit val appConfig: FrontendAppConfig,
-                                                    val executionContext: ExecutionContext,
-                                                    baseControllerComponents: BaseControllerComponents)
+                                       val authConnector: AuthConnector,
+                                       val applicantDetailsService: ApplicantDetailsService,
+                                       soleTraderIdentificationService: SoleTraderIdentificationService,
+                                       vatRegistrationService: VatRegistrationService
+                                      )(implicit val appConfig: FrontendAppConfig,
+                                        val executionContext: ExecutionContext,
+                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
@@ -56,17 +56,21 @@ class IndividualIdController @Inject()(val sessionService: SessionService,
             }
             config = SoleTraderIdJourneyConfig(
               continueUrl = appConfig.individualCallbackUrl,
-              optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
-              optFullNamePageLabel = fullNamePageLabel,
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
               regime = appConfig.regime,
               businessVerificationCheck = true,
-              labels = Some(JourneyLabels(TranslationLabels(
-                optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
-                optFullNamePageLabel = welshFullNamePageLabel
-              )))
+              labels = Some(JourneyLabels(
+                en = TranslationLabels(
+                  optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
+                  optFullNamePageLabel = fullNamePageLabel
+                ),
+                cy = TranslationLabels(
+                  optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
+                  optFullNamePageLabel = welshFullNamePageLabel
+                )
+              ))
             )
             partyType <- vatRegistrationService.partyType
             url <- soleTraderIdentificationService.startIndividualJourney(config, Some(partyType))

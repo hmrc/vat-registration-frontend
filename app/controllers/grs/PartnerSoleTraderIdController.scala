@@ -34,6 +34,7 @@ import uk.gov.hmrc.http.InternalServerException
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+// scalastyle:off
 @Singleton
 class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService,
                                               val authConnector: AuthConnector,
@@ -61,25 +62,35 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
                   )
                 } else if (index > leadEntityIndex) {
                   (
-                    messagesApi.translate("transactorName.partner.optFullNamePageLabel", Seq(index))(Lang("en")),
-                    messagesApi.translate("transactorName.partner.optFullNamePageLabel", Seq(index))(Lang("cy"))
+                    messagesApi.translate(
+                      "soleTraderName.partner.optFullNamePageLabel",
+                      messagesApi.translate(s"ordinals.$index", Nil)(Lang("en")).toSeq.map(_.toLowerCase)
+                    )(Lang("en")),
+                    messagesApi.translate(
+                      "soleTraderName.partner.optFullNamePageLabel",
+                      messagesApi.translate(s"ordinals.$index", Nil)(Lang("cy")).toSeq.map(_.toLowerCase)
+                    )(Lang("cy"))
                   )
                 } else {
                   (None, None)
                 }
                 journeyConfig = SoleTraderIdJourneyConfig(
                   continueUrl = appConfig.leadPartnerCallbackUrl(index),
-                  optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
-                  optFullNamePageLabel = fullNamePageLabel,
                   deskProServiceId = appConfig.contactFormServiceIdentifier,
                   signOutUrl = appConfig.feedbackUrl,
                   accessibilityUrl = appConfig.accessibilityStatementUrl,
                   regime = appConfig.regime,
                   businessVerificationCheck = false,
-                  labels = Some(JourneyLabels(TranslationLabels(
-                    optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
-                    optFullNamePageLabel = welshFullNamePageLabel
-                  )))
+                  labels = Some(JourneyLabels(
+                    en = TranslationLabels(
+                      optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
+                      optFullNamePageLabel = fullNamePageLabel
+                    ),
+                    cy = TranslationLabels(
+                      optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy")),
+                      optFullNamePageLabel = welshFullNamePageLabel
+                    )
+                  ))
                 )
                 journeyStartUrl <- soleTraderIdentificationService.startSoleTraderJourney(journeyConfig, partyType)
               } yield {

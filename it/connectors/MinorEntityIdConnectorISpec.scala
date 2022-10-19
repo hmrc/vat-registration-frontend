@@ -19,7 +19,7 @@ package connectors
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
-import models.external.minorentityid.MinorEntityIdJourneyConfig
+import models.external.minorentityid.{JourneyLabels, MinorEntityIdJourneyConfig, TranslationLabels}
 import models.external.soletraderid.OverseasIdentifierDetails
 import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
@@ -48,7 +48,11 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     signOutUrl = "/test-sign-out",
     accessibilityUrl = "/accessibility-url",
     regime = "VATC",
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    labels = Some(JourneyLabels(
+      en = TranslationLabels(optServiceName = Some("MTD")),
+      cy = TranslationLabels(optServiceName = Some("MTD"))
+    ))
   )
 
   val testPostCode = "ZZ1 1ZZ"

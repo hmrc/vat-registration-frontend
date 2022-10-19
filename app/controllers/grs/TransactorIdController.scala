@@ -31,13 +31,13 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class TransactorIdController @Inject()(val sessionService: SessionService,
-                                                   val authConnector: AuthConnector,
-                                                   val transactorDetailsService: TransactorDetailsService,
-                                                   vatRegistrationService: VatRegistrationService,
-                                                   soleTraderIdentificationService: SoleTraderIdentificationService
-                                                  )(implicit val appConfig: FrontendAppConfig,
-                                                    val executionContext: ExecutionContext,
-                                                    baseControllerComponents: BaseControllerComponents)
+                                       val authConnector: AuthConnector,
+                                       val transactorDetailsService: TransactorDetailsService,
+                                       vatRegistrationService: VatRegistrationService,
+                                       soleTraderIdentificationService: SoleTraderIdentificationService
+                                      )(implicit val appConfig: FrontendAppConfig,
+                                        val executionContext: ExecutionContext,
+                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
@@ -47,15 +47,19 @@ class TransactorIdController @Inject()(val sessionService: SessionService,
           soleTraderIdentificationService.startIndividualJourney(
             SoleTraderIdJourneyConfig(
               continueUrl = appConfig.transactorCallbackUrl,
-              optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
               regime = appConfig.regime,
               businessVerificationCheck = true,
-              labels = Some(JourneyLabels(TranslationLabels(
-                optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy"))
-              )))
+              labels = Some(JourneyLabels(
+                en = TranslationLabels(
+                  optServiceName = messagesApi.translate("service.name", Nil)(Lang("en"))
+                ),
+                cy = TranslationLabels(
+                  optServiceName = messagesApi.translate("service.name", Nil)(Lang("cy"))
+                )
+              ))
             )
           ).map(url => Redirect(url))
     }

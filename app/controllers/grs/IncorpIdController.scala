@@ -21,7 +21,7 @@ import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{TaskList, UseSoleTraderIdentification}
 import models.api.{CharitableOrg, RegSociety, UkCompany}
-import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels}
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -47,13 +47,15 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         val journeyConfig = IncorpIdJourneyConfig(
           continueUrl = appConfig.incorpIdCallbackUrl,
-          optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
           deskProServiceId = appConfig.contactFormServiceIdentifier,
           signOutUrl = appConfig.feedbackUrl,
           accessibilityUrl = appConfig.accessibilityStatementUrl,
           regime = appConfig.regime,
           businessVerificationCheck = true,
-          labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
+          labels = Some(JourneyLabels(
+            en = TranslationLabels(messagesApi.translate("service.name", Nil)(Lang("en"))),
+            cy = TranslationLabels(messagesApi.translate("service.name", Nil)(Lang("cy")))
+          ))
         )
 
         vatRegistrationService.partyType.flatMap {

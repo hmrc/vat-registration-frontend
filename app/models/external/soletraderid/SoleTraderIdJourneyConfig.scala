@@ -19,8 +19,6 @@ package models.external.soletraderid
 import play.api.libs.json._
 
 case class SoleTraderIdJourneyConfig(continueUrl: String,
-                                     optServiceName: Option[String] = None,
-                                     optFullNamePageLabel: Option[String] = None,
                                      deskProServiceId: String,
                                      signOutUrl: String,
                                      accessibilityUrl: String,
@@ -32,22 +30,16 @@ object SoleTraderIdJourneyConfig {
   implicit val format: Format[SoleTraderIdJourneyConfig] = Json.format[SoleTraderIdJourneyConfig]
 }
 
-case class JourneyLabels(welsh: TranslationLabels)
+case class JourneyLabels(en: TranslationLabels,
+                         cy: TranslationLabels)
 
 object JourneyLabels {
-
-  private val welshLabelsKey: String = "cy"
-
-  implicit val reads: Reads[JourneyLabels] = (JsPath \ welshLabelsKey).read[TranslationLabels].map(JourneyLabels.apply)
-  implicit val writes: OWrites[JourneyLabels] = (JsPath \ welshLabelsKey).write[TranslationLabels].contramap(_.welsh)
-
-  val format: OFormat[JourneyLabels] = OFormat(reads, writes)
+  implicit val format: OFormat[JourneyLabels] = Json.format[JourneyLabels]
 }
 
-case class TranslationLabels(optFullNamePageLabel: Option[String] = None, optServiceName: Option[String])
+case class TranslationLabels(optFullNamePageLabel: Option[String] = None,
+                             optServiceName: Option[String])
 
 object TranslationLabels {
-
   implicit val format: OFormat[TranslationLabels] = Json.format[TranslationLabels]
-
 }

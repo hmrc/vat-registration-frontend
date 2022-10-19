@@ -20,7 +20,7 @@ import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
-import models.external.incorporatedentityid.IncorpIdJourneyConfig
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
 import models.external.{BvFail, BvPass, IncorporatedEntity}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -31,6 +31,19 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
   lazy val connector: IncorpIdConnector = app.injector.instanceOf[IncorpIdConnector]
   val testIncorpId = "testIncorpId"
 
+  val testJourneyConfig = IncorpIdJourneyConfig(
+    continueUrl = "/test",
+    deskProServiceId = "vrs",
+    signOutUrl = "/signOutUrl",
+    accessibilityUrl = "/accessibility",
+    regime = "VATC",
+    businessVerificationCheck = true,
+    labels = Some(JourneyLabels(
+      en = TranslationLabels(optServiceName = Some("MTD")),
+      cy = TranslationLabels(optServiceName = Some("MTD"))
+    ))
+  )
+
   "createLimitedCompanyJourney" when {
     "the stub Incorp ID feature switch is enabled" should {
       "call the test only route to stub the journey for UkCompany" in {
@@ -38,7 +51,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -54,7 +66,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -70,7 +81,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         enable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -88,7 +98,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -104,7 +113,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 
@@ -120,7 +128,6 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         disable(StubIncorpIdJourney)
 
-        val testJourneyConfig = IncorpIdJourneyConfig(continueUrl = "/test", deskProServiceId = "vrs", signOutUrl = "/signOutUrl", accessibilityUrl = "/accessibility", regime = "VATC", businessVerificationCheck = true)
         val testJourneyStartUrl = "/test"
         val testDeskProServiceId = "vrs"
 

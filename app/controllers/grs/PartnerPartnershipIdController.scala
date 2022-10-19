@@ -23,7 +23,7 @@ import featureswitch.core.config.TaskList
 import models.Entity
 import models.Entity.leadEntityIndex
 import models.external.BusinessEntity
-import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig}
+import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -50,13 +50,15 @@ class PartnerPartnershipIdController @Inject()(val authConnector: AuthConnector,
           case Some(Entity(_, partyType, _, _, _, _, _)) =>
             val journeyConfig = PartnershipIdJourneyConfig(
               continueUrl = appConfig.partnershipIdPartnerCallbackUrl(index),
-              optServiceName = messagesApi.translate("service.name", Nil)(Lang("en")),
               deskProServiceId = appConfig.contactFormServiceIdentifier,
               signOutUrl = appConfig.feedbackUrl,
               accessibilityUrl = appConfig.accessibilityStatementUrl,
               regime = appConfig.regime,
               businessVerificationCheck = false,
-              labels = Some(JourneyLabels(messagesApi.translate("service.name", Nil)(Lang("cy"))))
+              labels = Some(JourneyLabels(
+                en = TranslationLabels(messagesApi.translate("service.name", Nil)(Lang("en"))),
+                cy = TranslationLabels(messagesApi.translate("service.name", Nil)(Lang("cy")))
+              ))
             )
 
             partnershipIdService.createJourney(journeyConfig, partyType).map { journeyStartUrl =>

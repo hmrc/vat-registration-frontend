@@ -20,7 +20,7 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.PersonalDetails
 import models.api.Individual
-import models.external.soletraderid.{OverseasIdentifierDetails, SoleTraderIdJourneyConfig}
+import models.external.soletraderid.{JourneyLabels, OverseasIdentifierDetails, SoleTraderIdJourneyConfig, TranslationLabels}
 import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
@@ -38,12 +38,15 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
 
   val testJourneyConfig: SoleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
     continueUrl = "/test-url",
-    optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
     accessibilityUrl = "/accessibility-url",
     regime = "VATC",
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    labels = Some(JourneyLabels(
+      en = TranslationLabels(optServiceName = Some("MTD")),
+      cy = TranslationLabels(optServiceName = Some("MTD"))
+    ))
   )
 
   "startSoleTraderJourney" when {
