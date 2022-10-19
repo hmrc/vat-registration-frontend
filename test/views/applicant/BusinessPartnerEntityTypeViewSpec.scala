@@ -69,7 +69,7 @@ class BusinessPartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitc
     }
 
     "have the correct heading" in new ViewSetup() {
-      doc.heading must contain (LeadBusinessPartnerEntityExpectedContent.withSubHeading)
+      doc.heading mustBe Some(LeadBusinessPartnerEntityExpectedContent.withSubHeading)
     }
 
     "have the correct button1" in new ViewSetup() {
