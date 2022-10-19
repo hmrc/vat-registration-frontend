@@ -19,7 +19,7 @@ package connectors
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api._
-import models.external.partnershipid.PartnershipIdJourneyConfig
+import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
 import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
@@ -42,12 +42,15 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
   val testJourneyConfig: PartnershipIdJourneyConfig = PartnershipIdJourneyConfig(
     continueUrl = "/test-url",
-    optServiceName = Some("MTD"),
     deskProServiceId = "MTDSUR",
     signOutUrl = "/test-sign-out",
     accessibilityUrl = "/accessibility-url",
     regime = "VATC",
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    labels = Some(JourneyLabels(
+      en = TranslationLabels(optServiceName = Some("MTD")),
+      cy = TranslationLabels(optServiceName = Some("MTD"))
+    ))
   )
 
   val testPostCode = "ZZ1 1ZZ"
@@ -111,7 +114,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
     }
 
     "for Limited Partnership" must {
-      "return a JSON response with status CREATED and journeyStartUrl in response body" in new Setup{
+      "return a JSON response with status CREATED and journeyStartUrl in response body" in new Setup {
         given()
 
         stubPost(createLtdPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))

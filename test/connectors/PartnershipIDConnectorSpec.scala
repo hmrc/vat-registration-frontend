@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.api.Partnership
-import models.external.partnershipid.PartnershipIdJourneyConfig
+import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
@@ -39,12 +39,15 @@ class PartnershipIDConnectorSpec extends VatRegSpec {
 
     val testJourneyConfig = PartnershipIdJourneyConfig(
       continueUrl = "/test-url",
-      optServiceName = Some("MTD"),
       deskProServiceId = "MTDSUR",
       signOutUrl = "/test-sign-out",
       accessibilityUrl = "/test-accessiblity-url",
       regime = "VATC",
-      businessVerificationCheck = true
+      businessVerificationCheck = true,
+      labels = Some(JourneyLabels(
+        en = TranslationLabels(optServiceName = Some("MTD")),
+        cy = TranslationLabels(optServiceName = Some("MTD"))
+      ))
     )
   }
 

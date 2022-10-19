@@ -18,7 +18,7 @@ package services
 
 import connectors.mocks.MockSoleTraderIdConnector
 import models.api.Individual
-import models.external.soletraderid.SoleTraderIdJourneyConfig
+import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
@@ -39,12 +39,16 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     val partyType = Individual
     val testJourneyConfig = SoleTraderIdJourneyConfig(
       continueUrl = testContinueUrl,
-      optServiceName = Some(testServiceName),
       deskProServiceId = testDeskproId,
       signOutUrl = testSignOutUrl,
       accessibilityUrl = testAccessibilityUrl,
       regime = regime,
-      businessVerificationCheck = businessVerificationStatus)
+      businessVerificationCheck = businessVerificationStatus,
+      labels = Some(JourneyLabels(
+        en = TranslationLabels(optServiceName = Some(testServiceName)),
+        cy = TranslationLabels(optServiceName = Some(testServiceName))
+      ))
+    )
 
     object Service extends SoleTraderIdentificationService(mockSoleTraderIdConnector)
 

@@ -21,7 +21,7 @@ import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
 import fixtures.VatRegistrationFixture
 import models.api.{CharitableOrg, GovOrg, RegSociety, UkCompany}
-import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels}
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockEntityService, MockVatRegistrationService, TimeServiceMock}
@@ -58,13 +58,19 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   val testJourneyConfig: IncorpIdJourneyConfig = IncorpIdJourneyConfig(
     continueUrl = appConfig.incorpIdCallbackUrl,
-    optServiceName = Some("Register for VAT"),
     deskProServiceId = "vrs",
     signOutUrl = appConfig.feedbackUrl,
     accessibilityUrl = appConfig.accessibilityStatementUrl,
     regime = appConfig.regime,
     businessVerificationCheck = true,
-    labels = Some(JourneyLabels(Some("Cofrestru ar gyfer TAW")))
+    labels = Some(JourneyLabels(
+      en = TranslationLabels(
+        optServiceName = Some("Register for VAT")
+      ),
+      cy = TranslationLabels(
+        optServiceName = Some("Cofrestru ar gyfer TAW")
+      )
+    ))
   )
 
   "startJourney" should {

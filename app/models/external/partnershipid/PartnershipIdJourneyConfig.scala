@@ -19,27 +19,26 @@ package models.external.partnershipid
 import play.api.libs.json._
 
 case class PartnershipIdJourneyConfig(continueUrl: String,
-                                      optServiceName: Option[String] = None,
                                       deskProServiceId: String,
                                       signOutUrl: String,
                                       accessibilityUrl: String,
                                       regime: String,
                                       businessVerificationCheck: Boolean,
-                                      labels: Option[JourneyLabels] = None)
+                                      labels: Option[JourneyLabels])
 
 object PartnershipIdJourneyConfig {
   implicit val format: OFormat[PartnershipIdJourneyConfig] = Json.format[PartnershipIdJourneyConfig]
 }
 
-case class JourneyLabels(optWelshServiceName: Option[String])
+case class JourneyLabels(en: TranslationLabels,
+                         cy: TranslationLabels)
 
 object JourneyLabels {
+  implicit val format: OFormat[JourneyLabels] = Json.format[JourneyLabels]
+}
 
-  val welshLabelsKey: String = "cy"
-  val optServiceNameKey: String = "optServiceName"
+case class TranslationLabels(optServiceName: Option[String])
 
-  implicit val reads: Reads[JourneyLabels] = (JsPath \ welshLabelsKey \ optServiceNameKey).readNullable[String].map(JourneyLabels.apply)
-  implicit val writes: OWrites[JourneyLabels] = (JsPath \ welshLabelsKey \ optServiceNameKey).writeNullable[String].contramap(_.optWelshServiceName)
-
-  val format: OFormat[JourneyLabels] = OFormat(reads, writes)
+object TranslationLabels {
+  implicit val format: OFormat[TranslationLabels] = Json.format[TranslationLabels]
 }

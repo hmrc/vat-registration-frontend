@@ -18,7 +18,7 @@ package connectors
 
 import config.FrontendAppConfig
 import models.api.NETP
-import models.external.soletraderid.{OverseasIdentifierDetails, SoleTraderIdJourneyConfig}
+import models.external.soletraderid.{JourneyLabels, OverseasIdentifierDetails, SoleTraderIdJourneyConfig, TranslationLabels}
 import models.external.{BusinessVerificationStatus, BvPass}
 import play.api.Configuration
 import play.api.libs.json.{JsObject, Json}
@@ -39,12 +39,15 @@ class SoleTraderIdentificationConnectorSpec extends VatRegSpec {
 
     val testJourneyConfig = SoleTraderIdJourneyConfig(
       continueUrl = "/test-url",
-      optServiceName = Some("MTD"),
       deskProServiceId = "MTDSUR",
       signOutUrl = "/test-sign-out",
       accessibilityUrl = "/accessibility-url",
       regime = "VATC",
-      businessVerificationCheck = true
+      businessVerificationCheck = true,
+      labels = Some(JourneyLabels(
+        en = TranslationLabels(optServiceName = Some("MTD")),
+        cy = TranslationLabels(optServiceName = Some("MTD"))
+      ))
     )
   }
 
