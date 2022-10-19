@@ -86,7 +86,8 @@
                         checked = form("value").value.contains(PartyType.stati(ScotPartnership))
                     )
                 ),
-                legendAsHeading = true
+                legendAsHeading = true,
+                subHeading = Some(messages("pages.businessLeadPartnerEntityType.subHeading"))
             )
 
             @button("app.common.continue")
