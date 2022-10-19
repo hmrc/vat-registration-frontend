@@ -1178,7 +1178,6 @@ pages.partnerEntityType.heading                          = What type of partner 
 pages.partnerEntityType.indentText                       = A partner in a partnership does not have to be an actual person. For example, a limited company can be a partner.
 
 # BUSINESS LEAD PARTNER ENTITY TYPE
-pages.businessLeadPartnerEntityType.subHeading           = Partner details
 pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
 pages.businessLeadPartnerEntityType.heading.3pt          = What type of business is the lead partner within the partnership?
 pages.businessLeadPartnerEntityType.netp                 = Non-established taxable person (NETP)

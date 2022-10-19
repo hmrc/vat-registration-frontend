@@ -1179,7 +1179,6 @@ pages.partnerEntityType.indentText                       = A partner in a partne
 
 
 # BUSINESS LEAD PARTNER ENTITY TYPE
-pages.businessLeadPartnerEntityType.subHeading           = Partner arweiniol
 pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
 pages.businessLeadPartnerEntityType.heading.3pt          = What type of business is the lead partner within the partnership?
 pages.businessLeadPartnerEntityType.netp                 = Person trethadwy sydd heb ei sefydlu (NETP)
