@@ -41,13 +41,16 @@ class BusinessPartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitc
 
   object LeadBusinessPartnerEntityExpectedContent {
     val heading: String = "What type of business are you within the partnership?"
+    val withSubHeading: String = s"$heading This section is Partner details"
     val heading3pt: String = "What type of business is the lead partner within the partnership?"
+    val withSubHeading3pt: String = s"$heading3pt This section is Partner details"
     val title = s"$heading - Register for VAT - GOV.UK"
     val error: String = "Select the type of business the lead partner is within the partnership"
   }
 
   object AdditionalBusinessPartnerEntityExpectedContent {
     val heading: String = s"What type of business is the second partner within the partnership?"
+    val withSubHeading: String = s"$heading This section is Partner details"
     val title: String = s"$heading - Register for VAT - GOV.UK"
     val error: String = "Select the type of partner you are"
   }
@@ -66,7 +69,7 @@ class BusinessPartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitc
     }
 
     "have the correct heading" in new ViewSetup() {
-      doc.heading mustBe Some(LeadBusinessPartnerEntityExpectedContent.heading)
+      doc.heading must contain (LeadBusinessPartnerEntityExpectedContent.withSubHeading)
     }
 
     "have the correct button1" in new ViewSetup() {
@@ -103,7 +106,7 @@ class BusinessPartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitc
 
     "3rd party flow has correct heading" in new ViewSetup() {
       val doc3pt: Document = Jsoup.parse(view(PartnerForm.form, isTransactor = true, leadEntityIndex).body)
-      doc3pt.heading mustBe Some(LeadBusinessPartnerEntityExpectedContent.heading3pt)
+      doc3pt.heading mustBe Some(LeadBusinessPartnerEntityExpectedContent.withSubHeading3pt)
     }
   }
 
@@ -122,7 +125,7 @@ class BusinessPartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitc
     }
 
     "have the correct heading" in new ViewSetup() {
-      doc.heading mustBe Some(AdditionalBusinessPartnerEntityExpectedContent.heading)
+      doc.heading mustBe Some(AdditionalBusinessPartnerEntityExpectedContent.withSubHeading)
     }
 
     "have the correct button1" in new ViewSetup() {

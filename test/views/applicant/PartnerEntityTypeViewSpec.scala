@@ -33,6 +33,7 @@ class PartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitching {
     val button2: String = "A business"
     val continue: String = "Save and continue"
     val continueLater: String = "Save and come back later"
+    val panelText: String = "A partner in a partnership does not have to be an actual person. For example, a limited company can be a partner."
   }
   object LeadPartnerExpectedContent {
     val heading: String = "What type of partner are you?"
@@ -70,6 +71,10 @@ class PartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitching {
 
     "have the correct button2" in new ViewSetup() {
       doc.radio("BusinessEntity") mustBe Some(GlobalExpectedContent.button2)
+    }
+
+    "have the correct panel text" in new ViewSetup {
+      doc.select(Selectors.indent).text mustBe GlobalExpectedContent.panelText
     }
 
     "have the correct continue button" in new ViewSetup() {

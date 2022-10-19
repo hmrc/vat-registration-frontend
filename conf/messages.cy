@@ -1175,8 +1175,11 @@ pages.leadPartnerEntityType.missing                      = Select the type of pa
 pages.leadPartnerEntityType.missing.3pt                  = Select the type of lead partner
 pages.partnerEntityType.heading                          = What type of partner is the {0} partner?
 pages.partnerEntityType.missing                          = Select the partner type
+pages.partnerEntityType.indentText                       = A partner in a partnership does not have to be an actual person. For example, a limited company can be a partner.
+
 
 # BUSINESS LEAD PARTNER ENTITY TYPE
+pages.businessLeadPartnerEntityType.subHeading           = Partner arweiniol
 pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
 pages.businessLeadPartnerEntityType.heading.3pt          = What type of business is the lead partner within the partnership?
 pages.businessLeadPartnerEntityType.netp                 = Person trethadwy sydd heb ei sefydlu (NETP)

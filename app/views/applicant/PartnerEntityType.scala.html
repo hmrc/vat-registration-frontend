@@ -28,7 +28,8 @@
         button: button,
         formWithCSRF: FormWithCSRF,
         errorSummary: errorSummary,
-        inputRadio: inputRadio
+        inputRadio: inputRadio,
+        panelIndent: components.panelIndent
 )
 
 @(form: Form[PartyType], isTransactor: Boolean, index: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -47,6 +48,12 @@
 
         @errorSummary(form.errors)
 
+        @h1(headingMessage)
+
+        @panelIndent {
+            @messages("pages.partnerEntityType.indentText")
+        }
+
         @formWithCSRF(
             action = if (index == leadEntityIndex) {
                 controllers.applicant.routes.LeadPartnerEntityController.submitLeadPartnerEntity
@@ -56,7 +63,7 @@
         ) {
             @inputRadio(
                 form = form,
-                legend = headingMessage,
+                legend = "",
                 items = Seq(
                     RadioItem(
                         content = Text(messages("pages.leadPartnerEntityType.soleTrader")),
@@ -69,7 +76,7 @@
                         checked = form("value").value.contains(PartyType.stati(BusinessEntity))
                     )
                 ),
-                legendAsHeading = true
+                legendAsHeading = false
             )
 
             @button("app.common.continue")
