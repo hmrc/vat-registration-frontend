@@ -42,7 +42,7 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         val journeyConfig = IncorpIdJourneyConfig(
@@ -68,7 +68,7 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
 
   }
 
-  def incorpIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def incorpIdCallback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

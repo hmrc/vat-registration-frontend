@@ -41,19 +41,11 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
 
-  lazy val getRegistrationInformationUrl: String = s"$backendHost/vatreg/traffic-management/reg-info"
-
   def eligibilityStartUrl(regId: String): String = s"$eligibilityUrl/journey/$regId"
-
-  def trafficManagementInfoApiUrl(regId: String): String = s"$backendHost/vatreg/traffic-management/$regId/reg-info"
-
-  def partnersApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/partners"
 
   def attachmentsApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/attachments"
 
   def incompleteAttachmentsApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/incomplete-attachments"
-
-  def clearTrafficManagementUrl: String = s"$backendHost/vatreg/traffic-management/reg-info/clear"
 
   lazy val otrsRoute: String = "https://www.tax.service.gov.uk/business-registration/select-taxes"
 

@@ -44,7 +44,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                                            baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -57,7 +57,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         } yield Ok(previousAddressPage(filledForm, name))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         applicantDetailsService.getTransactorApplicantName.flatMap { optName =>
@@ -87,7 +87,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -102,7 +102,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def previousAddress: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def previousAddress: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatRegistrationService.isTransactor.flatMap { isTransactor =>

@@ -36,7 +36,7 @@ class ShortOrgNameController @Inject()(val sessionService: SessionService,
                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         businessService.getBusiness.map { business =>
@@ -46,7 +46,7 @@ class ShortOrgNameController @Inject()(val sessionService: SessionService,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ShortOrgNameForm().bindFromRequest.fold(

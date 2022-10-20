@@ -48,14 +48,14 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
   val multiple = List("01110", "81300", "82190")
   val labourSicCodes = List("81221", "81222", "81223")
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
         Future.successful(Ok(view(SicStubForm.form)))
   }
 
   // scalastyle:off
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         SicStubForm.form.bindFromRequest().fold(

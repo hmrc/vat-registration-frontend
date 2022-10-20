@@ -39,7 +39,7 @@ class OtherBusinessActivelyTradingController @Inject()(val sessionService: Sessi
                                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with ObiIndexValidation with SessionProfile {
 
-  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.OtherBusinessActivelyTradingController.show) {
@@ -59,7 +59,7 @@ class OtherBusinessActivelyTradingController @Inject()(val sessionService: Sessi
         }
   }
 
-  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         OtherBusinessActivelyTradingForm.form.bindFromRequest.fold(

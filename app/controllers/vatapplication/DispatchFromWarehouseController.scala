@@ -39,7 +39,7 @@ class DispatchFromWarehouseController @Inject()(val sessionService: SessionServi
                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication map { vatApplication =>
@@ -52,7 +52,7 @@ class DispatchFromWarehouseController @Inject()(val sessionService: SessionServi
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         DispatchFromWarehouseForm.form.bindFromRequest.fold(

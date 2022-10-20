@@ -17,10 +17,8 @@
 package config
 
 import play.api.mvc.MessagesControllerComponents
-import services.TrafficManagementService
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class BaseControllerComponents @Inject()(val messagesControllerComponents: MessagesControllerComponents,
-                                         val trafficManagementService: TrafficManagementService)
+class BaseControllerComponents @Inject()(val messagesControllerComponents: MessagesControllerComponents)

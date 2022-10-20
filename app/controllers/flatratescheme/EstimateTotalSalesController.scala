@@ -36,7 +36,7 @@ class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -45,7 +45,7 @@ class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
         }
   }
 
-  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         EstimateTotalSalesForm.form.bindFromRequest().fold(

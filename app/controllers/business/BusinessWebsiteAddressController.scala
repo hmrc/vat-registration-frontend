@@ -39,7 +39,7 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +50,7 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
 
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         BusinessWebsiteAddressForm.form.bindFromRequest().fold(

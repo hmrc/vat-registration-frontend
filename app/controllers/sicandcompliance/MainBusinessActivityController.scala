@@ -40,7 +40,7 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +50,7 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
         } yield Ok(mainBusinessActivityPage(formFilled, sicCodeList))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         fetchSicCodeList flatMap { sicCodeList =>

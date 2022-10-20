@@ -39,7 +39,7 @@ class RemoveOtherBusinessController @Inject()(val authConnector: AuthConnector,
                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with ObiIndexValidation with SessionProfile {
 
-  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.RemoveOtherBusinessController.show) {
@@ -52,7 +52,7 @@ class RemoveOtherBusinessController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def submit(otherBusinessName: String, index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(otherBusinessName: String, index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         RemoveOtherBusinessForm(otherBusinessName).form.bindFromRequest.fold(

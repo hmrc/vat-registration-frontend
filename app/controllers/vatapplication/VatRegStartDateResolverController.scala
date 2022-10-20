@@ -36,7 +36,7 @@ class VatRegStartDateResolverController @Inject()(val sessionService: SessionSer
                                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def resolve: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+  def resolve: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       for {
         scheme <- vatRegistrationService.getVatScheme

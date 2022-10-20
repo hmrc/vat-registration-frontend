@@ -36,7 +36,7 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val resolve: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -67,7 +67,7 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
         } yield redirect
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     _ => _ =>
       Future.successful(Redirect(routes.AttachmentMethodController.show))
   }

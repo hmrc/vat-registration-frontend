@@ -41,7 +41,7 @@ class TransactorIdController @Inject()(val sessionService: SessionService,
   extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
-    isAuthenticatedWithProfile() {
+    isAuthenticatedWithProfile {
       implicit request =>
         _ =>
           soleTraderIdentificationService.startIndividualJourney(
@@ -65,7 +65,7 @@ class TransactorIdController @Inject()(val sessionService: SessionService,
     }
 
   def callback(journeyId: String): Action[AnyContent] =
-    isAuthenticatedWithProfile() { implicit request =>
+    isAuthenticatedWithProfile { implicit request =>
       implicit profile =>
         for {
           personalDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)

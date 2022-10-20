@@ -37,7 +37,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
                                    val executionContext: ExecutionContext,
                                    baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+  val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       vatApplicationService.getVatApplication.flatMap { vatApplication =>
         vatApplicationService.calculateEarliestStartDate().map { incorpDate =>
@@ -61,7 +61,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
       }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.calculateEarliestStartDate().flatMap { incorpDate =>

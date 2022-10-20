@@ -37,7 +37,7 @@ class TradingNameResolverController @Inject()(val sessionService: SessionService
   extends BaseController with SessionProfile {
 
   //scalastyle:off
-  def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def resolve: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatRegistrationService.partyType.flatMap {

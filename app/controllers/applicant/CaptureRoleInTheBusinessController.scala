@@ -39,7 +39,7 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
                                                    baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -51,7 +51,7 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
         } yield Ok(view(filledForm, name, isTrust))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         RoleInTheBusinessForm().bindFromRequest().fold(

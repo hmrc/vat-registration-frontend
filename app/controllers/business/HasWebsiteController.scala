@@ -35,7 +35,7 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
                                      val executionContext: ExecutionContext,
                                      baseControllerComponents: BaseControllerComponents) extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -44,7 +44,7 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
         } yield Ok(view(filledForm))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         hasWebsiteForm.bindFromRequest.fold(

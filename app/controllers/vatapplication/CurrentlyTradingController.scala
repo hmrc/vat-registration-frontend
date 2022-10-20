@@ -43,7 +43,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
                                            val baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication map { vatApplication =>
@@ -60,7 +60,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication.flatMap { vatApplication =>

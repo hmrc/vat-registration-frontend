@@ -43,7 +43,7 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_pas
                                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         getEmailAddress.map { email =>
@@ -51,7 +51,7 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_pas
         }
   }
 
-  val requestNew: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val requestNew: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         getEmailAddress.flatMap { email =>
@@ -68,7 +68,7 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_pas
         }
   }
 
-  def submit(isNewPasscode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(isNewPasscode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TransactorEmailPasscodeForm.form.bindFromRequest().fold(

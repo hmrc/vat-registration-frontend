@@ -37,13 +37,13 @@ class TransactorHomeAddressController @Inject()(val authConnector: AuthConnector
                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
         addressLookupService.getJourneyUrl(transactorAddress, routes.TransactorHomeAddressController.addressLookupCallback()) map Redirect
   }
 
-  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

@@ -59,7 +59,7 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
     ))
   }
 
-  def uploadResponse(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def uploadResponse(reference: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
       optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)

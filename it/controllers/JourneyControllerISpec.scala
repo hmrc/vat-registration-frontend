@@ -21,7 +21,6 @@ import config.FrontendAppConfig
 import controllers.transactor.{routes => transactorRoutes}
 import featureswitch.core.config._
 import itutil.ControllerISpec
-import models.api.trafficmanagement.{OTRS, VatReg}
 import models.api.{EligibilitySubmissionData, VatSchemeHeader}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
@@ -260,7 +259,6 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.submitted))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(status = VatRegStatus.submitted)))
-          .trafficManagement.passes(VatReg)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -277,7 +275,6 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
-          .trafficManagement.passes(VatReg)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -295,7 +292,6 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject] ++ Json.obj("attachments" -> Json.obj()))
-          .trafficManagement.passes(VatReg)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -326,121 +322,27 @@ class JourneyControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
     }
-    "the channel for traffic management is VatReg" when {
-      "the multiple registrations feature switch is enabled" when {
-        "traffic management passes (VatReg)" must {
-          "redirect to the Application Reference page" in new Setup {
-            enable(MultipleRegistrations)
-            given()
-              .user.isAuthorised()
-              .registrationApi.getSection(Some(VatRegStatus.draft))
-              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-              .trafficManagement.passes(VatReg)
+    "the multiple registrations feature switch is enabled" when {
+      "traffic management passes (VatReg)" must {
+        "redirect to the Application Reference page" in new Setup {
+          enable(MultipleRegistrations)
+          given()
+            .user.isAuthorised()
+            .registrationApi.getSection(Some(VatRegStatus.draft))
+            .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
 
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-            val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+          val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
-          }
-        }
-        "when traffic management fails" must {
-          "redirect to the Application Reference page" in new Setup {
-            enable(MultipleRegistrations)
-            given()
-              .user.isAuthorised()
-              .registrationApi.getSection(Some(VatRegStatus.draft))
-              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-              .trafficManagement.fails
-
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-            val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
-
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
-          }
-
-          "redirect to the Task List Controller page if TL FS enabled and submission data available" in new Setup {
-            enable(TaskList)
-            enable(MultipleRegistrations)
-            given()
-              .user.isAuthorised()
-              .registrationApi.getSection(Some(VatRegStatus.draft))
-              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-              .registrationApi.getSection(Some(testEligibilitySubmissionData))
-              .trafficManagement.fails
-
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-            val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
-
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.TaskListController.show.url)
-            disable(TaskList)
-          }
-        }
-      }
-      "the multiple registrations feature switch is disabled" when {
-        "traffic management passes (VatReg)" must {
-          "redirect to the Honesty Declaration page" in new Setup {
-            disable(MultipleRegistrations)
-            given()
-              .user.isAuthorised()
-              .registrationApi.getSection(Some(VatRegStatus.draft))
-              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-              .trafficManagement.passes(VatReg)
-
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-            val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
-
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
-          }
-        }
-        "traffic management fails" must {
-          "redirect to the Honesty Declaration page" in new Setup {
-            disable(MultipleRegistrations)
-            given()
-              .user.isAuthorised()
-              .registrationApi.getSection(Some(VatRegStatus.draft))
-              .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-              .trafficManagement.fails
-
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-            val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
-
-            res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
-          }
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
         }
       }
     }
-    "the channel for traffic management is OTRS" must {
-      "redirect to OTRS" in new Setup {
-        enable(TrafficManagementPredicate)
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection(Some(VatRegStatus.draft))
-          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-          .trafficManagement.passes(OTRS)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(appConfig.otrsRoute)
-        disable(TrafficManagementPredicate)
-      }
-    }
-    "the Traffic Management FS is disabled" must {
-      "pass all users as VatReg users" in new Setup {
-        enable(TrafficManagementPredicate)
-
+    "the multiple registrations feature switch is disabled" when {
+      "redirect to the Honesty Declaration page" in new Setup {
+        disable(MultipleRegistrations)
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
@@ -452,8 +354,6 @@ class JourneyControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
-
-        disable(TrafficManagementPredicate)
       }
     }
   }

@@ -39,7 +39,7 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication map { vatApplication =>
@@ -50,7 +50,7 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         VatExemptionForm.form.bindFromRequest.fold(

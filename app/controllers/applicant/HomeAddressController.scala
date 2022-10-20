@@ -39,7 +39,7 @@ class HomeAddressController @Inject()(val authConnector: AuthConnector,
                                       baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatRegistrationService.isTransactor.flatMap{ isTransactor =>
@@ -52,7 +52,7 @@ class HomeAddressController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

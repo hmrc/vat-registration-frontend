@@ -37,7 +37,7 @@ class PartOfOrganisationController @Inject()(val sessionService: SessionService,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -46,7 +46,7 @@ class PartOfOrganisationController @Inject()(val sessionService: SessionService,
         } yield Ok(view(filledForm))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         PartOfOrganisationForm.form.bindFromRequest.fold(

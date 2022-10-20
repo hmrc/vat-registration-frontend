@@ -39,7 +39,7 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(reference: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         upscanService.fetchUpscanFileDetails(profile.registrationId, reference).flatMap {
@@ -57,7 +57,7 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
         }
   }
 
-  def submit(reference: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(reference: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         upscanService.fetchUpscanFileDetails(profile.registrationId, reference).flatMap {

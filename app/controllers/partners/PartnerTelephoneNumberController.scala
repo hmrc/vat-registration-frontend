@@ -38,7 +38,7 @@ class PartnerTelephoneNumberController @Inject()(val sessionService: SessionServ
                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
-  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerTelephoneNumberController.show) { optEntity =>
@@ -54,7 +54,7 @@ class PartnerTelephoneNumberController @Inject()(val sessionService: SessionServ
         }
   }
 
-  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.PartnerTelephoneNumberController.show) {

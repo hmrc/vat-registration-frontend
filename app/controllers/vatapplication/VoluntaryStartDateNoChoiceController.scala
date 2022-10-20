@@ -41,14 +41,14 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
   private val exampleDateFormat = "d M yyyy"
   private val exampleDateFormatter = DateTimeFormatter.ofPattern(exampleDateFormat)
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     vatApplicationService.getVatApplication.map { vatApplication =>
       val form = vatApplication.startDate.fold(formProvider())(formProvider().fill)
       Ok(view(form, timeService.today.format(exampleDateFormatter)))
     }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     formProvider().bindFromRequest.fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors, timeService.today.format(exampleDateFormatter)))),

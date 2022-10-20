@@ -40,7 +40,7 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
                                                    baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         businessService.getBusiness.map {
@@ -51,7 +51,7 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         OtherBusinessInvolvementForm.form.bindFromRequest.fold(

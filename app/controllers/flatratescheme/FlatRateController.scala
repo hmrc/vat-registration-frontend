@@ -52,7 +52,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
     override val pct: BigDecimal = formPct
   }.form
 
-  def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def annualCostsInclusivePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -61,7 +61,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitAnnualInclusiveCosts: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitAnnualInclusiveCosts: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         overBusinessGoodsForm.bindFromRequest().fold(
@@ -76,7 +76,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         )
   }
 
-  def annualCostsLimitedPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def annualCostsLimitedPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -86,7 +86,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitAnnualCostsLimited: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitAnnualCostsLimited: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate flatMap { flatRateScheme =>
@@ -105,7 +105,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def registerForFrsPage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def registerForFrsPage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -117,7 +117,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitRegisterForFrs: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitRegisterForFrs: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         registerForFrsForm.bindFromRequest().fold(
@@ -134,7 +134,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         )
   }
 
-  def yourFlatRatePage: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def yourFlatRatePage: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate flatMap { flatRateScheme =>
@@ -149,7 +149,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
         }
   }
 
-  def submitYourFlatRate: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitYourFlatRate: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         yourFlatRateForm.bindFromRequest().fold(

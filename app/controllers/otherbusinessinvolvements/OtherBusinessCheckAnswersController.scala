@@ -37,7 +37,7 @@ class OtherBusinessCheckAnswersController @Inject()(val bcc: BaseControllerCompo
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents) extends BaseController with ObiIndexValidation {
 
-  def show(index: Int, changeMode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>implicit profile =>
+  def show(index: Int, changeMode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>implicit profile =>
     validateIndex(index, idx => routes.OtherBusinessCheckAnswersController.show(idx)) {
       obiService.getOtherBusinessInvolvement(index).flatMap {
         case Some(OtherBusinessInvolvement(Some(businessName), Some(hasVrn), optVrn, optHasUtr, optUtr, Some(stillTrading))) =>
@@ -55,7 +55,7 @@ class OtherBusinessCheckAnswersController @Inject()(val bcc: BaseControllerCompo
     }
   }
 
-  def submit(): Action[AnyContent] = isAuthenticatedWithProfile() { _ => _ =>
+  def submit(): Action[AnyContent] = isAuthenticatedWithProfile { _ => _ =>
     Future.successful(Redirect(routes.ObiSummaryController.show))
   }
 

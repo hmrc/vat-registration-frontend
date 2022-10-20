@@ -48,7 +48,7 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
   def startJourney(index: Int): Action[AnyContent] =
-    isAuthenticatedWithProfile() {
+    isAuthenticatedWithProfile {
       implicit request =>
         implicit profile =>
           validateIndex(index, routes.PartnerSoleTraderIdController.startJourney, minIndex = 1) {
@@ -102,7 +102,7 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
     }
 
   def callback(index: Int, journeyId: String): Action[AnyContent] =
-    isAuthenticatedWithProfile() {
+    isAuthenticatedWithProfile {
       implicit request =>
         implicit profile =>
           validateIndexSubmit(index, routes.PartnerSoleTraderIdController.startJourney, minIndex = 1) {

@@ -36,23 +36,6 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
     http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)
   }
 
-  def updateTrafficManagementQuota(partyType: String, isEnrolled: Boolean, newQuota: Int)(implicit hc: HeaderCarrier) =
-    http.PUT(
-      url = s"$vatRegUrl/vatreg/test-only/api/daily-quota",
-      body = Json.obj(
-        "partyType" -> partyType,
-        "isEnrolled" -> isEnrolled,
-        "quota" -> newQuota
-      )
-    ) recover {
-      case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
-    }
-
-  def clearTrafficManagement(implicit hc: HeaderCarrier) =
-    http.DELETE(s"$vatRegUrl/vatreg/test-only/api/traffic-management") recover {
-      case e: Exception => throw logResponse(e, "updateTrafficManagementQuota")
-    }
-
   def retrieveVatSubmission(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
   }

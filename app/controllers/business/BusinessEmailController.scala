@@ -37,7 +37,7 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -46,7 +46,7 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
         } yield Ok(view(routes.BusinessEmailController.submit, form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         BusinessEmailAddressForm.form.bindFromRequest().fold(

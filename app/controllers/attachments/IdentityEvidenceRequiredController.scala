@@ -34,7 +34,7 @@ class IdentityEvidenceRequiredController @Inject()(val authConnector: AuthClient
                                                    baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>_ =>
       Future.successful(Ok(identityEvidenceRequiredPage()))
   }

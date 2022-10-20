@@ -50,7 +50,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    appConfig: FrontendAppConfig) extends BaseController {
 
 
-  def show(): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(TaskList)) {
       for {
         vatScheme <- vatRegistrationService.getVatScheme

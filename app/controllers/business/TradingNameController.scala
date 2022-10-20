@@ -40,7 +40,7 @@ class TradingNameController @Inject()(val sessionService: SessionService,
                                       baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +50,7 @@ class TradingNameController @Inject()(val sessionService: SessionService,
         } yield Ok(view(form, companyName))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TradingNameForm.form.bindFromRequest.fold(

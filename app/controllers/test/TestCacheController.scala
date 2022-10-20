@@ -33,7 +33,7 @@ class TestCacheController @Inject()(val s4LService: S4LService,
                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def tearDownS4L: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
+  def tearDownS4L: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         s4LService.clear.map(_ => Ok("Save4Later cleared"))

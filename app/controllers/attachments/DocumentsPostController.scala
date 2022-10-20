@@ -34,7 +34,7 @@ class DocumentsPostController @Inject()(val authConnector: AuthClientConnector,
                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => _ =>
       Future.successful(Ok(documentsPostPage()))
   }

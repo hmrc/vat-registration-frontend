@@ -43,7 +43,7 @@ class PartnerPartnershipIdController @Inject()(val authConnector: AuthConnector,
                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
-  def startJourney(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startJourney(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerPartnershipIdController.startJourney, minIndex = 1) {
@@ -69,7 +69,7 @@ class PartnerPartnershipIdController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def callback(index: Int, journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def callback(index: Int, journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.PartnerPartnershipIdController.startJourney, minIndex = 1) {

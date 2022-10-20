@@ -38,7 +38,7 @@ class TransactorCaptureEmailAddressController @Inject()(view: capture_email_addr
                                                        val executionContext: ExecutionContext,
                                                        baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -48,7 +48,7 @@ class TransactorCaptureEmailAddressController @Inject()(view: capture_email_addr
           Ok(view(routes.TransactorCaptureEmailAddressController.submit, filledForm, None))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TransactorEmailAddressForm.form.bindFromRequest().fold(

@@ -43,7 +43,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val messagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  implicit val baseControllerComponents: BaseControllerComponents = new BaseControllerComponents(messagesControllerComponents, mockTrafficManagementService)
+  implicit val baseControllerComponents: BaseControllerComponents = new BaseControllerComponents(messagesControllerComponents)
   val regId = "VAT123456"
 
   implicit val currentProfile: CurrentProfile = CurrentProfile(

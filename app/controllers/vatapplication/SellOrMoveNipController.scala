@@ -37,7 +37,7 @@ class SellOrMoveNipController @Inject()(val sessionService: SessionService,
                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication.map { r =>
@@ -49,7 +49,7 @@ class SellOrMoveNipController @Inject()(val sessionService: SessionService,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         SellOrMoveNipForm.form.bindFromRequest.fold(

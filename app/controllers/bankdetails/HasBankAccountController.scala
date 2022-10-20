@@ -36,7 +36,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents) extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       vatRegistrationService.partyType.flatMap {
         case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
@@ -47,7 +47,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
       }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       hasBankAccountForm.bindFromRequest.fold(
         formWithErrors =>

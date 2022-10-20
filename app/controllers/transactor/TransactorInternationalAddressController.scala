@@ -45,7 +45,7 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
   private val headingMessageKey = "internationalAddress.home.heading"
   private lazy val submitAction = routes.TransactorInternationalAddressController.submit
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -55,7 +55,7 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
         } yield Ok(view(filledForm, countries, submitAction, headingMessageKey))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         val countries = configConnector.countries

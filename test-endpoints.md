@@ -13,5 +13,3 @@ Used to get the json payload from a submission, so we can confirm in Acceptance 
 `GET        /file-upload`
 Used to test the integration with Upscan.
 
-`GET        /setup-traffic-management`
-Used to set/reset the daily quota for local testing of traffic management.

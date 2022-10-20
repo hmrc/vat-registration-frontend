@@ -44,19 +44,19 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
         Future.successful(Ok(aboutToConfirmSicPage()))
   }
 
-  def startICLJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startICLJourney: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         startSelectingNewSicCodes
   }
 
-  def saveICLCodes: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def saveICLCodes: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

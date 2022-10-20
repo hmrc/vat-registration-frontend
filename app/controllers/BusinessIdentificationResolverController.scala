@@ -36,7 +36,7 @@ class BusinessIdentificationResolverController @Inject()(val sessionService: Ses
                                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def resolve: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

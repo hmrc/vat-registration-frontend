@@ -40,7 +40,7 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
                                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -52,7 +52,7 @@ class ScottishPartnershipNameController @Inject()(val sessionService: SessionSer
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ScottishPartnershipNameForm.apply().bindFromRequest().fold(

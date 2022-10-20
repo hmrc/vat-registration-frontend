@@ -36,7 +36,7 @@ class PersonalDetailsValidationController @Inject()(val authConnector: AuthConne
                                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startPersonalDetailsValidationJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     _ => _ =>
         val continueUrl = appConfig.getPersonalDetailsCallbackUrl()
         val personalDetailsValidationJourneyUrl = appConfig.getPersonalDetailsValidationJourneyUrl()
@@ -44,7 +44,7 @@ class PersonalDetailsValidationController @Inject()(val authConnector: AuthConne
         Future.successful(SeeOther(s"$personalDetailsValidationJourneyUrl?completionUrl=$continueUrl"))
   }
 
-  def personalDetailsValidationCallback(validationId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def personalDetailsValidationCallback(validationId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit req =>
       implicit profile =>
         for {

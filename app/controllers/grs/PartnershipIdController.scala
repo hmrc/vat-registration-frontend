@@ -43,7 +43,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def startJourney(): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startJourney(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         val journeyConfig = PartnershipIdJourneyConfig(
@@ -70,7 +70,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def callback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def callback(journeyId: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

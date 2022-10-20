@@ -34,12 +34,12 @@ class EmailAddressVerifiedController @Inject()(view: email_verified,
                                                 baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => _ =>
         Future.successful(Ok(view(routes.EmailAddressVerifiedController.submit)))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     _ => _ =>
         Future.successful(Redirect(routes.CaptureTelephoneNumberController.show))
   }

@@ -36,7 +36,7 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
                                         val executionContext: ExecutionContext,
                                         baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -47,7 +47,7 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
         } yield Ok(view(formFilled, isTransactor))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

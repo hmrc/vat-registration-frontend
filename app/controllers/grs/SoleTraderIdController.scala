@@ -43,7 +43,7 @@ class SoleTraderIdController @Inject()(val sessionService: SessionService,
   extends BaseController with SessionProfile {
 
   def startJourney(): Action[AnyContent] =
-    isAuthenticatedWithProfile() {
+    isAuthenticatedWithProfile {
       implicit request =>
         implicit profile =>
           vatRegistrationService.partyType.flatMap {
@@ -87,7 +87,7 @@ class SoleTraderIdController @Inject()(val sessionService: SessionService,
     }
 
   def callback(journeyId: String): Action[AnyContent] =
-    isAuthenticatedWithProfile() { implicit request =>
+    isAuthenticatedWithProfile { implicit request =>
       implicit profile =>
         for {
           (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
