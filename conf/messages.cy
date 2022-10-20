@@ -1851,3 +1851,11 @@ validation.partner.scottishPartnershipName.invalid                  = Nodwch enw
 # PARTNER TELEPHONE NUMBER
 partner.telephoneNumber.heading                                     = What is {0}’s telephone number?
 partner.telephoneNumber.hint                                        = Enter a UK telephone number
+
+# PARTNER CAPTURE EMAIL ADDRESS PAGE
+partnerEmail.namedHeading                      = Beth yw cyfeiriad e-bost {0}?
+partnerEmail.para                              = Ceir manylion llawn ynghylch sut rydym yn defnyddio manylion cyswllt yn
+partnerEmail.link                              = Hysbysiad Preifatrwydd CThEM
+partnerEmail.error.incorrect_format            = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
+partnerEmail.error.nothing_entered             = Nodwch y cyfeiriad e-bost
+partnerEmail.error.incorrect_length            = Mae’n rhaid i’r cyfeiriad e-bost fod yn 132 o gymeriadau neu lai

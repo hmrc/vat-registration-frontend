@@ -19,10 +19,10 @@ package services
 import connectors.RegistrationApiConnector
 import models.Entity
 import models.Entity.leadEntityIndex
-import models.api.{Address, PartyType, ScotPartnership}
-import models.external.{BusinessEntity, PartnershipIdEntity}
-import services.EntityService.{ScottishPartnershipName, Telephone}
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import models.api._
+import models.external._
+import services.EntityService._
+import uk.gov.hmrc.http._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -73,6 +73,7 @@ class EntityService @Inject()(val s4LService: S4LService,
       case telephone: Telephone =>
         entity.copy(telephoneNumber = Some(telephone.answer))
       case address: Address => entity.copy(address = Some(address))
+      case Email(answer) => entity.copy(email = Some(answer))
     }
   }
 
@@ -81,9 +82,7 @@ class EntityService @Inject()(val s4LService: S4LService,
 }
 
 object EntityService {
-
   case class ScottishPartnershipName(answer: String)
-
   case class Telephone(answer: String)
-
+  case class Email(answer: String)
 }

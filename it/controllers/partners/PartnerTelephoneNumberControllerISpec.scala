@@ -113,7 +113,8 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
 
       whenReady(response) { res =>
-        res.status mustBe NOT_IMPLEMENTED
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.partners.routes.PartnerCaptureEmailAddressController.show(2).url)
       }
     }
 
