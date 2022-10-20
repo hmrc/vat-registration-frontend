@@ -19,6 +19,7 @@ package services
 import config.FrontendAppConfig
 import models.Entity
 import models.api.{Individual, ScotPartnership, UkCompany}
+import services.EntityService.ScottishPartnershipName
 import testHelpers.VatRegSpec
 
 class EntityServiceSpec extends VatRegSpec {
@@ -69,7 +70,7 @@ class EntityServiceSpec extends VatRegSpec {
 
       mockGetSection(testRegId, Some(testPartner))
       mockReplaceSection(testRegId, updatedEntity)
-      val result = service.upsertEntity(testRegId, index, testCompanyName)
+      val result = service.upsertEntity(testRegId, index, ScottishPartnershipName(testCompanyName))
       await(result) mustBe updatedEntity
     }
 

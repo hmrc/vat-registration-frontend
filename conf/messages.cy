@@ -1847,3 +1847,7 @@ partner.scottishPartnershipName.heading                             = Beth yw en
 validation.partner.scottishPartnershipName.missing                  = Nodwch enw’r bartneriaeth
 validation.partner.scottishPartnershipName.maxlen                   = Nodwch enw partneriaeth sydd rhwng 1 a 105 o gymeriadau
 validation.partner.scottishPartnershipName.invalid                  = Nodwch enw partneriaeth heb gynnwys cymeriadau arbennig
+
+# PARTNER TELEPHONE NUMBER
+partner.telephoneNumber.heading                                     = What is {0}’s telephone number?
+partner.telephoneNumber.hint                                        = Enter a UK telephone number

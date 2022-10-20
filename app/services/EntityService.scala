@@ -21,6 +21,7 @@ import models.Entity
 import models.Entity.leadEntityIndex
 import models.api.{Address, PartyType, ScotPartnership}
 import models.external.{BusinessEntity, PartnershipIdEntity}
+import services.EntityService.{ScottishPartnershipName, Telephone}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import javax.inject.Inject
@@ -67,11 +68,22 @@ class EntityService @Inject()(val s4LService: S4LService,
         } else {
           entity
         }
-      case scottishPartnershipName: String => entity.copy(optScottishPartnershipName = Some(scottishPartnershipName))
+      case scottishPartnershipName: ScottishPartnershipName =>
+        entity.copy(optScottishPartnershipName = Some(scottishPartnershipName.answer))
+      case telephone: Telephone =>
+        entity.copy(telephoneNumber = Some(telephone.answer))
       case address: Address => entity.copy(address = Some(address))
     }
   }
 
   def deleteEntity(regId: String, index: Int)(implicit hc: HeaderCarrier): Future[Boolean] =
     registrationApiConnector.deleteSection[Entity](regId, Some(index))
+}
+
+object EntityService {
+
+  case class ScottishPartnershipName(answer: String)
+
+  case class Telephone(answer: String)
+
 }
