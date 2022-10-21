@@ -304,9 +304,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val vatRatesUrl = "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"
   lazy val vatAasUrl = "https://www.gov.uk/vat-annual-accounting-scheme"
 
-  lazy val govukVat: String = servicesConfig.getString("urls.govukVat")
-  lazy val govukMtd: String = servicesConfig.getString("urls.govukMtd")
-  lazy val govukSoftware: String = servicesConfig.getString("urls.govukSoftware")
+  lazy val govukHowToRegister: String = "https://www.gov.uk/register-for-vat/how-register-for-vat"
 
   lazy val businessDescriptionMaxLength = servicesConfig.getInt("constants.businessDescriptionMaxLength")
 

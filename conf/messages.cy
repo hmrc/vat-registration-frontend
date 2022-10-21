@@ -637,24 +637,25 @@ pages.summary.heading                                       = Gwiriwch eich ateb
 pages.summary.continue                                      = Cadarnhau a chyflwyno
 
 # Application Submission Confirmation page
-pages.application.submission.confirmation.heading                   = Mae’ch cais wedi’i gyflwyno
-pages.application.submission.confirmation.reference                 = Eich cyfeirnod
-pages.application.submission.confirmation.par1                      = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad. Mae hyn fel arfer yn cymryd oddeutu 20 diwrnod.
-pages.application.submission.confirmation.par1.post                 = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad. Mae hyn fel arfer yn cymryd oddeutu 30 diwrnod.
-pages.application.submission.confirmation.heading2                  = Yr hyn sy’n digwydd nesaf
-pages.application.submission.confirmation.list.post                 = Postiwch gopïau o’r dogfennau ategol a’r llythyr eglurhaol at CThEM fel y gallwn brosesu’ch cais.
-pages.application.submission.confirmation.list.email                = E-bostiwch gopïau o'r dogfennau ategol at CThEM fel y gallwn brosesu’ch cais. Gallwch
-pages.application.submission.confirmation.list.item1                = Aros am eich llythyr a fydd yn cadarnhau a ydych wedi’ch cofrestru ar gyfer TAW neu wedi cael esemptiad neu eithriad.
-pages.application.submission.confirmation.list.item2                = Aros nes i’ch cofrestriad gael ei gadarnhau cyn cael meddalwedd, os ydych yn mynd i ddilyn y rheolau ar gyfer y cynllun Troi Treth yn Ddigidol ar gyfer TAW.
-pages.application.submission.confirmation.heading3                  = Rhagor o wybodaeth
-pages.application.submission.confirmation.par2                      = Dysgwch ragor o wybodaeth am y canlynol:
-pages.application.submission.confirmation.post.link                 = Gallwch argraffu'r llythyr eglurhaol yma
-pages.application.submission.confirmation.email.link                = bwrw golwg dros ac argraffu’r cyfarwyddiadau ar gyfer e-bostio’ch dogfennau yma
-pages.application.submission.confirmation.link1                     = TAW
-pages.application.submission.confirmation.link2                     = Troi Treth yn Ddigidol ar gyfer TAW
-pages.application.submission.confirmation.link3                     = Meddalwedd ar gyfer Troi Treth yn Ddigidol ar gyfer TAW
-pages.application.submission.confirmation.par3                      = Ni all y cwmni godi TAW ar gwsmeriaid nes bod ganddo ei rif TAW.
-pages.application.submission.confirmation.button                    = Gorffen
+pages.application.submission.confirmation.heading                   = Your application has been submitted
+pages.application.submission.confirmation.reference                 = Your reference number
+pages.application.submission.confirmation.emailedTo                 = We have emailed the information on this page to {0}.
+pages.application.submission.confirmation.doc.heading               = What you must do now
+pages.application.submission.confirmation.doc.para                  = We’ve received your application. So we can process it,
+pages.application.submission.confirmation.doc.linkPost              = post us a cover letter and copies of your documents
+pages.application.submission.confirmation.doc.linkPost.3pt          = post us a cover letter and copies of the required documents
+pages.application.submission.confirmation.doc.linkEmail             = email us copies of your documents
+pages.application.submission.confirmation.doc.linkEmail.3pt         = email us copies of the required documents
+pages.application.submission.confirmation.heading2                  = What happens next
+pages.application.submission.confirmation.list.decisionDoc          = After we receive copies of your documents, we’ll write to you with a decision on your application in about 30 days.
+pages.application.submission.confirmation.list.decisionNoDoc        = We’ve received your application and we will write to you with a decision in about 30 days.
+pages.application.submission.confirmation.list.software             = You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.list.software.3pt         = The business should wait until its VAT registration is confirmed before getting software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.inset                     = You cannot include VAT on your invoices until you get your VAT number. However, you can increase your prices to
+pages.application.submission.confirmation.insetLink                 = account for the VAT you’ll need to pay HMRC
+pages.application.submission.confirmation.inset.3pt                 = The business cannot include VAT on its invoices until it gets its VAT number. However, it can increase its prices to
+pages.application.submission.confirmation.insetLink.3pt             = account for the VAT it needs to pay HMRC
+pages.application.submission.confirmation.button                    = Finish
 
 # Progress Saved Page
 pages.application.progress.saved.heading                            = Cedwir eich cais am 7 diwrnod
@@ -1176,7 +1177,6 @@ pages.leadPartnerEntityType.missing.3pt                  = Select the type of le
 pages.partnerEntityType.heading                          = What type of partner is the {0} partner?
 pages.partnerEntityType.missing                          = Select the partner type
 pages.partnerEntityType.indentText                       = A partner in a partnership does not have to be an actual person. For example, a limited company can be a partner.
-
 
 # BUSINESS LEAD PARTNER ENTITY TYPE
 pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?

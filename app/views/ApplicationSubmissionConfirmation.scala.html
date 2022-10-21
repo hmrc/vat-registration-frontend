@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import models.api.{Attached, AttachmentMethod, EmailMethod, Post}
+@import models.api.{AttachmentMethod, EmailMethod, Post}
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
@@ -27,14 +27,20 @@
         strong: strong,
         formWithCSRF: FormWithCSRF,
         govukPanel: GovukPanel,
-        orderedListHtml: orderedListHtml,
+        orderedList: orderedList,
         link: link,
         govukInsetText: GovukInsetText,
         button: button,
         form: FormWithCSRF
 )
 
-@(acknowledgementReference: String, attachmentMethod: Option[AttachmentMethod], attachmentsListExists: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(
+        acknowledgementReference: String,
+        attachmentMethod: Option[AttachmentMethod],
+        attachmentsListExists: Boolean,
+        email: String,
+        isTransactor: Boolean
+)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
 
@@ -44,47 +50,35 @@
         content = HtmlContent(referenceNumber)
     ))
 
-    @if(attachmentMethod.contains(Post)) {
-        @p(content = Html(messages("pages.application.submission.confirmation.par1.post")), id = Some("confirmation-par1"))
-    } else {
-        @p(content = Html(messages("pages.application.submission.confirmation.par1")), id = Some("confirmation-par1"))
+    @p{ @messages("pages.application.submission.confirmation.emailedTo", email) }
+
+    @{
+        attachmentMethod match {
+            case Some(Post) if attachmentsListExists => guidancePost
+            case Some(EmailMethod) if attachmentsListExists => guidanceEmail
+            case _ =>
+        }
     }
 
     @h2(messages("pages.application.submission.confirmation.heading2"))
 
-    @if(attachmentsListExists) {
-        @attachmentMethod match {
-            case Some(Post) => {
-                @orderedListHtml(bulletPost, bulletLetter, bulletRegistration)
-            }
-            case Some(EmailMethod) => {
-                @orderedListHtml(bulletEmail, bulletLetter, bulletRegistration)
-            }
-            case _ => {
-                @orderedListHtml(bulletLetter, bulletRegistration)
-            }
+    @{
+        attachmentMethod match {
+            case Some(Post | EmailMethod) if attachmentsListExists =>
+                orderedList(
+                    messages("pages.application.submission.confirmation.list.decisionDoc"),
+                    messages(s"pages.application.submission.confirmation.list.software$opt3pt")
+                )
+            case _ =>
+                orderedList(
+                    messages("pages.application.submission.confirmation.list.decisionNoDoc"),
+                    messages(s"pages.application.submission.confirmation.list.software$opt3pt")
+                )
         }
-    } else {
-        @orderedListHtml(bulletLetter, bulletRegistration)
     }
 
-    @h2(messages("pages.application.submission.confirmation.heading3"))
-    @p(content = Html(messages("pages.application.submission.confirmation.par2")), id = Some("confirmation-par2"))
-
-    <ul class="govuk-list govuk-list--bullet">
-        <li>
-            @link(appConfig.govukVat, messages("pages.application.submission.confirmation.link1"), Some("vat-link"), true)
-        </li>
-        <li>
-            @link(appConfig.govukMtd, messages("pages.application.submission.confirmation.link2"), Some("mtd-link"), true)
-        </li>
-        <li>
-            @link(appConfig.govukSoftware, messages("pages.application.submission.confirmation.link3"), Some("software-link"), true)
-        </li>
-    </ul>
-
     @govukInsetText(InsetText(
-        content = Text(messages("pages.application.submission.confirmation.par3"))
+        content = HtmlContent(insetText)
     ))
 
     @form(action = controllers.routes.ApplicationSubmissionController.submit) {
@@ -92,27 +86,35 @@
     }
 }
 
-@bulletPost = {
-    @messages("pages.application.submission.confirmation.list.post")
-    @link(controllers.attachments.routes.PostalCoverSheetController.show.url, messages("pages.application.submission.confirmation.post.link"), Some("cover-letter-link"), true, false)
+@guidancePost = {
+    @h2(messages("pages.application.submission.confirmation.doc.heading"))
+    @p {
+        @messages("pages.application.submission.confirmation.doc.para")
+        @link(controllers.attachments.routes.PostalCoverSheetController.show.url, s"pages.application.submission.confirmation.doc.linkPost$opt3pt", isExternal = true).
+    }
 }
 
-@bulletEmail = {
-    @messages("pages.application.submission.confirmation.list.email")
-    @link(controllers.attachments.routes.EmailCoverSheetController.show.url, messages("pages.application.submission.confirmation.email.link"), Some("cover-letter-link"), true, false)
+@guidanceEmail = {
+    @h2(messages("pages.application.submission.confirmation.doc.heading"))
+    @p {
+        @messages("pages.application.submission.confirmation.doc.para")
+        @link(controllers.attachments.routes.EmailCoverSheetController.show.url, s"pages.application.submission.confirmation.doc.linkEmail$opt3pt", isExternal = true).
+    }
 }
 
-@bulletLetter = {
-    @messages("pages.application.submission.confirmation.list.item1")
-}
-
-@bulletRegistration = {
-    @messages("pages.application.submission.confirmation.list.item2")
+@insetText = {
+    @p {
+        @messages(s"pages.application.submission.confirmation.inset$opt3pt")
+        @link(appConfig.govukHowToRegister, s"pages.application.submission.confirmation.insetLink$opt3pt", isExternal = true).
+    }
 }
 
 @referenceNumber = {
     @messages("pages.application.submission.confirmation.reference")
-    <br>
+        <br>
     @strong(Html(acknowledgementReference))
 }
 
+@opt3pt = @{
+    if(isTransactor) ".3pt" else ""
+}
