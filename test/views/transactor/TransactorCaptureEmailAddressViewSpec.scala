@@ -29,7 +29,7 @@ class TransactorCaptureEmailAddressViewSpec extends VatRegViewSpec {
   val paragraph = "We will send you a confirmation code"
   val buttonText = "Save and continue"
 
-  "Capture Email Address Page" should {
+  "Transactor Capture Email Address Page" should {
     val form = TransactorEmailAddressForm.form
     val view = app.injector.instanceOf[TransactorCaptureEmailAddress].apply(testCall, form)
 

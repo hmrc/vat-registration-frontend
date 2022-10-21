@@ -18,37 +18,39 @@ package controllers.partners
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.PartnerTelephoneForm
+import forms.PartnerEmailAddressForm
 import play.api.mvc.{Action, AnyContent}
-import services.EntityService.Telephone
+import services.EntityService.Email
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.partners.PartnerTelephoneNumber
+import views.html.partners.PartnerCaptureEmailAddress
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PartnerTelephoneNumberController @Inject()(val sessionService: SessionService,
-                                                 val authConnector: AuthConnector,
-                                                 val entityService: EntityService,
-                                                 view: PartnerTelephoneNumber)
-                                                (implicit appConfig: FrontendAppConfig,
-                                                 val executionContext: ExecutionContext,
-                                                 baseControllerComponents: BaseControllerComponents)
+class PartnerCaptureEmailAddressController @Inject()(val sessionService: SessionService,
+                                                     val authConnector: AuthConnector,
+                                                     val entityService: EntityService,
+                                                     val applicantDetailsService: ApplicantDetailsService,
+                                                     val vatRegistrationService: VatRegistrationService,
+                                                     val emailVerificationService: EmailVerificationService,
+                                                     view: PartnerCaptureEmailAddress)
+                                                    (implicit appConfig: FrontendAppConfig,
+                                                     val executionContext: ExecutionContext,
+                                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
   def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        validateIndex(index, routes.PartnerTelephoneNumberController.show) { optEntity =>
-          val form = optEntity.flatMap(_.telephoneNumber)
-            .fold(PartnerTelephoneForm.form)(PartnerTelephoneForm.form.fill)
+        validateIndex(index, routes.PartnerCaptureEmailAddressController.show) { optEntity =>
+          val form = optEntity.flatMap(_.email).fold(PartnerEmailAddressForm.form)(PartnerEmailAddressForm.form.fill)
           optEntity match {
             case Some(entity) if entity.displayName.isDefined =>
               Future.successful(Ok(view(form, index, entity.displayName)))
             case _ =>
-              logger.warn("[PartnerTelephoneNumberController] Attempted to capture telephone number without partyType")
+              logger.warn("[PartnerCaptureEmailAddressController] Attempted to capture email address without party type or response from GRS")
               Future.successful(Redirect(routes.PartnerEntityTypeController.showPartnerType(index)))
           }
         }
@@ -57,8 +59,8 @@ class PartnerTelephoneNumberController @Inject()(val sessionService: SessionServ
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
       implicit profile =>
-        validateIndexSubmit(index, routes.PartnerTelephoneNumberController.show) {
-          PartnerTelephoneForm.form.bindFromRequest().fold(
+        validateIndexSubmit(index, routes.PartnerCaptureEmailAddressController.show) {
+          PartnerEmailAddressForm.form.bindFromRequest().fold(
             formWithErrors =>
               entityService.getEntity(profile.registrationId, index).flatMap {
                 case Some(entity) if entity.displayName.isDefined =>
@@ -66,11 +68,10 @@ class PartnerTelephoneNumberController @Inject()(val sessionService: SessionServ
                 case _ =>
                   Future.successful(BadRequest(view(formWithErrors, index, None)))
               },
-            telephoneNumber => {
-              entityService.upsertEntity[Telephone](profile.registrationId, index, Telephone(telephoneNumber)).map { _ =>
-                Redirect(routes.PartnerCaptureEmailAddressController.show(index))
+            email =>
+              entityService.upsertEntity[Email](profile.registrationId, index, Email(email)).map { _ =>
+                NotImplemented //TODO Update routing to summary page
               }
-            }
           )
         }
   }

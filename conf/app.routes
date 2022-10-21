@@ -586,3 +586,7 @@ GET         /partner/:index/addressCallback                           controller
 ## Partner Telephone Number Page
 GET         /partner/:index/partner-telephone                         controllers.partners.PartnerTelephoneNumberController.show(index: Int)
 POST        /partner/:index/partner-telephone                         controllers.partners.PartnerTelephoneNumberController.submit(index: Int)
+
+## Partner Email Address Page
+GET         /partner/:index/email-address                             controllers.partners.PartnerCaptureEmailAddressController.show(index: Int)
+POST        /partner/:index/email-address                             controllers.partners.PartnerCaptureEmailAddressController.submit(index: Int)

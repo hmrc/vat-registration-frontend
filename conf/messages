@@ -1850,3 +1850,11 @@ validation.partner.scottishPartnershipName.invalid                  = Enter a pa
 # PARTNER TELEPHONE NUMBER
 partner.telephoneNumber.heading                                     = What is {0}’s telephone number?
 partner.telephoneNumber.hint                                        = Enter a UK telephone number
+
+# PARTNER CAPTURE EMAIL ADDRESS PAGE
+partnerEmail.namedHeading                      = What is {0}’s email address?
+partnerEmail.para                              = Full details of how we use your information are in the
+partnerEmail.link                              = HMRC Privacy Notice
+partnerEmail.error.incorrect_format            = Enter an email address in the correct format, like name@example.com
+partnerEmail.error.nothing_entered             = Enter the email address
+partnerEmail.error.incorrect_length            = The email address must be 132 characters or fewer
