@@ -239,7 +239,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     )
 
   private def zeroRatedTurnover(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
-    if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).contains(0)) None else optSummaryListRowString(
+    if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).contains(BigDecimal(0))) None else optSummaryListRowString(
       s"$sectionId.zeroRated",
       vatScheme.vatApplication.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
       Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)

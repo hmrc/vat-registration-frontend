@@ -18,7 +18,7 @@ package config
 
 import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.crypto.{ApplicationCrypto, CryptoWithKeysFromConfig}
+import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -44,7 +44,7 @@ class VatShortLivedHttpCaching @Inject()(val http: HttpClient, config: ServicesC
 class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching,
                                    applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
 
-  override implicit lazy val crypto: CryptoWithKeysFromConfig = applicationCrypto.JsonCrypto
+  override implicit lazy val crypto = applicationCrypto.JsonCrypto
 
 }
 

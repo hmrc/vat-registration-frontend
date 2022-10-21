@@ -16,7 +16,6 @@
 
 package services
 
-import config.FrontendAppConfig
 import models.CurrentProfile
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
@@ -29,8 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,
                                summaryCheckYourAnswersBuilder: SummaryCheckYourAnswersBuilder
-                              )(implicit ec: ExecutionContext,
-                                appConfig: FrontendAppConfig) {
+                              )(implicit ec: ExecutionContext) {
 
   def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[Accordion] = {
     for {

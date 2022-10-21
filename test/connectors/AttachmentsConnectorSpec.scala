@@ -27,20 +27,10 @@ class AttachmentsConnectorSpec extends VatRegSpec {
 
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val connector = new AttachmentsConnector(mockHttpClient, appConfig)
-
   val testAttachmentList: List[AttachmentType] = List[AttachmentType](IdentityEvidence, TaxRepresentativeAuthorisation, OtherAttachments)
-
   val testEmptyAttachmentList: List[AttachmentType] = List[AttachmentType]()
-
-  val testStoreAttachmentsOtherResponseJson: JsObject = Json.obj(
-    "method" -> Some(OtherAttachmentMethod).toString,
-  )
-  val testStoreAttachmentsAttachedResponseJson: JsObject = Json.obj(
-    "method" -> Some(Attached).toString,
-  )
-  val testStoreAttachmentsPostResponseJson: JsObject = Json.obj(
-    "method" -> Some(Post).toString,
-  )
+  val testStoreAttachmentsAttachedResponseJson: JsObject = Json.obj("method" -> Some(Attached).toString)
+  val testStoreAttachmentsPostResponseJson: JsObject = Json.obj("method" -> Some(Post).toString)
 
   "getAttachments" should {
     "return a list of attachments" in {

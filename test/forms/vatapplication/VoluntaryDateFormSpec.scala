@@ -54,7 +54,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
         "value" -> "company_registration_date",
         "startDate" -> ""
       )
-      form.bind(data).get mustBe (company_registration_date, None)
+      form.bind(data).get mustBe ((company_registration_date, None))
     }
 
     "Bind successfully for a business start date selection" in {
@@ -62,7 +62,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
         "value" -> "business_start_date",
         "startDate" -> ""
       )
-      form.bind(data).get mustBe (business_start_date, None)
+      form.bind(data).get mustBe ((business_start_date, None))
     }
 
     "Bind successfully with a date input" in {
@@ -72,7 +72,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
         "startDate.month" -> s"${validDate.getMonthValue}",
         "startDate.year"  -> s"${validDate.getYear}"
       )
-      form.bind(data).get mustBe (specific_date, Some(validDate))
+      form.bind(data).get mustBe ((specific_date, Some(validDate)))
     }
 
     "Bind successfully with a date 2 days from now" in {
@@ -82,7 +82,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
         "startDate.month" -> s"${lowerLimitDate.getMonthValue}",
         "startDate.year" -> s"${lowerLimitDate.getYear}"
       )
-      form.bind(data).get mustBe (specific_date, Some(lowerLimitDate))
+      form.bind(data).get mustBe ((specific_date, Some(lowerLimitDate)))
     }
 
     "Bind successfully with a date 3 months from now" in {
@@ -92,7 +92,7 @@ class VoluntaryDateFormSpec extends VatRegSpec {
         "startDate.month" -> s"${upperLimitDate.getMonthValue}",
         "startDate.year" -> s"${upperLimitDate.getYear}"
       )
-      form.bind(data).get mustBe (specific_date, Some(upperLimitDate))
+      form.bind(data).get mustBe ((specific_date, Some(upperLimitDate)))
     }
 
     "Fail to bind successfully for no input" in {

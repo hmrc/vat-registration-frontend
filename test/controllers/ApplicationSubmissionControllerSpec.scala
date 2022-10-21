@@ -78,24 +78,6 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       }
     }
 
-    "display the submission confirmation page to the user when IdentityEvidence is available and Method is Other" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
-
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(IdentityEvidence)))
-
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = Some(OtherAttachmentMethod)))))
-
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
-
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
-      }
-    }
-
     "display the submission confirmation page to the user when IdentityEvidence is available and Method is Attached" in {
       mockAuthenticatedBasic
       mockWithCurrentProfile(Some(currentProfile))

@@ -46,7 +46,7 @@ class AddressLookupStubController @Inject()(val configConnect: ConfigConnector,
     }
   }
 
-  def retrieve(id: String): Action[AnyContent] = Action.async { implicit request =>
+  def retrieve(id: String): Action[AnyContent] = Action.async { _ =>
     Future.successful(
       Ok(Json.obj(
         "auditRef" -> "auditRef",

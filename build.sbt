@@ -63,7 +63,6 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies(),
     PlayKeys.playDefaultPort := 9895,
     retrieveManaged := true,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     addTestReportOption(IntegrationTest, "int-test-reports"),
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api._",

@@ -50,7 +50,7 @@ class ErrorController @Inject()(val authConnector: AuthClientConnector,
   }
 
   def alreadySubmittedSignOut: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
-    implicit request => _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.signOut))
+    _ => _ => Future.successful(Redirect(controllers.callbacks.routes.SignInOutController.signOut))
   }
 
   def contact: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {

@@ -3,7 +3,6 @@ package controllers.otherbusinessinvolvements
 
 import itutil.ControllerISpec
 import models.OtherBusinessInvolvement
-import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
@@ -39,7 +38,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = await(buildClient(url(testIndex1)).get)
-        val doc = Jsoup.parse(res.body)
 
         res.status mustBe OK
       }
@@ -56,7 +54,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res = await(buildClient(url(testIndex1)).get)
-        val doc = Jsoup.parse(res.body)
 
         res.status mustBe OK
       }
@@ -75,7 +72,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
           val res = await(buildClient(url(testIndex2)).get)
-          val doc = Jsoup.parse(res.body)
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(testIndex1).url)
@@ -94,7 +90,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
           val res = await(buildClient(url(testIndex3)).get)
-          val doc = Jsoup.parse(res.body)
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(testIndex2).url)
@@ -111,7 +106,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
           val res = await(buildClient(url(testIndex4)).get)
-          val doc = Jsoup.parse(res.body)
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(testIndex2).url)
@@ -141,7 +135,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
           val res = await(buildClient(url(testIndexOverMax)).get)
-          val doc = Jsoup.parse(res.body)
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(testIndexMax).url)
@@ -160,7 +153,6 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
           val res = await(buildClient(url(testIndexBelow1)).get)
-          val doc = Jsoup.parse(res.body)
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(testIndex1).url)

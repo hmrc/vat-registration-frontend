@@ -63,7 +63,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
     val decrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).decrypt(Crypted(cookieData)).value
     val result = decrypted.split("&")
       .map(_.split("="))
-      .map { case Array(k, v) => (k, URLDecoder.decode(v)) }
+      .map { case Array(k, v) => (k, URLDecoder.decode(v, java.nio.charset.Charset.defaultCharset().name())) }
       .toMap
 
     result

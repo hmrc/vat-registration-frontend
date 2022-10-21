@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.test.TestVatRegistrationConnector
 import forms.test.UpdateTrafficManagementFormProvider
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.test.update_traffic_management
 
 import javax.inject.Inject

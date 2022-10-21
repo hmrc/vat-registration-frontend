@@ -24,10 +24,9 @@ import models.api.{AttachmentType, PrimaryIdentityEvidence}
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{JsArray, JsObject, Json}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, NotFoundException, Upstream5xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
 
 class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -67,7 +66,6 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
 
   "upscanInitiate" must {
-    implicit val rq = FakeRequest()
     "return an UpscanResponse" in {
       stubPost(upscanInitiateUrl, OK, testUpscanResponseJson.toString())
       val requestBody = Json.obj(
@@ -148,7 +146,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
       stubDelete(upscanDetailsUrl, IM_A_TEAPOT, "")
 
-      intercept[UpstreamErrorResponse](await(connector.deleteUpscanDetails(testRegId, testReference)))
+      intercept[Upstream4xxResponse](await(connector.deleteUpscanDetails(testRegId, testReference)))
     }
   }
 
@@ -165,7 +163,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an exception if delete fails" in {
       stubDelete(deleteAllUpscanDetailsUrl, IM_A_TEAPOT, "")
 
-      intercept[UpstreamErrorResponse](await(connector.deleteAllUpscanDetails(testRegId)))
+      intercept[Upstream4xxResponse](await(connector.deleteAllUpscanDetails(testRegId)))
     }
   }
 
@@ -180,7 +178,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
     "return an exception if fetch fails" in {
       stubGet(upscanFilesUrl, INTERNAL_SERVER_ERROR, JsArray(List(testUpscanDetailsJson)).toString())
-      intercept[UpstreamErrorResponse](await(connector.fetchAllUpscanDetails(testRegId)))
+      intercept[Upstream5xxResponse](await(connector.fetchAllUpscanDetails(testRegId)))
     }
   }
 }

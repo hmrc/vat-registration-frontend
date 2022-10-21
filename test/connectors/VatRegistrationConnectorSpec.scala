@@ -21,6 +21,7 @@ import fixtures.VatRegistrationFixture
 import models.api._
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
+import play.api.http.Status.BAD_REQUEST
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http._
 

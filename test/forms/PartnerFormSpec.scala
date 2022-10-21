@@ -18,7 +18,6 @@ package forms
 
 import models.api._
 import play.api.data.{Form, FormError}
-import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 
 class PartnerFormSpec extends VatRegSpec {
@@ -43,7 +42,7 @@ class PartnerFormSpec extends VatRegSpec {
 
       validEntityTypes map {
         case (value, expected) =>
-          val res = form.bind(Json.obj(PartnerForm.leadPartnerEntityType -> value))
+          val res = form.bind(Map(PartnerForm.leadPartnerEntityType -> value))
           res.get mustBe expected
       }
     }
@@ -55,7 +54,7 @@ class PartnerFormSpec extends VatRegSpec {
       )
 
       invalidEntityTypes map { value =>
-        val res = form.bind(Json.obj(PartnerForm.leadPartnerEntityType -> value))
+        val res = form.bind(Map(PartnerForm.leadPartnerEntityType -> value))
         res.errors.head mustBe FormError(PartnerForm.leadPartnerEntityType, Seq(errorKey), Seq())
       }
     }

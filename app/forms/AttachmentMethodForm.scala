@@ -50,7 +50,7 @@ object AttachmentMethodForm {
         case Some(Options.Upload) => Right(Attached)
         case Some(Options.Post) => Right(Post)
         case Some(Options.Email) => Right(EmailMethod)
-        case None => Left(Seq(FormError(key, Messages.invalidSelection)))
+        case _ => Left(Seq(FormError(key, Messages.invalidSelection)))
       }
     }
 

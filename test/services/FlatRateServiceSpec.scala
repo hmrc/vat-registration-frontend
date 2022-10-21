@@ -377,7 +377,7 @@ class FlatRateServiceSpec extends VatSpec {
       when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
         .thenReturn(Future.successful(Some(incompleteS4l)))
 
-      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe(None, None)
+      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe((None, None))
     }
 
     "should get as different date if it does not match the vat start date" in new Setup() {
@@ -389,7 +389,7 @@ class FlatRateServiceSpec extends VatSpec {
           Some(incompleteS4l.copy(frsStart = Some(Start(Some(diffdate)))))
         ))
 
-      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe(Some(FRSDateChoice.DifferentDate), Some(diffdate))
+      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe((Some(FRSDateChoice.DifferentDate), Some(diffdate)))
     }
 
     "should get vat date if it matches the vat start date" in new Setup() {
@@ -399,7 +399,7 @@ class FlatRateServiceSpec extends VatSpec {
           Some(incompleteS4l.copy(frsStart = Some(Start(None))))
         ))
 
-      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe(Some(FRSDateChoice.VATDate), None)
+      await(service.getPrepopulatedStartDate(vatStartDate)) mustBe((Some(FRSDateChoice.VATDate), None))
     }
   }
 
@@ -513,7 +513,7 @@ class FlatRateServiceSpec extends VatSpec {
         .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
       when(mockS4LService.save[FlatRateScheme](any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockRegistrationApiConnector.deleteSection[FlatRateScheme](any(), any())(any(), any(), any()))
+      when(mockRegistrationApiConnector.deleteSection[FlatRateScheme](any(), any())(any(), any()))
         .thenReturn(Future.successful(true))
 
       await(service.resetFRSForSAC(newSicCode)) mustBe newSicCode
@@ -523,12 +523,12 @@ class FlatRateServiceSpec extends VatSpec {
     "reset Flat Rate Scheme and return true" in new Setup {
       when(mockS4LService.save[FlatRateScheme](any())(any(), any(), any(), any()))
         .thenReturn(Future.successful(dummyCacheMap))
-      when(mockRegistrationApiConnector.deleteSection[FlatRateScheme](any(), any())(any(), any(), any()))
+      when(mockRegistrationApiConnector.deleteSection[FlatRateScheme](any(), any())(any(), any()))
         .thenReturn(Future.successful(true))
 
       await(service.clearFrs) mustBe true
       verify(mockS4LService, times(1)).save(any())(any(), any(), any(), any())
-      verify(mockRegistrationApiConnector, times(1)).deleteSection[FlatRateScheme](any(), any())(any(), any(), any())
+      verify(mockRegistrationApiConnector, times(1)).deleteSection[FlatRateScheme](any(), any())(any(), any())
     }
   }
 

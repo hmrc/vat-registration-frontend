@@ -38,13 +38,11 @@ class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
     val authConnector: AuthClientConnector = mockAuthClientConnector
 
     def callAuthenticated: Action[AnyContent] = isAuthenticated {
-      implicit request =>
-        Future.successful(Ok("ALL GOOD"))
+      _ => Future.successful(Ok("ALL GOOD"))
     }
 
     def callAuthenticatedButError: Action[AnyContent] = isAuthenticated {
-      implicit request =>
-        Future.failed(new Exception("Something wrong"))
+      _ => Future.failed(new Exception("Something wrong"))
     }
 
     def callAuthenticatedWithProfile(checkTrafficManagement: Boolean = true): Action[AnyContent] =

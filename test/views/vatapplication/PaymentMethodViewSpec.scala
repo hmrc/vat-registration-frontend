@@ -21,7 +21,6 @@ import models.api.vatapplication.PaymentMethod
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
-import play.api.libs.json.Json
 import views.VatRegViewSpec
 import views.html.vatapplication.aas_payment_method
 
@@ -75,7 +74,7 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
       }
     }
     "show the correct error message if a value isn't selected"in new ViewSetup()(
-      doc = asDocument(PaymentMethodForm().bind(Json.obj("value" -> "")))
+      doc = asDocument(PaymentMethodForm().bind(Map("value" -> "")))
     ) {
       doc.hasErrorSummary mustBe true
       doc.errorSummaryLinks must contain(Link(ExpectedMessages.error, "#value"))

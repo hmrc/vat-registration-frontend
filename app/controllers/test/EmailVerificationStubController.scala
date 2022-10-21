@@ -18,13 +18,12 @@ package controllers.test
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponents)
-  extends FrontendController(mcc) {
+class EmailVerificationStubController @Inject()(mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
   def requestEmailVerificationPasscode: Action[JsValue] = Action(parse.json) {
      request =>

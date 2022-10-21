@@ -44,7 +44,7 @@ class ReceiveGoodsNipController @Inject()(val sessionService: SessionService,
       implicit profile =>
         vatApplicationService.getVatApplication.map { vatApplication =>
           vatApplication.northernIrelandProtocol match {
-            case Some(NIPTurnover(_, Some(ConditionalValue(receiveGoods, amount)))) => Ok(view(ReceiveGoodsNipForm.form.fill(receiveGoods, amount)))
+            case Some(NIPTurnover(_, Some(ConditionalValue(receiveGoods, amount)))) => Ok(view(ReceiveGoodsNipForm.form.fill((receiveGoods, amount))))
             case _ => Ok(view(ReceiveGoodsNipForm.form))
           }
         }

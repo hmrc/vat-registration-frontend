@@ -54,14 +54,14 @@ class AddressLookupConnectorSpec extends VatRegSpec with VatRegistrationFixture 
 
   "getOnRampUrl" should {
     "return a valid call to be used in a redirect" in new Setup {
-      val successfulResponse = HttpResponse(PERMANENT_REDIRECT, responseHeaders = Map(LOCATION -> Seq(redirectUrl)))
+      val successfulResponse = HttpResponse(PERMANENT_REDIRECT, headers = Map(LOCATION -> Seq(redirectUrl)), body = "")
       mockHttpPOST[JsObject, HttpResponse](appConfig.addressLookupJourneyUrl, successfulResponse)
 
       connector.getOnRampUrl(AddressLookupConstants.testAlfConfig) returns Call(GET, redirectUrl)
     }
 
     "throw an exception when address lookup service does not respond with redirect location" in new Setup {
-      val badResponse = HttpResponse(OK, responseHeaders = Map.empty)
+      val badResponse = HttpResponse(OK, headers = Map.empty, body = "")
       mockHttpPOST[JsObject, HttpResponse](appConfig.addressLookupJourneyUrl, badResponse)
 
       connector.getOnRampUrl(AddressLookupConstants.testAlfConfig) failedWith classOf[ALFLocationHeaderNotSetException]

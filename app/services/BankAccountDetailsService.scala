@@ -28,12 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiConnector,
                                           val bankAccountRepService: BankAccountReputationService) {
 
-  def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Option[BankAccount]] = {
+  def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[BankAccount]] = {
     regApiConnector.getSection[BankAccount](profile.registrationId)
   }
 
   def saveBankAccountDetails(bankAccount: BankAccount)
-                            (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[BankAccount] = {
     regApiConnector.replaceSection[BankAccount](profile.registrationId, bankAccount)
   }
 
@@ -78,7 +78,7 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
   }
 
   def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
-                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
+                                (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[BankAccount] = {
     val bankAccount = BankAccount(
       isProvided = false,
       details = None,

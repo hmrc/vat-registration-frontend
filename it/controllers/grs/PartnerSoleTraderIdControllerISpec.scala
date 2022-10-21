@@ -216,7 +216,6 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
     }
 
     "return INTERNAL_SERVER_ERROR if not party type available" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))

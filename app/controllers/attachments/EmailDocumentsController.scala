@@ -35,7 +35,7 @@ class EmailDocumentsController @Inject()(view: EmailDocuments,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
-      implicit profile =>
+      _ =>
           Future.successful(Ok(view()))
   }
 

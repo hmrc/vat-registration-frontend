@@ -66,7 +66,7 @@ class TimeService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
 
   val DATE_FORMAT = "yyyy-MM-dd"
 
-  def isDateSomeWorkingDaysInFuture(futureDate: LocalDate)(implicit bHS: BankHolidaySet): Boolean = {
+  def isDateSomeWorkingDaysInFuture(futureDate: LocalDate): Boolean = {
     isEqualOrAfter(getMinWorkingDayInFuture, futureDate)
   }
 
@@ -83,8 +83,6 @@ class TimeService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
       3
     }
   }
-
-  def futureWorkingDate(days: Int)(implicit bHS: BankHolidaySet): LocalDate = addWorkingDays(currentLocalDate, days)
 
   def addMonths(months: Int): LocalDate = currentLocalDate.plusMonths(months)
 

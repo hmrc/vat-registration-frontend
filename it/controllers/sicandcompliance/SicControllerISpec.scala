@@ -42,16 +42,6 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   }
 
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
-    val simplifiedSicJson =
-      """|{"businessActivities" : [
-         |           {
-         |               "code" : "43220",
-         |               "desc" : "Plumbing, heat and air-conditioning installation",
-         |               "indexes" : ""
-         |           }
-         |       ]
-         |}""".stripMargin
-
     given()
       .user.isAuthorised()
       .s4lContainer[Business].contains(fullModel)

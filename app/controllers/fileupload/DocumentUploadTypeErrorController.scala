@@ -36,7 +36,7 @@ class DocumentUploadTypeErrorController @Inject()(view: UploadDocumentTypeError,
 
   def show(): Action[AnyContent] = isAuthenticatedWithProfile() {
     implicit request =>
-      implicit profile =>
+      _ =>
         Future.successful(Ok(view()))
   }
 }

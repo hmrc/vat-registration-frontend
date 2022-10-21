@@ -50,7 +50,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
     implicit request =>
-      implicit profile =>
+      _ =>
         Future.successful(Ok(view(SicStubForm.form)))
   }
 

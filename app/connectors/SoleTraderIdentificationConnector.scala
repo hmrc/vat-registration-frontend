@@ -59,8 +59,8 @@ class SoleTraderIdentificationConnector @Inject()(val httpClient: HttpClient, ap
             response.json.validate[SoleTraderIdEntity](SoleTraderIdEntity.apiFormat)) match {
             case (JsSuccess(transactorDetails, _), JsSuccess(optSoleTrader, _)) =>
               (transactorDetails, optSoleTrader)
-            case (JsError(errors), _) =>
-              throw new InternalServerException(s"Sole trader ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+            case (jsError@JsError(_), _) =>
+              throw new InternalServerException(s"Sole trader ID returned invalid JSON ${jsError.errors.map(_._1).mkString(", ")}")
           }
         case status =>
           throw new InternalServerException(s"[SoleTraderIdentificationConnector] Unexpected status returned from STI when retrieving sole trader details: $status")

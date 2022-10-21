@@ -20,6 +20,7 @@ import controllers.callbacks.routes
 import featureswitch.core.config._
 import models.api._
 import play.api.Configuration
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.nio.charset.Charset
@@ -223,6 +224,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
         case ScotPartnership => "scottish-partnership-journey"
         case ScotLtdPartnership => "scottish-limited-partnership-journey"
         case LtdLiabilityPartnership => "limited-liability-partnership-journey"
+        case _ => throw new InternalServerException(s"Party type $partyType is not a valid partnership party type")
       }
       s"$partnershipIdHost/partnership-identification/api/$url"
     }

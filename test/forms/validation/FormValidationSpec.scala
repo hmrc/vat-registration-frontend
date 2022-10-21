@@ -340,19 +340,19 @@ class FormValidationSpec extends AnyWordSpec with Inside with Inspectors with Ma
     val constraint = FormValidation.nonEmptyDate("testErrMsg")
 
     "return Valid if the tuple of strings provided has a day, month and year" in {
-      constraint("day", "month", "year") shouldBe Valid
+      constraint(("day", "month", "year")) shouldBe Valid
     }
 
     "return Invalid if the day in the tuple is missing" in {
-      constraint("", "month", "year") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint(("", "month", "year")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
 
     "return Invalid if the month in the tuple is missing" in {
-      constraint("day", "", "year") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint(("day", "", "year")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
 
     "return Invalid if the year in the tuple is missing" in {
-      constraint("day", "month", "") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint(("day", "month", "")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
   }
 
@@ -360,19 +360,19 @@ class FormValidationSpec extends AnyWordSpec with Inside with Inspectors with Ma
     val constraint = FormValidation.validDate("testErrMsg")
 
     "return Valid if the tuple of strings provided is a valid date" in {
-      constraint("30", "12", "2018") shouldBe Valid
+      constraint(("30", "12", "2018")) shouldBe Valid
     }
 
     "return Invalid if the provided dates day value is not a valid day" in {
-      constraint("50", "1", "2018") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint(("50", "1", "2018")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
 
     "return Invalid if the provided dates month value is not a valid month" in {
-      constraint("1", "20", "2018") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint(("1", "20", "2018")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
 
     "return Invalid if the provided dates year value is not a valid year" in {
-      constraint("1", "1", "zOlB") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint(("1", "1", "zOlB")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
   }
 
@@ -382,23 +382,23 @@ class FormValidationSpec extends AnyWordSpec with Inside with Inspectors with Ma
     val constraint = FormValidation.withinRange(minDate, maxDate, "beforeMinErrMsg", "afterMaxErrMsg", List(minDate.toString, maxDate.toString))
 
     "return Valid if the date is after the min date and before the max date" in {
-      constraint("15", "6", "2018") shouldBe Valid
+      constraint(("15", "6", "2018")) shouldBe Valid
     }
 
     "return Valid if the date is the same as the minimum date" in {
-      constraint("1", "1", "2018") shouldBe Valid
+      constraint(("1", "1", "2018")) shouldBe Valid
     }
 
     "return Valid if the date is the same as the maximum date" in {
-      constraint("31", "12", "2018") shouldBe Valid
+      constraint(("31", "12", "2018")) shouldBe Valid
     }
 
     "return Invalid if the date is before the minumum date with the correct error message" in {
-      constraint("31", "12", "2017") shouldBe Invalid(ValidationError("beforeMinErrMsg", minDate.toString, maxDate.toString))
+      constraint(("31", "12", "2017")) shouldBe Invalid(ValidationError("beforeMinErrMsg", minDate.toString, maxDate.toString))
     }
 
     "return Invalid if the date is after the maximum date with the correct error message" in {
-      constraint("1", "1", "2019") shouldBe Invalid(ValidationError("afterMaxErrMsg", minDate.toString, maxDate.toString))
+      constraint(("1", "1", "2019")) shouldBe Invalid(ValidationError("afterMaxErrMsg", minDate.toString, maxDate.toString))
     }
   }
 
@@ -409,15 +409,15 @@ class FormValidationSpec extends AnyWordSpec with Inside with Inspectors with Ma
     val moreThan4 = LocalDate.now().minusYears(6)
 
     "return Valid if the date is less than 4 years ago" in {
-      constraint(s"${lessThan4.getDayOfMonth}", s"${lessThan4.getMonthValue}", s"${lessThan4.getYear}") shouldBe Valid
+      constraint((s"${lessThan4.getDayOfMonth}", s"${lessThan4.getMonthValue}", s"${lessThan4.getYear}")) shouldBe Valid
     }
 
     "return Valid if the date is exactly 4 years ago" in {
-      constraint(s"${exactly4.getDayOfMonth}", s"${exactly4.getMonthValue}", s"${exactly4.getYear}") shouldBe Valid
+      constraint((s"${exactly4.getDayOfMonth}", s"${exactly4.getMonthValue}", s"${exactly4.getYear}")) shouldBe Valid
     }
 
     "return Invalid if the date is more than 4 years ago" in {
-      constraint(s"${moreThan4.getDayOfMonth}", s"${moreThan4.getMonthValue}", s"${moreThan4.getYear}") shouldBe Invalid(ValidationError("testErrMsg"))
+      constraint((s"${moreThan4.getDayOfMonth}", s"${moreThan4.getMonthValue}", s"${moreThan4.getYear}")) shouldBe Invalid(ValidationError("testErrMsg"))
     }
   }
 }

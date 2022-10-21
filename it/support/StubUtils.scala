@@ -37,7 +37,7 @@ trait StubUtils {
 
   final class RequestHolder(var request: FakeRequest[AnyContentAsFormUrlEncoded])
 
-  class PreconditionBuilder(implicit requestHolder: RequestHolder) {
+  class PreconditionBuilder {
 
     implicit val builder: PreconditionBuilder = this
 
@@ -67,7 +67,7 @@ trait StubUtils {
     def attachmentsApi = AttachmentsApiStub()
   }
 
-  def given()(implicit requestHolder: RequestHolder): PreconditionBuilder = {
+  def given(): PreconditionBuilder = {
     new PreconditionBuilder()
       .audit.writesAudit()
       .audit.writesAuditMerged()
@@ -204,7 +204,7 @@ trait StubUtils {
     }
   }
 
-  case class ICL()(implicit builder: PreconditionBuilder, requestHolder: RequestHolder) {
+  case class ICL()(implicit builder: PreconditionBuilder) {
     def setup(): PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/internal/initialise-journey"))
@@ -520,7 +520,7 @@ trait StubUtils {
       builder
     }
 
-    def getSectionFails[T: ApiKey](regId: String = "1")(implicit format: Format[T]): PreconditionBuilder = {
+    def getSectionFails[T: ApiKey](regId: String = "1"): PreconditionBuilder = {
       stubFor(
         get(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
           .willReturn(badRequest())
@@ -555,7 +555,7 @@ trait StubUtils {
       builder
     }
 
-    def deleteSection[T: ApiKey](regId: String = "1", optIdx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
+    def deleteSection[T: ApiKey](regId: String = "1", optIdx: Option[Int] = None): PreconditionBuilder = {
       val url = s"/vatreg/registrations/$regId/sections/${ApiKey[T]}${optIdx.fold("")(idx => s"/$idx")}"
       stubFor(
         delete(urlPathEqualTo(url))
@@ -563,7 +563,7 @@ trait StubUtils {
       builder
     }
 
-    def replaceSectionFails[T: ApiKey](regId: String = "1")(implicit format: Format[T]): PreconditionBuilder = {
+    def replaceSectionFails[T: ApiKey](regId: String = "1"): PreconditionBuilder = {
       stubFor(
         put(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
           .willReturn(badRequest())
@@ -590,7 +590,7 @@ trait StubUtils {
       builder
     }
 
-    def storeUpscanReference(reference: String, attachmentType: AttachmentType, regId: String = "1")(implicit format: Format[UpscanDetails]): PreconditionBuilder = {
+    def storeUpscanReference(reference: String, attachmentType: AttachmentType, regId: String = "1"): PreconditionBuilder = {
       stubFor(post(urlPathEqualTo(s"/vatreg/$regId/upscan-reference"))
         .withRequestBody(equalToJson(Json.stringify(Json.obj(
           "reference" -> reference,
@@ -601,7 +601,7 @@ trait StubUtils {
       builder
     }
 
-    def fetchUpscanFileDetails(upscanDetails: UpscanDetails, regId: String = "1", reference: String)(implicit format: Format[UpscanDetails]): PreconditionBuilder = {
+    def fetchUpscanFileDetails(upscanDetails: UpscanDetails, regId: String = "1", reference: String): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/$regId/upscan-file-details/$reference"))
         .willReturn(ok(Json.stringify(Json.toJson[UpscanDetails](upscanDetails)))
         ))
@@ -623,7 +623,7 @@ trait StubUtils {
       builder
     }
 
-    def deleteAttachments(regId: String = "1")(implicit writes: Writes[Attachments]): PreconditionBuilder = {
+    def deleteAttachments(regId: String = "1"): PreconditionBuilder = {
       stubFor(
         delete(urlPathMatching(s"/vatreg/$regId/upscan-file-details"))
           .willReturn(aResponse().withStatus(NO_CONTENT))
@@ -633,14 +633,14 @@ trait StubUtils {
   }
 
   case class AttachmentsApiStub()(implicit builder: PreconditionBuilder) {
-    def getAttachments(attachments: List[AttachmentType], regId: String = "1")(implicit format: Format[Attachments]): PreconditionBuilder = {
+    def getAttachments(attachments: List[AttachmentType], regId: String = "1"): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/$regId/attachments"))
         .willReturn(ok(Json.stringify(Json.toJson[List[AttachmentType]](attachments)))
         ))
       builder
     }
 
-    def getIncompleteAttachments(attachments: List[AttachmentType], regId: String = "1")(implicit format: Format[Attachments]): PreconditionBuilder = {
+    def getIncompleteAttachments(attachments: List[AttachmentType], regId: String = "1"): PreconditionBuilder = {
       stubFor(get(urlPathEqualTo(s"/vatreg/$regId/incomplete-attachments"))
         .willReturn(ok(Json.stringify(Json.toJson[List[AttachmentType]](attachments)))
         ))

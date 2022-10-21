@@ -21,7 +21,7 @@ import models.api.Address.inlineShow.inline
 import models.view.HomeAddressView
 import models.view.vatContact.ppob.PpobView
 import models.{ApiModelTransformer => MT}
-import org.apache.commons.lang3.text.WordUtils
+import org.apache.commons.text.WordUtils
 import play.api.libs.json._
 
 case class Country(code: Option[String], name: Option[String])

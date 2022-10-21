@@ -66,8 +66,8 @@ class PartnerEntityTypeController @Inject()(val authConnector: AuthConnector,
             result <- PartnerForm.form.bindFromRequest().fold(
               formWithErrors => Future.successful(BadRequest(partnerEntityTypePage(formWithErrors, isTransactor = true, index))),
               {
-                case partyType@Individual =>
-                  entityService.upsertEntity[PartyType](profile.registrationId, index, partyType).map { _ =>
+                case Individual =>
+                  entityService.upsertEntity[PartyType](profile.registrationId, index, Individual).map { _ =>
                     Redirect(grsRoutes.PartnerSoleTraderIdController.startJourney(index))
                   }
                 case _@BusinessEntity =>

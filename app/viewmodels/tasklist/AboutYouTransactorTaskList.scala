@@ -16,12 +16,10 @@
 
 package viewmodels.tasklist
 
-import config.FrontendAppConfig
 import featureswitch.core.config.{FeatureSwitching, FullAgentJourney}
 import models.CurrentProfile
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
-import play.api.mvc.Request
 import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.Inject
@@ -101,10 +99,8 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
   }
 
   def build(vatScheme: VatScheme)
-           (implicit request: Request[_],
-            profile: CurrentProfile,
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection = {
+           (implicit profile: CurrentProfile,
+            messages: Messages): TaskListSection = {
 
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
     val isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty

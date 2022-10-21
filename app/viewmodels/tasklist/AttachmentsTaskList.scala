@@ -16,12 +16,10 @@
 
 package viewmodels.tasklist
 
-import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import models._
 import models.api._
 import play.api.i18n.Messages
-import play.api.mvc.Request
 import services.AttachmentsService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
@@ -53,17 +51,11 @@ class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTask
       None
     }
 
-  def build(vatScheme: VatScheme, attachmentsRow: TaskListRowBuilder)
-           (implicit request: Request[_],
-            profile: CurrentProfile,
-            messages: Messages,
-            appConfig: FrontendAppConfig): TaskListSection = {
-
+  def build(vatScheme: VatScheme, attachmentsRow: TaskListRowBuilder)(implicit messages: Messages): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.attachments.heading"),
       rows = Seq(attachmentsRow.build(vatScheme))
     )
-  }
 
   private def resolveMessageKey(attachments: List[AttachmentType]): String = {
     val documentsKey = "tasklist.attachments.identityDocuments"
@@ -97,6 +89,7 @@ class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTask
             case _ => checkPassed ++ checkFailed
           }
         case Some(Post | EmailMethod) => checkPassed
+        case _ => checkFailed
       }
     }.getOrElse(checkFailed)
   }

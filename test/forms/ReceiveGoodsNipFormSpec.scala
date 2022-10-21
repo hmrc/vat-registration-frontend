@@ -44,7 +44,7 @@ class ReceiveGoodsNipFormSpec extends PlaySpec with GuiceOneAppPerSuite {
     "validate that receiveGoodsNip is valid" in {
       val form = receiveGoodsNipForm.bind(Map(ReceiveGoodsNipForm.yesNo -> validYesNo, ReceiveGoodsNipForm.inputAmount -> testValidReceiveGoodsNip)).value
 
-      form mustBe Some(true, Some(validReceiveGoodsNip))
+      form mustBe Some((true, Some(validReceiveGoodsNip)))
     }
 
     "validate that missing yesNo answer fails" in {

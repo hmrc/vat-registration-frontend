@@ -22,7 +22,7 @@ import org.mockito.Mockito._
 import org.mockito._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.{HttpResponse, InternalServerException, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HttpResponse, InternalServerException, UpstreamErrorResponse}
 
 import scala.concurrent.Future
 
@@ -48,7 +48,7 @@ class BankAccountReputationConnectorSpec extends VatRegSpec {
     "throw an exception" in new Setup {
       when(mockHttpClient.POST[BankAccountDetails, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
         (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-        .thenReturn(Future.failed(Upstream5xxResponse(INTERNAL_SERVER_ERROR.toString, 500, 500)))
+        .thenReturn(Future.failed(UpstreamErrorResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
 
       connector.validateBankDetails(bankDetails) failedWith classOf[InternalServerException]
     }

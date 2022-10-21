@@ -68,7 +68,7 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
-    implicit request => implicit profile =>
+    _ => _ =>
       Future.successful(Redirect(routes.AttachmentMethodController.show))
   }
 

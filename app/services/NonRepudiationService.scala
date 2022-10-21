@@ -24,12 +24,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.Base64Util
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
 class NonRepudiationService @Inject()(base64Util: Base64Util,
-                                      registrationApiConnector: RegistrationApiConnector)
-                                     (implicit ec: ExecutionContext) {
+                                      registrationApiConnector: RegistrationApiConnector) {
 
   def storeEncodedUserAnswers(regId: String, html: Html)(implicit hc: HeaderCarrier): Future[String] = {
     implicit val key: ApiKey[String] = nrsSubmissionPayloadKey

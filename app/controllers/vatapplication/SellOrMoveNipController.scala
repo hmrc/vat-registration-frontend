@@ -43,7 +43,7 @@ class SellOrMoveNipController @Inject()(val sessionService: SessionService,
         vatApplicationService.getVatApplication.map { r =>
           r.northernIrelandProtocol match {
             case Some(NIPTurnover(Some(ConditionalValue(answer, amount)), _)) =>
-              Ok(view(SellOrMoveNipForm.form.fill(answer, amount)))
+              Ok(view(SellOrMoveNipForm.form.fill((answer, amount))))
             case _ => Ok(view(SellOrMoveNipForm.form))
           }
         }

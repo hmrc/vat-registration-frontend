@@ -41,7 +41,6 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
 
     httpClient.POST[JsValue, HttpResponse](url, body).map {
       case response@HttpResponse(OK, _, _) => response.json.as[UpscanResponse]
-
       case response => throw new InternalServerException(s"[UpscanConnector] Upscan initiate received an unexpected response Status: ${response.status}")
     }
   }

@@ -29,7 +29,6 @@ import testHelpers.{S4LMockSugar, VatRegSpec}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockRegistrationApiConnector {
 

@@ -24,11 +24,10 @@ import models.external.soletraderid.SoleTraderIdJourneyConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnector: SoleTraderIdentificationConnector)
-                                               (implicit ec: ExecutionContext) {
+class SoleTraderIdentificationService @Inject()(soleTraderIdentificationConnector: SoleTraderIdentificationConnector) {
 
   def startSoleTraderJourney(config: SoleTraderIdJourneyConfig,
                              partyType: PartyType)

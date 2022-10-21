@@ -46,6 +46,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
     businessService.getBusiness flatMap { businessDetails =>
       businessDetails.businessActivities match {
         case Some(sicCodes) => Future.successful(sicCodes map (_.code))
+        case _ => Future.successful(Nil)
       }
     } recover {
       case e =>
