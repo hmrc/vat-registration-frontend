@@ -37,7 +37,7 @@ class LandAndPropertyController @Inject()(val sessionService: SessionService,
                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         businessService.getBusiness.map {
@@ -48,7 +48,7 @@ class LandAndPropertyController @Inject()(val sessionService: SessionService,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         LandAndPropertyForm.form.bindFromRequest.fold(

@@ -35,7 +35,7 @@ class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
                                       val executionContext: ExecutionContext,
                                       baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def startJourney: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => _ =>
         addressLookupService.getJourneyUrl(
           journeyId = AddressLookupJourneyIdentifier.businessActivities,
@@ -44,7 +44,7 @@ class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
         ) map Redirect
   }
 
-  def callback(id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def callback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

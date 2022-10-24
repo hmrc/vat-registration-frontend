@@ -41,7 +41,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -53,7 +53,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
         } yield Ok(formerNameDatePage(filledForm, formerName.asLabel, name))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         applicantDetailsService.getApplicantDetails flatMap {

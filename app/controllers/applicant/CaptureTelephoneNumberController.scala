@@ -40,7 +40,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
                                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +50,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
         } yield Ok(view(routes.CaptureTelephoneNumberController.submit, filledForm, name))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TelephoneNumberForm.form.bindFromRequest().fold(

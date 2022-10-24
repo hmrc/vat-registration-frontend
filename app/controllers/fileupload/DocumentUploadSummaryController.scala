@@ -44,7 +44,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+  val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       for {
         upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
@@ -68,7 +68,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
       }
   }
 
-  val continue: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+  val continue: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       for {
         upscanResponse <- upscanService.fetchAllUpscanDetails(profile.registrationId)
@@ -92,7 +92,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
       }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request =>
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       DocumentUploadSummaryForm.form.bindFromRequest().fold(
         errors => for {

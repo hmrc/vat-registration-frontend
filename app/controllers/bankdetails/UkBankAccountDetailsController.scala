@@ -38,7 +38,7 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -47,7 +47,7 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
         } yield Ok(view(filledForm))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         enterBankAccountDetailsForm.bindFromRequest.fold(

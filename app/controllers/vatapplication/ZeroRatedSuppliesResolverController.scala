@@ -39,7 +39,7 @@ class ZeroRatedSuppliesResolverController @Inject()(val sessionService: SessionS
   private val NoTurnover = BigDecimal("0")
   private val noZeroRatedSupplies = 0
 
-  def resolve: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def resolve: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getTurnover.flatMap {

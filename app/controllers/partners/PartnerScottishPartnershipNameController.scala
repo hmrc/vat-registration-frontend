@@ -39,7 +39,7 @@ class PartnerScottishPartnershipNameController @Inject()(val sessionService: Ses
                                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
-  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerScottishPartnershipNameController.show) { optEntity =>
@@ -50,7 +50,7 @@ class PartnerScottishPartnershipNameController @Inject()(val sessionService: Ses
         }
   }
 
-  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.PartnerScottishPartnershipNameController.show) {

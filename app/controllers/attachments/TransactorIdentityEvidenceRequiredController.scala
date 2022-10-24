@@ -36,7 +36,7 @@ class TransactorIdentityEvidenceRequiredController @Inject()(val authConnector: 
                                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

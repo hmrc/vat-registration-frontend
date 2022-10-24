@@ -38,7 +38,7 @@ class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -50,7 +50,7 @@ class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ChooseBusinessTypeForm.form(configConnector.businessTypes.flatMap(_.categories.map(_.id))).bindFromRequest().fold(

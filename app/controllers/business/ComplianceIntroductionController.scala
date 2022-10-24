@@ -33,11 +33,11 @@ class ComplianceIntroductionController @Inject() (val authConnector: AuthClientC
                                                   val executionContext: ExecutionContext,
                                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => _ => Future.successful(Ok(view()))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     _ => _ => Future.successful(Redirect(controllers.business.routes.SupplyWorkersController.show))
   }
 }

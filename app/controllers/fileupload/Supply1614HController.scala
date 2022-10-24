@@ -41,7 +41,7 @@ class Supply1614HController @Inject()(val authConnector: AuthConnector,
                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         attachmentsService.getAttachmentDetails(profile.registrationId).map { attachmentDetails =>
@@ -52,7 +52,7 @@ class Supply1614HController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         Supply1614HForm.form.bindFromRequest.fold(

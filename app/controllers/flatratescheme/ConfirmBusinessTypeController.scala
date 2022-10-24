@@ -36,7 +36,7 @@ class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents) extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.retrieveBusinessTypeDetails map { businessTypeDetails =>
@@ -46,7 +46,7 @@ class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.saveConfirmSector map { _ =>

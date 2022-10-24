@@ -37,7 +37,7 @@ class BusinessNameController @Inject()(val sessionService: SessionService,
                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         applicantDetailsService.getCompanyName.map {
@@ -46,7 +46,7 @@ class BusinessNameController @Inject()(val sessionService: SessionService,
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         BusinessNameForm().bindFromRequest.fold(

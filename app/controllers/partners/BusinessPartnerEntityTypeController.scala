@@ -42,7 +42,7 @@ class BusinessPartnerEntityTypeController @Inject()(val authConnector: AuthConne
 
   implicit val errorKey: String = "pages.businessPartnerEntityType.missing"
 
-  def showPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def showPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.BusinessPartnerEntityTypeController.showPartnerType) {
@@ -53,7 +53,7 @@ class BusinessPartnerEntityTypeController @Inject()(val authConnector: AuthConne
         }
   }
 
-  def submitPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.BusinessPartnerEntityTypeController.showPartnerType) {

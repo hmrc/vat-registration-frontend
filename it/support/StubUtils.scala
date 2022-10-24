@@ -22,7 +22,6 @@ import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
 import itutil.IntegrationSpecBase
 import models.api._
-import models.api.trafficmanagement.{Draft, RegistrationChannel, RegistrationInformation, VatReg}
 import models.external.upscan.UpscanDetails
 import models.{ApiKey, S4LKey}
 import play.api.http.Status._
@@ -30,8 +29,6 @@ import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
-
-import java.time.LocalDate
 
 trait StubUtils {
 
@@ -57,8 +54,6 @@ trait StubUtils {
     def s4lContainer[T: S4LKey]: S4lContainer[T] = new S4lContainer[T]()
 
     def audit = AuditStub()
-
-    def trafficManagement = TrafficManagementStub()
 
     def registrationApi = RegistrationApiStub()
 
@@ -399,47 +394,6 @@ trait StubUtils {
       stubFor(post(urlMatching("/validate/bank-details"))
         .willReturn(
           serverError()
-        ))
-      builder
-    }
-  }
-
-  case class TrafficManagementStub()(implicit builder: PreconditionBuilder) {
-    def passes(channel: RegistrationChannel = VatReg): PreconditionBuilder = {
-      stubFor(get(urlMatching(s"/vatreg/traffic-management/1/reg-info"))
-        .willReturn(
-          aResponse()
-            .withStatus(200)
-            .withBody(Json.toJson(
-              RegistrationInformation("1", "1", Draft, Some(LocalDate.now()), channel)
-            ).toString())
-        ))
-      builder
-    }
-
-    def fails: PreconditionBuilder = {
-      stubFor(get(urlMatching("/vatreg/traffic-management/1/reg-info"))
-        .willReturn(
-          aResponse()
-            .withStatus(204)
-        ))
-      builder
-    }
-
-    def isCleared: PreconditionBuilder = {
-      stubFor(delete(urlMatching("/vatreg/traffic-management/reg-info/clear"))
-        .willReturn(
-          aResponse()
-            .withStatus(204)
-        ))
-      builder
-    }
-
-    def failsToClear: PreconditionBuilder = {
-      stubFor(delete(urlMatching("/vatreg/traffic-management/reg-info/clear"))
-        .willReturn(
-          aResponse()
-            .withStatus(400)
         ))
       builder
     }

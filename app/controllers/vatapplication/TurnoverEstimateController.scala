@@ -37,7 +37,7 @@ class TurnoverEstimateController @Inject()(val sessionService: SessionService,
                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -47,7 +47,7 @@ class TurnoverEstimateController @Inject()(val sessionService: SessionService,
         } yield page
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         TurnoverEstimateForm.form.bindFromRequest.fold(

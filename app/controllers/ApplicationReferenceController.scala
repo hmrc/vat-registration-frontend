@@ -39,7 +39,7 @@ class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
                                                appConfig: FrontendAppConfig) extends BaseController with SessionProfile {
 
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     implicit val key: ApiKey[String] = applicationReferenceKey
 
     vatRegistrationService.getSection[String](profile.registrationId)
@@ -49,7 +49,7 @@ class ApplicationReferenceController @Inject()(val authConnector: AuthConnector,
       }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     form().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),

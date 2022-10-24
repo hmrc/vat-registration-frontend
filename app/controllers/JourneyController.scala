@@ -34,7 +34,6 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
                                   val journeyService: JourneyService,
                                   val authConnector: AuthClientConnector,
                                   val sessionService: SessionService,
-                                  val trafficManagementService: TrafficManagementService,
                                   view: start_new_application)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
@@ -70,7 +69,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
     }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     StartNewApplicationForm.form.bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),
@@ -102,10 +101,8 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
           _ <- journeyService.buildCurrentProfile(regId)
           header <- vatRegistrationService.getVatSchemeHeader(regId)
           eligibilitySubmissionData <- vatRegistrationService.getSection[EligibilitySubmissionData](regId)
-          trafficManagementResponse <- if (isEnabled(TrafficManagementPredicate)) trafficManagementService.checkTrafficManagement(regId) else Future.successful(PassedVatReg)
-        } yield (header.status, trafficManagementResponse) match {
-          case (_, PassedOTRS) => Redirect(appConfig.otrsRoute)
-          case (VatRegStatus.submitted, _) => Redirect(routes.ApplicationSubmissionController.show)
+        } yield header.status match {
+          case VatRegStatus.submitted => Redirect(routes.ApplicationSubmissionController.show)
           case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
           case _ if isEnabled(TaskList) && eligibilitySubmissionData.isDefined => Redirect(controllers.routes.TaskListController.show)
           case _ if isEnabled(MultipleRegistrations) && header.applicationReference.isEmpty => Redirect(routes.ApplicationReferenceController.show)
@@ -116,7 +113,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
     }
   }
 
-  def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     (for {
       isTransactor <- vatRegistrationService.isTransactor
       isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty

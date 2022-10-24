@@ -37,7 +37,7 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -56,7 +56,7 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ReturnsFrequencyForm.form.bindFromRequest.fold(

@@ -17,7 +17,7 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig, Logging}
-import featureswitch.core.config.{FeatureSwitching, TrafficManagementPredicate, WelshLanguage}
+import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import models.CurrentProfile
 import play.api.i18n.{I18nSupport, Lang, Messages}
 import play.api.mvc._
@@ -83,23 +83,11 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
       }.handleErrorResult
   }
 
-  def isAuthenticatedWithProfile(checkTrafficManagement: Boolean = true)
-                                (f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
+  def isAuthenticatedWithProfile(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
       authorised(authPredicate).retrieve(allEnrolments) { enrolments =>
         withCurrentProfile() { profile =>
-          if (isEnabled(TrafficManagementPredicate) && checkTrafficManagement) {
-            bcc.trafficManagementService.passedTrafficManagement(profile.registrationId).flatMap {
-              case true =>
-                f(request)(profile.copy(agentReferenceNumber = enrolments.agentReferenceNumber))
-              case false =>
-                logger.warn("[BaseController][isAuthenticatedWithProfile] User attempted to enter flow without passing TM")
-                Future.successful(Redirect(routes.JourneyController.show))
-            }
-          }
-          else {
-            f(request)(profile.copy(agentReferenceNumber = enrolments.agentReferenceNumber))
-          }
+          f(request)(profile.copy(agentReferenceNumber = enrolments.agentReferenceNumber))
         }
       }.handleErrorResult
   }

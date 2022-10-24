@@ -39,7 +39,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -48,7 +48,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
         } yield Ok(noUKBankAccountView(form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile => {
         NoUKBankAccountForm.form.bindFromRequest().fold(

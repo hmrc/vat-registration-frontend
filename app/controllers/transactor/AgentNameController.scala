@@ -40,7 +40,7 @@ class AgentNameController @Inject()(val authConnector: AuthConnector,
                                     appConfig: FrontendAppConfig
                                    ) extends BaseController  with AuthorisedFunctions {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       transactorDetails <- transactorDetailsService.getTransactorDetails
       optPersonalDetails = transactorDetails.personalDetails
@@ -48,7 +48,7 @@ class AgentNameController @Inject()(val authConnector: AuthConnector,
     } yield Ok(view(filledForm))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     form().bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
       name => {

@@ -36,13 +36,13 @@ class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_dec
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
         Future.successful(Ok(honestyDeclarationView(routes.HonestyDeclarationController.submit)))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile(checkTrafficManagement = false) { implicit request => implicit profile =>
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     implicit val key: ApiKey[Boolean] = honestyDeclarationKey
 
     for {

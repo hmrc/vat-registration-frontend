@@ -34,7 +34,7 @@ class ApplicationProgressSavedController @Inject()(val vatApplicationService: Va
                                                    baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
         Future.successful(Ok(applicationProgressSavedView()))

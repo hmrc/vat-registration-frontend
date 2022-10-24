@@ -39,7 +39,7 @@ class PartnerAddressController @Inject()(val sessionService: SessionService,
                                          baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
-  def redirectToAlf(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def redirectToAlf(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerAddressController.redirectToAlf) {
@@ -61,7 +61,7 @@ class PartnerAddressController @Inject()(val sessionService: SessionService,
         }
   }
 
-  def addressLookupCallback(index: Int, id: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def addressLookupCallback(index: Int, id: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.PartnerAddressController.redirectToAlf) {

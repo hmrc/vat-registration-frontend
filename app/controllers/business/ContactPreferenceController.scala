@@ -38,7 +38,7 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def showContactPreference: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def showContactPreference: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -48,7 +48,7 @@ class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
 
   }
 
-  def submitContactPreference: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitContactPreference: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ContactPreferenceForm().bindFromRequest().fold(

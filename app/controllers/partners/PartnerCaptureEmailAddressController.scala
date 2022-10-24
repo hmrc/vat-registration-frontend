@@ -41,7 +41,7 @@ class PartnerCaptureEmailAddressController @Inject()(val sessionService: Session
                                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with PartnerIndexValidation {
 
-  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerCaptureEmailAddressController.show) { optEntity =>
@@ -56,7 +56,7 @@ class PartnerCaptureEmailAddressController @Inject()(val sessionService: Session
         }
   }
 
-  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.PartnerCaptureEmailAddressController.show) {

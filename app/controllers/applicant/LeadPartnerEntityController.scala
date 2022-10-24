@@ -42,7 +42,7 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def showLeadPartnerEntityType: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def showLeadPartnerEntityType: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -59,7 +59,7 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
         } yield Ok(partnerEntityTypePage(form, isTransactor, leadEntityIndex))
   }
 
-  def submitLeadPartnerEntity: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitLeadPartnerEntity: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

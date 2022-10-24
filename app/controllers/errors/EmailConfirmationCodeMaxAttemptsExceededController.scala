@@ -38,7 +38,7 @@ class EmailConfirmationCodeMaxAttemptsExceededController @Inject()(view: maxConf
                                                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {

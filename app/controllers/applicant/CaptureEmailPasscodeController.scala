@@ -42,7 +42,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
                                                baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         getEmailAddress.map { email =>
@@ -50,7 +50,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
         }
   }
 
-  val requestNew: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val requestNew: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         getEmailAddress.flatMap { email =>
@@ -67,7 +67,7 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
         }
   }
 
-  def submit(isNewPasscode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(isNewPasscode: Boolean): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         EmailPasscodeForm.form.bindFromRequest().fold(

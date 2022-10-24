@@ -41,7 +41,7 @@ class PartnerEntityTypeController @Inject()(val authConnector: AuthConnector,
 
   implicit val errorKey: String = "pages.partnerEntityType.missing"
 
-  def showPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def showPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.PartnerEntityTypeController.showPartnerType) {
@@ -58,7 +58,7 @@ class PartnerEntityTypeController @Inject()(val authConnector: AuthConnector,
 
   }
 
-  def submitPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submitPartnerType(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.PartnerEntityTypeController.showPartnerType) {

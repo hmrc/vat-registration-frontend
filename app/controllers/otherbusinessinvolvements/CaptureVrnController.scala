@@ -39,7 +39,7 @@ class CaptureVrnController @Inject()(val authConnector: AuthConnector,
                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with ObiIndexValidation with SessionProfile {
 
-  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         validateIndex(index, routes.CaptureVrnController.show) {
@@ -60,7 +60,7 @@ class CaptureVrnController @Inject()(val authConnector: AuthConnector,
         }
   }
 
-  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         CaptureVrnForm().bindFromRequest.fold(

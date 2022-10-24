@@ -38,7 +38,7 @@ class UploadSupportingDocumentController @Inject()(view: UploadDocument,
                                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     attachmentsService.getAttachmentDetails(profile.registrationId).flatMap {
       case Some(Attachments(Some(Attached), _, _, Some(true))) =>
         upscanService.fetchAllUpscanDetails(profile.registrationId).flatMap {

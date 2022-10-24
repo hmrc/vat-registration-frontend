@@ -44,7 +44,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
 
   private val maxDateAddedMonths = 3
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       earliestDate <- calculateEarliestDate
       (optChoice, optDate) <- flatRateService.getPrepopulatedStartDate(earliestDate)
@@ -58,7 +58,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
     }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     calculateEarliestDate flatMap { earliestDate =>
       val maxDate = timeService.today.plusMonths(maxDateAddedMonths)
 

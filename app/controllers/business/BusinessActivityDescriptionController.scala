@@ -36,7 +36,7 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
                                                       baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -45,7 +45,7 @@ class BusinessActivityDescriptionController @Inject()(val authConnector: AuthCli
         } yield Ok(view(formFilled))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         BusinessActivityDescriptionForm.form.bindFromRequest().fold(

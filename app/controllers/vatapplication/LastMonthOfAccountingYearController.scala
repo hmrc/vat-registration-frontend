@@ -37,7 +37,7 @@ class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounti
                                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication.map { vatApplication =>
@@ -48,7 +48,7 @@ class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounti
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         AnnualStaggerForm.form.bindFromRequest().fold(

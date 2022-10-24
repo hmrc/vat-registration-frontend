@@ -36,7 +36,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubBars,
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
-    TrafficManagementPredicate,
     UseSoleTraderIdentification,
     SaveAndContinueLater,
     MultipleRegistrations,
@@ -107,11 +106,6 @@ case object StubPartnershipIdentification extends FeatureSwitch {
 case object StubMinorEntityIdentification extends FeatureSwitch {
   val configName = "feature-switch.minor-entity-identification"
   val displayName = "Stub Minor Entity Identification"
-}
-
-case object TrafficManagementPredicate extends FeatureSwitch {
-  val configName = "feature-switch.traffic-management-predicate"
-  val displayName = "Enable traffic management check in auth predicate (Must match the \"Use traffic management\" feature switch)"
 }
 
 case object UseSoleTraderIdentification extends FeatureSwitch {

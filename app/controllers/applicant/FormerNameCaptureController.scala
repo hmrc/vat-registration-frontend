@@ -38,7 +38,7 @@ class FormerNameCaptureController @Inject()(val authConnector: AuthConnector,
                                       baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -48,7 +48,7 @@ class FormerNameCaptureController @Inject()(val authConnector: AuthConnector,
         } yield Ok(formerNameCapturePage(filledForm, name))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         FormerNameCaptureForm.form.bindFromRequest().fold(

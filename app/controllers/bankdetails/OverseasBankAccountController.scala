@@ -35,7 +35,7 @@ class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -45,7 +45,7 @@ class OverseasBankAccountController @Inject()(overseasBankAccountView: overseas_
         } yield Ok(overseasBankAccountView(form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         OverseasBankAccountForm.form.bindFromRequest().fold(

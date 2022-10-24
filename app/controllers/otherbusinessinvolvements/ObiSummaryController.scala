@@ -43,7 +43,7 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                                      baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         otherBusinessInvolvementsService.getOtherBusinessInvolvements.map {
@@ -55,7 +55,7 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
   }
 
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ObiSummaryForm().bindFromRequest.fold(
@@ -84,7 +84,7 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
         )
   }
 
-  def continue: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def continue: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         if (isEnabled(TaskList)) {

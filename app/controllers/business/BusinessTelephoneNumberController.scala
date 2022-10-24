@@ -36,7 +36,7 @@ class BusinessTelephoneNumberController @Inject()(val sessionService: SessionSer
                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -45,7 +45,7 @@ class BusinessTelephoneNumberController @Inject()(val sessionService: SessionSer
         } yield Ok(view(form))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         BusinessTelephoneNumberForm.form.bindFromRequest.fold(

@@ -38,7 +38,7 @@ class WarehouseNumberController @Inject()(val sessionService: SessionService,
                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication map { vatApplication =>
@@ -51,7 +51,7 @@ class WarehouseNumberController @Inject()(val sessionService: SessionService,
         }
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         WarehouseNumberForm.form.bindFromRequest.fold(

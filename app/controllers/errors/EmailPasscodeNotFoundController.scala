@@ -34,7 +34,7 @@ class EmailPasscodeNotFoundController @Inject()(view: passcode_not_found,
                                                  baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show(redirectUrl: String): Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show(redirectUrl: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>_ =>
       Future.successful(Ok(view(redirectUrl)))
   }

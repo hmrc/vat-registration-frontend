@@ -38,7 +38,7 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
                                            val executionContext: ExecutionContext,
                                            baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     attachmentsService.getAttachmentDetails(profile.registrationId).map {
       case Some(Attachments(Some(method), _, _, _)) =>
         Ok(view(form().fill(method)))
@@ -47,7 +47,7 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
     }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() { implicit request => implicit profile =>
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     form().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),

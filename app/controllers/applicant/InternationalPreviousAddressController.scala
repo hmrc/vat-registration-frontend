@@ -47,7 +47,7 @@ class InternationalPreviousAddressController  @Inject()(val authConnector: AuthC
   private lazy val submitAction = routes.InternationalPreviousAddressController.submit
   private val countries: Seq[Country] = configConnector.countries
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       for {
         applicantDetails <- applicantDetailsService.getApplicantDetails
@@ -55,7 +55,7 @@ class InternationalPreviousAddressController  @Inject()(val authConnector: AuthC
       } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
 
       addressFormResultsHandler.handle(

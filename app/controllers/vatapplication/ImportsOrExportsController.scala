@@ -35,7 +35,7 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
                                            val executionContext: ExecutionContext,
                                            baseControllerComponents: BaseControllerComponents) extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication.map {
@@ -46,7 +46,7 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         ImportsOrExportsForm.form.bindFromRequest.fold(

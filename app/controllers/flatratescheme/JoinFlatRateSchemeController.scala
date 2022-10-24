@@ -42,7 +42,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
 
   val joinFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.join")
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -62,7 +62,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
         }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         joinFrsForm.bindFromRequest().fold(

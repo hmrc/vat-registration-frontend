@@ -37,7 +37,7 @@ class OrganisationNameController @Inject()(val sessionService: SessionService,
                                            baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
@@ -46,7 +46,7 @@ class OrganisationNameController @Inject()(val sessionService: SessionService,
         } yield Ok(view(filledForm))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         OrganisationNameForm().bindFromRequest().fold(

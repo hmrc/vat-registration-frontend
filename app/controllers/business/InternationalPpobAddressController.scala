@@ -50,7 +50,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
     country.name.isDefined && !invalidCountries.contains(country.name.get)
   })
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       for {
         contactDetails <- businessService.getBusiness
@@ -58,7 +58,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
       } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey, None, isPpob))
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile() {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       addressFormResultsHandler.handle(
         countries,
