@@ -18,18 +18,21 @@ package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc._
-import services.{AttachmentsService, SessionProfile, SessionService, VatRegistrationService}
+import services._
+import uk.gov.hmrc.http.InternalServerException
 import views.html.ApplicationSubmissionConfirmation
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ApplicationSubmissionController @Inject()(val vatRegistrationService: VatRegistrationService,
-                                                val attachmentsService: AttachmentsService,
+class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegistrationService,
+                                                applicantDetailsService: ApplicantDetailsService,
+                                                transactorDetailsService: TransactorDetailsService,
+                                                attachmentsService: AttachmentsService,
                                                 val authConnector: AuthClientConnector,
                                                 val sessionService: SessionService,
-                                                val applicationSubmissionConfirmationView: ApplicationSubmissionConfirmation)
+                                                applicationSubmissionConfirmationView: ApplicationSubmissionConfirmation)
                                                (implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
                                                 baseControllerComponents: BaseControllerComponents)
@@ -49,7 +52,14 @@ class ApplicationSubmissionController @Inject()(val vatRegistrationService: VatR
           prefix = acknowledgementRef.take(prefixLength)
           groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
           formattedRef = prefix +: groups mkString separator
-        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty))
+          isTransactor <- vatRegistrationService.isTransactor
+          optEmail <- if (isTransactor) {
+            transactorDetailsService.getTransactorDetails.map(_.email)
+          } else {
+            applicantDetailsService.getApplicantDetails.map(_.emailAddress.map(_.email))
+          }
+          email = optEmail.getOrElse(throw new InternalServerException("[ApplicationSubmissionController] missing user email"))
+        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

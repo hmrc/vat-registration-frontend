@@ -22,19 +22,21 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.mvc.Session
-import services.mocks.MockVatRegistrationService
+import services.mocks.{MockApplicantDetailsService, MockTransactorDetailsService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.ApplicationSubmissionConfirmation
 
 import scala.concurrent.Future
 
-class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with MockVatRegistrationService with VatRegistrationFixture {
+class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with MockVatRegistrationService with VatRegistrationFixture with MockTransactorDetailsService with MockApplicantDetailsService {
 
   val applicationSubmissionConfirmationView: ApplicationSubmissionConfirmation =
     fakeApplication.injector.instanceOf[ApplicationSubmissionConfirmation]
 
   val testController = new ApplicationSubmissionController(
     vatRegistrationServiceMock,
+    mockApplicantDetailsService,
+    mockTransactorDetailsService,
     mockAttachmentsService,
     mockAuthClientConnector,
     mockSessionService,
@@ -55,6 +57,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(mockAttachmentsService.getAttachmentDetails(any())(any()))
         .thenReturn(Future.successful(Some(Attachments(method = None))))
 
+      mockIsTransactor(Future.successful(true))
+      mockGetTransactorDetails(currentProfile)(validTransactorDetails)
+
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
       }
@@ -72,6 +77,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
+
+      mockIsTransactor(Future.successful(false))
+      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
@@ -91,6 +99,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
+      mockIsTransactor(Future.successful(false))
+      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
+
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
       }
@@ -108,6 +119,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
+
+      mockIsTransactor(Future.successful(false))
+      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
 
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
@@ -127,6 +141,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
+      mockIsTransactor(Future.successful(false))
+      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
+
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
       }
@@ -145,9 +162,11 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
       when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
         .thenReturn(Future.successful("123412341234"))
 
+      mockIsTransactor(Future.successful(false))
+      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
+
       callAuthorised(testController.show) { res =>
         status(res) mustBe OK
-        contentAsString(res) must include("You can print the cover letter here (opens in new tab)")
       }
     }
   }
