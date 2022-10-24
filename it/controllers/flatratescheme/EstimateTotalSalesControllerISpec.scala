@@ -5,7 +5,6 @@ import itutil.ControllerISpec
 import models.{FlatRateScheme, S4LKey, Start}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -98,7 +97,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(url).post(Json.obj("totalSalesEstimate" -> testTotalSales.toString))
+      val res: Future[WSResponse] = buildClient(url).post(Map("totalSalesEstimate" -> testTotalSales.toString))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -117,7 +116,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
       val invalidEstimates = Seq("", "a", "0", "999999999999999")
 
       invalidEstimates.map{ estimate =>
-        val res: Future[WSResponse] = buildClient(url).post(Json.obj("totalSalesEstimate" -> estimate))
+        val res: Future[WSResponse] = buildClient(url).post(Map("totalSalesEstimate" -> estimate))
 
         whenReady(res) { result =>
           result.status mustBe BAD_REQUEST

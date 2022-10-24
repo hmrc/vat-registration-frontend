@@ -19,33 +19,38 @@ package connectors
 import config.FrontendAppConfig
 import models.api.AttachmentType
 import play.api.http.Status._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AttachmentsConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
   def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
     implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
 
-    httpClient.GET[HttpResponse](config.attachmentsApiUrl(regId)).map { result =>
-      result.status match {
-        case OK => result.json.as[List[AttachmentType]]
-        case status => throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
+    httpClient.get(url"${config.attachmentsApiUrl(regId)}")
+      .execute
+      .map { result =>
+        result.status match {
+          case OK => result.json.as[List[AttachmentType]]
+          case status => throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
+        }
       }
-    }
   }
 
   def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
     implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
 
-    httpClient.GET[HttpResponse](config.incompleteAttachmentsApiUrl(regId)).map { result =>
-      result.status match {
-        case OK => result.json.as[List[AttachmentType]]
-        case status => throw new InternalServerException(s"[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: $status")
+    httpClient.get(url"${config.incompleteAttachmentsApiUrl(regId)}")
+      .execute
+      .map { result =>
+        result.status match {
+          case OK => result.json.as[List[AttachmentType]]
+          case status => throw new InternalServerException(s"[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: $status")
+        }
       }
-    }
   }
 }

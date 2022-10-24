@@ -21,7 +21,8 @@ import play.api.Environment
 import play.api.libs.json.JodaReads.jodaLocalDateReads
 import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import java.io.InputStream
@@ -29,7 +30,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankHolidaysConnector @Inject()(http: HttpClient,
+class BankHolidaysConnector @Inject()(http: HttpClientV2,
                                       config: FrontendAppConfig,
                                       environment: Environment)
                                      (implicit ec: ExecutionContext) {
@@ -50,8 +51,8 @@ class BankHolidaysConnector @Inject()(http: HttpClient,
   }
 
   def bankHolidays(division: String = division)(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
-    http.GET[Map[String, BankHolidaySet]](url) map {
-      holidaySets => holidaySets(division)
-    }
+    http.get(url"$url")
+      .execute[Map[String, BankHolidaySet]]
+      .map(holidaySets => holidaySets(division))
   }
 }

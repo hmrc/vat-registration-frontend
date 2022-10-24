@@ -18,44 +18,48 @@ package featureswitch.frontend.connectors
 
 import featureswitch.core.models.FeatureSwitchSetting
 import play.api.http.Status._
-import play.api.libs.json.{JsError, JsSuccess, Reads}
+import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FeatureSwitchApiConnector @Inject()(httpClient: HttpClient)(implicit ec: ExecutionContext) {
+class FeatureSwitchApiConnector @Inject()(httpClient: HttpClientV2)(implicit ec: ExecutionContext) {
 
   def retrieveFeatureSwitches(featureSwitchProviderUrl: String
                              )(implicit reads: Reads[Seq[FeatureSwitchSetting]],
-                               hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] = {
-    httpClient.GET(featureSwitchProviderUrl).map(response =>
-      response.status match {
-        case OK =>
-          response.json.validate[Seq[FeatureSwitchSetting]] match {
-            case JsSuccess(settings, _) => settings
-            case JsError(errors) => throw new Exception(errors.head.toString)
-          }
-        case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
+                               hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] =
+    httpClient.get(url"$featureSwitchProviderUrl")
+      .execute
+      .map { response =>
+        response.status match {
+          case OK =>
+            response.json.validate[Seq[FeatureSwitchSetting]] match {
+              case JsSuccess(settings, _) => settings
+              case JsError(errors) => throw new Exception(errors.head.toString)
+            }
+          case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
+        }
       }
-    )
-  }
 
   def updateFeatureSwitches(featureSwitchProviderUrl: String,
                             featureSwitchSettings: Seq[FeatureSwitchSetting]
-                           )(implicit hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] = {
-    httpClient.POST(featureSwitchProviderUrl, featureSwitchSettings, Seq("Csrf-Token" -> "nocheck")).map { response =>
-      response.status match {
-        case OK =>
-          response.json.validate[Seq[FeatureSwitchSetting]] match {
-            case JsSuccess(settings, _) => settings
-            case JsError(errors) => throw new Exception(errors.head.toString)
-          }
-        case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
+                           )(implicit hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] =
+    httpClient.post(url"$featureSwitchProviderUrl")
+      .withBody(Json.toJson(featureSwitchSettings))
+      .setHeader("Csrf-Token" -> "nocheck")
+      .execute.map { response =>
+        response.status match {
+          case OK =>
+            response.json.validate[Seq[FeatureSwitchSetting]] match {
+              case JsSuccess(settings, _) => settings
+              case JsError(errors) => throw new Exception(errors.head.toString)
+            }
+          case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
+        }
       }
-    }
-  }
 
 }

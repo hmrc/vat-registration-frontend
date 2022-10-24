@@ -7,7 +7,6 @@ import itutil.ControllerISpec
 import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistrationFixtures {
@@ -94,7 +93,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "value" -> "2"
         )))
 
@@ -111,7 +110,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "value" -> "3"
         )))
 
@@ -127,7 +126,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "value" -> "email"
         )))
 
@@ -142,7 +141,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj()))
+        val res = await(buildClient(url).post(""))
 
         res.status mustBe BAD_REQUEST
       }

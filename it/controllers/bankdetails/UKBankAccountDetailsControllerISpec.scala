@@ -7,7 +7,6 @@ import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{BankAccount, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
@@ -71,7 +70,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "accountName" -> testBankName,
           "accountNumber" -> testAccountNumber,
           "sortCode" -> testSortCode
@@ -91,7 +90,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "accountName" -> testBankName,
           "accountNumber" -> testAccountNumber,
           "sortCode" -> testSortCode
@@ -112,7 +111,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj(
+      val res = await(buildClient(url).post(Map(
         "accountName" -> testBankName,
         "accountNumber" -> testAccountNumber,
         "sortCode" -> testSortCode
@@ -132,7 +131,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "accountName" -> "",
           "accountNumber" -> "",
           "sortCode" -> ""

@@ -21,39 +21,44 @@ import models.api.PartyType
 import models.external.PartnershipIdEntity
 import models.external.partnershipid.PartnershipIdJourneyConfig
 import play.api.http.Status.{CREATED, OK}
-import play.api.libs.json.{JsError, JsSuccess}
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PartnershipIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class PartnershipIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
 
   def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
     val url = config.startPartnershipJourneyUrl(partyType)
 
-    httpClient.POST(url, journeyConfig).map {
-      case response@HttpResponse(CREATED, _, _) =>
-        (response.json \ "journeyStartUrl").as[String]
-      case response =>
-        throw new InternalServerException(s"[PartnershipIdConnector] Invalid response from partnership identification: Status: ${response.status} Body: ${response.body}")
-    }
+    httpClient.post(url"$url")
+      .withBody(Json.toJson(journeyConfig))
+      .execute
+      .map {
+        case response@HttpResponse(CREATED, _, _) =>
+          (response.json \ "journeyStartUrl").as[String]
+        case response =>
+          throw new InternalServerException(s"[PartnershipIdConnector] Invalid response from partnership identification: Status: ${response.status} Body: ${response.body}")
+      }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipIdEntity] = {
-    httpClient.GET(config.getPartnershipIdDetailsUrl(journeyId)).map { response =>
-      response.status match {
-        case OK => response.json.validate[PartnershipIdEntity](PartnershipIdEntity.apiFormat) match {
-          case JsSuccess(value, _) => value
-          case JsError(errors) =>
-            throw new InternalServerException(s"[PartnershipIdConnector] Partnership ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipIdEntity] =
+    httpClient.get(url"${config.getPartnershipIdDetailsUrl(journeyId)}")
+      .execute
+      .map { response =>
+        response.status match {
+          case OK => response.json.validate[PartnershipIdEntity](PartnershipIdEntity.apiFormat) match {
+            case JsSuccess(value, _) => value
+            case JsError(errors) =>
+              throw new InternalServerException(s"[PartnershipIdConnector] Partnership ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+          }
+          case status =>
+            throw new InternalServerException(s"[PartnershipIdConnector] Unexpected status returned from partnership id: $status")
         }
-        case status =>
-          throw new InternalServerException(s"[PartnershipIdConnector] Unexpected status returned from partnership id: $status")
       }
-    }
-  }
 
 }

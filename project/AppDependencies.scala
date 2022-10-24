@@ -23,10 +23,10 @@ object AppDependencies {
 
 private object CompileDependencies {
   private val hmrcMongoVersion = "0.68.0"
-  private val bootstrapVersion = "5.20.0"
+  private val bootstrapVersion = "7.8.0"
   private val timeVersion = "3.25.0"
   private val partialsVersion = "8.3.0-play-28"
-  private val cachingClientVersion = "9.6.0-play-28"
+  private val cachingClientVersion = "10.0.0-play-28"
   private val formMappingVersion = "1.11.0-play-28"
   private val catsVersion = "1.0.0"
   private val playUiVersion = "9.8.0-play-28"

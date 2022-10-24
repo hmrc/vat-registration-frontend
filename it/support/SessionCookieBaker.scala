@@ -71,6 +71,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
 
   def cookieData(userId: String = "anyUserId", reference: Option[String] = None): Map[String, String] = {
     Map(
+      SessionKeys.authToken -> "test",
       SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
       tokenKey -> "RANDOMTOKEN",
       userIdKey -> userId
@@ -79,6 +80,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
 
   def requestWithSession(req: FakeRequest[AnyContentAsFormUrlEncoded], userId: String): FakeRequest[AnyContentAsFormUrlEncoded] =
     req.withSession(
+      SessionKeys.authToken -> "test",
       SessionKeys.sessionId -> "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1",
       tokenKey -> "RANDOMTOKEN",
       userIdKey -> userId)

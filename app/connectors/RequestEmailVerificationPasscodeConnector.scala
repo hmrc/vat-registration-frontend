@@ -19,14 +19,15 @@ package connectors
 import config.FrontendAppConfig
 import models.external.{AlreadyVerifiedEmailAddress, MaxEmailsExceeded, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
 import play.api.http.Status.{CONFLICT, CREATED, FORBIDDEN}
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, Upstream4xxResponse}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, Upstream4xxResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient,
+class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClientV2,
                                                           config: FrontendAppConfig
                                                          )(implicit ec: ExecutionContext) {
 
@@ -36,12 +37,15 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
 
     val jsonBody = Json.obj("email" -> email, "serviceName" -> "VAT Registration", "lang" -> "en")
 
-    httpClient.POST[JsValue, HttpResponse](url, jsonBody).map {
-      case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
-    }.recover {
-      case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadyVerifiedEmailAddress
-      case Upstream4xxResponse(_, FORBIDDEN, _, _) => MaxEmailsExceeded
-    }
+    httpClient.post(url"$url")
+      .withBody(jsonBody)
+      .execute
+      .map {
+        case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
+      }.recover {
+        case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadyVerifiedEmailAddress
+        case Upstream4xxResponse(_, FORBIDDEN, _, _) => MaxEmailsExceeded
+      }
   }
 
 }

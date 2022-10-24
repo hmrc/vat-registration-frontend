@@ -5,7 +5,6 @@ import itutil.ControllerISpec
 import models.api._
 import models.external.upscan._
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 import java.time.LocalDateTime
@@ -87,7 +86,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails(Ready), reference = testReference)
 
-      val res = buildClient(submitUrl).post(Json.obj())
+      val res = buildClient(submitUrl).post("")
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -99,7 +98,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails(InProgress), reference = testReference)
 
-      val res = buildClient(submitUrl).post(Json.obj())
+      val res = buildClient(submitUrl).post("")
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -111,7 +110,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails(Failed), reference = testReference)
 
-      val res = buildClient(submitUrl).post(Json.obj())
+      val res = buildClient(submitUrl).post("")
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -126,7 +125,7 @@ class UploadingDocumentControllerISpec extends ControllerISpec {
         reference = testReference
       )
 
-      val res = buildClient(submitUrl).post(Json.obj())
+      val res = buildClient(submitUrl).post("")
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER

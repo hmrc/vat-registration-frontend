@@ -31,7 +31,6 @@ trait VatMocks
   extends MockS4lConnector
     with AuthMock
     with SessionServiceMock
-    with HttpClientMock
     with BusinessServiceMock
     with IncorpIdServiceMock
     with PersonalDetailsValidationServiceMock
@@ -65,7 +64,6 @@ trait VatMocks
 
   def resetMocks() {
     reset(
-      mockHttpClient,
       mockS4LConnector,
       mockS4LService,
       mockSessionService,

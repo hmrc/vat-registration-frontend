@@ -6,7 +6,6 @@ import forms.ContactPreferenceForm
 import itutil.ControllerISpec
 import models.{Business, Email, Letter}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -72,7 +71,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> ContactPreferenceForm.email)))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> ContactPreferenceForm.email)))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)
@@ -88,7 +87,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> ContactPreferenceForm.letter)))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> ContactPreferenceForm.letter)))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.LandAndPropertyController.show.url)
@@ -105,7 +104,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> ContactPreferenceForm.letter)))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> ContactPreferenceForm.letter)))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)

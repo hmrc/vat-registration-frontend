@@ -20,7 +20,6 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class SendEUGoodsControllerISpec extends ControllerISpec {
@@ -69,7 +68,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("value" -> "true"))
+      val res = buildClient(url).post(Map("value" -> "true"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -85,7 +84,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("value" -> "false"))
+      val res = buildClient(url).post(Map("value" -> "false"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER

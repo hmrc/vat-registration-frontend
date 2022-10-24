@@ -25,6 +25,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -45,6 +46,8 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
   def upscanInitiate(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val callbackUrl = (request.body \ "callbackUrl").as[String]
     val successUrl = (request.body \ "successRedirect").as[String]
+
+    implicit val hc = HeaderCarrierConverter.fromRequest(request)
 
     for {
       _ <- sessionService.cache(testOnlyUpscanCallbackUrl, callbackUrl)

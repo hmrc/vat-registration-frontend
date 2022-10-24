@@ -6,7 +6,7 @@ import models.api.vatapplication.VatApplication
 import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, DateSelection}
 import play.api.http.HeaderNames
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 import java.time.LocalDate
@@ -53,13 +53,11 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      val res = buildClient("/vat-start-date").post(Json.obj(
+      val res = buildClient("/vat-start-date").post(Map(
         "value" -> DateSelection.specific_date.toString,
-        "startDate" -> Json.obj(
-          "day" -> today.getDayOfMonth,
-          "month" -> today.getMonthValue,
-          "year" -> today.getYear
-        )
+        "startDate.day" -> today.getDayOfMonth.toString,
+        "startDate.month" -> today.getMonthValue.toString,
+        "startDate.year" -> today.getYear.toString
       ))
 
       whenReady(res) { result =>

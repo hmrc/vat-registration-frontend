@@ -60,7 +60,7 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
 
         vatRegistrationService.partyType.flatMap {
           case partyType@(UkCompany | RegSociety | CharitableOrg) => incorpIdService.createJourney(journeyConfig, partyType).map(
-            journeyStartUrl => SeeOther(journeyStartUrl)
+            journeyStartUrl => SeeOther(journeyStartUrl).withSession(request.session)
           )
           case partyType =>
             throw new InternalServerException(s"[IncorpIdController][startJourney] attempted to start journey with invalid partyType: ${partyType.toString}")
@@ -77,13 +77,13 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
         } yield {
           if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
+            Redirect(controllers.routes.TaskListController.show).withSession(request.session)
           } else {
             if (isTransactor || isEnabled(UseSoleTraderIdentification)) {
-              Redirect(routes.IndividualIdController.startJourney)
+              Redirect(routes.IndividualIdController.startJourney).withSession(request.session)
             }
             else {
-              Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney())
+              Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()).withSession(request.session)
             }
           }
         }

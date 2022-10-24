@@ -19,7 +19,6 @@ package controllers.vatapplication
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -82,7 +81,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(url).post(Json.obj(
+      val res: Future[WSResponse] = buildClient(url).post(Map(
         "zeroRatedSupplies" -> "10000.53"
       ))
 
@@ -99,7 +98,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(url).post(Json.obj(
+      val res: Future[WSResponse] = buildClient(url).post(Map(
         "zeroRatedSupplies" -> "text"
       ))
 
@@ -115,7 +114,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(url).post(Json.obj(
+      val res: Future[WSResponse] = buildClient(url).post(Map(
         "zeroRatedSupplies" -> "10,000.53"
       ))
 

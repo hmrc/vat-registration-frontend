@@ -7,7 +7,6 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFixtures {
@@ -98,7 +97,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Json.obj("value" -> "UK")))
+          val res = await(buildClient(url).post(Map("value" -> "UK")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.DispatchFromWarehouseController.show.url)
@@ -116,7 +115,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
+          val res = await(buildClient(url).post(Map("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
@@ -134,7 +133,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Json.obj("value" -> "OVERSEAS")))
+          val res = await(buildClient(url).post(Map("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -152,7 +151,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Json.obj()))
+          val res = await(buildClient(url).post(""))
 
           res.status mustBe BAD_REQUEST
         }

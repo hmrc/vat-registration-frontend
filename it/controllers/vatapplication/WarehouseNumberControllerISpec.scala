@@ -20,7 +20,6 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class WarehouseNumberControllerISpec extends ControllerISpec {
@@ -91,7 +90,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> testWarehouseNumber))
+      val res = buildClient(url).post(Map("warehouseNumber" -> testWarehouseNumber))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -105,7 +104,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> "1234567890123456789012345678901"))
+      val res = buildClient(url).post(Map("warehouseNumber" -> "1234567890123456789012345678901"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
@@ -119,7 +118,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> ""))
+      val res = buildClient(url).post(Map("warehouseNumber" -> ""))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
@@ -133,7 +132,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Json.obj("warehouseNumber" -> "/"))
+      val res = buildClient(url).post(Map("warehouseNumber" -> "/"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST

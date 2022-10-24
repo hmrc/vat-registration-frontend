@@ -20,18 +20,22 @@ import config.FrontendAppConfig
 import models.PersonalDetails
 import play.api.http.Status.OK
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PersonalDetailsValidationConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class PersonalDetailsValidationConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
   def retrieveValidationResult(validationId: String)(implicit hc: HeaderCarrier): Future[PersonalDetails] =
-    httpClient.GET(config.getRetrievePersonalDetailsValidationResultUrl(validationId)).map {
-      case response if response.status == OK =>
-        (response.json \ "personalDetails").as[PersonalDetails](PersonalDetails.pdvFormat)
-      case response =>
-        throw new InternalServerException(s"Invalid response from personal details validation: Status: ${response.status} Body: ${response.body}")
-    }
+    httpClient.get(url"${config.getRetrievePersonalDetailsValidationResultUrl(validationId)}")
+      .execute
+      .map {
+        case response if response.status == OK =>
+          (response.json \ "personalDetails").as[PersonalDetails](PersonalDetails.pdvFormat)
+        case response =>
+          throw new InternalServerException(s"Invalid response from personal details validation: Status: ${response.status} Body: ${response.body}")
+      }
+
 }

@@ -17,19 +17,24 @@
 package connectors
 
 import config.FrontendAppConfig
+import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.IncorporatedEntity
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.http.Status.CREATED
-import play.api.libs.json.{JsError, JsSuccess, JsValue}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import play.api.libs.json.{JsError, JsSuccess, Json}
+import services.SessionService
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
+import utils.SessionIdRequestHelper
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class IncorpIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig, sessionService: SessionService)
+                                 (implicit ec: ExecutionContext) extends FeatureSwitching {
 
   def createJourney(journeyConfig: IncorpIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
     val url = partyType match {
@@ -39,7 +44,12 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
       case _ => throw new InternalServerException(s"Party type $partyType is not a valid incorporated entity party type")
     }
 
-    httpClient.POST(url, journeyConfig).map {
+    val incorpIdRequewt = SessionIdRequestHelper.conditionallyAddSessionIdHeader(
+      baseRequest = httpClient.post(url"$url").withBody(Json.toJson(journeyConfig)),
+      condition = isEnabled(StubIncorpIdJourney)
+    )
+
+    incorpIdRequewt.execute.map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>
@@ -50,9 +60,15 @@ class IncorpIdConnector @Inject()(httpClient: HttpClient, config: FrontendAppCon
   def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntity] = {
     val url = config.getIncorpIdDetailsUrl(journeyId)
 
-    httpClient.GET[JsValue](url)
-      .map(json => {
-        IncorporatedEntity.apiFormat.reads(json) match {
+    val incorpIdRequest = SessionIdRequestHelper.conditionallyAddSessionIdHeader(
+      baseRequest = httpClient.get(url"$url"),
+      condition = isEnabled(StubIncorpIdJourney)
+    )
+
+    incorpIdRequest
+      .execute
+      .map(res => {
+        IncorporatedEntity.apiFormat.reads(res.json) match {
           case JsSuccess(value, _) => value
           case JsError(errors) => throw new Exception(s"Incorp ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
         }
