@@ -39,11 +39,8 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
             url = _ => controllers.partners.routes.PartnerEntityTypeController.showPartnerType(minPartnerIndex).url,
             tagId = "partnersDetailRow",
             checks = scheme => Seq(
-              scheme.entities.flatMap(_.find(_.isLeadPartner.contains(false))) match {
-                case Some(Entity(Some(_), partyType, Some(_), None, Some(_), Some(_), Some(_))) if partyType != ScotPartnership => true
-                case Some(Entity(Some(_), partyType, Some(_), Some(_), Some(_), Some(_), Some(_))) if partyType == ScotPartnership => true
-                case _ => false
-              }
+              scheme.entities.exists(_.size > 1),
+              scheme.entities.flatMap(_.find(_.isModelComplete(isLeadPartner = false))).isDefined
             ),
             prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
           )

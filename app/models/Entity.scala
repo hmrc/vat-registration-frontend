@@ -34,6 +34,21 @@ case class Entity(details: Option[BusinessEntity],
     case Some(partnershipBusiness: PartnershipIdEntity) => partnershipBusiness.companyName
     case _ => None
   }
+
+  def isModelComplete(isLeadPartner: Boolean): Boolean =
+    if (isLeadPartner) {
+      this match {
+        case Entity(Some(_), ScotPartnership, Some(true), Some(_), _, _, _) => true
+        case Entity(Some(_), _, Some(true), _, _, _, _) => true
+        case _ => false
+      }
+    } else {
+      this match {
+        case Entity(Some(_), ScotPartnership, Some(false), Some(_), Some(_), Some(_), Some(_)) => true
+        case Entity(Some(_), _, Some(false), _, Some(_), Some(_), Some(_)) => true
+        case _ => false
+      }
+    }
 }
 
 object Entity {
@@ -42,12 +57,12 @@ object Entity {
     (__ \ "partyType").read[PartyType].flatMap { partyType =>
       (
         (__ \ "details").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
-        (__ \ "isLeadPartner").readNullable[Boolean] and
-        (__ \ "optScottishPartnershipName").readNullable[String] and
-        (__ \ "address").readNullable[Address] and
-        (__ \ "email").readNullable[String] and
-        (__ \ "telephoneNumber").readNullable[String]
-      ) { (optDetails, optIsLeadPartner, optScottishPartnershipName, address, email, telephoneNumber) =>
+          (__ \ "isLeadPartner").readNullable[Boolean] and
+          (__ \ "optScottishPartnershipName").readNullable[String] and
+          (__ \ "address").readNullable[Address] and
+          (__ \ "email").readNullable[String] and
+          (__ \ "telephoneNumber").readNullable[String]
+        ) { (optDetails, optIsLeadPartner, optScottishPartnershipName, address, email, telephoneNumber) =>
         val updatedDetails = optDetails.map {
           case details: PartnershipIdEntity if partyType.equals(ScotPartnership) => details.copy(companyName = optScottishPartnershipName)
           case notScottishPartnership => notScottishPartnership

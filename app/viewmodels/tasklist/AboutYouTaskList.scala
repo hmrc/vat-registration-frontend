@@ -91,7 +91,10 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       messageKey = _ => "tasklist.aboutYou.leadPartnerDetails",
       url = _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
       tagId = "leadPartnerDetailsRow",
-      checks = scheme => Seq(scheme.entities.exists(_.exists(_.isLeadPartner.contains(true)))),
+      checks = scheme => Seq(
+        scheme.entities.exists(_.nonEmpty),
+        scheme.entities.exists(_.headOption.exists(_.isModelComplete(isLeadPartner = true)))
+      ),
       prerequisites = _ => Seq(verifyBusinessTaskList.businessInfoRow)
     )
   }
