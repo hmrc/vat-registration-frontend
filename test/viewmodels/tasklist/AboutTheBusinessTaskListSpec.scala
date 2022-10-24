@@ -17,7 +17,7 @@
 package viewmodels.tasklist
 
 import controllers.partners.PartnerIndexValidation
-import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching}
+import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty}
 import fixtures.VatRegistrationFixture
 import models.api.{Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
@@ -71,6 +71,28 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       disable(DigitalPartnerFlow)
     }
 
+    "be TLInProgress if the prerequisites are complete but there are only some answers for the 2nd entity" in {
+      enable(DigitalPartnerFlow)
+      val scheme = validVatScheme.copy(
+        eligibilitySubmissionData = Some(
+          validEligibilitySubmissionData.copy(partyType = ScotPartnership)
+        ),
+        entities = Some(List(
+          Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
+          Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)
+        ))
+      )
+
+      val maybePartnersDetail = section.buildPartnersDetailRow(scheme)
+      maybePartnersDetail must not be None
+
+      val row = maybePartnersDetail.get.build(scheme)
+
+      row.status mustBe TLInProgress
+      row.url mustBe expectedRowUrl
+      disable(DigitalPartnerFlow)
+    }
+
     "be TLCompleted if the prerequisites are complete and there are all answers" in {
       enable(DigitalPartnerFlow)
       val scheme = emptyVatScheme.copy(
@@ -80,7 +102,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         applicantDetails = Some(completeApplicantDetails),
         business = Some(validBusiness),
         entities = Some(List(
-          Entity(None, Individual, Some(true), None, None, None, None),
+          Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
           Entity(Some(testSoleTrader), Individual, Some(false), None, Some(testAddress), Some("test@test.com"), Some("12334483"))
         ))
       )
@@ -131,16 +153,21 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "be in progress if the prerequisites are complete and there are all answers but companyName not defined for GeneralPartnership" in {
+      enable(DigitalPartnerFlow)
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership)),
         applicantDetails = Some(completeApplicantDetails.copy(entity = Some(testGeneralPartnership))),
-        entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None))),
+        entities = Some(List(
+          Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(testCompanyName), None, None, None),
+          Entity(Some(testSoleTrader), Individual, Some(false), None, Some(testAddress), Some("test@test.com"), Some("12334483"))
+        )),
         business = Some(validBusiness)
       )
       val row = section.businessDetailsRow.build(scheme)
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
+      disable(DigitalPartnerFlow)
     }
 
     "be completed if the prerequisites are complete and there are all answers" in {

@@ -46,7 +46,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         res.status mustBe TLNotStarted
         res.url mustBe controllers.applicant.routes.FormerNameController.show.url
       }
-      "be complete if the user anssers No to former name" in {
+      "be complete if the user answers No to former name" in {
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
             partyType = NETP,
@@ -453,9 +453,18 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
       }
-    }
 
-    "party type is available and applicable for lead partner section" must {
+      "return TLInProgress state if prerequisites met but lead partner not complete" in {
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership)),
+          applicantDetails = Some(completeApplicantDetails),
+          entities = Some(List(Entity(None, Partnership, Some(true), None, None, None, None)))
+        )
+        val sectionRow = section.buildLeadPartnerRow(scheme).get
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
+      }
+
       "return TLNotStarted state if prerequisites met but lead partner not selected" in {
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership)),
@@ -465,9 +474,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
       }
-    }
 
-    "party type is available and applicable for lead partner section" must {
       "return not TLCannotStart state if prerequisites not met" in {
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = LtdPartnership))
@@ -541,6 +548,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           sectionRow.status mustBe TLNotStarted
           sectionRow.url mustBe url
         }
+
         verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
         verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
       }
