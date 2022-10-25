@@ -47,6 +47,8 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
           presentAttachmentDetails.copy(supplyVat1614a = Some(false), supplyVat1614h = Some(answer))
         case SupplySupportingDocumentsAnswer(answer) =>
           presentAttachmentDetails.copy(supplySupportingDocuments = Some(answer))
+        case AdditionalPartnersDocumentsAnswer(answer) =>
+          presentAttachmentDetails.copy(additionalPartnersDocuments = Some(answer))
       }
 
       registrationApiConnector.replaceSection[Attachments](regId, updatedAttachmentDetails)
@@ -67,4 +69,6 @@ object AttachmentsService {
   case class Supply1614HAnswer(answer: Boolean)
 
   case class SupplySupportingDocumentsAnswer(answer: Boolean)
+
+  case class AdditionalPartnersDocumentsAnswer(answer: Boolean)
 }

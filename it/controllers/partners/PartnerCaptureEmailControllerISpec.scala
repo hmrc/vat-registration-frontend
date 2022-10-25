@@ -113,8 +113,8 @@ class PartnerCaptureEmailControllerISpec extends ControllerISpec {
 
       val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(email))))
 
-      response.status mustBe NOT_IMPLEMENTED
-      response.header(HeaderNames.LOCATION) mustBe None //TODO Update routing to redirect to next page
+      response.status mustBe SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerSummaryController.show.url)
     }
 
     "Return BAD_REQUEST if email is not provided" in new Setup {

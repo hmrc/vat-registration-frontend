@@ -350,6 +350,17 @@ POST        /partner/:index/partner-type                             controllers
 GET         /partner/:index/business-type-in-partnership             controllers.partners.BusinessPartnerEntityTypeController.showPartnerType(index: Int)
 POST        /partner/:index/business-type-in-partnership             controllers.partners.BusinessPartnerEntityTypeController.submitPartnerType(index: Int)
 
+## Partner Summary
+GET         /partner/summary                                          controllers.partners.PartnerSummaryController.show
+POST        /partner/summary                                          controllers.partners.PartnerSummaryController.submit
+
+## Other Business Involvement Remove
+GET         /partner/:index/remove                                    controllers.partners.RemovePartnerEntityController.show(index: Int)
+POST        /partner/:index/remove                                    controllers.partners.RemovePartnerEntityController.submit(partnerName: Option[String], index: Int)
+
+## Additional partners
+GET         /partner/additional                                      controllers.partners.AdditionalPartnerEntityController.show
+
 ## PartyTypeResolverController
 GET         /resolve-party-type                                       controllers.TradingNameResolverController.resolve
 

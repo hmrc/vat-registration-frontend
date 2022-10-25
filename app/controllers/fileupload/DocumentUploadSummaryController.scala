@@ -118,15 +118,15 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
     isEnabled(OptionToTax) && uploadedAttachments.contains(VAT5L)
 
   private def is1614FormComplete(attachmentDetails: Attachments, uploadedAttachments: Seq[AttachmentType]): Boolean = attachmentDetails match {
-    case Attachments(_, Some(false), Some(false), _) => true
-    case Attachments(_, Some(false), Some(true), _) if uploadedAttachments.contains(Attachment1614h) => true
-    case Attachments(_, Some(true), _, _) if uploadedAttachments.contains(Attachment1614a) => true
+    case Attachments(_, Some(false), Some(false), _, _) => true
+    case Attachments(_, Some(false), Some(true), _, _) if uploadedAttachments.contains(Attachment1614h) => true
+    case Attachments(_, Some(true), _, _, _) if uploadedAttachments.contains(Attachment1614a) => true
     case _ => false
   }
 
   private def areSupportingDocumentsComplete(attachmentDetails: Attachments, uploadedAttachments: Seq[AttachmentType]): Boolean = attachmentDetails match {
-    case Attachments(_, _, _, Some(false)) => true
-    case Attachments(_, _, _, Some(true)) if uploadedAttachments.contains(LandPropertyOtherDocs) => true
+    case Attachments(_, _, _, Some(false), _) => true
+    case Attachments(_, _, _, Some(true), _) if uploadedAttachments.contains(LandPropertyOtherDocs) => true
     case _ => false
   }
 

@@ -20,7 +20,7 @@ import controllers.partners.PartnerIndexValidation.minPartnerIndex
 import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
 import models.api._
 import models.external.{MinorEntity, PartnershipIdEntity}
-import models.{Business, CurrentProfile, Entity, OtherBusinessInvolvement}
+import models.{Business, CurrentProfile, OtherBusinessInvolvement}
 import play.api.i18n.Messages
 import services.BusinessService
 
@@ -36,11 +36,17 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         Some(
           TaskListRowBuilder(
             messageKey = _ => "tasklist.aboutTheBusiness.partnersDetail",
-            url = _ => controllers.partners.routes.PartnerEntityTypeController.showPartnerType(minPartnerIndex).url,
+            url = _ => {
+              if (vatScheme.entities.exists(_.size < minPartnerIndex))
+                controllers.partners.routes.PartnerEntityTypeController.showPartnerType(minPartnerIndex).url
+              else
+                controllers.partners.routes.PartnerSummaryController.show.url
+            },
             tagId = "partnersDetailRow",
             checks = scheme => Seq(
               scheme.entities.exists(_.size > 1),
-              scheme.entities.flatMap(_.find(_.isModelComplete(isLeadPartner = false))).isDefined
+              scheme.entities.flatMap(_.find(_.isModelComplete(isLeadPartner = false))).isDefined,
+              scheme.attachments.exists(_.additionalPartnersDocuments.isDefined)
             ),
             prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
           )

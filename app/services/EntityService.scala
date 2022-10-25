@@ -17,7 +17,7 @@
 package services
 
 import connectors.RegistrationApiConnector
-import models.Entity
+import models.{CurrentProfile, Entity}
 import models.Entity.leadEntityIndex
 import models.api._
 import models.external._
@@ -79,6 +79,9 @@ class EntityService @Inject()(val s4LService: S4LService,
 
   def deleteEntity(regId: String, index: Int)(implicit hc: HeaderCarrier): Future[Boolean] =
     registrationApiConnector.deleteSection[Entity](regId, Some(index))
+
+  def getNextValidIndex(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Int] =
+    getAllEntities(profile.registrationId).map(_.size + 1)
 }
 
 object EntityService {

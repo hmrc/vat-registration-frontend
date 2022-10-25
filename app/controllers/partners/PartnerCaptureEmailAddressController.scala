@@ -70,7 +70,7 @@ class PartnerCaptureEmailAddressController @Inject()(val sessionService: Session
               },
             email =>
               entityService.upsertEntity[Email](profile.registrationId, index, Email(email)).map { _ =>
-                NotImplemented //TODO Update routing to summary page
+                Redirect(routes.PartnerSummaryController.show)
               }
           )
         }

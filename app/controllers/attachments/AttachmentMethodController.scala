@@ -40,7 +40,7 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     attachmentsService.getAttachmentDetails(profile.registrationId).map {
-      case Some(Attachments(Some(method), _, _, _)) =>
+      case Some(Attachments(Some(method), _, _, _, _)) =>
         Ok(view(form().fill(method)))
       case _ =>
         Ok(view(form()))
