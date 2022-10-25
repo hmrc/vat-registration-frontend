@@ -17,9 +17,9 @@
 package viewmodels.tasklist
 
 import controllers.partners.PartnerIndexValidation
-import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty}
+import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching}
 import fixtures.VatRegistrationFixture
-import models.api.{Individual, Partnership, ScotPartnership, SicCode}
+import models.api.{Attachments, Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
 import testHelpers.VatRegSpec
 
@@ -40,7 +40,8 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(
           validEligibilitySubmissionData.copy(partyType = ScotPartnership)
-        )
+        ),
+        entities = Some(List(Entity(None, Individual, Some(true), None, None, None, None)))
       )
 
       val maybePartnersDetail = section.buildPartnersDetailRow(scheme)
@@ -89,7 +90,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = maybePartnersDetail.get.build(scheme)
 
       row.status mustBe TLInProgress
-      row.url mustBe expectedRowUrl
+      row.url mustBe controllers.partners.routes.PartnerSummaryController.show.url
       disable(DigitalPartnerFlow)
     }
 
@@ -99,6 +100,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         eligibilitySubmissionData = Some(
           validEligibilitySubmissionData.copy(partyType = ScotPartnership)
         ),
+        attachments = Some(Attachments(additionalPartnersDocuments = Some(false))),
         applicantDetails = Some(completeApplicantDetails),
         business = Some(validBusiness),
         entities = Some(List(
@@ -112,7 +114,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
       val row = maybePartnersDetail.get.build(scheme)
       row.status mustBe TLCompleted
-      row.url mustBe expectedRowUrl
+      row.url mustBe controllers.partners.routes.PartnerSummaryController.show.url
       disable(DigitalPartnerFlow)
     }
   }
@@ -157,6 +159,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership)),
         applicantDetails = Some(completeApplicantDetails.copy(entity = Some(testGeneralPartnership))),
+        attachments = Some(Attachments(additionalPartnersDocuments = Some(false))),
         entities = Some(List(
           Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(testCompanyName), None, None, None),
           Entity(Some(testSoleTrader), Individual, Some(false), None, Some(testAddress), Some("test@test.com"), Some("12334483"))

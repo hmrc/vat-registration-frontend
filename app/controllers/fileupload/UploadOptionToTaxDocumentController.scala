@@ -43,7 +43,7 @@ class UploadOptionToTaxDocumentController @Inject()(view: UploadDocument,
   val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       attachmentsService.getAttachmentDetails(profile.registrationId).flatMap {
-        case Some(Attachments(Some(Attached), supplyVat1614a, supplyVat1614h, _)) if List(supplyVat1614a, supplyVat1614h).flatten.contains(true) =>
+        case Some(Attachments(Some(Attached), supplyVat1614a, supplyVat1614h, _, _)) if List(supplyVat1614a, supplyVat1614h).flatten.contains(true) =>
           val attachmentType = if (supplyVat1614a.contains(true)) {
             Attachment1614a
           } else {

@@ -1193,6 +1193,21 @@ pages.businessLeadPartnerEntityType.missing.3pt          = Select the type of bu
 pages.businessPartnerEntityType.missing                  = Select the partner’s business type within the partnership
 pages.businessPartnerEntityType.heading                  = What type of business is the {0} partner within the partnership?
 
+# PARTNER SUMMARY PAGE
+partner.summary.heading                                  = You have added {0} member of the partnership
+partner.summary.headingPlural                            = You have added {0} members of the partnership
+partner.summary.subHeading                               = Do you need to add another partner?
+partner.summary.hint                                     = You need a minimum of 2 partners. You can add a maximum of 10 members using this service.
+validation.entity.partnerSummary.error                   = Select yes if you need to add another partner
+entity.removePartner.heading                             = Are you sure you want to remove {0}?
+validation.entity.removePartner.missing                  = Select yes if you want to remove {0}
+
+# ADDITIONAL PARTNERS REQUIRED PAGE
+partner.additional.required.heading                      = To add more partners, you must send us a completed VAT2 form
+partner.additional.required.para.1                       = We need a completed
+partner.additional.required.para.link                    = VAT2 form
+partner.additional.required.para.2                       = with details of the partners in the partnership.
+
 # OVERSEAS BANK ACCOUNT
 pages.overseasBankAccount.heading                        = Bank or building society account details
 pages.overseasBankAccount.name                           = Name on the account
