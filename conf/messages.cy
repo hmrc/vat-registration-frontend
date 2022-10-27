@@ -58,7 +58,7 @@ tasklist.aboutBusinessContact.contactDetails        = Ei fanylion cyswllt
 tasklist.aboutBusinessContact.personalDetails       = Ei wybodaeth bersonol
 tasklist.aboutBusinessContact.heading               = Ynglŷn â’r cyswllt busnes
 tasklist.aboutTheBusiness.heading                   = Ynglŷn â’r busnes
-tasklist.aboutTheBusiness.partnersDetail            = Partners within a partnership
+tasklist.aboutTheBusiness.partnersDetail            = Partneriaid yn y bartneriaeth
 tasklist.aboutTheBusiness.businessDetails           = Manylion y busnes
 tasklist.aboutTheBusiness.businessActivities        = Gweithgareddau busnes
 tasklist.aboutTheBusiness.otherBusinessInvolvements = Cysylltiadau busnes eraill
@@ -98,10 +98,10 @@ ordinals.18 = Deunawfed
 ordinals.19 = Pedwerydd ar bymtheg
 ordinals.20 = Ugeinfed
 
-#Sections
+# Sections
 section.vatRegistration                 = Cofrestru ar gyfer TAW
 
-#Feedback
+# Feedback
 page.feedback.title                     = Adborth
 page.feedback.thank-you.title           = Diolch
 
@@ -111,7 +111,7 @@ addressLookup.common.navTitle                               = Cofrestru ar gyfer
 addressLookup.common.phaseBannerHtml                        = Gwasanaeth newydd yw hwn. Helpwch ni i’w wella – anfonwch eich <a href="https://www.tax.service.gov.uk/register-for-vat/feedback">adborth</a>.
 addressLookup.common.deskProServiceName                     = SCRS
 
-# homeAddress
+# Home Address
 addressLookup.homeAddress.lookupPage.title                   = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.homeAddress.lookupPage.heading                 = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.homeAddress.lookupPage.filterLabel             = Enw neu rif yr eiddo
@@ -140,7 +140,7 @@ addressLookup.homeAddress.confirmPage.submitLabel            = Yn eich blaen
 addressLookup.homeAddress.countryPicker.title                = Dewch o hyd i’ch cyfeiriad cartref
 addressLookup.homeAddress.countryPicker.heading              = Dewch o hyd i’ch cyfeiriad cartref
 
-# international.homeAddress
+# International Home Address
 international.addressLookup.homeAddress.editPage.title                     = Nodwch eich cyfeiriad cartref
 international.addressLookup.homeAddress.editPage.heading                   = Nodwch eich cyfeiriad cartref
 international.addressLookup.homeAddress.editPage.line1Label                = Cyfeiriad – llinell 1
@@ -369,19 +369,19 @@ addressLookup.transactorAddress.countryPicker.title                = Dewch o hyd
 addressLookup.transactorAddress.countryPicker.heading              = Dewch o hyd i’ch cyfeiriad cartref
 
 # individualPartner
-addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
-addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
+addressLookup.individualPartner.lookupPage.title                   = Dewch o hyd i gyfeiriad cartref {0}
+addressLookup.individualPartner.lookupPage.heading                 = Dewch o hyd i gyfeiriad cartref {0}
 addressLookup.individualPartner.lookupPage.filterLabel             = Enw neu rif yr eiddo
 addressLookup.individualPartner.lookupPage.submitLabel             = Yn eich blaen
 addressLookup.individualPartner.lookupPage.manualAddressLinkText   = Nid oes gan y cyfeiriad god post yn y DU
 
-addressLookup.individualPartner.selectPage.title                   = Choose the address
-addressLookup.individualPartner.selectPage.heading                 = Choose the address
+addressLookup.individualPartner.selectPage.title                   = Dewiswch y cyfeiriad
+addressLookup.individualPartner.selectPage.heading                 = Dewiswch y cyfeiriad
 addressLookup.individualPartner.selectPage.editAddressLinkText     = Nodwch y cyfeiriad â llaw
 addressLookup.individualPartner.selectPage.submitLabel             = Yn eich blaen
 
-addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
-addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
+addressLookup.individualPartner.editPage.title                     = Nodwch gyfeiriad cartref {0}
+addressLookup.individualPartner.editPage.heading                   = Nodwch gyfeiriad cartref {0}
 addressLookup.individualPartner.editPage.line1Label                = Cyfeiriad – llinell 1
 addressLookup.individualPartner.editPage.line2Label                = Cyfeiriad – llinell 2
 addressLookup.individualPartner.editPage.line3Label                = Cyfeiriad – llinell 3
@@ -394,18 +394,18 @@ addressLookup.individualPartner.confirmPage.heading                = Confirm {0}
 addressLookup.individualPartner.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 addressLookup.individualPartner.confirmPage.submitLabel            = Yn eich blaen
 
-addressLookup.individualPartner.countryPicker.title                = Where is {0}’s home address?
-addressLookup.individualPartner.countryPicker.heading              = Where is {0}’s home address?
+addressLookup.individualPartner.countryPicker.title                = Ble mae cyfeiriad cartref {0}?
+addressLookup.individualPartner.countryPicker.heading              = Ble mae cyfeiriad cartref {0}?
 
 # international.individualPartner
-international.addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
-international.addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
+international.addressLookup.individualPartner.lookupPage.title                   = Dewch o hyd i gyfeiriad cartref {0}
+international.addressLookup.individualPartner.lookupPage.heading                 = Dewch o hyd i gyfeiriad cartref {0}
 international.addressLookup.individualPartner.lookupPage.filterLabel             = Enw neu rif yr eiddo
 international.addressLookup.individualPartner.lookupPage.submitLabel             = Yn eich blaen
 international.addressLookup.individualPartner.lookupPage.manualAddressLinkText   = Nodwch eich cyfeiriad â llaw
 
-international.addressLookup.individualPartner.editPage.title                     = Enter {0}’s home address
-international.addressLookup.individualPartner.editPage.heading                   = Enter {0}’s home address
+international.addressLookup.individualPartner.editPage.title                     = Nodwch gyfeiriad cartref {0}
+international.addressLookup.individualPartner.editPage.heading                   = Nodwch gyfeiriad cartref {0}
 international.addressLookup.individualPartner.editPage.line1Label                = Cyfeiriad – llinell 1
 international.addressLookup.individualPartner.editPage.line2Label                = Cyfeiriad – llinell 2
 international.addressLookup.individualPartner.editPage.line3Label                = Cyfeiriad – llinell 3 (dewisol)
@@ -420,14 +420,14 @@ international.addressLookup.individualPartner.confirmPage.changeLinkText        
 international.addressLookup.individualPartner.confirmPage.submitLabel            = Yn eich blaen
 
 # companyPartner
-addressLookup.companyPartner.lookupPage.title                   = Find {0}’s registered office address
-addressLookup.companyPartner.lookupPage.heading                 = Find {0}’s registered office address
+addressLookup.companyPartner.lookupPage.title                   = Dod o hyd i gyfeiriad swyddfa gofrestredig {0}
+addressLookup.companyPartner.lookupPage.heading                 = Dod o hyd i gyfeiriad swyddfa gofrestredig {0}
 addressLookup.companyPartner.lookupPage.filterLabel             = Enw neu rif yr eiddo
 addressLookup.companyPartner.lookupPage.submitLabel             = Yn eich blaen
 addressLookup.companyPartner.lookupPage.manualAddressLinkText   = Nid oes gan y cyfeiriad god post yn y DU
 
-addressLookup.companyPartner.selectPage.title                   = Choose the address
-addressLookup.companyPartner.selectPage.heading                 = Choose the address
+addressLookup.companyPartner.selectPage.title                   = Dewiswch y cyfeiriad
+addressLookup.companyPartner.selectPage.heading                 = Dewiswch y cyfeiriad
 addressLookup.companyPartner.selectPage.editAddressLinkText     = Nodwch y cyfeiriad â llaw
 addressLookup.companyPartner.selectPage.submitLabel             = Yn eich blaen
 
@@ -440,8 +440,8 @@ addressLookup.companyPartner.editPage.postcodeLabel             = Cod post
 addressLookup.companyPartner.editPage.countryLabel              = Gwlad
 addressLookup.companyPartner.editPage.submitLabel               = Yn eich blaen
 
-addressLookup.companyPartner.confirmPage.title                  = Confirm {0}’s registered office address
-addressLookup.companyPartner.confirmPage.heading                = Confirm {0}’s registered office address
+addressLookup.companyPartner.confirmPage.title                  = Cadarnhau cyfeiriad swyddfa gofrestredig {0}
+addressLookup.companyPartner.confirmPage.heading                = Cadarnhau cyfeiriad swyddfa gofrestredig {0}
 addressLookup.companyPartner.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 addressLookup.companyPartner.confirmPage.submitLabel            = Yn eich blaen
 
@@ -474,7 +474,7 @@ page.MaxPasscodeAttemptsExceeded.p1                = Y rheswm dros hyn yw eich b
 page.MaxPasscodeAttemptsExceeded.p2                = I ddechrau eto, bydd angen i chi
 page.MaxPasscodeAttemptsExceeded.link              = allgofnodi
 
-##Max Confirmation Code Attempts Exceeded
+## Max Confirmation Code Attempts Exceeded
 page.MaxConfirmationCodeAttemptsExceeded.heading           = You have reached the maximum number of confirmation code requests
 page.MaxConfirmationCodeAttemptsExceeded.p                 = Ni allwn anfon cod arall at {0}. Os nad yw hwn yn eich mewnflwch, eich ffolder sbam neu’ch folder sothach, gallwch
 page.MaxConfirmationCodeAttemptsExceeded.link              = roi cyfeiriad e-bost arall
@@ -1033,8 +1033,8 @@ pages.frs.confirmBusinessSector.changeLink                = Newid y math o fusne
 validation.frs.confirmBusinessSector.missing              = Dewiswch ‘Iawn’ os hoffech ddefnyddio’r gyfradd hon
 
 # Choose business type
-pages.frs.chooseBusinessType.heading      = Dewiswch y prif fath o fusnes
-validation.frs.chooseBusinessType.missing = Dewiswch brif fath o fusnes y busnes
+pages.frs.chooseBusinessType.heading                      = Dewiswch y prif fath o fusnes
+validation.frs.chooseBusinessType.missing                 = Dewiswch brif fath o fusnes y busnes
 
 # Do you want to register for FRS Page 16.5% rate
 pages.frs.registerFor.heading                             = Er mwyn ymuno â’r Cynllun Cyfradd Unffurf, mae’n rhaid i’r busnes ddefnyddio’r gyfradd unffurf o 16.5%
@@ -1168,45 +1168,45 @@ validation.trading-name.maxlen                           = Nodwch enw masnachu g
 validation.trading-name.missing                          = Nodwch enw masnachu
 
 # LEAD PARTNER ENTITY TYPE
-pages.leadPartnerEntityType.heading                      = What type of partner are you?
-pages.leadPartnerEntityType.heading.3pt                  = What type of partner is the lead partner?
-pages.leadPartnerEntityType.soleTrader                   = An actual person
-pages.leadPartnerEntityType.business                     = A business
-pages.leadPartnerEntityType.missing                      = Select the type of partner you are
-pages.leadPartnerEntityType.missing.3pt                  = Select the type of lead partner
-pages.partnerEntityType.heading                          = What type of partner is the {0} partner?
-pages.partnerEntityType.missing                          = Select the partner type
-pages.partnerEntityType.indentText                       = A partner in a partnership does not have to be an actual person. For example, a limited company can be a partner.
+pages.leadPartnerEntityType.heading                      = Pa fath o bartner ydych chi?
+pages.leadPartnerEntityType.heading.3pt                  = Pa fath o bartner yw’r partner arweiniol?
+pages.partnerEntityType.indentText                       = Nid oes rhaid i bartner mewn partneriaeth fod yn berson go iawn. Er enghraifft, gall cwmni cyfyngedig fod yn bartner.
+pages.leadPartnerEntityType.soleTrader                   = Person go iawn
+pages.leadPartnerEntityType.business                     = Busnes
+pages.leadPartnerEntityType.missing                      = Dewiswch y math o bartneriaeth ydych chi
+pages.leadPartnerEntityType.missing.3pt                  = Dewiswch y math o bartner arweiniol
+pages.partnerEntityType.heading                          = Pa fath o bartner yw’r {0} bartner?
+pages.partnerEntityType.missing                          = Dewiswch y math o bartner
 
 # BUSINESS LEAD PARTNER ENTITY TYPE
-pages.businessLeadPartnerEntityType.heading              = What type of business are you within the partnership?
-pages.businessLeadPartnerEntityType.heading.3pt          = What type of business is the lead partner within the partnership?
+pages.businessLeadPartnerEntityType.heading              = Pa fath o fusnes yr ydych o fewn y bartneriaeth?
+pages.businessLeadPartnerEntityType.heading.3pt          = Pa fath o fusnes yw’r partner arweiniol o fewn y bartneriaeth?
 pages.businessLeadPartnerEntityType.netp                 = Person trethadwy sydd heb ei sefydlu (NETP)
 pages.businessLeadPartnerEntityType.ukCompany            = Cwmni yn y DU
 pages.businessLeadPartnerEntityType.scotPartner          = Partneriaeth yn yr Alban
 pages.businessLeadPartnerEntityType.scotLimPartner       = Partneriaeth gyfyngedig yn yr Alban
 pages.businessLeadPartnerEntityType.limLiaPartner        = Partneriaeth atebolrwydd cyfyngedig
-pages.businessLeadPartnerEntityType.cio                  = Sefydliad Corfforedig Elusennol
+pages.businessLeadPartnerEntityType.cio                  = Sefydliad Corfforedig Elusennol (CIO)
 pages.businessLeadPartnerEntityType.regSociety           = Cymdeithas gofrestredig
-pages.businessLeadPartnerEntityType.missing              = Select the business type of the lead partner
-pages.businessLeadPartnerEntityType.missing.3pt          = Select the type of business the lead partner is within the partnership
-pages.businessPartnerEntityType.missing                  = Select the partner’s business type within the partnership
-pages.businessPartnerEntityType.heading                  = What type of business is the {0} partner within the partnership?
+pages.businessLeadPartnerEntityType.missing              = Dewiswch y math o fusnes yr ydych o fewn y bartneriaeth
+pages.businessLeadPartnerEntityType.missing.3pt          = Dewiswch pa fath o fusnes yw’r partner arweiniol o fewn y bartneriaeth
+pages.businessPartnerEntityType.missing                  = Dewiswch fath o fusnes y partner yn y bartneriaeth
+pages.businessPartnerEntityType.heading                  = Pa fath o fusnes yw’r {0} bartner yn y bartneriaeth?
 
 # PARTNER SUMMARY PAGE
 partner.summary.heading                                  = You have added {0} member of the partnership
-partner.summary.headingPlural                            = You have added {0} members of the partnership
-partner.summary.subHeading                               = Do you need to add another partner?
-partner.summary.hint                                     = You need a minimum of 2 partners. You can add a maximum of 10 members using this service.
+partner.summary.headingPlural                            = Rydych wedi ychwanegu {0} aelod o’r bartneriaeth
+partner.summary.subHeading                               = A oes angen i chi ychwanegu partner arall?
+partner.summary.hint                                     = Mae angen o leiaf 2 bartner arnoch. Gallwch ychwanegu uchafswm o 10 aelod wrth ddefnyddio’r gwasanaeth hwn.
 validation.entity.partnerSummary.error                   = Select yes if you need to add another partner
 entity.removePartner.heading                             = Are you sure you want to remove {0}?
 validation.entity.removePartner.missing                  = Select yes if you want to remove {0}
 
 # ADDITIONAL PARTNERS REQUIRED PAGE
-partner.additional.required.heading                      = To add more partners, you must send us a completed VAT2 form
-partner.additional.required.para.1                       = We need a completed
-partner.additional.required.para.link                    = VAT2 form
-partner.additional.required.para.2                       = with details of the partners in the partnership.
+partner.additional.required.heading                      = Er mwyn ychwanegu rhagor o bartneriaid, bydd yn rhaid i chi anfon atom ffurflen VAT2 wedi’i chwblhau
+partner.additional.required.para.1                       = Mae arnom angen ffurflen
+partner.additional.required.para.link                    = VAT2 wedi’i chwblhau
+partner.additional.required.para.2                       = gyda manylion unrhyw bartneriaid ychwanegol yn y bartneriaeth.
 
 # OVERSEAS BANK ACCOUNT
 pages.overseasBankAccount.heading                        = Manylion cyfrif banc neu gyfrif cymdeithas adeiladu
@@ -1345,9 +1345,9 @@ attachments.documentsPost.postCode                 = BX9 1WR
 attachments.documentsPost.country                  = United Kingdom
 
 # UPLOADING DOCUMENT
-attachments.uploadingDocument.heading              = Uwchlwytho’r ddogfen
-attachments.uploadingDocument.subheading           = Rydym yn gwirio’ch ffeil.
-attachments.uploadingDocument.status.button.text   = Gwirio statws
+attachments.uploadingDocument.heading                        = Uwchlwytho’r ddogfen
+attachments.uploadingDocument.subheading                     = Rydym yn gwirio’ch ffeil.
+attachments.uploadingDocument.status.button.text             = Gwirio statws
 attachments.uploadingDocument.heading.vat5L                  = Uploading the VAT5L
 attachments.uploadingDocument.heading.vat51                  = Uploading the VAT 50/51
 attachments.uploadingDocument.heading.vat2                   = Uploading the VAT2
@@ -1420,14 +1420,14 @@ pages.CoverSheet.vat1TRStart                       = ffurflen VAT1TR
 pages.CoverSheet.vat1TRLink                        = wedi’i chwblhau
 
 # Northern Ireland Protocol - Receive Goods
-pages.northernIrelandReceiveGoods.heading                = A yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE?
-pages.northernIrelandReceiveGoods.label                  = Beth yw gwerth y nwyddau hyn?
-pages.northernIrelandReceiveGoods.hint                   = Er enghraifft, £600 neu £90000
-nip.receiveGoods.missing                                 = Dewiswch ‘Iawn’ os yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE yn ystod y 12 mis nesaf
-validation.northernIrelandReceiveGoods.missing           = Nodwch werth amcangyfrifedig y nwyddau
-validation.northernIrelandReceiveGoods.invalid           = Nodwch werth amcangyfrifedig y nwyddau yn y fformat cywir
-validation.northernIrelandReceiveGoods.commasNotAllowed  = Ni all gwerth amcangyfrifedig y nwyddau gynnwys atalnodau
-validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed = The estimated value of the goods can only include pounds and pence
+pages.northernIrelandReceiveGoods.heading                                   = A yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE?
+pages.northernIrelandReceiveGoods.label                                     = Beth yw gwerth y nwyddau hyn?
+pages.northernIrelandReceiveGoods.hint                                      = Er enghraifft, £600 neu £90000
+nip.receiveGoods.missing                                                    = Dewiswch ‘Iawn’ os yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE yn ystod y 12 mis nesaf
+validation.northernIrelandReceiveGoods.missing                              = Nodwch werth amcangyfrifedig y nwyddau
+validation.northernIrelandReceiveGoods.invalid                              = Nodwch werth amcangyfrifedig y nwyddau yn y fformat cywir
+validation.northernIrelandReceiveGoods.commasNotAllowed                     = Ni all gwerth amcangyfrifedig y nwyddau gynnwys atalnodau
+validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed        = The estimated value of the goods can only include pounds and pence
 
 # NORTHERN IRELAND PROTOCOL - SELL OR MOVE
 nip.sellOrMove.heading                                   = A yw’r busnes yn disgwyl gwneud unrhyw un o’r canlynol yn ystod y 12 mis nesaf?
@@ -1517,7 +1517,7 @@ transactorEmail.error.incorrect_length                   = Nodwch gyfeiriad e-bo
 # GRS FULL NAME PAGE
 transactorName.optFullNamePageLabel                      = Ar ran pwy rydych yn cofrestru?
 transactorName.leadPartner.optFullNamePageLabel          = What is the name of the lead partner?
-soleTraderName.partner.optFullNamePageLabel              = What is the name of the {0} partner?
+soleTraderName.partner.optFullNamePageLabel              = Beth yw enw’r {0} bartner?
 
 # VAT2 REQUIRED
 pages.vat2Required.heading                               = You must send us a completed VAT2 form in order for us to process this application
@@ -1864,13 +1864,13 @@ validation.partner.scottishPartnershipName.maxlen                   = Nodwch enw
 validation.partner.scottishPartnershipName.invalid                  = Nodwch enw partneriaeth heb gynnwys cymeriadau arbennig
 
 # PARTNER TELEPHONE NUMBER
-partner.telephoneNumber.heading                                     = What is {0}’s telephone number?
-partner.telephoneNumber.hint                                        = Enter a UK telephone number
+partner.telephoneNumber.heading                = Beth yw rhif ffôn {0}?
+partner.telephoneNumber.hint                   = Nodwch y rhif ffôn
 
 # PARTNER CAPTURE EMAIL ADDRESS PAGE
 partnerEmail.namedHeading                      = Beth yw cyfeiriad e-bost {0}?
 partnerEmail.para                              = Ceir manylion llawn ynghylch sut rydym yn defnyddio manylion cyswllt yn
 partnerEmail.link                              = Hysbysiad Preifatrwydd CThEM
-partnerEmail.error.incorrect_format            = Nodwch gyfeiriad e-bost yn y fformat cywir, megis enw@enghraifft.com
+partnerEmail.error.incorrect_format            = Nodwch y cyfeiriad e-bost yn y fformat cywir, fel enw@enghraifft.com
 partnerEmail.error.nothing_entered             = Nodwch y cyfeiriad e-bost
 partnerEmail.error.incorrect_length            = Mae’n rhaid i’r cyfeiriad e-bost fod yn 132 o gymeriadau neu lai
