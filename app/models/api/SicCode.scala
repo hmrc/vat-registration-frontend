@@ -21,20 +21,20 @@ import play.api.libs.json._
 
 case class SicCode(code: String,
                    description: String,
-                   displayDetails: String)
+                   descriptionCy: String)
 
 object SicCode {
 
   implicit val format: Format[SicCode] =
     ((__ \ "code").format[String] and
       (__ \ "desc").format[String] and
-      (__ \ "indexes").format[String]
+      (__ \ "descCy").format[String]
        ) (SicCode.apply, unlift(SicCode.unapply))
 
   val reads: Reads[SicCode] =
     ((__ \ "code").read[String] and
       (__ \ "desc").read[String] and
-      (__ \ "indexes").read[String].orElse(Reads.pure(""))
+      (__ \ "descCy").read[String].orElse(Reads.pure(""))
       ) (SicCode.apply _)
 
 

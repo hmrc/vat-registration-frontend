@@ -302,7 +302,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val sicCodeId = "81300003"
   val sicCodeDesc = "test2 desc"
-  val sicCodeDisplay = "test2 display"
+  val sicCodeDescCy = "test2 desc cy"
   val businessActivityDescription = "test business desc"
 
   val jsonListSicCode =
@@ -311,17 +311,17 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
        |    {
        |      "code": "01110004",
        |      "desc": "gdfgdg d",
-       |      "indexes": "dfg dfg g fd"
+       |      "descCy": "gdfgdg d cy"
        |    },
        |    {
        |      "code": "$sicCodeId",
        |      "desc": "$sicCodeDesc",
-       |      "indexes": "$sicCodeDisplay"
+       |      "descCy": "$sicCodeDescCy"
        |    },
        |    {
        |      "code": "82190004",
        |      "desc": "ry rty try rty ",
-       |      "indexes": " rtyrtyrty rt"
+       |      "descCy": "ry rty try rty "
        |    }
        |  ]
         """.stripMargin
@@ -336,7 +336,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     "ICLFetchResultsUri" -> JsString("/fetch-results")
   )
 
-  val mainBusinessActivity = SicCode(sicCodeId, sicCodeDesc, sicCodeDisplay)
+  val mainBusinessActivity = SicCode(sicCodeId, sicCodeDesc, sicCodeDescCy)
 
   val fullModel = Business(
     email = Some("test@foo.com"),
