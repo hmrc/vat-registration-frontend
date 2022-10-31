@@ -231,6 +231,71 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
           ).flatten
         ))))
       }
+
+      "show completed and non-lead-partner members of the partnership" when {
+        "the user has added partners" in {
+          val scheme = emptyVatScheme.copy(
+            business = Some(validBusiness.copy(
+              hasLandAndProperty = Some(true),
+              otherBusinessInvolvement = Some(false),
+              labourCompliance = Some(complianceWithLabour),
+              businessActivities = Some(List(sicCode))
+            )),
+            entities = Some(validEntities),
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+            vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance), appliedForExemption = Some(false)))
+          )
+
+          val res = builder.build(scheme)
+
+          res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
+            rows = List(
+              optSummaryListRowSeq(s"$sectionId.partnershipMembers", Some(List[String](testCompanyName)), Some(controllers.partners.routes.PartnerSummaryController.show.url)),
+              optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
+              optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
+              optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(controllers.business.routes.HasWebsiteController.show.url)),
+              optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)),
+              optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
+              optSummaryListRowBoolean(s"$sectionId.buySellLandAndProperty", Some(true), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
+              optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)),
+              optSummaryListRowSeq(s"$sectionId.sicCodes", Some(Seq(s"${sicCode.code} - ${sicCode.description}")), Some(controllers.sicandcompliance.routes.SicController.startICLJourney.url)),
+              optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.obi", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(true), Some(controllers.business.routes.SupplyWorkersController.show.url)),
+              optSummaryListRowString(s"$sectionId.numberOfWorkers", Some(testNumWorkers), Some(controllers.business.routes.WorkersController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.intermediarySupply", Some(true), Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)),
+              optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
+              optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
+              optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
+              optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("Yes", testNipAmount)), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
+              optSummaryListRowSeq(s"$sectionId.receiveGoodsNip", Some(Seq("Yes", testNipAmount)), Some(vatApplicationRoutes.ReceiveGoodsNipController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.claimRefunds", Some(false), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
+              optSummaryListRowBoolean(s"$sectionId.vatExemption", Some(false), Some(vatApplicationRoutes.VatExemptionController.show.url))
+            ).flatten
+          ))))
+        }
+      }
+
+      "hide the members of the partnership row" when {
+        "the user has not added partners" in {
+          val scheme = emptyVatScheme.copy(
+            business = Some(validBusiness.copy(
+              hasLandAndProperty = Some(true),
+              otherBusinessInvolvement = Some(false),
+              labourCompliance = Some(complianceWithLabour),
+              businessActivities = Some(List(sicCode))
+            )),
+            entities = Some(validEntities.slice(1,2)),
+            eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+            vatApplication = Some(validVatApplication.copy(northernIrelandProtocol = Some(validNipCompliance), appliedForExemption = Some(false)))
+          )
+
+          verifySummaryPageContents(scheme)
+        }
+      }
     }
 
     "the user is overseas" when {

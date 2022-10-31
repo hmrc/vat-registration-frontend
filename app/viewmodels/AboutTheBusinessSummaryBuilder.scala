@@ -18,10 +18,10 @@ package viewmodels
 
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.FeatureSwitching
-import models.Business
 import models.api._
 import models.api.vatapplication.{StoringOverseas, StoringWithinUk, VatApplication}
 import models.view.SummaryListRowUtils._
+import models.{Business, Entity}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -42,10 +42,12 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
     val vatApplication = vatScheme.vatApplication.getOrElse(throw missingSection("Vat Application"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
+    val entities = vatScheme.entities
 
     HtmlFormat.fill(List(
       govukSummaryList(SummaryList(
         rows = List(
+          partnershipMembers(entities),
           ppobAddress(business, partyType),
           businessEmailAddress(business),
           businessDaytimePhoneNumber(business),
@@ -77,6 +79,23 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           netpSection(vatApplication, partyType)
       ))
     ))
+  }
+
+  private def partnershipMembers(entities: Option[List[Entity]])(implicit messages: Messages): Option[SummaryListRow] = {
+    if (entities.exists(_.length > 1)) {
+      optSummaryListRowSeq(
+        questionId = s"$sectionId.partnershipMembers",
+        optAnswers = {
+          entities.map(_.collect {
+            case entity if entity.isLeadPartner.contains(false) && entity.isModelComplete(false) =>
+              entity.displayName
+          }.flatten)
+        },
+        Some(controllers.partners.routes.PartnerSummaryController.show.url)
+      )
+    } else {
+      None
+    }
   }
 
   private def ppobAddress(business: Business, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
