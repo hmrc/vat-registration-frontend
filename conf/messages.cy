@@ -700,6 +700,7 @@ cya.transactor.telephoneNumber                       = Rhif ffôn
 cya.transactor.emailAddress                          = Cyfeiriad e-bost
 
 # CYA About the business
+cya.aboutTheBusiness.partnershipMembers             = Aelodau o’r bartneriaeth
 cya.aboutTheBusiness.homeAddress                    = Cyfeiriad y busnes
 cya.aboutTheBusiness.emailBusiness                  = Cyfeiriad e-bost y busnes
 cya.aboutTheBusiness.daytimePhoneBusiness           = Rhif ffôn y busnes yn ystod y dydd

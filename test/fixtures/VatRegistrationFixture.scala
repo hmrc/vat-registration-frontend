@@ -20,6 +20,7 @@ import common.enums.VatRegStatus
 import models._
 import models.api._
 import models.api.vatapplication._
+import models.external.{BvPass, PartnershipIdEntity}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
@@ -165,6 +166,36 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     """.stripMargin).as[JsObject]
 
   val emptyVatScheme = VatScheme(testRegId, testDate, status = VatRegStatus.draft)
+
+  val validPartnershipIdEntity = PartnershipIdEntity(
+    sautr = Some(testSautr),
+    companyName = Some(testCompanyName),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    identifiersMatch = true
+  )
+
+  val validEntities = List[Entity](
+    Entity(
+      details = Some(validPartnershipIdEntity),
+      partyType = Partnership,
+      isLeadPartner = Some(true),
+      optScottishPartnershipName = None,
+      address = Some(testAddress),
+      email = Some("test@foo.com"),
+      telephoneNumber = Some("1234567890")
+    ),
+    Entity(
+      details = Some(validPartnershipIdEntity),
+      partyType = Partnership,
+      isLeadPartner = Some(false),
+      optScottishPartnershipName = None,
+      address = Some(testAddress),
+      email = Some("test@foo.com"),
+      telephoneNumber = Some("1234567890")
+    )
+  )
 
   val validNipCompliance = NIPTurnover(
     goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),

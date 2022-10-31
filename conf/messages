@@ -700,6 +700,7 @@ cya.transactor.telephoneNumber                       = Telephone number
 cya.transactor.emailAddress                          = Email address
 
 # CYA About the business
+cya.aboutTheBusiness.partnershipMembers             = Members of the partnership
 cya.aboutTheBusiness.homeAddress                    = Business address
 cya.aboutTheBusiness.emailBusiness                  = Business email address
 cya.aboutTheBusiness.daytimePhoneBusiness           = Business daytime phone number
