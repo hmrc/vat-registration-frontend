@@ -45,7 +45,7 @@ class ConfigConnectorSpec extends VatRegSpec with VatMocks {
         )
       )
     }
-    val sicCode = SicCode(code = "01490001", description = "Silk worm raising", displayDetails = "Raising of other animals")
+    val sicCode = SicCode(code = "01490001", description = "Silk worm raising", descriptionCy = "Raising of other animals")
   }
 
   "Calling getSicCodeDetails" must {

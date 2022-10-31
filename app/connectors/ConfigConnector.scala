@@ -61,7 +61,7 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
     SicCode(
       code = amendedCode,
       description = config.getString(s"$sicCodePrefix.$amendedCode.description"),
-      displayDetails = config.getString(s"$sicCodePrefix.$amendedCode.displayDetails")
+      descriptionCy = config.getString(s"$sicCodePrefix.$amendedCode.description")
     )
   }
 

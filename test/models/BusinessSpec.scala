@@ -22,8 +22,8 @@ import testHelpers.VatRegSpec
 
 class BusinessSpec extends VatRegSpec {
 
-  val sicCodeNoneLabour = SicCode(code = "123", description = "none labour", displayDetails = "none labour")
-  val sicCodeLabour = SicCode(code = "123", description = "labour", displayDetails = "labour")
+  val sicCodeNoneLabour = SicCode(code = "123", description = "none labour", descriptionCy = "none labour")
+  val sicCodeLabour = SicCode(code = "123", description = "labour", descriptionCy = "labour")
 
   val jsonNoneLabour = Json.parse(
     s"""
@@ -32,13 +32,13 @@ class BusinessSpec extends VatRegSpec {
        |"mainBusinessActivity": {
        |   "code": "123",
        |   "desc": "none labour",
-       |   "indexes": "none labour"
+       |   "descCy": "none labour"
        |},
        |"businessActivities": [
        |{
        |   "code": "99889",
        |   "desc": "otherBusiness",
-       |   "indexes": ""
+       |   "descCy": "otherBusiness"
        |}
        |]
        |}
@@ -46,7 +46,7 @@ class BusinessSpec extends VatRegSpec {
   val noneLabour = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeNoneLabour),
-    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "")))
+    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness")))
   )
 
   val jsonLabourWithoutWorkers = Json.parse(
@@ -56,13 +56,13 @@ class BusinessSpec extends VatRegSpec {
        |  "mainBusinessActivity": {
        |    "code": "123",
        |    "desc": "labour",
-       |    "indexes": "labour"
+       |    "descCy": "labour"
        |  },
        |  "businessActivities": [
        |  {
        |     "code": "99889",
        |     "desc": "otherBusiness",
-       |     "indexes": "otherBusiness1"
+       |     "descCy": "otherBusiness1"
        |  }
        |  ],
        |  "labourCompliance": {
@@ -73,7 +73,7 @@ class BusinessSpec extends VatRegSpec {
   val labourWithoutWorkers = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeLabour),
-    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1"))),
+    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1"))),
     labourCompliance = Some(LabourCompliance(
       supplyWorkers = Some(false),
       numOfWorkersSupplied = None,
@@ -88,13 +88,13 @@ class BusinessSpec extends VatRegSpec {
        |  "mainBusinessActivity": {
        |    "code": "123",
        |    "desc": "labour",
-       |    "indexes": "labour"
+       |    "descCy": "labour"
        |  },
        |  "businessActivities": [
        |    {
        |       "code": "99889",
        |       "desc": "otherBusiness",
-       |       "indexes": "otherBusiness1"
+       |       "descCy": "otherBusiness1"
        |    }
        |  ],
        |  "labourCompliance": {
@@ -107,7 +107,7 @@ class BusinessSpec extends VatRegSpec {
   val labourWithWorkers = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeLabour),
-    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1"))),
+    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1"))),
     labourCompliance = Some(LabourCompliance(
       supplyWorkers = Some(true),
       numOfWorkersSupplied = Some(7),
@@ -122,13 +122,13 @@ class BusinessSpec extends VatRegSpec {
        |  "mainBusinessActivity": {
        |    "code": "123",
        |    "desc": "labour",
-       |    "indexes": "labour"
+       |    "descCy": "labour"
        |  },
        |  "businessActivities": [
        |  {
        |     "code": "99889",
        |     "desc": "otherBusiness",
-       |     "indexes": "otherBusiness1"
+       |     "descCy": "otherBusiness1"
        |  }
        |  ],
        |  "labourCompliance": {
@@ -142,7 +142,7 @@ class BusinessSpec extends VatRegSpec {
   val labourWithoutTemporaryContracts = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeLabour),
-    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1"))),
+    businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1"))),
     labourCompliance = Some(LabourCompliance(
       supplyWorkers = Some(true),
       numOfWorkersSupplied = Some(8),
@@ -224,13 +224,13 @@ class BusinessSpec extends VatRegSpec {
           |  "mainBusinessActivity": {
           |    "code": "123",
           |    "desc": "labour",
-          |    "indexes": "labour"
+          |    "descCy": "labour"
           |  },
           |  "businessActivities": [
           |  {
           |     "code": "99889",
           |     "desc": "otherBusiness",
-          |     "indexes": "otherBusiness1"
+          |     "descCy": "otherBusiness1"
           |  }
           |  ]
           |}
@@ -252,7 +252,7 @@ class BusinessSpec extends VatRegSpec {
         contactPreference = Some(Letter),
         businessDescription = Some("Test Desc"),
         mainBusinessActivity = Some(sicCodeLabour),
-        businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))
+        businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1")))
       )
 
       Json.toJson(modelToTransform) mustBe expectedJson
@@ -269,13 +269,13 @@ class BusinessSpec extends VatRegSpec {
           |  "mainBusinessActivity": {
           |    "code": "123",
           |    "desc": "labour",
-          |    "indexes": "labour"
+          |    "descCy": "labour"
           |  },
           |  "businessActivities": [
           |  {
           |     "code": "99889",
           |     "desc": "otherBusiness",
-          |     "indexes": "otherBusiness1"
+          |     "descCy": "otherBusiness1"
           |  }
           |  ]
           |}
@@ -289,7 +289,7 @@ class BusinessSpec extends VatRegSpec {
         contactPreference = Some(Letter),
         businessDescription = Some("Test Desc"),
         mainBusinessActivity = Some(sicCodeLabour),
-        businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))
+        businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1")))
       )
 
       Json.toJson(modelToTransform) mustBe expectedJson
@@ -303,13 +303,13 @@ class BusinessSpec extends VatRegSpec {
           |  "mainBusinessActivity": {
           |    "code": "123",
           |    "desc": "labour",
-          |    "indexes": "labour"
+          |    "descCy": "labour"
           |  },
           |  "businessActivities": [
           |  {
           |     "code": "99889",
           |     "desc": "otherBusiness",
-          |     "indexes": "otherBusiness1"
+          |     "descCy": "otherBusiness1"
           |  }
           |  ]
           |}
@@ -319,7 +319,7 @@ class BusinessSpec extends VatRegSpec {
       val modelToTransform = Business(
         businessDescription = Some("Test Desc"),
         mainBusinessActivity = Some(sicCodeLabour),
-        businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", displayDetails = "otherBusiness1")))
+        businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1")))
       )
 
       Json.toJson(modelToTransform) mustBe expectedJson
