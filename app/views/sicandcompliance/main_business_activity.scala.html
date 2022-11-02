@@ -44,7 +44,7 @@
             defining {
                 sicCodeList.map { sicCode =>
                     RadioItem(
-                        content = Text(sicCode.description),
+                        content = Text(sicCode.getDescription),
                         value = Some(sicCode.code),
                         checked = mainBusinessActivityForm("value").value.contains(sicCode.code)
                     )

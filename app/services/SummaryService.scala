@@ -16,6 +16,7 @@
 
 package services
 
+import config.FrontendAppConfig
 import models.CurrentProfile
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
@@ -30,10 +31,10 @@ class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,
                                summaryCheckYourAnswersBuilder: SummaryCheckYourAnswersBuilder
                               )(implicit ec: ExecutionContext) {
 
-  def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages): Future[Accordion] = {
+  def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages, frontendAppConfig: FrontendAppConfig): Future[Accordion] = {
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme)(messages)
+      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme)(messages, frontendAppConfig)
     } yield accordion
   }
 

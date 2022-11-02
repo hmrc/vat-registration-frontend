@@ -16,6 +16,7 @@
 
 package viewmodels
 
+import config.FrontendAppConfig
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models.api._
@@ -38,7 +39,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   private def missingSection(section: String) =
     new InternalServerException(s"[AboutTheBusinessCheckYourAnswersBuilder] Couldn't construct CYA due to missing section: $section")
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): HtmlFormat.Appendable = {
     val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
     val vatApplication = vatScheme.vatApplication.getOrElse(throw missingSection("Vat Application"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
@@ -159,10 +160,10 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)
     )
 
-  private def mainBusinessActivity(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
+  private def mainBusinessActivity(business: Business)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.mainSicCode",
-      business.mainBusinessActivity.map(_.description),
+      business.mainBusinessActivity.map(_.getDescription),
       Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)
     )
 
@@ -173,12 +174,12 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)
     )
 
-  private def otherBusinessActivities(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
+  private def otherBusinessActivities(business: Business)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): Option[SummaryListRow] =
     if (business.businessActivities.exists(_.nonEmpty == true)) {
       optSummaryListRowSeq(
         s"$sectionId.sicCodes",
         business.businessActivities.map(codes => codes.map(
-          sicCode => sicCode.code + " - " + sicCode.description
+          sicCode => sicCode.code + " - " + sicCode.getDescription
         )),
         Some(controllers.sicandcompliance.routes.SicController.startICLJourney.url)
       )

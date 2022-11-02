@@ -16,6 +16,7 @@
 
 package viewmodels
 
+import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import models.api._
 import play.api.i18n.Messages
@@ -36,7 +37,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: Eligib
                                                otherBusinessInvolvementSummaryBuilder: OtherBusinessInvolvementSummaryBuilder,
                                                registrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder) extends FeatureSwitching {
 
-  def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages): Accordion = {
+  def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): Accordion = {
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
 
     val summaryMap = ListMap(

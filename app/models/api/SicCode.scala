@@ -16,12 +16,20 @@
 
 package models.api
 
+import config.FrontendAppConfig
+import featureswitch.core.config.WelshLanguage
+import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class SicCode(code: String,
                    description: String,
-                   descriptionCy: String)
+                   descriptionCy: String) {
+  def getDescription(implicit messages: Messages, appConfig: FrontendAppConfig): String = messages.lang.code match {
+    case "cy" if appConfig.isEnabled(WelshLanguage) => descriptionCy
+    case _ => description
+  }
+}
 
 object SicCode {
 

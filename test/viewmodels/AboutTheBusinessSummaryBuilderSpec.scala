@@ -16,6 +16,7 @@
 
 package viewmodels
 
+import config.FrontendAppConfig
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import models._
 import models.api.vatapplication.{OverseasCompliance, StoringWithinUk}
@@ -33,6 +34,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
   val messagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages = messagesApi.preferred(Seq(Lang("en")))
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val sectionId = "cya.aboutTheBusiness"
   val testEmail = "test@foo.com"
