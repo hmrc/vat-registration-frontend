@@ -62,7 +62,7 @@ object VatScheme {
         (__ \ "otherBusinessInvolvements").readNullable[List[OtherBusinessInvolvement]] and
         (__ \ "vatApplication").readNullable[VatApplication] and
         (__ \ "bankAccount").readNullable[BankAccount] and
-        (__ \ "flatRateScheme").readNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
+        (__ \ "flatRateScheme").readNullable[FlatRateScheme] and
         (__ \ "attachments").readNullable[Attachments]
       ) (VatScheme.apply _)
       case None => (
@@ -98,7 +98,7 @@ object VatScheme {
     (__ \ "otherBusinessInvolvements").writeNullable[List[OtherBusinessInvolvement]] and
     (__ \ "vatApplication").writeNullable[VatApplication] and
     (__ \ "bankAccount").writeNullable[BankAccount] and
-    (__ \ "flatRateScheme").writeNullable[FlatRateScheme](FlatRateScheme.apiFormat) and
+    (__ \ "flatRateScheme").writeNullable[FlatRateScheme] and
     (__ \ "attachments").writeNullable[Attachments]
   ) (unlift(VatScheme.unapply))
 

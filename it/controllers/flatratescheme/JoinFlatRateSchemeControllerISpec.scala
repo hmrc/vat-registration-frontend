@@ -5,6 +5,7 @@ import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.api.vatapplication.VatApplication
 import models.{FlatRateScheme, GroupRegistration}
+import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
@@ -51,11 +52,11 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
   )
 
   "GET /join-flat-rate" must {
-    "return OK when the details are in s4l" in new Setup {
+    "return OK without prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].contains(frsS4LData)
-        .registrationApi.getSection(Some(vatApplication))
+        .registrationApi.getSection[FlatRateScheme](None)
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -67,11 +68,11 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       }
     }
 
-    "return OK when the details are in s4l and missing frs flag" in new Setup {
+    "return OK with prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].contains(frsS4LData.copy(joinFrs = None))
-        .registrationApi.getSection(Some(vatApplication))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -80,31 +81,15 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
+        Jsoup.parse(result.body).getElementById("value").attr("value") mustBe "true"
       }
     }
 
-    "return OK when the details are in the backend" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].isEmpty
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .registrationApi.getSection(Some(vatApplication))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = buildClient("/join-flat-rate").get()
-
-      whenReady(res) { result =>
-        result.status mustBe OK
-      }
-    }
     "redirect to the Attachments Resolver when the turnover is too high" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].isEmpty
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .registrationApi.getSection(Some(vatApplicationWithBigTurnover))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[VatApplication](Some(vatApplicationWithBigTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -116,12 +101,12 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
+
     "redirect to the Attachments Resolver for a Group Registration" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].isEmpty
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .registrationApi.getSection(Some(vatApplication))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
         registrationReason = GroupRegistration
       )))
@@ -135,12 +120,12 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
+
     "return INTERNAL_SERVER_ERROR if no estimates data available" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].isEmpty
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .registrationApi.getSection(Some(vatApplicationWithoutTurnover))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[VatApplication](Some(vatApplicationWithoutTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -157,10 +142,9 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the next FRS page if the user answers Yes" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData)
-        .registrationApi.replaceSection[FlatRateScheme](frsS4LData.copy(joinFrs = Some(true)))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .registrationApi.getSection(Some(vatApplication))
+        .s4lContainer[FlatRateScheme].clearedByKey
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.replaceSection[FlatRateScheme](frsS4LData.copy(joinFrs = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -171,13 +155,13 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)
       }
     }
+
     "redirect to the documents page if the user answers No" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](None)(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
         .s4lContainer[FlatRateScheme].clearedByKey
-        .registrationApi.replaceSection[FlatRateScheme](FlatRateScheme(Some(false)))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
-        .registrationApi.getSection(Some(vatApplication))
+        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.replaceSection[FlatRateScheme](FlatRateScheme(Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -188,6 +172,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         result.headers(HeaderNames.LOCATION) must contain(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
+
     "return BAD_REQUEST if form binding fails due to missing flat rate condition" in new Setup {
       given().user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionId)

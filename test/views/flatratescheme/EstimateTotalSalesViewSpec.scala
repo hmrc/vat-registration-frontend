@@ -29,7 +29,7 @@ class EstimateTotalSalesViewSpec extends VatRegViewSpec {
   val header = "Estimate the business’s total sales, including VAT, for the next 3 months"
   val title = s"$header - Register for VAT - GOV.UK"
   val text = "Give figures that are as realistic as possible."
-  val label = "Enter the estimate"
+  val label = header
   val buttonText = "Save and continue"
 
   val form: Form[BigDecimal] = EstimateTotalSalesForm.form

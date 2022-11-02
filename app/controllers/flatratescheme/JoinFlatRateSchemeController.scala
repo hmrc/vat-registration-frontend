@@ -23,6 +23,7 @@ import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.GroupRegistration
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
+import services.FlatRateService.JoinFrsAnswer
 import services._
 import uk.gov.hmrc.http.InternalServerException
 import views.html.flatratescheme.frs_join
@@ -67,13 +68,13 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
       implicit profile =>
         joinFrsForm.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
-          joiningFRS => flatRateService.saveJoiningFRS(joiningFRS.answer) map { _ =>
+          joiningFRS => flatRateService.saveFlatRate(JoinFrsAnswer(joiningFRS.answer)).map { _ =>
             if (joiningFRS.answer) {
               Redirect(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage)
-            } else if(isEnabled(TaskList)) {
-                Redirect(controllers.routes.TaskListController.show)
+            } else if (isEnabled(TaskList)) {
+              Redirect(controllers.routes.TaskListController.show)
             } else {
-                Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+              Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
             }
           }
         )

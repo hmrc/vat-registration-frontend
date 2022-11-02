@@ -20,9 +20,8 @@ import com.google.inject.Inject
 import connectors.{ConfigConnector, RegistrationApiConnector}
 import models._
 import models.api.SicCode
-import play.api.libs.json.Format
 import services.FlatRateService._
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
 import javax.inject.Singleton
@@ -38,83 +37,128 @@ class FlatRateService @Inject()(val s4LService: S4LService,
 
   def applyPercentRoundUp(b: BigDecimal): BigDecimal = (b * relevantGoodsPercent).setScale(0, RoundingMode.CEILING)
 
-  def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    s4LService.fetchAndGet[FlatRateScheme] flatMap {
+  def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
+    s4LService.fetchAndGet[FlatRateScheme](FlatRateScheme.s4lKey, profile, hc, FlatRateScheme.oldS4lReads) flatMap {
       case None | Some(FlatRateScheme(None, None, None, None, None, None, None, None, None)) =>
-        implicit val format: Format[FlatRateScheme] = FlatRateScheme.apiFormat
         registrationApiConnector.getSection[FlatRateScheme](profile.registrationId) map {
           case Some(flatRateScheme) => flatRateScheme
           case None => FlatRateScheme()
         }
       case Some(flatRateScheme) => Future.successful(flatRateScheme)
     }
-
-  def handleView(flatRate: FlatRateScheme): Completion[FlatRateScheme] = {
-    flatRate match {
-      case FlatRateScheme(_, Some(true), None, None, _, _, _, _, _) =>
-        Incomplete(FlatRateScheme(Some(true), Some(true)))
-      case FlatRateScheme(Some(true), Some(true), Some(_), Some(isOverBusinessGoodsPercent), Some(true), Some(Start(_)), _, Some(_), Some(_)) =>
-        Complete(flatRate.copy(limitedCostTrader = Some(!isOverBusinessGoodsPercent)))
-      case FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(Start(_)), _, Some(_), Some(_)) =>
-        Complete(flatRate.copy(estimateTotalSales = None, overBusinessGoodsPercent = None, limitedCostTrader = Some(true)))
-      case FlatRateScheme(Some(false), _, _, _, _, _, _, _, _) =>
-        Complete(flatRate)
-      case _ =>
-        Incomplete(flatRate)
-    }
   }
 
-  def submitFlatRate(data: FlatRateScheme)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
-    handleView(data).fold(
-      incomplete => s4LService.save[FlatRateScheme](incomplete).map(_ => incomplete),
-      complete => {
-        implicit val format: Format[FlatRateScheme] = FlatRateScheme.apiFormat
-        for {
-          _ <- registrationApiConnector.replaceSection[FlatRateScheme](profile.registrationId, complete)
-          _ <- s4LService.clearKey[FlatRateScheme]
-        } yield complete
+  def saveFlatRate[T](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
+    for {
+      flatRateScheme <- getFlatRate
+      updatedFlatRateScheme = updateModel(data, flatRateScheme)
+      result <- registrationApiConnector.replaceSection[FlatRateScheme](profile.registrationId, updatedFlatRateScheme)
+      _ <- s4LService.clearKey[FlatRateScheme]
+    } yield result
+
+  //scalastyle:off
+  private def updateModel[T](data: T, scheme: FlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): FlatRateScheme =
+    data match {
+      case JoinFrsAnswer(answer) =>
+        if (answer) {
+          scheme.copy(joinFrs = Some(true))
+        } else {
+          FlatRateScheme(joinFrs = Some(false))
+        }
+
+      case OverBusinessGoodsAnswer(answer) =>
+        if (answer) {
+          scheme.copy(
+            overBusinessGoods = Some(true),
+            useThisRate = if (scheme.overBusinessGoods.contains(answer)) scheme.useThisRate else None,
+            limitedCostTrader = Some(false)
+          )
+        } else {
+          scheme.copy(
+            overBusinessGoods = Some(false),
+            useThisRate = if (scheme.overBusinessGoods.contains(answer)) scheme.useThisRate else None,
+            estimateTotalSales = None,
+            overBusinessGoodsPercent = None,
+            categoryOfBusiness = None,
+            percent = None,
+            limitedCostTrader = Some(true)
+          )
+        }
+
+      case EstimateTotalSalesAnswer(answer) =>
+        scheme.copy(
+          estimateTotalSales = Some(answer)
+        )
+
+      case OverBusinessGoodsPercentAnswer(answer) =>
+        if (answer) {
+          scheme.copy(
+            overBusinessGoodsPercent = Some(true),
+            useThisRate = if (scheme.overBusinessGoodsPercent.contains(answer)) scheme.useThisRate else None,
+            limitedCostTrader = Some(false)
+          )
+        } else {
+          scheme.copy(
+            overBusinessGoodsPercent = Some(false),
+            useThisRate = if (scheme.overBusinessGoodsPercent.contains(answer)) scheme.useThisRate else None,
+            categoryOfBusiness = None,
+            percent = None,
+            limitedCostTrader = Some(true)
+          )
+        }
+
+      case CategoryOfBusinessAnswer(answer) =>
+        val percent: BigDecimal = configConnector.getBusinessType(answer).percentage
+        if (scheme.categoryOfBusiness.contains(answer) && scheme.percent.contains(percent)) {
+          scheme
+        } else {
+          scheme.copy(categoryOfBusiness = Some(answer), useThisRate = None, percent = None)
+        }
+
+      case UseThisRateAnswer(answer) =>
+        if (answer) {
+          val percent = configConnector
+            .getBusinessType(scheme.categoryOfBusiness.getOrElse(throw new InternalServerException("Attempted to confirm flat rate percent without confirming business category")))
+            .percentage
+          scheme.copy(
+            useThisRate = Some(true),
+            percent = Some(percent)
+          )
+        } else {
+          FlatRateScheme(joinFrs = Some(false))
+        }
+
+      case answer: LocalDate =>
+        scheme.copy(frsStart = Some(answer))
+
+      case updateFunction: (FlatRateScheme => FlatRateScheme) =>
+        updateFunction(scheme)
+    }
+  //scalastyle:on
+
+  def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
+    if (answer) {
+      retrieveBusinessTypeDetails.flatMap { businessType =>
+        saveFlatRate { storedData: FlatRateScheme =>
+          storedData.copy(
+            useThisRate = Some(answer),
+            categoryOfBusiness = Some(businessType.id),
+            percent = Some(businessType.percentage)
+          )
+        }
       }
-    )
+    } else {
+      saveFlatRate { _: FlatRateScheme => FlatRateScheme(joinFrs = Some(false)) }
+    }
   }
 
-  def updateFlatRate(newS4L: FlatRateScheme => FlatRateScheme)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    getFlatRate flatMap { storedData => submitFlatRate(newS4L(storedData)) }
-
-  def saveJoiningFRS(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate(frs => if (answer) frs.copy(joinFrs = Some(answer)) else FlatRateScheme(Some(false)))
-
-  def saveOverBusinessGoods(newValue: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate { storedData =>
-      storedData.copy(
-        overBusinessGoods = Some(newValue),
-        useThisRate = if (storedData.overBusinessGoods.contains(newValue)) storedData.useThisRate else None,
-        categoryOfBusiness = if (newValue) storedData.categoryOfBusiness else None,
-        estimateTotalSales = if (!newValue) None else storedData.estimateTotalSales,
-        overBusinessGoodsPercent = if (!newValue) None else storedData.overBusinessGoodsPercent,
-        limitedCostTrader = Some(!newValue)
-      )
-    }
-
-  def saveOverBusinessGoodsPercent(newValue: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate { storedData =>
-      storedData.copy(
-        overBusinessGoodsPercent = Some(newValue),
-        useThisRate = if (storedData.overBusinessGoodsPercent.contains(newValue)) storedData.useThisRate else None,
-        categoryOfBusiness = if (newValue) storedData.categoryOfBusiness else None,
-        limitedCostTrader = Some((storedData.overBusinessGoods contains true) && !newValue)
-      )
-    }
-
-  def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    retrieveBusinessTypeDetails.flatMap {
-      case FrsBusinessType(category, _, _, percent) =>
-      updateFlatRate { storedData =>
+  def saveConfirmSector(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
+    retrieveBusinessTypeDetails.flatMap { businessType =>
+      saveFlatRate { storedData: FlatRateScheme =>
         storedData.copy(
-          joinFrs = Some(answer),
-          useThisRate = Some(answer),
-          categoryOfBusiness = Some(category),
-          percent = Some(percent),
-          frsStart = if (answer) storedData.frsStart else None)
+          categoryOfBusiness = Some(businessType.id),
+          percent = None
+        )
       }
     }
 
@@ -135,83 +179,60 @@ class FlatRateService @Inject()(val s4LService: S4LService,
     }
   }
 
-  def saveUseFlatRate(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    updateFlatRate { storedData =>
-      val percent = configConnector.getBusinessType(storedData.categoryOfBusiness.get).percentage
-      storedData.copy(
-        joinFrs = Some(answer),
-        useThisRate = Some(answer),
-        percent = Some(percent),
-        frsStart = if (answer) storedData.frsStart else None,
-        limitedCostTrader = if (answer) storedData.limitedCostTrader else Some(false)
-      )
-    }
-
-  def saveConfirmSector(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    retrieveBusinessTypeDetails.flatMap {
-      case FrsBusinessType(sector, _, _, _) =>
-        updateFlatRate(storedData => storedData.copy(
-          categoryOfBusiness = Some(sector),
-          percent = if (storedData.categoryOfBusiness.contains(sector)) storedData.percent else None
-        ))
-    }
-
-  def clearFrs(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Boolean] = {
-    s4LService.save(FlatRateScheme()) flatMap (_ =>
-      registrationApiConnector.deleteSection[FlatRateScheme](cp.registrationId).map(_ => true))
-  }
-
   def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
     for {
       mainSic <- businessService.getBusiness.map(_.mainBusinessActivity)
       selectionChanged = mainSic.exists(_.code != sicCode.code)
-      _ <- if (selectionChanged) clearFrs else Future.successful(true)
+      _ <- if (selectionChanged) {
+        registrationApiConnector.deleteSection[FlatRateScheme](cp.registrationId)
+      } else {
+        Future.successful(true)
+      }
     } yield sicCode
   }
 
-  def saveStartDate(dateChoice: FRSDateChoice.Value, date: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
-    if (dateChoice == FRSDateChoice.VATDate) {
-      fetchVatStartDate flatMap { vatStartDate =>
-        updateFlatRate(_.copy(frsStart = Some(Start(vatStartDate))))
-      }
-    } else {
-      updateFlatRate(_.copy(frsStart = Some(Start(date))))
-    }
-
-  def getPrepopulatedStartDate(vatStartDate: LocalDate)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
-    getFlatRate map {
-      case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
-      case FlatRateScheme(_, _, _, _, _, Some(Start(None)), _, _, _) => (Some(FRSDateChoice.VATDate), None)
-      case FlatRateScheme(_, _, _, _, _, Some(Start(Some(frd))), _, _, _) => (Some(FRSDateChoice.DifferentDate), Some(frd))
-      case _ => (None, None)
-
-    }
-
-  def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile): Future[Option[LocalDate]] = {
-    vatApplicationService.getVatApplication.map { vatApplication =>
-      vatApplication.startDate
-    } recover {
-      case e =>
-        logger.warn(s"[FlatRateService] - [fetchVatStartDate] - encountered an error when retrieving the VatApplication block with exception: ${e.getMessage}")
-        throw e
+  def saveStartDate(dateChoice: FRSDateChoice.Value, date: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
+    (dateChoice, date) match {
+      case (FRSDateChoice.VATDate, _) =>
+        fetchVatStartDate.flatMap { vatStartDate =>
+          saveFlatRate(vatStartDate)
+        }
+      case (FRSDateChoice.DifferentDate, Some(date)) =>
+        saveFlatRate(date)
+      case _ =>
+        throw new InternalServerException("[FlatRateService] Attempted to save invalid start date choice")
     }
   }
 
-  def saveEstimateTotalSales(estimate: BigDecimal)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
-    updateFlatRate(_.copy(estimateTotalSales = Some(estimate)))
-
-  def saveBusinessType(businessType: String)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
-    updateFlatRate { storedData =>
-      val percent: BigDecimal = configConnector.getBusinessType(businessType).percentage
-      if (storedData.categoryOfBusiness.contains(businessType) && storedData.percent.contains(percent)) {
-        storedData
-      } else {
-        storedData.copy(useThisRate = None, categoryOfBusiness = Some(businessType), percent = None)
-      }
+  def getPrepopulatedStartDate(vatStartDate: LocalDate)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
+    getFlatRate map {
+      case FlatRateScheme(_, _, _, _, _, Some(frd), _, _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
+      case FlatRateScheme(_, _, _, _, _, Some(frd), _, _, _) => (Some(FRSDateChoice.DifferentDate), Some(frd))
+      case _ => (None, None)
     }
+
+  def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = {
+    vatApplicationService.getVatApplication.map(_.startDate.getOrElse(
+      throw new InternalServerException("[FlatRateService] Unable to fetch VatStartDate")
+    )).recoverWith {
+      case _ => vatApplicationService.retrieveCalculatedStartDate
+    }
+  }
 }
 
 object FlatRateService {
   val defaultFlatRate: BigDecimal = 16.5
   val relevantGoodsPercent: Double = 0.02
+
+  case class JoinFrsAnswer(answer: Boolean)
+
+  case class OverBusinessGoodsAnswer(answer: Boolean)
+
+  case class EstimateTotalSalesAnswer(answer: BigDecimal)
+
+  case class OverBusinessGoodsPercentAnswer(answer: Boolean)
+
+  case class UseThisRateAnswer(answer: Boolean)
+
+  case class CategoryOfBusinessAnswer(answer: String)
 }

@@ -989,9 +989,9 @@ pages.frs.join.subheading2                      = Before you decide
 pages.frs.join.p4                               = You will need to have an idea how much the business will:
 pages.frs.join.list2.bullet1                    = spend on goods to run the company over the next 3 months
 pages.frs.join.list2.bullet2                    = earn in sales, including VAT, over the next 3 months
-pages.frs.join.para1                            = If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date.
-pages.frs.join.para2                            = Find out more about
-pages.frs.join.para2.1                          = VAT Flat Rate Scheme
+pages.frs.join.indent                           = If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date.
+pages.frs.join.para1                            = Find out more about
+pages.frs.join.para1.1                          = VAT Flat Rate Scheme
 validation.frs.join.missing                     = Select yes if you want to register the business for the Flat Rate Scheme
 
 # Do you spend less than £1000 Page
@@ -1015,7 +1015,6 @@ validation.frs.costsInclusive.missing                     = Select yes if the bu
 
 # Estimate Total Sales Page
 pages.frs.estimateTotalSales.heading                        = Estimate the business’s total sales, including VAT, for the next 3 months
-pages.frs.estimateTotalSales.legend                         = Enter the estimate
 pages.frs.estimateTotalSales.hint                           = For example, £600 or £90000
 pages.frs.estimateTotalSales.info                           = Give figures that are as realistic as possible.
 validation.frs.estimateTotalSales.range.above               = Enter an estimate which is less than £99,999,999,999

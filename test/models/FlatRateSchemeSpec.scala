@@ -16,162 +16,47 @@
 
 package models
 
-import play.api.libs.json.{Format, JsSuccess, JsValue, Json}
+import fixtures.FlatRateFixtures
+import play.api.libs.json.{JsObject, JsSuccess, Json}
 import testHelpers.VatRegSpec
 
-import java.time.LocalDate
+class FlatRateSchemeSpec extends VatRegSpec with FlatRateFixtures {
 
-class FlatRateSchemeSpec extends VatRegSpec {
-
-  val validDate: LocalDate = LocalDate.now
-  implicit val frmt: Format[FlatRateScheme] = FlatRateScheme.apiFormat
-
-  override val validFlatRate = FlatRateScheme(Some(true), Some(true), Some(13145L), Some(true), Some(true), Some(Start(Some(validDate))), Some("test"), Some(15.00), Some(false))
-
-  val validFlateRateJoinFrsFalse = FlatRateScheme(Some(false), None, None, None, None, None, None, None, None)
-
-  val validJson: JsValue    = Json.parse(
-    s"""{
-       |  "joinFrs" : true,
-       |  "frsDetails" : {
-       |    "businessGoods": {
-       |      "estimatedTotalSales": 13145,
-       |      "overTurnover"       : true
-       |    },
-       |    "startDate"         : "$validDate",
-       |    "categoryOfBusiness": "test",
-       |    "percent"           : 15.00,
-       |    "limitedCostTrader" : false
-       |  }
-       |}""".stripMargin
+  val completeFlatRateSchemeJson: JsObject = Json.obj(
+    "joinFrs" -> true,
+    "overBusinessGoods" -> true,
+    "estimateTotalSales" -> BigDecimal(5003),
+    "overBusinessGoodsPercent" -> true,
+    "useThisRate" -> true,
+    "frsStart" -> frsDate,
+    "categoryOfBusiness" -> testBusinessCategory,
+    "percent" -> flatRatePercentage,
+    "limitedCostTrader" -> false
   )
 
-  "FlatRateScheme" should {
-    "successfully construct json from the model" when {
+  val incompleteFlatRateSchemeJson: JsObject = Json.obj(
+    "joinFrs" -> true,
+    "overBusinessGoods" -> true
+  )
 
-      s"joinFrs is true and frsDetails defined with Business Goods - overBusinessGoods set to true" in {
-        Json.toJson(validFlatRate.copy(overBusinessGoods = Some(true)))(FlatRateScheme.apiFormat) mustBe validJson
+  "Creating a FlatRateScheme model from Json" should {
+    "complete successfully" when {
+      "complete json provided" in {
+        Json.fromJson[FlatRateScheme](completeFlatRateSchemeJson) mustBe JsSuccess(validFlatRate)
       }
-
-      "joinFrs is true and frsDetails defined without Business Goods" in {
-        val expectedJson = Json.parse(
-          s"""{
-             |  "joinFrs" : true,
-             |  "frsDetails" : {
-             |    "startDate": "$validDate",
-             |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00,
-             |    "limitedCostTrader" : false
-             |  }
-             |}""".stripMargin)
-
-        Json.toJson(validFlatRate.copy(overBusinessGoods = Some(false)))(FlatRateScheme.apiFormat) mustBe expectedJson
-      }
-
-      "joinFrs is false and frsDetails defined" in {
-        val expectedJson = Json.parse(
-          s"""{
-             |  "joinFrs" : false,
-             |  "frsDetails" : {
-             |    "businessGoods": {
-             |      "estimatedTotalSales": 13145,
-             |      "overTurnover"       : true
-             |    },
-             |    "startDate"         : "$validDate",
-             |    "categoryOfBusiness": "test",
-             |    "percent"           : 15.00,
-             |    "limitedCostTrader" : false
-             |  }
-             |}""".stripMargin
-        )
-
-        Json.toJson(validFlatRate.copy(joinFrs = Some(false)))(FlatRateScheme.apiFormat) mustBe expectedJson
-      }
-
-      "joinFrs is false and frsDetails not defined" in {
-        val expectedJson = Json.parse(
-          s"""{
-             |  "joinFrs" : false
-             |}""".stripMargin
-        )
-
-        Json.toJson(validFlateRateJoinFrsFalse)(FlatRateScheme.apiFormat) mustBe expectedJson
+      "incomplete json provided" in {
+        Json.fromJson[FlatRateScheme](incompleteFlatRateSchemeJson) mustBe JsSuccess(incompleteFlatRate)
       }
     }
+  }
 
-    "Successfully construct a valid view model from API json" when {
-      "joinFrs is true and Frs details is defined with Business Goods" in {
-        val res = Json.fromJson[FlatRateScheme](validJson)(FlatRateScheme.apiFormat)
-        res mustBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(true),
-          overBusinessGoodsPercent = Some(true)))
+  "Parsing FlatRateScheme to Json" should {
+    "succeed" when {
+      "FlatRateScheme is full" in {
+        Json.toJson[FlatRateScheme](validFlatRate) mustBe completeFlatRateSchemeJson
       }
-
-      "joinFrs is true and Frs details is defined without Business Goods" in {
-        val json = Json.parse(
-          s"""{
-             |  "joinFrs" : true,
-             |  "frsDetails" : {
-             |    "startDate": "$validDate",
-             |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00,
-             |    "limitedCostTrader" : false
-             |  }
-             |}""".stripMargin
-        )
-
-        val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res mustBe JsSuccess(validFlatRate.copy(overBusinessGoods = Some(false), overBusinessGoodsPercent = None, estimateTotalSales = None))
-      }
-
-      "successfully populate startDate in view Model joinFrs true, startDate does not exist" in {
-        val json = Json.parse(
-          s"""{
-             |  "joinFrs" : true,
-             |  "frsDetails" : {
-             |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00,
-             |    "limitedCostTrader" : false
-             |  }
-             |}""".stripMargin
-        )
-        val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res mustBe JsSuccess(validFlatRate.copy(
-          overBusinessGoods = Some(false),
-          overBusinessGoodsPercent = None,
-          estimateTotalSales = None,
-          frsStart = Some(Start(None))))
-      }
-
-      "successfully populate startDate in view model join Frs false, startDate exists" in {
-        val json = Json.parse(
-          s"""{
-             |  "joinFrs" : false,
-             |  "frsDetails" : {
-             |    "startDate": "$validDate",
-             |    "categoryOfBusiness" : "test",
-             |    "percent" : 15.00,
-             |    "limitedCostTrader" : false
-             |  }
-             |}""".stripMargin
-        )
-        val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res mustBe JsSuccess(validFlatRate.copy(
-          overBusinessGoods = Some(false),
-          overBusinessGoodsPercent = None,
-          joinFrs = Some(false),
-          useThisRate = Some(false),
-          estimateTotalSales = None,
-          frsStart = None))
-      }
-
-      "joinFrs is false" in {
-        val json = Json.parse(
-          s"""{
-             |  "joinFrs" : false
-             |}""".stripMargin
-        )
-        val res = Json.fromJson[FlatRateScheme](json)(FlatRateScheme.apiFormat)
-        res mustBe JsSuccess(validFlateRateJoinFrsFalse)
+      "FlatRateScheme is incomplete" in {
+        Json.toJson[FlatRateScheme](incompleteFlatRate) mustBe incompleteFlatRateSchemeJson
       }
     }
   }

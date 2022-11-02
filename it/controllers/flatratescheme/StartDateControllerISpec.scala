@@ -4,7 +4,7 @@ package controllers.flatratescheme
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.api.vatapplication.VatApplication
-import models.{FRSDateChoice, FlatRateScheme, Start}
+import models.{FRSDateChoice, FlatRateScheme}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -23,7 +23,13 @@ class StartDateControllerISpec extends ControllerISpec {
     System.clearProperty("feature.system-date")
   }
 
-  val frsS4LData: FlatRateScheme = FlatRateScheme(
+  val edrDate: LocalDate = LocalDate.of(LocalDate.now().getYear - 2, 10, 2)
+  val oneDayBeforeEdrDate: LocalDate = edrDate.minusDays(1)
+  val vatStartDate: LocalDate = LocalDate.of(LocalDate.now().getYear - 2, 1, 2)
+  val oneDayBeforeVatStartDate: LocalDate = vatStartDate.minusDays(1)
+  val testDate: LocalDate = LocalDate.now().minusYears(1)
+
+  val frsData: FlatRateScheme = FlatRateScheme(
     joinFrs = Some(true),
     overBusinessGoods = Some(true),
     estimateTotalSales = Some(123),
@@ -47,72 +53,123 @@ class StartDateControllerISpec extends ControllerISpec {
     claimVatRefunds = Some(true),
     returnsFrequency = None,
     staggerStart = None,
-    startDate = Some(LocalDate.of(2017, 1, 2))
+    startDate = Some(vatStartDate)
   )
 
-  implicit val s4lFrsKey = FlatRateScheme.s4lKey
+  val eligibilityData: EligibilitySubmissionData = testEligibilitySubmissionData.copy(calculatedDate = Some(edrDate))
 
-  val edrDate = LocalDate.of(2018, 5, 30)
-  val oneDayBeforeEdrDate = edrDate.minusDays(1)
-  val vatStartDate = LocalDate.of(2017, 1, 2)
-  val oneDayBeforeVatStartDate = vatStartDate.minusDays(1)
-
-  def differentDate(date: LocalDate) = Map("frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
+  def differentDate(date: LocalDate) = Map(
+    "frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
     "frsStartDate.day" -> Seq(date.getDayOfMonth.toString),
     "frsStartDate.month" -> Seq(date.getMonthValue.toString),
-    "frsStartDate.year" -> Seq(date.getYear.toString))
+    "frsStartDate.year" -> Seq(date.getYear.toString)
+  )
+
+  def registrationDate = Map(
+    "frsStartDateRadio" -> Seq(FRSDateChoice.VATDate.toString)
+  )
 
   s"GET /flat-rate-date" should {
-    "return OK and text based on no vat start date provided" in new Setup {
+    "return OK without prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
-        .s4lContainer[FlatRateScheme].contains(frsS4LData)
-        .registrationApi.getSection(Some(vatApplication))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[FlatRateScheme](None)
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
+
       whenReady(response) { res =>
         res.status mustBe OK
-        val document = Jsoup.parse(res.body)
-        document.html().contains("This date must be on or within 3 months after the date the business is registered for VAT.") mustBe true
+        Jsoup.parse(res.body).select("input[value=VATDate]").hasAttr("checked") mustBe false
+        Jsoup.parse(res.body).select("input[value=DifferentDate]").hasAttr("checked") mustBe false
       }
     }
-    "return OK and text based on the vat start date already provided by the user" in new Setup {
+
+    "return OK with prepop for same date as application" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
-        .s4lContainer[FlatRateScheme].contains(frsS4LData)
-        .registrationApi.getSection(Some(vatApplicationWithStartDate))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(frsStart = Some(vatStartDate))))
+        .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
+
       whenReady(response) { res =>
         res.status mustBe OK
-        val document = Jsoup.parse(res.body)
-        document.html().contains("This date must be on or within 3 months after the date the business is registered for VAT.") mustBe true
+        Jsoup.parse(res.body).select("input[value=VATDate]").hasAttr("checked") mustBe true
+      }
+    }
+
+    "return OK with prepop for different date" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(frsStart = Some(LocalDate.now()))))
+        .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).select("input[value=DifferentDate]").hasAttr("checked") mustBe true
       }
     }
   }
 
   s"POST /flat-rate-date" when {
-    "on a mandatory journey" should {
-      "use the EDR date over the Vat Start Date and redirect when valid data is posted" in new Setup {
+    "on a regular journey" should {
+      "use the Vat Start Date and redirect when valid different date is posted" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .registrationApi.getSection(Some(vatApplicationWithStartDate))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
+          .registrationApi.getSection[FlatRateScheme](Some(frsData))
+          .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(testDate)))
+          .s4lContainer[FlatRateScheme].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
-          .post(differentDate(edrDate))
+          .post(differentDate(testDate))
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+        }
+      }
+
+      "use the Vat Start Date and redirect when same date is posted" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
+          .registrationApi.getSection[FlatRateScheme](Some(frsData))
+          .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(vatStartDate)))
+          .s4lContainer[FlatRateScheme].clearedByKey
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+          .post(registrationDate)
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+        }
+      }
+
+      "update the page with errors when an invalid date is posted" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+          .post(differentDate(oneDayBeforeVatStartDate))
 
         whenReady(response) { res =>
           res.status mustBe BAD_REQUEST
@@ -120,32 +177,54 @@ class StartDateControllerISpec extends ControllerISpec {
           document.html().contains("Enter a date that is on or after the date the business’s registered for VAT") mustBe true
         }
       }
-      "use the EDR and redirect when valid data is posted" in new Setup {
+    }
+
+    "on an journey where start date is captured in eligibility (NonUK, TOGC/COLE)" should {
+      "use the Calculated Date and redirect when valid different date is posted" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .registrationApi.getSection(Some(vatApplication))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[VatApplication](Some(vatApplication))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
+          .registrationApi.getSection[FlatRateScheme](Some(frsData))
+          .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(testDate)))
+          .s4lContainer[FlatRateScheme].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
-          .post(differentDate(edrDate))
+          .post(differentDate(testDate))
 
         whenReady(response) { res =>
-          res.status mustBe BAD_REQUEST
-          val document = Jsoup.parse(res.body)
-          document.html().contains("Enter a date that is on or after the date the business’s registered for VAT") mustBe true
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
         }
       }
-      "return BAD_REQUEST when an invalid form is posted when the date provided is before the EDR" in new Setup {
+
+      "use the Calculated Date and redirect when same date is posted" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .registrationApi.getSection(Some(vatApplicationWithStartDate))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[VatApplication](Some(vatApplication))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
+          .registrationApi.getSection[FlatRateScheme](Some(frsData))
+          .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(edrDate)))
+          .s4lContainer[FlatRateScheme].clearedByKey
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+          .post(registrationDate)
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+        }
+      }
+
+      "update the page with errors when an invalid date is posted" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(vatApplication))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -156,52 +235,6 @@ class StartDateControllerISpec extends ControllerISpec {
           res.status mustBe BAD_REQUEST
           val document = Jsoup.parse(res.body)
           document.html().contains("Enter a date that is on or after the date the business’s registered for VAT") mustBe true
-        }
-      }
-    }
-    "on a voluntary journey" should {
-      "use the VAT start date as the lower boundary and redirect when a valid data is posted" in new Setup {
-        System.setProperty("feature.system-date", "2018-05-23T01:01:01")
-
-        given()
-          .user.isAuthorised()
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .registrationApi.getSection(Some(vatApplicationWithStartDate))
-          .s4lContainer[FlatRateScheme].isUpdatedWith(frsS4LData.copy(frsStart = Some(Start(Some(oneDayBeforeEdrDate)))))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-          threshold = voluntaryThreshold,
-          calculatedDate = None
-        )))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
-          .post(differentDate(vatStartDate))
-
-        whenReady(response) { res =>
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
-        }
-      }
-      "return INTERNAL_SERVER_ERROR when no returns or threshold data exists" in new Setup {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[FlatRateScheme].contains(frsS4LData)
-          .registrationApi.getSection[VatApplication](None)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-          threshold = voluntaryThreshold,
-          calculatedDate = None
-        )))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
-          .post(differentDate(oneDayBeforeVatStartDate))
-
-        whenReady(response) { res =>
-          res.status mustBe INTERNAL_SERVER_ERROR
         }
       }
     }

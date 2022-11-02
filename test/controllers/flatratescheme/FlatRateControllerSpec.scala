@@ -23,6 +23,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import services.FlatRateService.{OverBusinessGoodsAnswer, OverBusinessGoodsPercentAnswer, UseThisRateAnswer}
 import testHelpers.ControllerSpec
 import views.html.flatratescheme._
 
@@ -53,7 +54,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   }
 
   s"GET ${routes.FlatRateController.annualCostsInclusivePage}" should {
-    "return a 200 when a previously completed S4LFlatRateScheme is returned" in new Setup {
+    "return a 200 when a previously completed FlatRateScheme is returned" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -62,7 +63,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
 
-    "return a 200 when an empty S4LFlatRateScheme is returned from the service" in new Setup {
+    "return a 200 when an empty FlatRateScheme is returned from the service" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(FlatRateScheme()))
 
@@ -84,7 +85,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "return 303 with Annual Costs Inclusive selected Yes" in new Setup {
-      when(mockFlatRateService.saveOverBusinessGoods(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -98,7 +99,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     }
 
     "redirect to 16.5% rate page if user selects No" in new Setup {
-      when(mockFlatRateService.saveOverBusinessGoods(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -113,7 +114,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
   }
 
   s"GET ${routes.FlatRateController.annualCostsLimitedPage}" should {
-    "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is not found on the vat scheme" in new Setup {
+    "return a 200 and render Annual Costs Limited page when a FlatRateScheme is not found on the vat scheme" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None, estimateTotalSales = Some(1234L))))
       when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
@@ -123,7 +124,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       }
     }
 
-    "return a 200 and render Annual Costs Limited page when a S4LFlatRateScheme is found on the vat scheme" in new Setup {
+    "return a 200 and render Annual Costs Limited page when a FlatRateScheme is found on the vat scheme" in new Setup {
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
       when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
@@ -153,7 +154,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
-      when(mockFlatRateService.saveOverBusinessGoodsPercent(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -170,7 +171,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
-      when(mockFlatRateService.saveOverBusinessGoodsPercent(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -293,7 +294,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      when(mockFlatRateService.saveUseFlatRate(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
@@ -310,7 +311,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      when(mockFlatRateService.saveUseFlatRate(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(

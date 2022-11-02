@@ -55,9 +55,9 @@ class JoinFrsViewSpec extends VatRegViewSpec {
       val bullet2 = "earn in sales, including VAT, over the next 3 months"
     }
 
-    val para2 = "If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date."
+    val inset = "If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date."
     val link = "VAT Flat Rate Scheme (opens in new tab)"
-    val para3 = s"Find out more about $link."
+    val para2 = s"Find out more about $link."
     val label = "Tell us if you want to register the business for the Flat Rate Scheme"
     val yes = "Yes"
     val no = "No"
@@ -102,9 +102,12 @@ class JoinFrsViewSpec extends VatRegViewSpec {
       )
     }
 
+    "have the correct indent test" in new ViewSetup {
+      doc.panelIndent(0) mustBe Some(ExpectedContent.inset)
+    }
+
     "have a final paragraph with a help link" in new ViewSetup {
       doc.para(4) mustBe Some(ExpectedContent.para2)
-      doc.para(5) mustBe Some(ExpectedContent.para3)
       doc.link(1) mustBe Some(Link(ExpectedContent.link, "https://www.gov.uk/vat-flat-rate-scheme"))
     }
 

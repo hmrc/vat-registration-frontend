@@ -16,16 +16,7 @@
 
 package models
 
-import play.api.libs.json._
-
-import java.time.LocalDate
 import scala.language.implicitConversions
-
-case class Start(date: Option[LocalDate])
-
-object Start {
-  implicit val format = Json.format[Start]
-}
 
 object DateSelection extends Enumeration {
   val company_registration_date = Value

@@ -989,9 +989,9 @@ pages.frs.join.subheading2                      = Cyn i chi benderfynu
 pages.frs.join.p4                               = Bydd angen i chi fod â syniad faint fydd y busnes:
 pages.frs.join.list2.bullet1                    = yn ei wario ar nwyddau i redeg y cwmni yn ystod y tri mis nesaf
 pages.frs.join.list2.bullet2                    = yn ei ennill mewn gwerthiannau, gan gynnwys TAW, yn ystod y tri mis nesaf
-pages.frs.join.para1                            = Os na allwch benderfynu ar hyn o bryd, atebwch ‘Na’. Gall y busnes gofrestru ar gyfer y Cynllun Cyfradd Unffurf yn ddiweddarach.
-pages.frs.join.para2                            = Rhagor o wybodaeth am y
-pages.frs.join.para2.1                          = Cynllun Cyfradd Unffurf TAW
+pages.frs.join.indent                           = Os na allwch benderfynu ar hyn o bryd, atebwch ‘Na’. Gall y busnes gofrestru ar gyfer y Cynllun Cyfradd Unffurf yn ddiweddarach.
+pages.frs.join.para1                            = Rhagor o wybodaeth am y
+pages.frs.join.para1.1                          = Cynllun Cyfradd Unffurf TAW
 validation.frs.join.missing                     = Dewiswch ‘Iawn’ os hoffech gofrestru’r busnes ar gyfer y Cynllun Cyfradd Unffurf
 
 # Do you spend less than £1000 Page
@@ -1015,7 +1015,6 @@ validation.frs.costsInclusive.missing                     = Dewiswch ‘Iawn’ 
 
 # Estimate Total Sales Page
 pages.frs.estimateTotalSales.heading                        = Amcangyfrifwch gyfanswm gwerthiannau’r busnes, gan gynnwys TAW, ar gyfer y tri mis nesaf
-pages.frs.estimateTotalSales.legend                         = Nodwch yr amcangyfrif
 pages.frs.estimateTotalSales.hint                           = Er enghraifft, £600 neu £90000
 pages.frs.estimateTotalSales.info                           = Rhowch ffigurau sydd mor realistig â phosibl.
 validation.frs.estimateTotalSales.range.above               = Nodwch amcangyfrif sy’n llai na £99,999,999,999
