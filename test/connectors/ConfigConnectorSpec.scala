@@ -48,15 +48,6 @@ class ConfigConnectorSpec extends VatRegSpec with VatMocks {
     val sicCode = SicCode(code = "01490001", description = "Silk worm raising", descriptionCy = "Raising of other animals")
   }
 
-  "Calling getSicCodeDetails" must {
-    "return a SicCode successfully" in new Setup {
-      when(mockServicesConfig.getString(ArgumentMatchers.any()))
-        .thenReturn("Silk worm raising", "Raising of other animals")
-
-      connector.getSicCodeDetails("01490") mustBe sicCode
-    }
-  }
-
   "Calling getSicCodeFRSCategory" must {
     "return a FRS Category ID" in new Setup {
       when(mockServicesConfig.getString(ArgumentMatchers.any()))

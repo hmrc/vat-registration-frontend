@@ -46,7 +46,7 @@ class SummaryServiceSpec extends VatRegSpec {
       val testVatScheme = validVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson.as[JsObject]))
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(testVatScheme))
-      when(mockSummaryCheckYourAnswersBuilder.generateSummaryAccordion(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+      when(mockSummaryCheckYourAnswersBuilder.generateSummaryAccordion(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages), ArgumentMatchers.eq(appConfig)))
         .thenReturn(Accordion())
 
       await(testService.getSummaryData) mustBe Accordion()

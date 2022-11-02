@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.api.{Country, SicCode}
+import models.api.Country
 import models.{FrsBusinessType, FrsGroup}
 import play.api.Environment
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -55,17 +55,7 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
     }.toSeq.sortBy(_.name)
   }
 
-  def getSicCodeDetails(sicCode: String): SicCode = {
-    val amendedCode = sicCode + "001"
-
-    SicCode(
-      code = amendedCode,
-      description = config.getString(s"$sicCodePrefix.$amendedCode.description"),
-      descriptionCy = config.getString(s"$sicCodePrefix.$amendedCode.description")
-    )
-  }
-
-  def getSicCodeFRSCategory(sicCode: String): String = config.getString(s"$sicCodePrefix.${sicCode}001.frsCategory")
+  def getSicCodeFRSCategory(sicCode: String): String = config.getString(s"$sicCodePrefix.$sicCode")
 
   def getBusinessType(frsId: String): FrsBusinessType = {
     val businessType = businessTypes.flatMap(_.categories).find(_.id.equals(frsId))

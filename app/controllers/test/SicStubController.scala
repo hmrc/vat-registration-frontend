@@ -19,9 +19,9 @@ package controllers.test
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
-import controllers.sicandcompliance.BusinessActivitiesResolverController
 import forms.test.SicStubForm
 import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode
 import models.test._
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -36,12 +36,22 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val s4LService: S4LService,
                                   val businessService: BusinessService,
                                   val authConnector: AuthClientConnector,
-                                  view: SicStubPage,
-                                  sicCodesResponseHandler: BusinessActivitiesResolverController)
+                                  view: SicStubPage)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
+
+  private val sicCodes = List(
+    SicCode("36000", "Collection of rain water", "Collection of rain water cy"),
+    SicCode("42110", "Airport or Airfield runway construction", "Airport or Airfield runway construction cy"),
+    SicCode("01110", "Barley, oats or wheat growing", "Barley, oats or wheat growing cy"),
+    SicCode("81300", "Aerographing (manufacture)", "Aerographing (manufacture) cy"),
+    SicCode("82190", "Blueprinting", "Blueprinting cy"),
+    SicCode("81221", "Window cleaning", "Window cleaning cy"),
+    SicCode("81222", "Cleaning of ventilation, heat and air ducts", "Cleaning of ventilation, heat and air ducts cy"),
+    SicCode("81223", "Boiler cleaning and scaling", "Boiler cleaning and scaling cy")
+  )
 
   val single = List("36000")
   val singleCompliance = List("42110")
@@ -69,7 +79,7 @@ class SicStubController @Inject()(val configConnect: ConfigConnector,
                 case MultipleSicCodeCompliance => labourSicCodes
                 case CustomSicCodes => data.fullSicCodes
               }
-              codes.map(configConnect.getSicCodeDetails).map(s => s.copy(code = s.code.substring(0, 5)))
+              codes.flatMap(c => sicCodes.filter(_.code == c))
             }
             _ <- sessionService.cache(SIC_CODES_KEY, sicCodesList)
             _ <- businessService.submitSicCodes(sicCodesList)

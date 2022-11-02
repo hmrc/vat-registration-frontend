@@ -57,7 +57,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     "the StoreAnswersForNrs feature switch is enabled" should {
       "return OK with a valid summary view" in new Setup {
         when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
-        when(mockSummaryService.getSummaryData(any(), any(), any()))
+        when(mockSummaryService.getSummaryData(any(), any(), any(), any()))
           .thenReturn(Future.successful(Accordion()))
         mockStoreEncodedUserAnswers(regId)(Future.successful(""))
 
