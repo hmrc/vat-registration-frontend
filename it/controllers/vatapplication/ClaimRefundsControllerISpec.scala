@@ -6,7 +6,6 @@ import models.api._
 import models.api.vatapplication.VatApplication
 import models.{NonUk, TransferOfAGoingConcern}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class ClaimRefundsControllerISpec extends ControllerISpec {
@@ -57,7 +56,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -74,7 +73,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -91,7 +90,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -108,7 +107,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -127,7 +126,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "true"))
+        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -144,7 +143,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = buildClient("/claim-vat-refunds").post(Json.obj("value" -> "false"))
+        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "false"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER

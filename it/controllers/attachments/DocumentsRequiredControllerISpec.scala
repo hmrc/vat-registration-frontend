@@ -5,7 +5,6 @@ import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 class DocumentsRequiredControllerISpec extends ControllerISpec {
@@ -195,7 +194,7 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      val res = buildClient(submitUrl).post(Json.obj())
+      val res = buildClient(submitUrl).post("")
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER

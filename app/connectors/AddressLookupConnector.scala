@@ -21,29 +21,35 @@ import models.api.Address
 import models.external.addresslookup.AddressLookupConfigurationModel
 import play.api.http.HeaderNames._
 import play.api.http.HttpVerbs._
+import play.api.libs.json.Json
 import play.api.mvc.Call
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NoStackTrace
 
 @Singleton
-class AddressLookupConnector @Inject()(val http: HttpClient, appConfig: FrontendAppConfig)
+class AddressLookupConnector @Inject()(val http: HttpClientV2, appConfig: FrontendAppConfig)
                                       (implicit ec: ExecutionContext) {
 
   implicit val reads: Address.addressLookupReads.type = Address.addressLookupReads
 
   def getAddress(id: String)(implicit hc: HeaderCarrier): Future[Address] =
-    http.GET[Address](appConfig.addressLookupRetrievalUrl(id))
+    http.get(url"${appConfig.addressLookupRetrievalUrl(id)}")
+      .execute[Address]
 
   def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] =
-    http.POST[AddressLookupConfigurationModel, HttpResponse](appConfig.addressLookupJourneyUrl, alfConfig).map { resp =>
-      resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
-        logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
-        throw new ALFLocationHeaderNotSetException
+    http.post(url"${appConfig.addressLookupJourneyUrl}")
+      .withBody(Json.toJson(alfConfig))
+      .execute[HttpResponse]
+      .map { resp =>
+        resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
+          logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
+          throw new ALFLocationHeaderNotSetException
+        }
       }
-    }
 }
 
 private[connectors] class ALFLocationHeaderNotSetException extends NoStackTrace

@@ -21,13 +21,14 @@ import models._
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 // scalastyle:off
 @Singleton
-class RegistrationApiConnector @Inject()(val http: HttpClient,
+class RegistrationApiConnector @Inject()(val http: HttpClientV2,
                                          val config: FrontendAppConfig)
                                         (implicit ec: ExecutionContext) {
 
@@ -43,7 +44,8 @@ class RegistrationApiConnector @Inject()(val http: HttpClient,
     }
 
     val url = appendIndexToUrl(s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}", idx)
-    http.GET[Option[T]](url)
+
+    http.get(url"$url").execute
   }
 
   def getListSection[T: ApiKey](regId: String)(implicit hc: HeaderCarrier, format: Format[List[T]]): Future[List[T]] = {
@@ -56,7 +58,8 @@ class RegistrationApiConnector @Inject()(val http: HttpClient,
         }
       }
     }
-    http.GET[List[T]](s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}")
+
+    http.get(url"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}").execute
   }
 
   def replaceSection[T: ApiKey](regId: String, section: T, idx: Option[Int] = None)(implicit hc: HeaderCarrier, format: Format[T]): Future[T] = {
@@ -70,18 +73,23 @@ class RegistrationApiConnector @Inject()(val http: HttpClient,
     }
 
     val url = appendIndexToUrl(s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}", idx)
-    http.PUT[T, T](url, section)
+
+    http.put(url"$url")
+      .withBody(Json.toJson(section))
+      .execute
   }
 
   def deleteSection[T: ApiKey](regId: String, idx: Option[Int] = None)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val url = appendIndexToUrl(s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}", idx)
 
-    http.DELETE[HttpResponse](url).map {
-      _.status match {
-        case NO_CONTENT => true
-        case status => throw new InternalServerException(s"[RegistrationApiConnector][deleteSection] unexpected status from backend: $status")
+    http.delete(url"$url")
+      .execute
+      .map {
+        _.status match {
+          case NO_CONTENT => true
+          case status => throw new InternalServerException(s"[RegistrationApiConnector][deleteSection] unexpected status from backend: $status")
+        }
       }
-    }
   }
 
   private def appendIndexToUrl(url: String, idx: Option[Int]): String = {

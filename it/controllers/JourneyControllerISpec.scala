@@ -184,7 +184,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> true)))
+        val res: WSResponse = await(buildClient(showUrl).post(Map("value" -> "true")))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.startNewJourney.url)
@@ -196,7 +196,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
-        val res: WSResponse = await(buildClient(showUrl).post(Json.obj("value" -> false)))
+        val res: WSResponse = await(buildClient(showUrl).post(Map("value" -> "false")))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.continueJourney(Some(testRegId)).url)

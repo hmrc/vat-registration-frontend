@@ -18,6 +18,7 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
+import featureswitch.core.config.{FeatureSwitching, StubUpscan}
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{AttachmentType, PrimaryIdentityEvidence}
@@ -26,9 +27,9 @@ import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, SessionId, Upstream5xxResponse}
 
-class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
+class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures with FeatureSwitching {
 
   val connector: UpscanConnector = app.injector.instanceOf[UpscanConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
@@ -66,7 +67,23 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
 
   "upscanInitiate" must {
+    "return an upscan response when the StubUpscan FS is enabled" in {
+      enable(StubUpscan)
+      stubPost("/register-for-vat/test-only/upscan/initiate", OK, testUpscanResponseJson.toString())
+      val requestBody = Json.obj(
+        "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
+        "successRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadingDocumentController.show.url}",
+        "errorRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadDocumentController.show.url}",
+        "minimumFileSize" -> 1,
+        "maximumFileSize" -> 10485760)
+
+      val response = await(connector.upscanInitiate()(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+
+      verify(postRequestedFor(urlEqualTo("/register-for-vat/test-only/upscan/initiate")).withRequestBody(equalToJson(requestBody.toString)))
+      response mustBe testUpscanResponse
+    }
     "return an UpscanResponse" in {
+      disable(StubUpscan)
       stubPost(upscanInitiateUrl, OK, testUpscanResponseJson.toString())
       val requestBody = Json.obj(
         "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
@@ -90,7 +107,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an exception if initiate fails" in {
       stubPost(upscanInitiateUrl, INTERNAL_SERVER_ERROR, testUpscanResponseJson.toString())
 
-      intercept[Upstream5xxResponse](await(connector.upscanInitiate()))
+      intercept[InternalServerException](await(connector.upscanInitiate()))
     }
   }
 
@@ -146,7 +163,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
       stubDelete(upscanDetailsUrl, IM_A_TEAPOT, "")
 
-      intercept[Upstream4xxResponse](await(connector.deleteUpscanDetails(testRegId, testReference)))
+      intercept[InternalServerException](await(connector.deleteUpscanDetails(testRegId, testReference)))
     }
   }
 
@@ -163,7 +180,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an exception if delete fails" in {
       stubDelete(deleteAllUpscanDetailsUrl, IM_A_TEAPOT, "")
 
-      intercept[Upstream4xxResponse](await(connector.deleteAllUpscanDetails(testRegId)))
+      intercept[InternalServerException](await(connector.deleteAllUpscanDetails(testRegId)))
     }
   }
 

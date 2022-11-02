@@ -5,7 +5,6 @@ import itutil.ControllerISpec
 import models.BankAccount
 import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
@@ -114,7 +113,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj("value" -> "true")))
+      val res = await(buildClient(url).post(Map("value" -> "true")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
@@ -128,7 +127,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj("value" -> "true")))
+      val res = await(buildClient(url).post(Map("value" -> "true")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.OverseasBankAccountController.show.url)
@@ -142,7 +141,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(url).post(Json.obj("value" -> "false")))
+      val res = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)

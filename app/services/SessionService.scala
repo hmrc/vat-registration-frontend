@@ -30,7 +30,8 @@ class SessionService @Inject()(sessionRepository: SessionRepository,
                                cascadeUpsert: CascadeUpsert)
                               (implicit ec: ExecutionContext) {
 
-  def sessionID(implicit hc: HeaderCarrier): String = hc.sessionId.getOrElse(throw new RuntimeException("Active User had no Session ID")).value
+  def sessionID(implicit hc: HeaderCarrier): String =
+    hc.sessionId.getOrElse(throw new RuntimeException("Active User had no Session ID")).value
 
   def cache[T](formId: String, body: T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
     sessionRepository.get(sessionID).flatMap { optionalCacheMap =>

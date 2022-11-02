@@ -21,7 +21,6 @@ import itutil.ControllerISpec
 import models.api.{Attachments, LandPropertyOtherDocs, VAT5L}
 import models.external.upscan.{Ready, UpscanDetails}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -90,7 +89,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "true")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "true")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadSupportingDocumentController.show.url)
@@ -107,7 +106,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "false")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
@@ -125,7 +124,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       enable(TaskList)
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "false")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)

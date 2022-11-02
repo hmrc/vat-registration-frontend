@@ -37,9 +37,7 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
   implicit val messages = messagesApi.preferred(Seq(Lang("en")))
 
   "getting an address out of Address Lookup Frontend" should {
-
     "obtain expected address from JSON response from ALF" when {
-
       "address is found in ALF" in {
         given()
           .address("addressId", "16 Coniston Court", "Holland road", "UK", "BN3 1JU").isFound

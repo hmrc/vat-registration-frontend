@@ -80,7 +80,7 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
 
   private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
 
-  def buildClient(path: String, reference: Option[String] = None)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie(reference = reference)) = {
+  def buildClient(path: String, reference: Option[String] = None)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie(reference = reference))= {
     val removeRegisterWithPath = path.replace("""/register-for-vat""", "")
     ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHttpHeaders(headers, "Csrf-Token" -> "nocheck")
   }

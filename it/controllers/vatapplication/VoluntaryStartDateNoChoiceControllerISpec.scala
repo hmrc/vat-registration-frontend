@@ -5,7 +5,6 @@ import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 import java.time.LocalDate
@@ -87,7 +86,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Json.obj(
+          val res = await(buildClient(url).post(Map(
             "startDate.day" -> testDate.getDayOfMonth.toString,
             "startDate.month" -> testDate.getMonthValue.toString,
             "startDate.year" -> testDate.getYear.toString
@@ -107,7 +106,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Json.obj(
+          val res = await(buildClient(url).post(Map(
             "startDate.day" -> testDate.getDayOfMonth.toString,
             "startDate.month" -> testDate.getMonthValue.toString,
             "startDate.year" -> testDate.getYear.toString
@@ -125,7 +124,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Json.obj(
+        val res = await(buildClient(url).post(Map(
           "startDate.day" -> "",
           "startDate.month" -> "",
           "startDate.year" -> ""

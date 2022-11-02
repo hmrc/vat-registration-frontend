@@ -20,21 +20,24 @@ package connectors
 import config.FrontendAppConfig
 import models.BankAccountDetails
 import play.api.http.Status.OK
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountReputationConnector @Inject()(val http: HttpClient,
+class BankAccountReputationConnector @Inject()(val http: HttpClientV2,
                                                appConfig: FrontendAppConfig)
                                               (implicit ec: ExecutionContext) {
 
 
   def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
-    http.POST[BankAccountDetails, HttpResponse](appConfig.validateBankDetailsUrl, account)
+    http.post(url"${appConfig.validateBankDetailsUrl}")
+      .withBody(Json.toJson(account))
+      .execute
       .map { response =>
         response.status match {
           case OK => response.json

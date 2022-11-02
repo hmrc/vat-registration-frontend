@@ -6,7 +6,6 @@ import itutil.ControllerISpec
 import models.OtherBusinessInvolvement
 import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 
 
@@ -87,7 +86,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessInvolvementController.show.url)
@@ -103,7 +102,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
 
           res.status mustBe BAD_REQUEST
         }
@@ -120,7 +119,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "true")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "true")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessNameController.show(2).url)
@@ -135,7 +134,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "false")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "false")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
@@ -151,7 +150,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "false")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "false")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
@@ -166,7 +165,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "false")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "false")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)

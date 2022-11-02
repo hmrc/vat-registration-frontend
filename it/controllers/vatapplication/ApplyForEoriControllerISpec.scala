@@ -20,7 +20,6 @@ import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -84,7 +83,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Json.obj("value" -> "true"))
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER

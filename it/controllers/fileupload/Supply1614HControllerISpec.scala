@@ -20,7 +20,6 @@ import itutil.ControllerISpec
 import models.api.{Attachment1614a, Attachment1614h, Attachments, LandPropertyOtherDocs}
 import models.external.upscan.{Ready, UpscanDetails}
 import org.jsoup.Jsoup
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -89,7 +88,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "true")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "true")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadOptionToTaxDocumentController.show.url)
@@ -105,7 +104,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "false")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.SupplySupportingDocumentsController.show.url)
@@ -121,7 +120,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Json.obj("value" -> "false")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentUploadSummaryController.show.url)

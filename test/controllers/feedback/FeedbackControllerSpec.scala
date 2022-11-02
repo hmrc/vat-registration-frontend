@@ -54,10 +54,4 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
     }
   }
 
-  "POST /feedback" should {
-    "return form with thank you for valid selections" in new Setup {
-      when(mockHttpClient.POSTForm[HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(
-        Future.successful(HttpResponse(Status.OK, "1234")))
-    }
-  }
 }

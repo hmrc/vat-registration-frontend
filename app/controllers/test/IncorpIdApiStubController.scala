@@ -26,6 +26,7 @@ import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import views.html.test.IncorpIdStubPage
 
 import java.time.LocalDate
@@ -57,8 +58,10 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
         case CharitableOrg => charitableOrg
       }
 
+      implicit val hc = HeaderCarrierConverter.fromRequest(request)
+
       sessionService.cache("continueUrl", request.body.continueUrl).map { _ =>
-        Created(Json.obj("journeyStartUrl" -> JsString(routes.IncorpIdApiStubController.showStubPage(journeyId).url)))
+        Created(Json.obj("journeyStartUrl" -> JsString(routes.IncorpIdApiStubController.showStubPage(journeyId).url))).withSession(request.session)
       }
   }
 
@@ -71,7 +74,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
       "passBv" -> "false"
     )
 
-    Ok(stubView(IncorpIdStubForm.form.bind(data), journeyId))
+    Ok(stubView(IncorpIdStubForm.form.bind(data), journeyId)).withSession(request.session)
   }
 
   def submitStubPage(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
@@ -82,7 +85,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
         sessionService.cache("incorpStubResponse", values).flatMap { _ =>
           sessionService.fetchAndGet[String]("continueUrl").collect {
             case Some(continueUrl) =>
-              Redirect(continueUrl + s"?journeyId=$journeyId")
+              Redirect(continueUrl + s"?journeyId=$journeyId").withSession(request.session)
           }
         }
     )

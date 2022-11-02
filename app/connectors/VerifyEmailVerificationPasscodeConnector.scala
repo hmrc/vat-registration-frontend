@@ -21,7 +21,8 @@ import connectors.VerifyEmailVerificationPasscodeParser._
 import models.external._
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +54,7 @@ object VerifyEmailVerificationPasscodeParser {
 }
 
 @Singleton
-class VerifyEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient,
+class VerifyEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClientV2,
                                                          config: FrontendAppConfig
                                                         )(implicit ec: ExecutionContext) {
 
@@ -65,7 +66,9 @@ class VerifyEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient,
       "email" -> email,
       "passcode" -> passcode)
 
-    httpClient.POST(url, jsonBody)
+    httpClient.post(url"$url")
+      .withBody(jsonBody)
+      .execute[VerifyEmailPasscodeResult]
   }
 }
 

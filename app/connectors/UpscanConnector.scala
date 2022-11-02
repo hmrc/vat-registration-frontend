@@ -17,17 +17,22 @@
 package connectors
 
 import config.FrontendAppConfig
+import featureswitch.core.config.{FeatureSwitching, StubUpscan}
 import models.api.AttachmentType
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
+import utils.SessionIdRequestHelper
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppConfig)(implicit executionContext: ExecutionContext) {
+class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendAppConfig)
+                               (implicit executionContext: ExecutionContext) extends FeatureSwitching {
 
   def upscanInitiate()(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
     lazy val url = appConfig.setupUpscanJourneyUrl
@@ -39,7 +44,12 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
       "maximumFileSize" -> 10485760
     )
 
-    httpClient.POST[JsValue, HttpResponse](url, body).map {
+    val upscanRequest = SessionIdRequestHelper.conditionallyAddSessionIdHeader(
+      baseRequest = httpClient.post(url"$url").withBody(body),
+      condition = isEnabled(StubUpscan)
+    )
+
+    upscanRequest.execute.map {
       case response@HttpResponse(OK, _, _) => response.json.as[UpscanResponse]
       case response => throw new InternalServerException(s"[UpscanConnector] Upscan initiate received an unexpected response Status: ${response.status}")
     }
@@ -48,48 +58,60 @@ class UpscanConnector @Inject()(httpClient: HttpClient, appConfig: FrontendAppCo
   def storeUpscanReference(regId: String, reference: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     lazy val url = appConfig.storeUpscanReferenceUrl(regId)
 
-    httpClient.POST[JsValue, HttpResponse](url, Json.obj(
-      "reference" -> reference,
-      "attachmentType" -> attachmentType
-    )) recover {
-      case e => throw logResponse(e, "storeUpscanReference")
-    }
+    httpClient.post(url"$url")
+      .withBody(
+        Json.obj(
+          "reference" -> reference,
+          "attachmentType" -> attachmentType
+        )
+      ).execute
+      .recover {
+        case e => throw logResponse(e, "storeUpscanReference")
+      }
   }
 
   def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[UpscanDetails] = {
     lazy val url = appConfig.fetchUpscanFileDetails(regId, reference)
 
-    httpClient.GET[UpscanDetails](url) recover {
-      case e => throw logResponse(e, "fetchUpscanFileDetails")
-    }
+    httpClient.get(url"$url")
+      .execute[UpscanDetails]
+      .recover {
+        case e => throw logResponse(e, "fetchUpscanFileDetails")
+      }
   }
 
   def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     lazy val url = appConfig.fetchUpscanFileDetails(regId, reference)
 
-    httpClient.DELETE[HttpResponse](url).map {
-      _.status match {
-        case NO_CONTENT => true
-        case status => throw new InternalServerException(s"[UpscanConnector] Delete upscan details received an unexpected response Status: $status")
+    httpClient.delete(url"$url")
+      .execute
+      .map {
+        _.status match {
+          case NO_CONTENT => true
+          case status => throw new InternalServerException(s"[UpscanConnector] Delete upscan details received an unexpected response Status: $status")
+        }
       }
-    }
   }
 
   def deleteAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     lazy val url = appConfig.deleteAllUpscanDetails(regId)
 
-    httpClient.DELETE[HttpResponse](url).map {
-      _.status match {
-        case NO_CONTENT => true
-        case status => throw new InternalServerException(s"[UpscanConnector] Delete all upscan details received an unexpected response Status: $status")
+    httpClient.delete(url"$url")
+      .execute
+      .map {
+        _.status match {
+          case NO_CONTENT => true
+          case status => throw new InternalServerException(s"[UpscanConnector] Delete all upscan details received an unexpected response Status: $status")
+        }
       }
-    }
   }
 
   def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Seq[UpscanDetails]] = {
     lazy val url = appConfig.fetchAllUpscanDetails(regId)
-    httpClient.GET[Seq[UpscanDetails]](url) recover {
-      case e => throw logResponse(e, "fetchAllUpscanDetails")
-    }
+    httpClient.get(url"$url")
+      .execute[Seq[UpscanDetails]]
+      .recover {
+        case e => throw logResponse(e, "fetchAllUpscanDetails")
+      }
   }
 }

@@ -25,6 +25,7 @@ import models.external.{BvFail, BvPass, IncorporatedEntity}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 
 class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with ITRegistrationFixtures {
 
@@ -56,7 +57,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(UkCompany)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createJourney(testJourneyConfig, UkCompany))
+        val res = await(connector.createJourney(testJourneyConfig, UkCompany)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
 
         res mustBe testJourneyStartUrl
       }
@@ -71,7 +72,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(RegSociety)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createJourney(testJourneyConfig, RegSociety))
+        val res = await(connector.createJourney(testJourneyConfig, RegSociety)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
 
         res mustBe testJourneyStartUrl
       }
@@ -86,7 +87,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(CharitableOrg)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createJourney(testJourneyConfig, CharitableOrg))
+        val res = await(connector.createJourney(testJourneyConfig, CharitableOrg)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
 
         res mustBe testJourneyStartUrl
       }
@@ -142,11 +143,22 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
   "getDetails" when {
     "incorp ID returns valid incorporation details" should {
-      "return the incorporation details without optional data" in {
-        given()
+      "return the incorporation details when the StubIncorpIdJourney FS is enabled" in {
+        enable(StubIncorpIdJourney)
+        given().user.isAuthorised()
 
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", Some(BvFail), None)
+        stubGet(s"/register-for-vat/test-only/api/incorp-id-journey/testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
+
+        val res = await(connector.getDetails(testIncorpId)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+
+        res mustBe validResponse
+      }
+      "return the incorporation details without optional data" in {
         disable(StubIncorpIdJourney)
+        given().user.isAuthorised()
+
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", Some(BvFail), None)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
@@ -155,10 +167,10 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       }
 
       "return the incorporation details with optional data" in {
-        given()
+        disable(StubIncorpIdJourney)
+        given().user.isAuthorised()
 
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
-        disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
@@ -167,10 +179,10 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
       }
 
       "return the incorporation details for a charitable organisation" in {
-        given()
+        disable(StubIncorpIdJourney)
+        given().user.isAuthorised()
 
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
-        disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
@@ -180,9 +192,9 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
     }
     "incorp ID returns invalid incorporation details" should {
       "throw and exception" in {
+        disable(StubIncorpIdJourney)
         given()
 
-        disable(StubIncorpIdJourney)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")
 
         intercept[Exception](await(connector.getDetails(testIncorpId)))
