@@ -22,6 +22,7 @@ import forms.vatapplication.VoluntaryDateForm
 import models._
 import play.api.mvc.{Action, AnyContent}
 import services._
+import utils.MessageDateFormat
 import views.html.vatapplication.start_date_incorp_view
 
 import javax.inject.{Inject, Singleton}
@@ -56,7 +57,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
 
           val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))
 
-          Ok(voluntaryStartDateIncorpPage(filledForm, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, exampleVatStartDate))
+          Ok(voluntaryStartDateIncorpPage(filledForm, MessageDateFormat.format(incorpDate), incorpDateAfter, exampleVatStartDate))
         }
       }
   }
@@ -71,7 +72,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
               val dynamicDate = timeService.dynamicFutureDateExample()
               val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))
 
-              Future.successful(BadRequest(voluntaryStartDateIncorpPage(errors, incorpDate.format(VoluntaryDateForm.dateFormat), incorpDateAfter, dynamicDate)))
+              Future.successful(BadRequest(voluntaryStartDateIncorpPage(errors, MessageDateFormat.format(incorpDate), incorpDateAfter, dynamicDate)))
             },
             success => vatApplicationService.saveVoluntaryStartDate(success._1, success._2, incorpDate).map(_ =>
               Redirect(controllers.vatapplication.routes.CurrentlyTradingController.show)

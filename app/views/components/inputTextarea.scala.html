@@ -16,7 +16,7 @@
 
 @this(
     govukTextArea: GovukTextarea,
-    govukCharacterCount: GovukCharacterCount
+    hmrcCharacterCount: HmrcCharacterCount
 )
 
 @(
@@ -41,7 +41,7 @@
 }
 
 @if(maxCharacters.isDefined) {
-    @govukCharacterCount(uk.gov.hmrc.govukfrontend.views.html.components.CharacterCount(
+    @hmrcCharacterCount(uk.gov.hmrc.hmrcfrontend.views.html.components.CharacterCount(
         id = id,
         name = name,
         maxLength = maxCharacters,

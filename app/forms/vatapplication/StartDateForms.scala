@@ -22,8 +22,10 @@ import models.DateSelection.specific_date
 import play.api.data.Forms.{tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
+import play.api.i18n.Messages
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+import utils.MessageDateFormat
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -37,10 +39,6 @@ trait StartDateForm {
   protected val dateEmptyKey = "validation.startDate.missing"
   protected val dateInvalidKey = "validation.startDate.invalid"
   protected val dateRange = "validation.startDate.range"
-
-  val dateFormat: DateTimeFormatter = DateTimeFormatter
-    .ofLocalizedDate(java.time.format.FormatStyle.LONG)
-    .withLocale(java.util.Locale.UK)
 
   implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
     def bind(key: String, data: Map[String, String]): Either[Seq[FormError], DateSelection.Value] = {
@@ -63,7 +61,7 @@ object MandatoryDateForm extends StartDateForm {
   val radioAnswer = "value"
   val startDate = "date"
 
-  def form(incorpDate: LocalDate, calculatedDate: LocalDate): Form[(DateSelection.Value, Option[LocalDate])] = Form(
+  def form(incorpDate: LocalDate, calculatedDate: LocalDate)(implicit messages: Messages): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
       radioAnswer -> Forms.of[DateSelection.Value],
       startDate -> mandatoryIf(isEqual(radioAnswer, specific_date),
@@ -74,7 +72,7 @@ object MandatoryDateForm extends StartDateForm {
         ).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          withinRange(incorpDate, calculatedDate, dateRange, dateRange, List(incorpDate.format(dateFormat), calculatedDate.format(dateFormat))),
+          withinRange(incorpDate, calculatedDate, dateRange, dateRange, List(MessageDateFormat.format(incorpDate), MessageDateFormat.format(calculatedDate))),
           withinFourYearsPast(dateWithinFourYears)
         )).transform[LocalDate](
           { case (day, month, year) => LocalDate.of(year.toInt, month.toInt, day.toInt) },
@@ -87,7 +85,7 @@ object MandatoryDateForm extends StartDateForm {
 }
 
 object VoluntaryDateForm extends StartDateForm {
-  def form(dateRangeMin: LocalDate, dateRangeMax: LocalDate): Form[(DateSelection.Value, Option[LocalDate])] = Form(
+  def form(dateRangeMin: LocalDate, dateRangeMax: LocalDate)(implicit messages: Messages): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
       START_DATE_SELECTION -> Forms.of[DateSelection.Value],
       START_DATE -> mandatoryIf(
@@ -95,7 +93,7 @@ object VoluntaryDateForm extends StartDateForm {
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          withinRange(dateRangeMin, dateRangeMax, dateRange, dateRange, List(dateRangeMin.format(dateFormat), dateRangeMax.format(dateFormat)))
+          withinRange(dateRangeMin, dateRangeMax, dateRange, dateRange, List(MessageDateFormat.format(dateRangeMin), MessageDateFormat.format(dateRangeMax)))
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt),
           date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
@@ -109,7 +107,7 @@ object VoluntaryDateFormIncorp extends StartDateForm {
   private val dateWithinFourYears = "validation.startDate.range.below4y"
   private val now3MonthsLater = LocalDate.now().plusMonths(3)
 
-  def form(incorpDate: LocalDate): Form[(DateSelection.Value, Option[LocalDate])] = Form(
+  def form(incorpDate: LocalDate)(implicit messages: Messages): Form[(DateSelection.Value, Option[LocalDate])] = Form(
     tuple(
       START_DATE_SELECTION -> Forms.of[DateSelection.Value],
       START_DATE -> mandatoryIf(
@@ -117,7 +115,7 @@ object VoluntaryDateFormIncorp extends StartDateForm {
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
-          withinRange(incorpDate, now3MonthsLater, dateRange, dateRange, List(incorpDate.format(dateFormat), now3MonthsLater.format(dateFormat))),
+          withinRange(incorpDate, now3MonthsLater, dateRange, dateRange, List(MessageDateFormat.format(incorpDate), MessageDateFormat.format(now3MonthsLater))),
           withinFourYearsPast(dateWithinFourYears)
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt),

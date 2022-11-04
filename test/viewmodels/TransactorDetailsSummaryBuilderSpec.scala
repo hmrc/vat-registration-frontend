@@ -25,6 +25,7 @@ import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import utils.MessageDateFormat
 
 import java.time.LocalDate
 
@@ -110,7 +111,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           ),
           optSummaryListRowString(
             TestContent.dateOfBirth,
-            Some(testDateOfBirth.format(Builder.presentationFormatter)),
+            Some(MessageDateFormat.format(testDateOfBirth)),
             Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowString(
@@ -174,7 +175,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
           ),
           optSummaryListRowString(
             TestContent.dateOfBirth,
-            Some(testDateOfBirth.format(Builder.presentationFormatter)),
+            Some(MessageDateFormat.format(testDateOfBirth)),
             Some(controllers.grs.routes.TransactorIdController.startJourney.url)
           ),
           optSummaryListRowString(

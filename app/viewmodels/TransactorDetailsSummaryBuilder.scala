@@ -25,15 +25,14 @@ import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
+import utils.MessageDateFormat
 
-import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
 class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
 
-  val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId: String = "cya.transactor"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
@@ -91,7 +90,7 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
 
     val dateOfBirth = optSummaryListRowString(
       s"$sectionId.dateOfBirth",
-      transactorDetails.personalDetails.flatMap(_.dateOfBirth.map(_.format(presentationFormatter))),
+      transactorDetails.personalDetails.flatMap(_.dateOfBirth).map(MessageDateFormat.format),
       Some(controllers.grs.routes.TransactorIdController.startJourney.url)
     )
 

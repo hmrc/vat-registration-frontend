@@ -29,14 +29,13 @@ import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
+import utils.MessageDateFormat
 
-import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
 class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
-  val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId: String = "cya.applicantDetails"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
@@ -63,7 +62,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         case _ if isEnabled(UseSoleTraderIdentification) => //The low volume entities are already set up to use individual flow, incorp id entities are still switched to PDV in prod
           grsRoutes.IndividualIdController.startJourney.url
         case _ =>
-          applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney.url
+          applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
       }
     }
 
@@ -90,7 +89,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       for {
         personalDetails <- applicantDetails.personalDetails
         dob <- personalDetails.dateOfBirth
-      } yield dob.format(presentationFormatter),
+      } yield MessageDateFormat.format(dob),
       Some(changePersonalDetailsUrl)
     )
 
@@ -122,7 +121,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
 
     val formerNameDate = optSummaryListRowString(
       s"$sectionId.formerNameDate",
-      applicantDetails.formerNameDate.map(_.date.format(presentationFormatter)),
+      applicantDetails.formerNameDate.map(_.date).map(MessageDateFormat.format),
       Some(applicantRoutes.FormerNameDateController.show.url)
     )
 

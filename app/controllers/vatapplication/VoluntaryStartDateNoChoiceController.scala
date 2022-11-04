@@ -21,9 +21,9 @@ import controllers.BaseController
 import forms.VoluntaryStartDateNoChoiceForm
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionService, TimeService, VatApplicationService}
+import utils.MessageDateFormat
 import views.html.vatapplication.VoluntaryStartDateNoChoice
 
-import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,20 +38,17 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
                                                      val executionContext: ExecutionContext,
                                                      baseControllerComponents: BaseControllerComponents) extends BaseController {
 
-  private val exampleDateFormat = "d M yyyy"
-  private val exampleDateFormatter = DateTimeFormatter.ofPattern(exampleDateFormat)
-
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     vatApplicationService.getVatApplication.map { vatApplication =>
       val form = vatApplication.startDate.fold(formProvider())(formProvider().fill)
-      Ok(view(form, timeService.today.format(exampleDateFormatter)))
+      Ok(view(form, MessageDateFormat.format(timeService.today)))
     }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     formProvider().bindFromRequest.fold(
       formWithErrors =>
-        Future.successful(BadRequest(view(formWithErrors, timeService.today.format(exampleDateFormatter)))),
+        Future.successful(BadRequest(view(formWithErrors, MessageDateFormat.format(timeService.today)))),
       startDate =>
         vatApplicationService.saveVatApplication(startDate).map { _ =>
           Redirect(controllers.vatapplication.routes.CurrentlyTradingController.show)

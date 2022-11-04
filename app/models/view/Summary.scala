@@ -22,6 +22,11 @@ import play.api.libs.json._
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import utils.MessageDateFormat
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import scala.util.Try
 
 object SummaryListRowUtils {
   def optSummaryListRowString(questionId: String,
@@ -119,11 +124,12 @@ object EligibilityJsonParser {
     (
       (__ \ "question").read[String] and
         (__ \ "answer").read[String] and
+        (__ \ "answerValue").read[JsValue] and
         (__ \ "questionId").read[String].map(_.replaceAll("[-](?<=-).*", ""))
-      ) ((question, answer, questionId) =>
+      ) ((question, answer, answerValue, questionId) =>
       SummaryListRow(
         key = Key(Text(messages(question)), "govuk-!-width-one-half"),
-        value = Value(Text(messages(answer))),
+        value = Value(Text(messages(getAnswer(answer, answerValue)))),
         actions = Some(Actions(
           items = Seq(
             ActionItem(
@@ -135,6 +141,12 @@ object EligibilityJsonParser {
         ))
       )
     )
+  }
+
+  private def getAnswer(answer: String, answerValue: JsValue)(implicit messages: Messages): String = {
+    Try(LocalDate.parse(answerValue.as[String], DateTimeFormatter.ISO_LOCAL_DATE))
+      .map(date => MessageDateFormat.format(date))
+      .getOrElse(answer)
   }
 
   def eligibilitySummaryListReads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryList] = {
