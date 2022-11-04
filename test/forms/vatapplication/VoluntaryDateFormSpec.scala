@@ -19,12 +19,16 @@ package forms.vatapplication
 import models.DateSelection
 import models.DateSelection.{business_start_date, company_registration_date, specific_date}
 import play.api.data.Form
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import java.time.LocalDate
 
 class VoluntaryDateFormSpec extends VatRegSpec {
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+
   val now: LocalDate = LocalDate.of(2018, 1, 2)
 
   val validDate: LocalDate = now.plusDays(10)

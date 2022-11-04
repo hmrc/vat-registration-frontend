@@ -38,7 +38,4 @@ object MonthYearModel {
   def fromLocalDate(localDate: LocalDate): MonthYearModel =
     MonthYearModel(localDate.getMonthValue.toString, localDate.getYear.toString)
 
-  val FORMAT_DD_MMMM_Y = DateTimeFormatter.ofPattern("dd MMMM y").withResolverStyle(ResolverStyle.STRICT)
-  val FORMAT_D_MMMM_Y = DateTimeFormatter.ofPattern("d MMMM y").withResolverStyle(ResolverStyle.STRICT)
-
 }

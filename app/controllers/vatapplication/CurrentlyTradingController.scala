@@ -25,6 +25,7 @@ import services.VatApplicationService.CurrentlyTrading
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
+import utils.MessageDateFormat
 import views.html.vatapplication.CurrentlyTradingView
 
 import java.time.LocalDate
@@ -50,7 +51,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
           vatApplication.startDate match {
             case Some(startDate) =>
               val msgKeySuffix = if (startDate.isBefore(LocalDate.now())) "past" else "future"
-              val registrationDate = DateTimeFormatter.ofPattern("d MMMM yyyy").format(startDate)
+              val registrationDate = MessageDateFormat.format(startDate)
               val form = CurrentlyTradingForm(msgKeySuffix, registrationDate).form
 
               Ok(view(vatApplication.currentlyTrading.fold(form)(form.fill), msgKeySuffix, registrationDate))
@@ -67,7 +68,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
           vatApplication.startDate match {
             case Some(startDate) =>
               val msgKeySuffix = if (startDate.isBefore(LocalDate.now())) "past" else "future"
-              val registrationDate = DateTimeFormatter.ofPattern("dd MMMM yyyy").format(startDate)
+              val registrationDate = MessageDateFormat.format(startDate)
 
               CurrentlyTradingForm(msgKeySuffix, registrationDate).form.bindFromRequest.fold(
                 errors => Future.successful(BadRequest(view(errors, msgKeySuffix, registrationDate))),

@@ -20,12 +20,16 @@ import models.DateSelection
 import models.DateSelection._
 import org.joda.time.{LocalDate => JodaLocalDate}
 import play.api.data.Form
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
 
 import java.time.LocalDate
 
 class VoluntaryDateFormIncorpSpec extends VatRegSpec {
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+
   val incorpDate: LocalDate = LocalDate.of(2021, 1, 1)
 
   implicit val bhs: BankHolidaySet = BankHolidaySet("england-and-wales", List(

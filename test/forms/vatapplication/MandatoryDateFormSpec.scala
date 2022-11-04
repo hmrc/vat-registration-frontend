@@ -19,11 +19,15 @@ package forms.vatapplication
 import models.DateSelection
 import models.DateSelection._
 import play.api.data.Form
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
 
 import java.time.LocalDate
 
 class MandatoryDateFormSpec extends VatRegSpec {
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+
   val incorpDate: LocalDate = LocalDate.now.minusYears(3)
   val oldIncorpDate: LocalDate = LocalDate.of(2010, 1, 1)
   val calculatedDate: LocalDate = LocalDate.now().minusYears(2).withMonth(12).withDayOfMonth(12)

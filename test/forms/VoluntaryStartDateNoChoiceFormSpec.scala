@@ -16,10 +16,14 @@
 
 package forms
 
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import services.mocks.TimeServiceMock
 import testHelpers.VatRegSpec
 
 class VoluntaryStartDateNoChoiceFormSpec extends VatRegSpec with TimeServiceMock {
+
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
   val form = new VoluntaryStartDateNoChoiceForm(mockTimeService)
 

@@ -20,8 +20,10 @@ import forms.FormValidation.{nonEmptyDate, validDate, withinRange}
 import forms.vatapplication.StartDateForm
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.i18n.Messages
 import services.TimeService
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import utils.MessageDateFormat
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -31,7 +33,7 @@ class VoluntaryStartDateNoChoiceForm @Inject()(timeService: TimeService) extends
   lazy val date4YearsAgo = timeService.today.minusYears(4)
   lazy val now3MonthsLater = timeService.today.plusMonths(3)
 
-  def apply(): Form[LocalDate] = Form(
+  def apply()(implicit messages: Messages): Form[LocalDate] = Form(
     single(
       START_DATE -> tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
           nonEmptyDate(dateEmptyKey),
@@ -41,7 +43,7 @@ class VoluntaryStartDateNoChoiceForm @Inject()(timeService: TimeService) extends
             maxDate = now3MonthsLater,
             beforeMinErr = dateRange,
             afterMaxErr = dateRange,
-            args = List(date4YearsAgo.format(dateFormat), now3MonthsLater.format(dateFormat))
+            args = List(MessageDateFormat.format(date4YearsAgo), MessageDateFormat.format(now3MonthsLater))
           )
         )).transform[LocalDate](
           date => LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt),

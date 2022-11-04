@@ -26,8 +26,8 @@ import uk.gov.hmrc.govukfrontend.views.html.components.GovukTag
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.{HeadCell, TableRow}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.tag.Tag
+import utils.MessageDateFormat
 
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSwitching {
@@ -35,8 +35,6 @@ class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSw
   private final val GREY = "govuk-tag--grey"
   private final val YELLOW = "govuk-tag--yellow"
   private final val GREEN = "govuk-tag--green"
-
-  val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
 
   def tableHead(implicit messages: Messages) = Seq(
     HeadCell(content = Text(messages("manageRegistrations.table.reference"))),
@@ -56,7 +54,7 @@ class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSw
   def link(registration: VatSchemeHeader): String =
     controllers.routes.JourneyController.continueJourney(Some(registration.registrationId)).url
 
-  def tableRows(registrations: List[VatSchemeHeader])(implicit messages: Messages): Seq[Seq[TableRow]] =
+  def tableRows(registrations: List[VatSchemeHeader])(implicit messages: Messages): Seq[Seq[TableRow]] = {
     registrations.map(registration =>
       Seq(
         TableRow(content = HtmlContent(
@@ -66,9 +64,10 @@ class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSw
              |  </a>""".stripMargin
           )
         )),
-        TableRow(content = Text(registration.createdDate.format(presentationFormatter))),
+        TableRow(content = Text(MessageDateFormat.format(registration.createdDate))),
         TableRow(content = HtmlContent(statusTag(registration)))
       )
     )
+  }
 
 }

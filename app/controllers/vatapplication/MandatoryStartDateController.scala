@@ -24,6 +24,7 @@ import models._
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.MessageDateFormat
 import views.html.vatapplication.mandatory_start_date_incorp_view
 
 import java.time.LocalDate
@@ -47,7 +48,7 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
             val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
             Ok(mandatoryStartDateIncorpPage(
               dateModel.selected.fold(form) { selection => form.fill((selection, dateModel.startDate)) },
-              dateModel.calculatedDate.format(MonthYearModel.FORMAT_D_MMMM_Y)
+              MessageDateFormat.format(dateModel.calculatedDate)
             ))
           })
   }
@@ -59,7 +60,7 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
           vatApplicationService.retrieveCalculatedStartDate.flatMap { calcDate =>
             MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
               errors => {
-                Future.successful(BadRequest(mandatoryStartDateIncorpPage(errors, calcDate.format(MonthYearModel.FORMAT_D_MMMM_Y))))
+                Future.successful(BadRequest(mandatoryStartDateIncorpPage(errors, MessageDateFormat.format(calcDate))))
               },
               {
                 case (DateSelection.specific_date, Some(startDate)) => handleMandatoryStartDate(startDate)

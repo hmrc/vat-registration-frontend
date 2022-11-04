@@ -92,8 +92,6 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val testBusinessActivityDescription = "description"
   val testRegId = "VAT123456"
   val testHonestyDeclaration = true
-  val testMonthYearPresentationFormatter = DateTimeFormatter.ofPattern("MMMM y")
-  val testPresentationFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val validBankCheckJsonResponseString =
     s"""
        |{
@@ -384,8 +382,8 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
       |              "data": [
       |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
       |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
-      |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-5-23"},
-      |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-7-16"}
+      |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-05-23"},
+      |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-07-16"}
       |              ]
       |            },
       |            {

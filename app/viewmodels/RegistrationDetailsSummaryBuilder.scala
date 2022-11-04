@@ -30,8 +30,8 @@ import services.FlatRateService
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
+import utils.MessageDateFormat
 
-import java.time.format.DateTimeFormatter
 import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
@@ -41,7 +41,6 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
                                                   govukSummaryList: GovukSummaryList)
                                                  (implicit appConfig:FrontendAppConfig) extends FeatureSwitching {
 
-  val presentationFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM y")
   val sectionId = "cya.registrationDetails"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
@@ -67,7 +66,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     optSummaryListRowString(
       s"$sectionId.startDate",
       vatApplication.startDate match {
-        case Some(date) => Some(date.format(presentationFormatter))
+        case Some(date) => Some(MessageDateFormat.format(date))
         case _ => None
       },
       Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
@@ -225,7 +224,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       s"$sectionId.frsStartDate",
       (vatScheme.vatApplication.flatMap(_.startDate), optFlatRateScheme.flatMap(_.frsStart.flatMap(_.date))) match {
         case (Some(startDate), Some(date)) if startDate.isEqual(date) => Some(s"$sectionId.dateOfRegistration")
-        case (_, Some(date)) => Some(date.format(presentationFormatter))
+        case (_, Some(date)) => Some(MessageDateFormat.format(date))
         case _ => None
       },
       Some(controllers.flatratescheme.routes.StartDateController.show.url)
