@@ -36,7 +36,7 @@ object MessageDateFormat extends FeatureSwitching {
     9 -> "Medi",
     10 -> "Hydref",
     11 -> "Tachwedd",
-    12 -> "Rhagfyr",
+    12 -> "Rhagfyr"
   )
 
   def format(date: LocalDate)(implicit messages: Messages): String = {
