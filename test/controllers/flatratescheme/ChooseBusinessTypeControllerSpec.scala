@@ -22,6 +22,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
+import services.FlatRateService.CategoryOfBusinessAnswer
 import testHelpers.ControllerSpec
 import views.html.flatratescheme.choose_business_type
 
@@ -31,7 +32,7 @@ import scala.concurrent.Future
 class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtures {
 
   trait Setup {
-    val view = app.injector.instanceOf[choose_business_type]
+    val view: choose_business_type = app.injector.instanceOf[choose_business_type]
     val controller: ChooseBusinessTypeController = new ChooseBusinessTypeController(
       mockAuthClientConnector,
       mockSessionService,
@@ -107,7 +108,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
       when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
-      when(mockFlatRateService.saveBusinessType(any())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[CategoryOfBusinessAnswer]())(any(), any()))
         .thenReturn(Future.successful(testFlatRate))
 
       submitAuthorised(controller.submit, request) { result =>

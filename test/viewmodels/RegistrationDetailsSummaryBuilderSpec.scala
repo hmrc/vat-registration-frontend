@@ -72,7 +72,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           claimVatRefunds = Some(true),
           returnsFrequency = Some(Annual),
           annualAccountingDetails = Some(validAasDetails),
-          startDate = frsDate.flatMap(_.date),
+          startDate = Some(frsDate),
           currentlyTrading = Some(true)
         )),
         bankAccount = Some(validUkBankAccount),

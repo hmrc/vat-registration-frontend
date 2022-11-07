@@ -41,19 +41,19 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an error when document name is missing" in new Setup {
+    "redirect to the document upload summary page when document is missing" in new Setup {
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
-        .upscanApi.fetchUpscanFileDetails(testUpscanDetails.copy(uploadDetails = None), reference = testReference)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(removeDocumentUrl(testReference)).get()
 
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentUploadSummaryController.show.url)
       }
     }
   }

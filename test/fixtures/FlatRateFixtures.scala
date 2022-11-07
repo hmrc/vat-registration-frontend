@@ -16,14 +16,14 @@
 
 package fixtures
 
-import models.{FlatRateScheme, FrsBusinessType, FrsGroup, Start}
+import models.{FlatRateScheme, FrsBusinessType, FrsGroup}
 
 import java.time.LocalDate
 
 trait FlatRateFixtures {
 
-  private val flatRatePercentage = BigDecimal(3.14)
-  val frsDate = Some(Start(Some(LocalDate.of(2017, 10, 10))))
+  val flatRatePercentage = BigDecimal(3.14)
+  val frsDate = LocalDate.of(2017, 10, 10)
 
   val testBusinessTypeLabel = "test"
   val testBusinessTypeLabelCy = "test"
@@ -36,7 +36,7 @@ trait FlatRateFixtures {
     Some(5003),
     Some(true),
     Some(true),
-    frsDate,
+    Some(frsDate),
     Some(testBusinessCategory),
     Some(flatRatePercentage),
     Some(false)
@@ -50,7 +50,7 @@ trait FlatRateFixtures {
     Some(1000L),
     Some(true),
     Some(true),
-    frsDate,
+    Some(frsDate),
     Some(testBusinessCategory),
     Some(defaultFlatRate),
     Some(false)
@@ -73,7 +73,7 @@ trait FlatRateFixtures {
     Some(1000000L),
     Some(true),
     Some(true),
-    frsDate,
+    Some(frsDate),
     Some(""),
     Some(defaultFlatRate)
   )
@@ -84,7 +84,7 @@ trait FlatRateFixtures {
     Some(1000000L),
     Some(false),
     Some(true),
-    frsDate,
+    Some(frsDate),
     Some(""),
     Some(defaultFlatRate)
   )
@@ -116,7 +116,7 @@ trait FlatRateFixtures {
     Some(false)
   )
 
-  val incompleteS4l = FlatRateScheme(
+  val incompleteFlatRate = FlatRateScheme(
     Some(true),
     Some(true)
   )

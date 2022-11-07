@@ -58,14 +58,12 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
         transactorDetails <- transactorDetailsService.getTransactorDetails
         business <- businessService.getBusiness
         vatApplication <- vatApplicationService.getVatApplication
-        flatRateScheme <- flatRateService.getFlatRate
         attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
         scheme = vatScheme.copy(
           applicantDetails = Some(applicantDetails),
           transactorDetails = Some(transactorDetails),
           business = Some(business),
-          vatApplication = Some(vatApplication),
-          flatRateScheme = Some(flatRateScheme)
+          vatApplication = Some(vatApplication)
         ) // Grabbing the data from two sources is temporary, until we've removed S4L
         sections = List(
           Some(registrationReasonSection.build(scheme)),

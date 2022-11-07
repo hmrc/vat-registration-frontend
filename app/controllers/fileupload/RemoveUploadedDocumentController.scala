@@ -54,6 +54,8 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
               case None =>
                 throw new InternalServerException("Invalid document reference for remove uploaded document page")
             }
+        }.recover {
+          case _ => Redirect(routes.DocumentUploadSummaryController.show)
         }
   }
 

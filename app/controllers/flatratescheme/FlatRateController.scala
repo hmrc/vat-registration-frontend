@@ -23,6 +23,7 @@ import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
+import services.FlatRateService.{OverBusinessGoodsAnswer, OverBusinessGoodsPercentAnswer, UseThisRateAnswer}
 import services._
 import views.html.flatratescheme._
 
@@ -66,11 +67,11 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
       implicit profile =>
         overBusinessGoodsForm.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(annual_costs_inclusive(badForm))),
-          view => flatRateService.saveOverBusinessGoods(view) map { _ =>
-            if (!view) {
-              Redirect(controllers.flatratescheme.routes.FlatRateController.registerForFrsPage)
-            } else {
+          answer => flatRateService.saveFlatRate(OverBusinessGoodsAnswer(answer)).map { _ =>
+            if (answer) {
               Redirect(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales)
+            } else {
+              Redirect(controllers.flatratescheme.routes.FlatRateController.registerForFrsPage)
             }
           }
         )
@@ -94,11 +95,11 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           form.bindFromRequest().fold(formErr => {
             Future.successful(BadRequest(annual_costs_limited(formErr, flatRateService.applyPercentRoundUp(flatRateScheme.estimateTotalSales.get))))
           },
-            view => flatRateService.saveOverBusinessGoodsPercent(view) map { _ =>
-              if (!view) {
-                Redirect(controllers.flatratescheme.routes.FlatRateController.registerForFrsPage)
-              } else {
+            answer => flatRateService.saveFlatRate(OverBusinessGoodsPercentAnswer(answer)).map { _ =>
+              if (answer) {
                 Redirect(controllers.flatratescheme.routes.ConfirmBusinessTypeController.show)
+              } else {
+                Redirect(controllers.flatratescheme.routes.FlatRateController.registerForFrsPage)
               }
             }
           )
@@ -158,7 +159,7 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
             BadRequest(frs_your_flat_rate(businessTypeDetails.businessTypeLabel, decimalFormat.format(businessTypeDetails.percentage), badForm))
           },
           view => for {
-            _ <- flatRateService.saveUseFlatRate(view.answer)
+            _ <- flatRateService.saveFlatRate(UseThisRateAnswer(view.answer))
           } yield if (view.answer) {
             Redirect(controllers.flatratescheme.routes.StartDateController.show)
           } else if (isEnabled(TaskList)) {

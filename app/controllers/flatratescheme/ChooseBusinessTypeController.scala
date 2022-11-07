@@ -21,6 +21,7 @@ import connectors.ConfigConnector
 import controllers.BaseController
 import forms.ChooseBusinessTypeForm
 import play.api.mvc.{Action, AnyContent}
+import services.FlatRateService.CategoryOfBusinessAnswer
 import services.{FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.flatratescheme.choose_business_type
@@ -55,7 +56,7 @@ class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         ChooseBusinessTypeForm.form(configConnector.businessTypes.flatMap(_.categories.map(_.id))).bindFromRequest().fold(
           badForm => Future.successful(BadRequest(chooseBusinessTypeView(badForm, configConnector.businessTypes))),
-          data => flatRateService.saveBusinessType(data) map {
+          data => flatRateService.saveFlatRate(CategoryOfBusinessAnswer(data)) map {
             _ => Redirect(controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage)
           }
         )

@@ -114,9 +114,9 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     tagId = "flatRateScheme",
     checks = scheme => {
       scheme.flatRateScheme match {
-        case Some(FlatRateScheme(Some(true), Some(true), Some(_), Some(true), Some(true), Some(_), Some(_), Some(_), Some(_))) => List(true)
-        case Some(FlatRateScheme(Some(true), Some(true), Some(_), Some(false), Some(true), Some(_), _, Some(_), Some(_))) => List(true)
-        case Some(FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(_), _, Some(_), Some(_))) => List(true)
+        case Some(FlatRateScheme(Some(true), Some(true), Some(_), Some(true), Some(true), Some(_), Some(_), Some(_), Some(false))) => List(true)
+        case Some(FlatRateScheme(Some(true), Some(true), Some(_), Some(false), Some(true), Some(_), Some(_), Some(_), Some(true))) => List(true)
+        case Some(FlatRateScheme(Some(true), Some(false), _, _, Some(true), Some(_), Some(_), Some(_), Some(true))) => List(true)
         case Some(FlatRateScheme(Some(true), Some(false), _, _, Some(false), _, _, _, _)) => List(true)
         case Some(FlatRateScheme(Some(true), _, _, _, _, _, _, _, _)) => List(true, false)
         case Some(FlatRateScheme(Some(false), _, _, _, _, _, _, _, _)) => List(true)

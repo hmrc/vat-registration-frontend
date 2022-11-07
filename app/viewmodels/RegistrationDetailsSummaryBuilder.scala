@@ -39,7 +39,7 @@ import javax.inject.{Inject, Singleton}
 class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnector,
                                                   flatRateService: FlatRateService,
                                                   govukSummaryList: GovukSummaryList)
-                                                 (implicit appConfig:FrontendAppConfig) extends FeatureSwitching {
+                                                 (implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
 
   val sectionId = "cya.registrationDetails"
 
@@ -216,13 +216,17 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     val businessSectorRow = optSummaryListRowString(
       s"$sectionId.businessSector",
-      optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessType(frsId).businessTypeLabel)),
+      if (isLimitedCostTrader) {
+        None
+      } else {
+        optFlatRateScheme.flatMap(_.categoryOfBusiness.filter(_.nonEmpty).map(frsId => configConnector.getBusinessType(frsId).businessTypeLabel))
+      },
       Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)
     )
 
     val frsStartDate = optSummaryListRowString(
       s"$sectionId.frsStartDate",
-      (vatScheme.vatApplication.flatMap(_.startDate), optFlatRateScheme.flatMap(_.frsStart.flatMap(_.date))) match {
+      (vatScheme.vatApplication.flatMap(_.startDate), optFlatRateScheme.flatMap(_.frsStart)) match {
         case (Some(startDate), Some(date)) if startDate.isEqual(date) => Some(s"$sectionId.dateOfRegistration")
         case (_, Some(date)) => Some(MessageDateFormat.format(date))
         case _ => None

@@ -29,7 +29,8 @@
         form: FormWithCSRF,
         details: components.details,
         yesNoRadio: components.yesNoRadio,
-        button: components.button
+        button: components.button,
+        indent: components.panelIndent
 )
 
 @(joinFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -63,11 +64,11 @@
         messages("pages.frs.join.list2.bullet2")
     )
 
-    @p { @messages("pages.frs.join.para1") }
+    @indent { @messages("pages.frs.join.indent") }
 
     @p {
-        @messages("pages.frs.join.para2")
-        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para2.1"), isExternal = true).
+        @messages("pages.frs.join.para1")
+        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.join.para1.1"), isExternal = true).
     }
 
     @form(action = controllers.flatratescheme.routes.JoinFlatRateSchemeController.submit) {

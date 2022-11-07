@@ -20,6 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EstimateTotalSalesForm
 import play.api.mvc.{Action, AnyContent}
+import services.FlatRateService.EstimateTotalSalesAnswer
 import services._
 import views.html.flatratescheme.estimate_total_sales
 
@@ -50,7 +51,7 @@ class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
       implicit profile =>
         EstimateTotalSalesForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(estimateTotalSalesPage(badForm))),
-          data => flatRateService.saveEstimateTotalSales(data) map {
+          data => flatRateService.saveFlatRate(EstimateTotalSalesAnswer(data)) map {
             _ => Redirect(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage)
           }
         )

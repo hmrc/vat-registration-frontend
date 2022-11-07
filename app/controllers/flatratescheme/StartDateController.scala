@@ -20,14 +20,11 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.FRSStartDateForm
-import models.CurrentProfile
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionService, TimeService, VatApplicationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.flatratescheme.frs_start_date
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,7 +32,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class StartDateController @Inject()(val authConnector: AuthConnector,
                                     val sessionService: SessionService,
                                     flatRateService: FlatRateService,
-                                    vatApplicationService: VatApplicationService,
                                     timeService: TimeService,
                                     view: frs_start_date)
                                    (implicit appConfig: FrontendAppConfig,
@@ -46,7 +42,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
-      earliestDate <- calculateEarliestDate
+      earliestDate <- flatRateService.fetchVatStartDate
       (optChoice, optDate) <- flatRateService.getPrepopulatedStartDate(earliestDate)
       exampleDate = timeService.dynamicFutureDateExample(earliestDate)
       maxDate = timeService.today.plusMonths(maxDateAddedMonths)
@@ -59,7 +55,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    calculateEarliestDate flatMap { earliestDate =>
+    flatRateService.fetchVatStartDate.flatMap { earliestDate =>
       val maxDate = timeService.today.plusMonths(maxDateAddedMonths)
 
       FRSStartDateForm.form(earliestDate, maxDate).bindFromRequest().fold(
@@ -70,7 +66,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
         answers => {
           val (choice, optDate) = answers
           flatRateService.saveStartDate(choice, optDate) map { _ =>
-            if(isEnabled(TaskList)) {
+            if (isEnabled(TaskList)) {
               Redirect(controllers.routes.TaskListController.show)
             } else {
               Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
@@ -78,14 +74,6 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
           }
         }
       )
-    }
-  }
-
-  private def calculateEarliestDate(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[LocalDate] = {
-    vatApplicationService.retrieveCalculatedStartDate.recoverWith {
-      case _ => flatRateService.fetchVatStartDate.map(_.getOrElse(
-        throw new InternalServerException("[StartDateController] Unable to calculate earliest date due to missing VatStartDate")
-      ))
     }
   }
 

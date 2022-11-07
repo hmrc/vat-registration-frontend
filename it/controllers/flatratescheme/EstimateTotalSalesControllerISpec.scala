@@ -1,8 +1,23 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.flatratescheme
 
 import itutil.ControllerISpec
-import models.{FlatRateScheme, S4LKey, Start}
+import models.{FlatRateScheme, S4LKey}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -34,32 +49,16 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     estimateTotalSales = Some(testTotalSales),
     overBusinessGoodsPercent = Some(true),
     useThisRate = Some(true),
-    frsStart = Some(Start(Some(LocalDate.now()))),
+    frsStart = Some(LocalDate.now()),
     categoryOfBusiness = Some("testCategory"),
     percent = Some(15)
   )
 
   s"GET $url" must {
-    "return OK with prepop when the details are in s4l" in new Setup {
+    "return OK with prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].contains(frsData)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(url).get()
-
-      whenReady(res) { result =>
-        result.status mustBe OK
-        Jsoup.parse(result.body).getElementById("totalSalesEstimate").attr("value") mustBe testTotalSales.toString
-      }
-    }
-
-    "return OK with prepop when the details are in the backend" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].isEmpty
-        .registrationApi.getSection[FlatRateScheme](Some(fullFrsData))(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
+        .registrationApi.getSection[FlatRateScheme](Some(fullFrsData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -74,8 +73,8 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "return OK without prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].isEmpty
-        .registrationApi.getSection[FlatRateScheme](None)(FlatRateScheme.apiKey, FlatRateScheme.apiFormat)
+        .s4lContainer[FlatRateScheme].clearedByKey
+        .registrationApi.getSection[FlatRateScheme](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -92,8 +91,9 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "redirect to the next FRS page when the user submits a valid estimate" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].contains(frsData.copy(estimateTotalSales = None))
-        .s4lContainer[FlatRateScheme].isUpdatedWith(frsData)
+        .s4lContainer[FlatRateScheme].clearedByKey
+        .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(estimateTotalSales = None)))
+        .registrationApi.replaceSection[FlatRateScheme](frsData)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -108,14 +108,12 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "update the page with errors when the user submits an invalid estimate" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].contains(frsData.copy(estimateTotalSales = None))
-        .s4lContainer[FlatRateScheme].isUpdatedWith(frsData)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val invalidEstimates = Seq("", "a", "0", "999999999999999")
 
-      invalidEstimates.map{ estimate =>
+      invalidEstimates.map { estimate =>
         val res: Future[WSResponse] = buildClient(url).post(Map("totalSalesEstimate" -> estimate))
 
         whenReady(res) { result =>
