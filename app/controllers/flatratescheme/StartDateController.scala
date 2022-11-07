@@ -21,7 +21,7 @@ import controllers.BaseController
 import featureswitch.core.config.TaskList
 import forms.FRSStartDateForm
 import play.api.mvc.{Action, AnyContent}
-import services.{FlatRateService, SessionService, TimeService, VatApplicationService}
+import services.{FlatRateService, SessionService, TimeService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.flatratescheme.frs_start_date
 

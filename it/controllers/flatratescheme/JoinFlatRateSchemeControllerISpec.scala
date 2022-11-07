@@ -11,8 +11,6 @@ import play.api.test.Helpers._
 
 class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
-  implicit val s4lFrsKey = FlatRateScheme.s4lKey
-
   val frsS4LData: FlatRateScheme = FlatRateScheme(
     joinFrs = Some(true),
     overBusinessGoods = Some(true),
@@ -142,7 +140,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the next FRS page if the user answers Yes" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].clearedByKey
         .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
         .registrationApi.replaceSection[FlatRateScheme](frsS4LData.copy(joinFrs = Some(true)))
 
@@ -159,7 +156,6 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the documents page if the user answers No" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].clearedByKey
         .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
         .registrationApi.replaceSection[FlatRateScheme](FlatRateScheme(Some(false)))
 

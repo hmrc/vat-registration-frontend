@@ -29,8 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
 
 @Singleton
-class FlatRateService @Inject()(val s4LService: S4LService,
-                                val businessService: BusinessService,
+class FlatRateService @Inject()(val businessService: BusinessService,
                                 vatApplicationService: VatApplicationService,
                                 val configConnector: ConfigConnector,
                                 registrationApiConnector: RegistrationApiConnector)(implicit ec: ExecutionContext) {
@@ -38,13 +37,9 @@ class FlatRateService @Inject()(val s4LService: S4LService,
   def applyPercentRoundUp(b: BigDecimal): BigDecimal = (b * relevantGoodsPercent).setScale(0, RoundingMode.CEILING)
 
   def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
-    s4LService.fetchAndGet[FlatRateScheme](FlatRateScheme.s4lKey, profile, hc, FlatRateScheme.oldS4lReads) flatMap {
-      case None | Some(FlatRateScheme(None, None, None, None, None, None, None, None, None)) =>
-        registrationApiConnector.getSection[FlatRateScheme](profile.registrationId) map {
-          case Some(flatRateScheme) => flatRateScheme
-          case None => FlatRateScheme()
-        }
-      case Some(flatRateScheme) => Future.successful(flatRateScheme)
+    registrationApiConnector.getSection[FlatRateScheme](profile.registrationId) map {
+      case Some(flatRateScheme) => flatRateScheme
+      case None => FlatRateScheme()
     }
   }
 
@@ -53,11 +48,10 @@ class FlatRateService @Inject()(val s4LService: S4LService,
       flatRateScheme <- getFlatRate
       updatedFlatRateScheme = updateModel(data, flatRateScheme)
       result <- registrationApiConnector.replaceSection[FlatRateScheme](profile.registrationId, updatedFlatRateScheme)
-      _ <- s4LService.clearKey[FlatRateScheme]
     } yield result
 
   //scalastyle:off
-  private def updateModel[T](data: T, scheme: FlatRateScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): FlatRateScheme =
+  private def updateModel[T](data: T, scheme: FlatRateScheme): FlatRateScheme =
     data match {
       case JoinFrsAnswer(answer) =>
         if (answer) {
