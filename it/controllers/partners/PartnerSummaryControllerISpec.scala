@@ -76,7 +76,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "true")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "true")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(entities.size + 1).url)
@@ -96,7 +96,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "false")))
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "false")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -124,7 +124,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(pageUrl()).post(Json.obj("value" -> "true")))
+        val res = await(buildClient(pageUrl()).post(Map("value" -> "true")))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.AdditionalPartnerEntityController.show.url)

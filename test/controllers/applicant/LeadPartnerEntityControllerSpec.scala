@@ -81,7 +81,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
       when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
       mockUpsertEntity[PartyType](regId, 1, Individual)(entity)
 
-      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> soleTrader)) { result =>
+      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> soleTrader)) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.grs.routes.PartnerSoleTraderIdController.startJourney(1).url)
       }
@@ -91,7 +91,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
       mockGetEntity(regId, 1)(None)
       when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
-      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody("value" -> "BusinessEntity")) { result =>
+      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "BusinessEntity")) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.BusinessLeadPartnerEntityController.showPartnerEntityType.url)
       }
@@ -100,7 +100,7 @@ class LeadPartnerEntityControllerSpec extends ControllerSpec
     "return BAD_REQUEST with Empty data" in new Setup {
       when(mockVatRegistrationService.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
-      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(controller.submitLeadPartnerEntity, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         result => status(result) mustBe BAD_REQUEST
       }
     }

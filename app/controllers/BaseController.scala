@@ -27,7 +27,6 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.play.bootstrap.controller.WithUnsafeDefaultFormBinding
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.Inject
@@ -37,7 +36,6 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
                                         bcc: BaseControllerComponents,
                                         appConfig: FrontendAppConfig)
   extends FrontendController(bcc.messagesControllerComponents)
-    with WithUnsafeDefaultFormBinding
     with I18nSupport
     with Logging
     with AuthorisedFunctions

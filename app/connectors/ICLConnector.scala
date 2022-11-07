@@ -16,7 +16,7 @@
 
 package connectors
 
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject, JsValue}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -36,10 +36,10 @@ class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
 
   val IClInitialiseUrl: String = iclFEurl + initialiseJourney
 
-  def iclSetup(js: JsObject)(implicit hc: HeaderCarrier): Future[JsObject] = {
+  def iclSetup(js: JsObject)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.post(url"$IClInitialiseUrl")
       .withBody(js)
-      .execute[JsObject]
+      .execute[JsValue]
       .recover {
         case ex =>
           logger.error(s"[ICLConnector] [ICLSetup] Threw an exception whilst Posting to initialise a new ICL journey with message: ${ex.getMessage}")
@@ -47,9 +47,9 @@ class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
       }
   }
 
-  def iclGetResult(fetchResultsUrl: String)(implicit hc: HeaderCarrier): Future[JsObject] = {
+  def iclGetResult(fetchResultsUrl: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.get(url"${IClFEinternal + fetchResultsUrl}")
-      .execute[JsObject]
+      .execute[JsValue]
       .recover {
         case ex =>
           logger.error(s"[ICLConnector] [ICLGetResult] Threw an exception while getting ICL journey results with message: ${ex.getMessage}")

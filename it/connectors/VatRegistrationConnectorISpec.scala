@@ -22,7 +22,7 @@ import itutil.IntegrationSpecBase
 import models.api.{VatScheme, VatSchemeHeader}
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.Upstream5xxResponse
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 class VatRegistrationConnectorISpec extends IntegrationSpecBase
   with AppAndStubs
@@ -65,7 +65,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
         given()
           .registrationApi.registrationCreationFailed
 
-        intercept[Upstream5xxResponse] {
+        intercept[UpstreamErrorResponse] {
           await(vatregConnector.createNewRegistration)
         }
       }

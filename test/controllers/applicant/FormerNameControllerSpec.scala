@@ -102,7 +102,7 @@ class FormerNameControllerSpec extends ControllerSpec
         mockPartyType(Future.successful(UkCompany))
         mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "false")) { result =>
           redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
@@ -111,7 +111,7 @@ class FormerNameControllerSpec extends ControllerSpec
       "return BAD_REQUEST with Empty data" in new Setup {
         disable(TaskList)
         mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
           status(result) mustBe BAD_REQUEST
         }
       }
@@ -121,7 +121,7 @@ class FormerNameControllerSpec extends ControllerSpec
         mockPartyType(Future.successful(UkCompany))
         mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "false")) { result =>
           redirectLocation(result) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
         }
       }
@@ -131,7 +131,7 @@ class FormerNameControllerSpec extends ControllerSpec
         mockPartyType(Future.successful(NETP))
         mockSaveApplicantDetails(HasFormerName(false))(emptyApplicantDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("value" -> "false")) { result =>
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "false")) { result =>
           redirectLocation(result) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
         }
       }
@@ -140,7 +140,7 @@ class FormerNameControllerSpec extends ControllerSpec
         disable(TaskList)
         mockSaveApplicantDetails(HasFormerName(true))(emptyApplicantDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "value" -> "true"
         )) { result =>
           redirectLocation(result) mustBe Some(applicantRoutes.FormerNameCaptureController.show.url)

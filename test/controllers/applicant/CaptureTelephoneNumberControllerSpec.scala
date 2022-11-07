@@ -100,7 +100,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
  "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()){
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody()){
         result => status(result) mustBe BAD_REQUEST
       }
     }
@@ -110,7 +110,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
       mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
       mockPartyType(Future.successful(UkCompany))
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
       }
@@ -121,7 +121,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
      mockSaveApplicantDetails(TelephoneNumber(phone))(emptyApplicantDetails)
      mockPartyType(Future.successful(NETP))
 
-     submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
+     submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
          status(res) mustBe SEE_OTHER
          redirectLocation(res) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
      }

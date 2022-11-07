@@ -19,7 +19,7 @@ package services
 import connectors.{ICLConnector, VatRegistrationConnector}
 import models.CurrentProfile
 import models.api.SicCode
-import play.api.libs.json.{JsObject, Json, OWrites}
+import play.api.libs.json.{JsObject, JsValue, Json, OWrites}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -58,7 +58,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
   def journeySetup(customICLMessages: CustomICLMessages, welshCustomICLMessages: CustomICLMessages)
                   (implicit hc: HeaderCarrier, cp: CurrentProfile): Future[String] = {
 
-    def extractFromJsonSetup(jsonSetup: JsObject, item: String) = {
+    def extractFromJsonSetup(jsonSetup: JsValue, item: String) = {
       (jsonSetup \ item).validate[String].getOrElse {
         logger.error(s"[ICLServiceImpl] [journeySetup] $item couldn't be parsed from Json object")
         throw new Exception

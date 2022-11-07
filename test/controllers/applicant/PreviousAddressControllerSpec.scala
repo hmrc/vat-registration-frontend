@@ -122,7 +122,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         result => status(result) mustBe BAD_REQUEST
       }
     }
@@ -130,7 +130,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(UkCompany))
       mockSaveApplicantDetails(PreviousAddressView(true, None))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "true"
       )) { res =>
         status(res) mustBe SEE_OTHER
@@ -144,7 +144,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       when(vatRegistrationServiceMock.isTransactor(any(), any())).thenReturn(Future.successful(false))
 
       submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("value" -> "false")
+        fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some("/register-for-vat/current-address/changePreviousAddress")
@@ -154,7 +154,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
       mockPartyType(Future.successful(NETP))
 
       submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("value" -> "false")
+        fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "false")
       ) { res =>
         status(res) mustBe SEE_OTHER
         redirectLocation(res) mustBe Some(routes.InternationalPreviousAddressController.show.url)

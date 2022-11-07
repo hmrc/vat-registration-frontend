@@ -77,7 +77,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody(), useBasicAuth = true) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = true) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result.redirectsTo(controllers.routes.ApplicationSubmissionController.show.url)
@@ -94,7 +94,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody(), useBasicAuth = true) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = true) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.submissionRetryable.url
@@ -112,7 +112,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withFormUrlEncodedBody(), useBasicAuth = true) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = true) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.submissionFailed.url

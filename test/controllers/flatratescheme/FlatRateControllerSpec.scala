@@ -77,7 +77,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
     val fakeRequest = FakeRequest(routes.FlatRateController.submitAnnualInclusiveCosts)
 
     "return 400 with Empty data" in new Setup {
-      val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val emptyRequest: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       submitAuthorised(controller.submitAnnualInclusiveCosts, emptyRequest) { result =>
         status(result) mustBe 400
@@ -88,7 +88,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "true"
       )
 
@@ -102,7 +102,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "false"
       )
 
@@ -143,7 +143,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
       when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       submitAuthorised(controller.submitAnnualCostsLimited, request) { result =>
         status(result) mustBe 400
@@ -157,7 +157,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "true"
       )
 
@@ -174,7 +174,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "false"
       )
 
@@ -201,7 +201,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
     "return 400 with Empty data" in new Setup {
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       submitAuthorised(controller.submitRegisterForFrs, request) { result =>
         status(result) mustBe 400
@@ -215,7 +215,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "true"
       )
 
@@ -232,7 +232,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "false"
       )
 
@@ -250,7 +250,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "false"
       )
 
@@ -283,7 +283,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       submitAuthorised(controller.submitYourFlatRate, request) { result =>
         status(result) mustBe 400
@@ -297,7 +297,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "true"
       )
 
@@ -314,7 +314,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
       when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "false"
       )
 

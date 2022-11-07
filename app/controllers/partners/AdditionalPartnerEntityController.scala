@@ -36,8 +36,7 @@ class AdditionalPartnerEntityController @Inject()(val authConnector: AuthConnect
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        Future.successful(Ok(view()))
+    implicit request =>_ =>
+      Future.successful(Ok(view()))
   }
 }

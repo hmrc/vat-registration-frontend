@@ -86,7 +86,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
     "return a 400" when {
       "form is empty" in new SubmissionSetup {
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody()) {
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
           _ isA 400
         }
       }
@@ -94,7 +94,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
     "return a 400" when {
       "user provides invalid data" in new SubmissionSetup {
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "BadStuff")) {
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "BadStuff")) {
           _ isA 400
         }
       }
@@ -102,20 +102,20 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
     "return a 303" when {
       "user selects email and redirect to the business activity description" in new SubmissionSetup {
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "email")) {
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "email")) {
           _ redirectsTo controllers.business.routes.BusinessActivityDescriptionController.show.url
         }
       }
 
       "user selects letter and redirect to the business activity description" in new SubmissionSetup {
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "letter")) {
           _ redirectsTo controllers.business.routes.BusinessActivityDescriptionController.show.url
         }
       }
 
       "land and property feature switch is enabled" in new SubmissionSetup {
         enable(LandAndProperty)
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "letter")) {
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "letter")) {
           _ redirectsTo controllers.business.routes.LandAndPropertyController.show.url
         }
       }
@@ -126,7 +126,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
         when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future(throw exception))
 
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withFormUrlEncodedBody("value" -> "email")) {
+        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "email")) {
           _ failedWith exception
         }
       }

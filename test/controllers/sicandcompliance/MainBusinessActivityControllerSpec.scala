@@ -82,7 +82,7 @@ class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAsser
     "return 400" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody()
       )(result => result isA 400)
     }
 
@@ -91,7 +91,7 @@ class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAsser
       mockSessionFetchAndGet(SIC_CODES_KEY, Option.empty[List[SicCode]])
 
       submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("value" -> sicCode.code)
+        fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> sicCode.code)
       )(_ isA 400)
 
     }
@@ -102,7 +102,7 @@ class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAsser
       when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
 
       submitAuthorised(controller.submit,
-        fakeRequest.withFormUrlEncodedBody("value" -> validLabourSicCode.code)
+        fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> validLabourSicCode.code)
       )(_ redirectsTo controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve.url)
     }
   }

@@ -57,13 +57,13 @@ class BusinessActivityDescriptionControllerSpec extends ControllerSpec with Futu
 
   "submit" should {
     "return BAD_REQUEST when an invalid description is posted" in new Setup {
-      submitAuthorised(controller.submit, FakeRequest().withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, FakeRequest().withMethod("POST").withFormUrlEncodedBody(
       ))(result => result isA BAD_REQUEST)
     }
     "Redirect to ICL when a valid description is posted" in new Setup {
       mockUpdateBusiness(Future.successful(validBusinessWithNoDescription))
 
-      submitAuthorised(controller.submit, FakeRequest().withFormUrlEncodedBody("description" -> "Testing")) {
+      submitAuthorised(controller.submit, FakeRequest().withMethod("POST").withFormUrlEncodedBody("description" -> "Testing")) {
         _ redirectsTo s"$contextRoot/choose-standard-industry-classification-codes"
       }
     }

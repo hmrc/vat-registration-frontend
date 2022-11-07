@@ -93,7 +93,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
     "submit" should {
       "return BAD_REQUEST with Empty data" in new Setup {
         mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
           result => status(result) mustBe BAD_REQUEST
         }
       }
@@ -103,7 +103,7 @@ class CaptureRoleInTheBusinessSpec extends ControllerSpec
 
         mockSaveApplicantDetails(Director)(emptyApplicantDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("roleInTheBusiness" -> role)) {
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("roleInTheBusiness" -> role)) {
           result =>
             redirectLocation(result) mustBe Some(routes.FormerNameController.show)
         }
