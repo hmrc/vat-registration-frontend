@@ -149,6 +149,13 @@
         {"id": "044", "businessType": "Retailing not listed elsewhere", "businessTypeCy": "Gwasanaethau manwerthu nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 7.5},
         {"id": "054", "businessType": "Wholesaling not listed elsewhere", "businessTypeCy": "Gwasanaethau cyfanwerthu nad ydynt wedi’u rhestru yn unman arall", "currentFRSPercent": 8.5}
       ]
+    },
+    {
+      "groupLabel": "Wholesale of waste and scrap",
+      "groupLabelCy": "Wholesale of waste and scrap",
+      "categories": [
+        {"id": "055", "businessType": "Dealing in waste and scrap", "businessTypeCy": "Dealing in waste and scrap", "currentFRSPercent": 10.5}
+      ]
     }
   ]
 }
