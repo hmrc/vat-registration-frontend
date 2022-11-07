@@ -18,8 +18,9 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{TaskList, TaxRepPage}
+import featureswitch.core.config.TaskList
 import forms.vatapplication.ReturnsFrequencyForm
+import models.api.{NETP, NonUkNonEstablished}
 import models.api.vatapplication.{Annual, Monthly}
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -32,6 +33,7 @@ import scala.concurrent.ExecutionContext
 class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
                                            val authConnector: AuthClientConnector,
                                            val vatApplicationService: VatApplicationService,
+                                           vatRegistrationService: VatRegistrationService,
                                            returnFrequencyPage: return_frequency_view
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
@@ -67,19 +69,23 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
           } yield {
             BadRequest(returnFrequencyPage(errors, showAAS, showMonthly))
           },
-          success => vatApplicationService.saveVatApplication(success) map { _ =>
-            success match {
-              case Monthly => if (isEnabled(TaxRepPage)) {
-                Redirect(controllers.vatapplication.routes.TaxRepController.show)
-              } else {
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show)
-                } else {
-                  Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+          returnFrequency =>
+            vatRegistrationService.partyType flatMap { partyType =>
+              vatApplicationService.saveVatApplication(returnFrequency) map { _ =>
+                returnFrequency match {
+                  case Monthly =>
+                    partyType match {
+                      case NETP | NonUkNonEstablished => Redirect(controllers.vatapplication.routes.TaxRepController.show)
+                      case _ =>
+                        if (isEnabled(TaskList)) {
+                          Redirect(controllers.routes.TaskListController.show)
+                        } else {
+                          Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+                        }
+                    }
+                  case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
+                  case _ => Redirect(routes.AccountingPeriodController.show)
                 }
-              }
-              case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
-              case _ => Redirect(routes.AccountingPeriodController.show)
             }
           }
         )

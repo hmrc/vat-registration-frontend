@@ -25,7 +25,7 @@ import javax.inject.Singleton
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(
+  val switches: Seq[FeatureSwitch] = Seq(
     StubIncorpIdJourney,
     StubPersonalDetailsValidation,
     StubEmailVerification,
@@ -44,7 +44,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     OtherBusinessInvolvement,
     UploadDocuments,
     TaskList,
-    TaxRepPage,
     NewNoBankReasons,
     WelshLanguage,
     OptionToTax,
@@ -146,11 +145,6 @@ case object UploadDocuments extends FeatureSwitch {
 case object TaskList extends FeatureSwitch {
   override val configName: String = "feature-switch.task-list"
   override val displayName: String = "Enable Task List"
-}
-
-case object TaxRepPage extends FeatureSwitch {
-  override val configName: String = "feature-switch.tax-rep"
-  override val displayName: String = "Enable Tax Rep Page"
 }
 
 case object NewNoBankReasons extends FeatureSwitch {

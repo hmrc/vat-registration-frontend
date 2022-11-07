@@ -64,6 +64,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
           flatRateScheme = None
@@ -96,6 +97,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           ))
         )
@@ -129,6 +131,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
           attachments = Some(Attachments(Some(Attached)))
