@@ -104,7 +104,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
       when(movkVatApplicationService.isEligibleForAAS(any(), any()))
         .thenReturn(Future.successful(true))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> ReturnsFrequencyForm.monthlyKey
       )
 
@@ -122,7 +122,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
       when(movkVatApplicationService.isEligibleForAAS(any(), any()))
         .thenReturn(Future.successful(true))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> ReturnsFrequencyForm.quarterlyKey
       )
 
@@ -140,7 +140,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
       when(movkVatApplicationService.isEligibleForAAS(any(), any()))
         .thenReturn(Future.successful(true))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> ReturnsFrequencyForm.annualKey
       )
 
@@ -156,7 +156,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
       when(movkVatApplicationService.getVatApplication(any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> ""
       )
 
@@ -171,7 +171,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
       when(movkVatApplicationService.getVatApplication(any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "INVALID_SELECTION"
       )
 

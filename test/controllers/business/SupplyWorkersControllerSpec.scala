@@ -67,7 +67,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec
 
   "submit" must {
     "return BAD_REQUEST with Empty data" in new Setup {
-      submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody())(result =>
+      submitAuthorised(Controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody())(result =>
         status(result) mustBe BAD_REQUEST
       )
     }
@@ -75,7 +75,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec
       mockUpdateBusiness(Future.successful(validBusiness.copy(labourCompliance = Some(complianceWithLabour))))
       mockIsTransactor(Future.successful(true))
 
-      submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "true"
       ))(_ redirectsTo controllers.business.routes.WorkersController.show.url)
     }
@@ -83,7 +83,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec
       mockUpdateBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
 
-      submitAuthorised(Controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(Controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "false"
       ))(_ redirectsTo controllers.business.routes.SupplyWorkersIntermediaryController.show.url)
     }

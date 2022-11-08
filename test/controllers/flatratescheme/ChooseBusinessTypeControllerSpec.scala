@@ -80,7 +80,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
     val fakeRequest = FakeRequest(routes.ChooseBusinessTypeController.submit)
 
     "return BAD_REQUEST with Empty data" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
@@ -90,7 +90,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
     }
 
     "return BAD_REQUEST with incorrect data" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "000"
       )
 
@@ -102,7 +102,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
     }
 
     "redirect to the next page if everything is OK" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "019"
       )
 

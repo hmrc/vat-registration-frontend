@@ -76,7 +76,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.janStaggerKey
       )
 
@@ -92,7 +92,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.febStaggerKey
       )
 
@@ -108,7 +108,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.marStaggerKey
       )
 
@@ -119,7 +119,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return 400 when they do not select an option" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> ""
       )
 
@@ -129,7 +129,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return 400 when they submit an invalid choice" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> "INVALID_SELECTION"
       )
 

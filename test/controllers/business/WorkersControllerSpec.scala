@@ -48,7 +48,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
 
     def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
       featureSwitchFn(OtherBusinessInvolvement)
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       ))(_ redirectsTo resolvedLocation.url)
     }
@@ -79,7 +79,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   s"POST ${controllers.business.routes.WorkersController.submit}" should {
     "return BAD_REQUEST with Empty data" in new Setup {
       mockPartyType(Future.successful(UkCompany))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
       }

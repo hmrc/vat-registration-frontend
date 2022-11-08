@@ -24,7 +24,7 @@ import play.api.http.HttpVerbs._
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,7 +43,7 @@ class AddressLookupConnector @Inject()(val http: HttpClientV2, appConfig: Fronte
   def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] =
     http.post(url"${appConfig.addressLookupJourneyUrl}")
       .withBody(Json.toJson(alfConfig))
-      .execute[HttpResponse]
+      .execute
       .map { resp =>
         resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
           logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")

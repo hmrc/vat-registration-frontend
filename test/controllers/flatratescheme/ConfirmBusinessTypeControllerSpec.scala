@@ -74,7 +74,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
       when(mockFlatRateService.saveConfirmSector(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe SEE_OTHER

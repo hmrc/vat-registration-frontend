@@ -18,12 +18,12 @@ package controllers.partners
 
 import forms.PartnerTelephoneForm
 import itutil.ControllerISpec
-import models.{ApplicantDetails, Director, Entity}
 import models.api.{EligibilitySubmissionData, Individual, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
+import models.{ApplicantDetails, Director, Entity}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.http.Status.{BAD_REQUEST, NOT_IMPLEMENTED, OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future

@@ -78,7 +78,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
     val fakeRequest = FakeRequest(controllers.vatapplication.routes.VoluntaryStartDateController.submit)
 
     "redirect to the returns frequency page if company registration date is selected" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> DateSelection.company_registration_date
       )
 
@@ -105,7 +105,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       "user submit a valid start date if the submission occurred before 2pm" in new Setup(currDate = dateBefore2pm) {
         val incorpDate: LocalDate = LocalDate.of(2016, 1, 1)
         val nowPlusFive: LocalDate = dateBefore2pm.toLocalDate.plusDays(3)
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "value" -> DateSelection.specific_date,
           "startDate.month" -> nowPlusFive.getMonthValue.toString,
           "startDate.year" -> nowPlusFive.getYear.toString,
@@ -133,7 +133,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       "user submit a valid start date if the submission occurred after 2pm" in new Setup(currDate = dateAfter2pm, minDaysInFuture = 4) {
         val incorpDate: LocalDate = LocalDate.of(2016, 1, 1)
         val nowPlusFive: LocalDate = dateAfter2pm.toLocalDate.plusDays(4)
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "value" -> DateSelection.specific_date,
           "startDate.month" -> nowPlusFive.getMonthValue.toString,
           "startDate.year" -> nowPlusFive.getYear.toString,
@@ -164,7 +164,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
         "user submit a past start date earlier than 4 years ago" in new Setup {
           val incorpDate: LocalDate = LocalDate.of(2016, 1, 1)
           val nowMinusFive: LocalDate = dateBefore2pm.toLocalDate.minusYears(5)
-          val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
             "value" -> DateSelection.specific_date,
             "startDate.month" -> nowMinusFive.getMonthValue.toString,
             "startDate.year" -> nowMinusFive.getYear.toString,
@@ -188,7 +188,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
         "user submit a past start date earlier than date of incorporation when it's older than 4 years ago" in new Setup {
           val incorpDate: LocalDate = LocalDate.of(2011, 1, 1)
           val requestedDate: LocalDate = LocalDate.of(2010, 1, 1)
-          val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
             "value" -> DateSelection.specific_date,
             "startDate.month" -> requestedDate.getMonthValue.toString,
             "startDate.year" -> requestedDate.getYear.toString,
@@ -212,7 +212,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
         "user submit a date older than the incorp date but within 4 years" in new Setup {
           val incorpDate: LocalDate = LocalDate.of(2011, 1, 1)
           val requestedDate: LocalDate = LocalDate.of(2010, 1, 1)
-          val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+          val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
             "value" -> DateSelection.specific_date,
             "startDate.month" -> requestedDate.getMonthValue.toString,
             "startDate.year" -> requestedDate.getYear.toString,

@@ -81,7 +81,7 @@ class MandatoryStartDateControllerSpec extends ControllerSpec with VatRegistrati
 
     "redirect to the accounts period page if the calculated date is selected" in new Setup {
       val incorpDate: LocalDate = LocalDate.now.minusYears(3)
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> DateSelection.calculated_date
       )
       val calculatedDate: LocalDate = LocalDate.now().minusMonths(3)
@@ -110,7 +110,7 @@ class MandatoryStartDateControllerSpec extends ControllerSpec with VatRegistrati
     "redirect to the accounts period page if chosen date is before the calculated date and after the earliest of incorpDate and 4 years ago" in new Setup {
       val incorpDate: LocalDate = LocalDate.now.minusYears(3)
       val specificDate: LocalDate = LocalDate.now.minusYears(1)
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> DateSelection.specific_date,
         "date.month" -> specificDate.getMonthValue.toString,
         "date.year" -> specificDate.getYear.toString,
@@ -143,7 +143,7 @@ class MandatoryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       "user submit a past start date earlier than 4 years ago" in new Setup {
         val incorpDate: LocalDate = LocalDate.now.minusYears(3)
         val specificDate: LocalDate = LocalDate.now.minusYears(5)
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "value" -> DateSelection.specific_date,
           "date.month" -> specificDate.getMonthValue.toString,
           "date.year" -> specificDate.getYear.toString,
@@ -173,7 +173,7 @@ class MandatoryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       "user submit a past start date earlier than 4 incorp date" in new Setup {
         val incorpDate: LocalDate = LocalDate.now.minusYears(5)
         val specificDate: LocalDate = LocalDate.now.minusYears(6)
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "value" -> DateSelection.specific_date,
           "date.month" -> specificDate.getMonthValue.toString,
           "date.year" -> specificDate.getYear.toString,
@@ -202,7 +202,7 @@ class MandatoryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       "user submit a date older than the incorp date but within 4 years" in new Setup {
         val incorpDate: LocalDate = LocalDate.now.minusYears(2)
         val specificDate: LocalDate = LocalDate.now.minusYears(3)
-        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "value" -> DateSelection.specific_date,
           "date.month" -> specificDate.getMonthValue.toString,
           "date.year" -> specificDate.getYear.toString,

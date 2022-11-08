@@ -49,7 +49,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
 
     def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, selection: Boolean, resolvedLocation: Call): Unit = {
       featureSwitchFn(OtherBusinessInvolvement)
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> selection.toString
       )) {
         response =>
@@ -89,7 +89,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)
       mockPartyType(Future.successful(UkCompany))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
       )) {
         result => status(result) mustBe BAD_REQUEST
       }

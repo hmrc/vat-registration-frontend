@@ -16,14 +16,9 @@
 
 package controllers.feedback
 
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import uk.gov.hmrc.http.HttpResponse
-
-import scala.concurrent.Future
 
 class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
 

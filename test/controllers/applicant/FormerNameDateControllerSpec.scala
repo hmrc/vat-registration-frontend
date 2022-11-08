@@ -128,7 +128,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
         mockPartyType(Future.successful(UkCompany))
         mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "formerNameDate.day" -> "1",
           "formerNameDate.month" -> "2",
           "formerNameDate.year" -> "2020"
@@ -144,7 +144,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
         mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
         mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody()) {
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
           status(_) mustBe BAD_REQUEST
         }
       }
@@ -154,7 +154,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
         mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None))))
 
         val ex = intercept[IllegalStateException] {
-          submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+          submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
             "formerNameDate.day" -> "1",
             "formerNameDate.month" -> "2",
             "formerNameDate.year" -> "2020"
@@ -171,7 +171,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
         mockPartyType(Future.successful(UkCompany))
         mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "formerNameDate.day" -> "1",
           "formerNameDate.month" -> "2",
           "formerNameDate.year" -> "2020"
@@ -186,7 +186,7 @@ class FormerNameDateControllerSpec extends ControllerSpec
         mockPartyType(Future.successful(NETP))
         mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
-        submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
           "formerNameDate.day" -> "1",
           "formerNameDate.month" -> "2",
           "formerNameDate.year" -> "2020"

@@ -23,8 +23,8 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.Application
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.crypto.{CryptoWithKeysFromConfig, Protected}
 import uk.gov.hmrc.crypto.json.JsonEncryptor
+import uk.gov.hmrc.crypto.{Protected, SymmetricCryptoFactory}
 
 import java.time.LocalDateTime
 
@@ -151,7 +151,7 @@ trait WiremockHelper extends WiremockS4LHelper {
 trait WiremockS4LHelper {
 
   private def encryptJson(body: JsObject)(implicit app: Application): String = {
-    val crypto = new CryptoWithKeysFromConfig(baseConfigKey = "json.encryption", app.configuration.underlying)
+    val crypto = SymmetricCryptoFactory.aesCryptoFromConfig(baseConfigKey = "json.encryption", app.configuration.underlying)
     val encryptionFormat = new JsonEncryptor[JsObject]()(crypto, implicitly)
     encryptionFormat.writes(Protected(body)).toString()
   }

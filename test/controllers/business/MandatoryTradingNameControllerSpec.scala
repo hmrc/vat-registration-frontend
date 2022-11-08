@@ -76,7 +76,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "trading-name" -> testTradingName
       )
 
@@ -87,7 +87,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 400 without a provided trading name" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "trading-name" -> ""
       )
 
@@ -97,7 +97,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 400 when trading name is empty" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody()
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 400
@@ -105,7 +105,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 400 when the trading name they have provided is invalid" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withFormUrlEncodedBody(
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "trading-name" -> "$0M3 T3$T"
       )
 

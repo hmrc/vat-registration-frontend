@@ -21,7 +21,7 @@ import play.api.http.HeaderNames
 import play.api.libs.crypto.CookieSigner
 import play.api.libs.ws.WSCookie
 import support.{AppAndStubs, SessionCookieBaker}
-import uk.gov.hmrc.crypto.{CompositeSymmetricCrypto, Crypted, PlainText}
+import uk.gov.hmrc.crypto.{Crypted, PlainText, SymmetricCryptoFactory}
 import uk.gov.hmrc.http.SessionKeys
 
 import java.net.{URLDecoder, URLEncoder}
@@ -98,7 +98,7 @@ trait SessionCookieBaker {
     }
 
     val encodedCookie = encode(sessionData)
-    val encrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).encrypt(encodedCookie).value
+    val encrypted = SymmetricCryptoFactory.aesGcmCrypto(cookieKey).encrypt(encodedCookie).value
 
     s"""mdtp="$encrypted"; Path=/; HTTPOnly"; Path=/; HTTPOnly"""
   }
@@ -109,7 +109,7 @@ trait SessionCookieBaker {
 
   def getCookieData(cookieData: String): Map[String, String] = {
 
-    val decrypted = CompositeSymmetricCrypto.aesGCM(cookieKey, Seq()).decrypt(Crypted(cookieData)).value
+    val decrypted = SymmetricCryptoFactory.aesGcmCrypto(cookieKey).decrypt(Crypted(cookieData)).value
     val result = decrypted.split("&")
       .map(_.split("="))
       .map { case Array(k, v) => (k, URLDecoder.decode(v, StandardCharsets.UTF_8.name())) }

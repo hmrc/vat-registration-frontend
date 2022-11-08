@@ -109,7 +109,7 @@ class FormerNameCaptureControllerSpec extends ControllerSpec
   "submit" should {
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("formerNameRadio" -> "")){ result =>
         status(result) mustBe BAD_REQUEST
       }
     }
@@ -117,7 +117,7 @@ class FormerNameCaptureControllerSpec extends ControllerSpec
     "Redirect to FormerNameDate with valid data with former name" in new Setup {
       mockSaveApplicantDetails(Name(Some(testFirstName), last = testLastName))(emptyApplicantDetails)
 
-      submitAuthorised(controller.submit, fakeRequest.withFormUrlEncodedBody(
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "formerFirstName" -> testFirstName,
         "formerLastName" -> testLastName
       )) { result =>
