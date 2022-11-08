@@ -16,7 +16,6 @@
 
 package models
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 import java.time.LocalDate
@@ -32,20 +31,7 @@ case class FlatRateScheme(joinFrs: Option[Boolean] = None,
                           limitedCostTrader: Option[Boolean] = None)
 
 object FlatRateScheme {
-  implicit val s4lKey: S4LKey[FlatRateScheme] = S4LKey("flatRateScheme")
   implicit val apiKey: ApiKey[FlatRateScheme] = ApiKey("flat-rate-scheme")
-
-  val oldS4lReads: Reads[FlatRateScheme] = (
-    (__ \ "joinFrs").readNullable[Boolean] and
-    (__ \ "overBusinessGoods").readNullable[Boolean] and
-    (__ \ "estimateTotalSales").readNullable[BigDecimal] and
-    (__ \ "overBusinessGoodsPercent").readNullable[Boolean] and
-    (__ \ "useThisRate").readNullable[Boolean] and
-    (__ \ "frsStart" \ "date").readNullable[LocalDate] and
-    (__ \ "categoryOfBusiness").readNullable[String] and
-    (__ \ "percent").readNullable[BigDecimal] and
-    (__ \ "limitedCostTrader").readNullable[Boolean]
-  ) (FlatRateScheme.apply _)
 
   implicit val format: OFormat[FlatRateScheme] = Json.format[FlatRateScheme]
 }

@@ -28,7 +28,6 @@ import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 import utils.MessageDateFormat
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 trait StartDateForm {
   protected val START_DATE_SELECTION = "value"

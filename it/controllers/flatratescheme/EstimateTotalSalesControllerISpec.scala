@@ -28,8 +28,6 @@ import scala.concurrent.Future
 
 class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
-  implicit val s4lFrsKey: S4LKey[FlatRateScheme] = FlatRateScheme.s4lKey
-
   val url: String = controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url
 
   val testTotalSales = 123456
@@ -73,7 +71,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "return OK without prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].clearedByKey
         .registrationApi.getSection[FlatRateScheme](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -91,7 +88,6 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
     "redirect to the next FRS page when the user submits a valid estimate" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[FlatRateScheme].clearedByKey
         .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(estimateTotalSales = None)))
         .registrationApi.replaceSection[FlatRateScheme](frsData)
 

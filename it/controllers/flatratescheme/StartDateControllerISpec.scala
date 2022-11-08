@@ -13,16 +13,6 @@ import java.time.LocalDate
 
 class StartDateControllerISpec extends ControllerISpec {
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    System.clearProperty("feature.system-date")
-  }
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    System.clearProperty("feature.system-date")
-  }
-
   val edrDate: LocalDate = LocalDate.of(LocalDate.now().getYear - 2, 10, 2)
   val oneDayBeforeEdrDate: LocalDate = edrDate.minusDays(1)
   val vatStartDate: LocalDate = LocalDate.of(LocalDate.now().getYear - 2, 1, 2)
@@ -129,7 +119,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(testDate)))
-          .s4lContainer[FlatRateScheme].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -148,7 +137,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(vatStartDate)))
-          .s4lContainer[FlatRateScheme].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -187,7 +175,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(testDate)))
-          .s4lContainer[FlatRateScheme].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -207,7 +194,6 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(edrDate)))
-          .s4lContainer[FlatRateScheme].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

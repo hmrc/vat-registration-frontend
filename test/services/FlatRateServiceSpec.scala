@@ -33,17 +33,11 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
   class Setup {
     val service = new FlatRateService(
-      mockS4LService,
       mockBusinessService,
       movkVatApplicationService,
       mockConfigConnector,
       mockRegistrationApiConnector
     )
-
-    when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
-      .thenReturn(Future.successful(None))
-    when(mockS4LService.clearKey[FlatRateScheme](any(), any(), any()))
-      .thenReturn(Future.successful(dummyCacheMap))
   }
 
   "applyPercentRoundUp" must {
@@ -59,21 +53,13 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
     val frSch = FlatRateScheme(
       Some(false)
     )
-
-    "return the S4L model if it is there" in new Setup() {
-      when(mockS4LService.fetchAndGet[FlatRateScheme](any(), any(), any(), any()))
-        .thenReturn(Future.successful(Some(frSch)))
-
-      await(service.getFlatRate) mustBe frSch
-    }
-
-    "return the converted backend model if the S4L is not there" in new Setup() {
+    "return the backend model" in new Setup() {
       mockGetSection[FlatRateScheme](testRegId, Some(frSch))
 
       await(service.getFlatRate) mustBe frSch
     }
 
-    "return an empty backend model if the S4L is not there and neither is the backend" in new Setup() {
+    "return an empty model if data isn't in backend" in new Setup() {
       mockGetSection[FlatRateScheme](testRegId, None)
 
       await(service.getFlatRate) mustBe FlatRateScheme()
@@ -315,8 +301,6 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
-      when(mockS4LService.save[FlatRateScheme](any())(any(), any(), any(), any()))
-        .thenReturn(Future.successful(dummyCacheMap))
       mockDeleteSection[FlatRateScheme](testRegId)
 
       await(service.resetFRSForSAC(newSicCode)) mustBe newSicCode
