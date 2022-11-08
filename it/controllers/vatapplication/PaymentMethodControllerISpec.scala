@@ -16,9 +16,10 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.{TaskList, TaxRepPage}
+import featureswitch.core.config.TaskList
 import forms.PaymentMethodForm._
 import itutil.ControllerISpec
+import models.api.{EligibilitySubmissionData, NETP}
 import models.api.vatapplication._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -100,7 +101,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
           .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
-
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))
@@ -123,6 +124,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testFullVatApplication)
           .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
           .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -141,13 +143,14 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
-    "return a redirect to the Tax Representative page if the feature switch is on" in new Setup {
-      enable(TaxRepPage)
-
+    "return a redirect to the Tax Representative page if the selected party type is NonUK" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testFullVatApplication)
         .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](
+          Some(testEligibilitySubmissionData.copy(partyType = NETP)), testRegId
+        )
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

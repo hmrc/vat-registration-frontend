@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, TaxRepPage}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
@@ -523,9 +523,8 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
       }
     }
 
-    "prerequisite is complete and all vat returns data captured except tax rep when TaxRep FS enabled" must {
+    "prerequisite is complete and all vat returns data captured except tax rep for non-uk journey" must {
       "return TLInProgress" in {
-        enable(TaxRepPage)
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
           business = Some(validBusiness.copy(
@@ -541,8 +540,6 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
         val sectionRow = section.vatReturnsRow.build(scheme)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.vatapplication.routes.ReturnsFrequencyController.show.url
-
-        disable(TaxRepPage)
       }
     }
 
@@ -556,6 +553,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           ))
         )
@@ -611,6 +609,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
           flatRateScheme = None
@@ -632,6 +631,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
           flatRateScheme = Some(FlatRateScheme(None, None, None, None, None, None, None, None, None))
@@ -653,6 +653,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
           flatRateScheme = Some(FlatRateScheme(joinFrs = Some(true)))
@@ -674,6 +675,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
             businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
           )),
           vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+            hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
           flatRateScheme = Some(validFlatRate)

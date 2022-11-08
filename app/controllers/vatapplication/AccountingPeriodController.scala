@@ -18,8 +18,9 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{TaskList, TaxRepPage}
+import featureswitch.core.config.TaskList
 import forms.vatapplication.AccountingPeriodForm
+import models.api.{NETP, NonUkEstablished, NonUkNonEstablished}
 import models.api.vatapplication.QuarterlyStagger
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -32,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AccountingPeriodController @Inject()(val sessionService: SessionService,
                                            val authConnector: AuthClientConnector,
                                            val vatApplicationService: VatApplicationService,
+                                           vatRegistrationService: VatRegistrationService,
                                            accountingPeriodPage: AccountingPeriodView
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
@@ -53,15 +55,18 @@ class AccountingPeriodController @Inject()(val sessionService: SessionService,
       implicit profile =>
         AccountingPeriodForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
-          success => vatApplicationService.saveVatApplication(success) flatMap { _ =>
-            if (isEnabled(TaxRepPage)) {
-              Future.successful(Redirect(controllers.vatapplication.routes.TaxRepController.show))
-            } else {
-              if (isEnabled(TaskList)) {
-                Future.successful(Redirect(controllers.routes.TaskListController.show))
-              } else {
-                Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
-              }
+          success =>
+            vatRegistrationService.partyType flatMap { partyType =>
+              vatApplicationService.saveVatApplication(success) map { _ =>
+                partyType match {
+                  case NETP | NonUkNonEstablished => Redirect(controllers.vatapplication.routes.TaxRepController.show)
+                  case _ =>
+                    if (isEnabled(TaskList)) {
+                      Redirect(controllers.routes.TaskListController.show)
+                    } else {
+                      Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+                    }
+                }
             }
           }
         )

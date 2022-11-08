@@ -37,7 +37,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
   class Setup() {
     val accountingPeriodView: AccountingPeriodView = app.injector.instanceOf[AccountingPeriodView]
     val testController = new AccountingPeriodController(
-      mockSessionService, mockAuthClientConnector, movkVatApplicationService, accountingPeriodView
+      mockSessionService, mockAuthClientConnector, movkVatApplicationService, mockVatRegistrationService, accountingPeriodView
     )
 
     mockAuthenticated()

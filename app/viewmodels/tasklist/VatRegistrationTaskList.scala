@@ -16,10 +16,10 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaxRepPage}
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
-import models.api.{NETP, NonUkNonEstablished, VatScheme}
+import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.InternalServerException
 
@@ -99,7 +99,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
     url = _ => controllers.vatapplication.routes.ReturnsFrequencyController.show.url,
     tagId = "vatReturnsRow",
-    checks = scheme => scheme.vatApplication.fold(Seq(false))(checkVatReturns),
+    checks = scheme => scheme.vatApplication.fold(Seq(false))(vatAppl => checkVatReturns(scheme.partyType, vatAppl)),
     prerequisites = scheme => Seq(
       List(
         resolveVATRegistrationDateRow(scheme),
@@ -202,7 +202,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     }
   }
 
-  private def checkVatReturns(vatApplication: VatApplication) = {
+  private def checkVatReturns(partyType: Option[PartyType], vatApplication: VatApplication) = {
     Seq(
       Some(vatApplication.returnsFrequency.isDefined),
       Some(vatApplication.staggerStart.isDefined),
@@ -214,7 +214,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         )
         case _ => None
       },
-      if (isEnabled(TaxRepPage)) Some(vatApplication.hasTaxRepresentative.isDefined) else None
+      if (Seq(NETP, NonUkNonEstablished).exists(partyType.contains)) Some(vatApplication.hasTaxRepresentative.isDefined) else None
     )
   }.flatten
 }

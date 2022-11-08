@@ -18,11 +18,12 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{TaskList, TaxRepPage}
+import featureswitch.core.config.TaskList
 import forms.PaymentMethodForm
+import models.api.{NETP, NonUkNonEstablished}
 import models.api.vatapplication.AASDetails
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService, VatApplicationService}
+import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
 import views.html.vatapplication.aas_payment_method
 
 import javax.inject.{Inject, Singleton}
@@ -32,7 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
                                         val sessionService: SessionService,
                                         view: aas_payment_method,
-                                        vatApplicationService: VatApplicationService
+                                        vatApplicationService: VatApplicationService,
+                                        vatRegistrationService: VatRegistrationService
                                        )(implicit appConfig: FrontendAppConfig,
                                          val executionContext: ExecutionContext,
                                          baseControllerComponents: BaseControllerComponents)
@@ -54,15 +56,18 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         PaymentMethodForm.apply().bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-          paymentMethod => vatApplicationService.saveVatApplication(paymentMethod).map { _ =>
-            if (isEnabled(TaxRepPage)) {
-              Redirect(controllers.vatapplication.routes.TaxRepController.show)
-            } else {
-              if (isEnabled(TaskList)) {
-                Redirect(controllers.routes.TaskListController.show)
-              } else {
-                Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
-              }
+          paymentMethod =>
+            vatRegistrationService.partyType.flatMap { partyType =>
+              vatApplicationService.saveVatApplication(paymentMethod).map { _ =>
+                partyType match {
+                  case NETP | NonUkNonEstablished => Redirect(controllers.vatapplication.routes.TaxRepController.show)
+                  case _ =>
+                    if (isEnabled(TaskList)) {
+                      Redirect(controllers.routes.TaskListController.show)
+                    } else {
+                      Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
+                    }
+                }
             }
           }
         )
