@@ -79,6 +79,23 @@ class RegistrationApiConnector @Inject()(val http: HttpClientV2,
       .execute
   }
 
+  def replaceListSection[T: ApiKey](regId: String, section: List[T])(implicit hc: HeaderCarrier, format: Format[List[T]]): Future[List[T]] = {
+    implicit object ReplaceSectionHttpReads extends HttpReads[List[T]] {
+      override def read(method: String, url: String, response: HttpResponse): List[T] = {
+        response.status match {
+          case OK => response.json.as[List[T]]
+          case _ => throw new InternalServerException(s"Unexpected response: ${response.body}")
+        }
+      }
+    }
+
+    val url = s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}"
+
+    http.put(url"$url")
+      .withBody(Json.toJson(section))
+      .execute
+  }
+
   def deleteSection[T: ApiKey](regId: String, idx: Option[Int] = None)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val url = appendIndexToUrl(s"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}", idx)
 

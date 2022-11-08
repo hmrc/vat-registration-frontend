@@ -16,6 +16,7 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import controllers.partners.PartnerIndexValidation.minPartnerIndex
 import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
 import models.api._
@@ -27,7 +28,7 @@ import services.BusinessService
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService) extends FeatureSwitching {
+class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService, appConfig: FrontendAppConfig) extends FeatureSwitching {
 
   //scalastyle:off
   def buildPartnersDetailRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListRowBuilder] = {
@@ -45,8 +46,9 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
             tagId = "partnersDetailRow",
             checks = scheme => Seq(
               scheme.entities.exists(_.size > 1),
-              scheme.entities.flatMap(_.find(_.isModelComplete(isLeadPartner = false))).isDefined,
-              scheme.attachments.exists(_.additionalPartnersDocuments.isDefined)
+              scheme.entities.exists(_.filter(_.isLeadPartner.contains(false)).forall(_.isModelComplete(isLeadPartner = false))) && scheme.entities.exists(_.size > 1),
+              (scheme.attachments.exists(_.additionalPartnersDocuments.contains(true)) && scheme.entities.exists(_.size == appConfig.maxPartnerCount))
+                || (scheme.attachments.exists(_.additionalPartnersDocuments.contains(false)) && scheme.entities.exists(_.size > 1))
             ),
             prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
           )

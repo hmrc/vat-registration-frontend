@@ -18,14 +18,11 @@ package controllers.partners
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.partners.PartnerIndexValidation.minPartnerIndex
 import forms.partners.PartnerSummaryForm
-import models.Entity
 import play.api.mvc.{Action, AnyContent}
 import services.AttachmentsService.AdditionalPartnersDocumentsAnswer
 import services.{AttachmentsService, EntityService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import viewmodels.PartnerSummaryRow
 import views.html.partners.PartnerSummary
 
 import javax.inject.{Inject, Singleton}
@@ -38,17 +35,26 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
                                          attachmentsService: AttachmentsService,
                                          view: PartnerSummary)
                                         (implicit appConfig: FrontendAppConfig,
-                                     val executionContext: ExecutionContext,
-                                     baseControllerComponents: BaseControllerComponents)
+                                         val executionContext: ExecutionContext,
+                                         baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        entityService.getAllEntities(profile.registrationId).map {
-          case Nil => Redirect(controllers.routes.TaskListController.show)
-          case partners if partners.size == 1 => Redirect(routes.PartnerEntityTypeController.showPartnerType(minPartnerIndex))
-          case partners => Ok(view(PartnerSummaryForm(), buildRows(partners), partners.size))
+        entityService.getAllEntities(profile.registrationId).flatMap {
+          case Nil => Future.successful(Redirect(controllers.routes.TaskListController.show))
+          case partners =>
+            val clearedPartners = partners.filter { partner =>
+              partner.isModelComplete(isLeadPartner = partner.isLeadPartner.contains(true))
+            }
+            val page = Ok(view(PartnerSummaryForm(), clearedPartners, clearedPartners.size))
+
+            if (clearedPartners != partners) {
+              entityService.upsertEntityList(profile.registrationId, clearedPartners).map(_ => page)
+            } else {
+              Future.successful(page)
+            }
         }
   }
 
@@ -60,7 +66,7 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
           errors =>
             entityService.getAllEntities(profile.registrationId).map {
               case Nil => Redirect(controllers.routes.TaskListController.show)
-              case partnerEntities => BadRequest(view(errors, buildRows(partnerEntities), partnerEntities.size))
+              case partnerEntities => BadRequest(view(errors, partnerEntities, partnerEntities.size))
             },
           addMore =>
             if (addMore) {
@@ -81,13 +87,7 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
         )
   }
 
-  private def buildRows(partnerEntities: List[Entity]): List[PartnerSummaryRow] =
-    partnerEntities.zipWithIndex.map { case (partner, idx) =>
-      PartnerSummaryRow(
-        name = partner.displayName,
-        changeAction = if (partner.isLeadPartner.contains(true)) None else Some(routes.PartnerEntityTypeController.showPartnerType(idx + 1)),
-        deleteAction = if (partner.isLeadPartner.contains(true)) None else Some(routes.RemovePartnerEntityController.show(idx + 1))
-      )
-    }
-
+  def continue: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    Future.successful(Redirect(routes.PartnerEntityTypeController.showPartnerType(2)))
+  }
 }

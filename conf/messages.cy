@@ -1196,7 +1196,10 @@ pages.businessPartnerEntityType.heading                  = Pa fath o fusnes yw�
 # PARTNER SUMMARY PAGE
 partner.summary.heading                                  = You have added {0} member of the partnership
 partner.summary.headingPlural                            = Rydych wedi ychwanegu {0} aelod o’r bartneriaeth
-partner.summary.subHeading                               = A oes angen i chi ychwanegu partner arall?
+partner.summary.leadPartner                              = Lead partner
+partner.summary.additionalPartners                       = Additional partners
+partner.summary.subHeadingPlural                         = A oes angen i chi ychwanegu partner arall?
+partner.summary.subHeading                               = You need to add another partner
 partner.summary.hint                                     = Mae angen o leiaf 2 bartner arnoch. Gallwch ychwanegu uchafswm o 10 aelod wrth ddefnyddio’r gwasanaeth hwn.
 validation.entity.partnerSummary.error                   = Select yes if you need to add another partner
 entity.removePartner.heading                             = Are you sure you want to remove {0}?

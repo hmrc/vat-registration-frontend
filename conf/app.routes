@@ -353,6 +353,7 @@ POST        /partner/:index/business-type-in-partnership             controllers
 ## Partner Summary
 GET         /partner/summary                                          controllers.partners.PartnerSummaryController.show
 POST        /partner/summary                                          controllers.partners.PartnerSummaryController.submit
+POST        /partner/summary-continue                                 controllers.partners.PartnerSummaryController.continue
 
 ## Other Business Involvement Remove
 GET         /partner/:index/remove                                    controllers.partners.RemovePartnerEntityController.show(index: Int)
