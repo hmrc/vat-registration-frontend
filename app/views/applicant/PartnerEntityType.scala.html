@@ -63,7 +63,8 @@
         ) {
             @inputRadio(
                 form = form,
-                legend = "",
+                legend = messages(headingMessage),
+                classes = "govuk-visually-hidden",
                 items = Seq(
                     RadioItem(
                         content = Text(messages("pages.leadPartnerEntityType.soleTrader")),
