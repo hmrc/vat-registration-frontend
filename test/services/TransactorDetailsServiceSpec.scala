@@ -104,6 +104,16 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
         service.saveTransactorDetails(PartOfOrganisation(true)) returns testTransactorDetails
       }
+
+      "the TransactorDetails model is complete but user stores false" in {
+        when(mockS4LService.fetchAndGet[TransactorDetails])
+          .thenReturn(Future.successful(Some(testTransactorDetails)))
+        mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails.copy(isPartOfOrganisation = Some(false), organisationName = None))
+        when(mockS4LService.clearKey[TransactorDetails])
+          .thenReturn(Future.successful(CacheMap("", Map())))
+
+        service.saveTransactorDetails(PartOfOrganisation(false)) returns testTransactorDetails.copy(isPartOfOrganisation = Some(false), organisationName = None)
+      }
     }
 
     "return a TransactorDetails model if storing organisationName" when {
@@ -218,6 +228,18 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(DeclarationCapacityAnswer(AuthorisedEmployee)) returns testTransactorDetails
+      }
+
+      "the TransactorDetails model is complete but user changed to an agent cred" in {
+        val agentTransactorDetails = testTransactorDetails.copy(personalDetails = Some(testPersonalDetails.copy(arn = Some("123"))))
+        val updatedTransactorDetails = agentTransactorDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)), organisationName = None, isPartOfOrganisation = None, address = None)
+        when(mockS4LService.fetchAndGet[TransactorDetails])
+          .thenReturn(Future.successful(Some(agentTransactorDetails)))
+        mockReplaceSection[TransactorDetails](testRegId, updatedTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
+          .thenReturn(Future.successful(CacheMap("", Map())))
+
+        service.saveTransactorDetails(DeclarationCapacityAnswer(AccountantAgent)) returns updatedTransactorDetails
       }
     }
   }

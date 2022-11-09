@@ -42,27 +42,10 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def show: Action[AnyContent] = isAuthenticated { implicit request =>
     if (isEnabled(SaveAndContinueLater)) {
-      if (isEnabled(MultipleRegistrations)) {
-        vatRegistrationService.getAllRegistrations.map {
-          case head :: tail => Redirect(routes.ManageRegistrationsController.show)
-          case Nil => Redirect(routes.JourneyController.startNewJourney)
-        }
-      } else {
-        vatRegistrationService.getAllRegistrations.map(_.lastOption).flatMap {
-          case Some(header) if header.status == VatRegStatus.draft | header.status == VatRegStatus.contact =>
-            journeyService.buildCurrentProfile(header.registrationId).map { _ =>
-              Ok(view(StartNewApplicationForm.form))
-            }.recover { //This handles the rare case where build current profile status check is applied to an old unparsable VatScheme
-              case exception =>
-                Redirect(routes.JourneyController.startNewJourney)
-            }
-          case _ =>
-            journeyService.sessionService.remove.map { _ =>
-              Redirect(routes.JourneyController.startNewJourney)
-            }
-        }
+      vatRegistrationService.getAllRegistrations.map {
+        case head :: tail => Redirect(routes.ManageRegistrationsController.show)
+        case Nil => Redirect(routes.JourneyController.startNewJourney)
       }
-
     }
     else {
       Future.successful(Redirect(routes.JourneyController.startNewJourney))
@@ -86,11 +69,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
     for {
       scheme <- vatRegistrationService.createRegistrationFootprint
       _ <- journeyService.buildCurrentProfile(scheme.registrationId)
-    } yield if (isEnabled(MultipleRegistrations)) {
-      Redirect(routes.ApplicationReferenceController.show)
-    } else {
-      Redirect(routes.HonestyDeclarationController.show)
-    }
+    } yield Redirect(routes.ApplicationReferenceController.show)
   }
 
   // scalastyle:off
@@ -105,7 +84,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
           case VatRegStatus.submitted => Redirect(routes.ApplicationSubmissionController.show)
           case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
           case _ if isEnabled(TaskList) && eligibilitySubmissionData.isDefined => Redirect(controllers.routes.TaskListController.show)
-          case _ if isEnabled(MultipleRegistrations) && header.applicationReference.isEmpty => Redirect(routes.ApplicationReferenceController.show)
+          case _ if header.applicationReference.isEmpty => Redirect(routes.ApplicationReferenceController.show)
           case _ => Redirect(routes.HonestyDeclarationController.show)
         }
       case None =>
@@ -116,16 +95,16 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
   def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     (for {
       isTransactor <- vatRegistrationService.isTransactor
-      isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
+      isAgentTransactor = isTransactor && profile.agentReferenceNumber.nonEmpty
       _ <- journeyService.buildCurrentProfile(regId)
     } yield {
       if (isEnabled(TaskList)) {
         Redirect(controllers.routes.TaskListController.show)
       } else {
-        if (isTransactor && !isAgent)
-          Redirect(transactorRoutes.PartOfOrganisationController.show)
-        else if (isAgent && isEnabled(FullAgentJourney))
+        if (isAgentTransactor)
           Redirect(transactorRoutes.AgentNameController.show)
+        else if (isTransactor)
+          Redirect(transactorRoutes.PartOfOrganisationController.show)
         else
           Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
       }

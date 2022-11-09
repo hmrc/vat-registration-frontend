@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, FullAgentJourney}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
@@ -28,39 +28,33 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
   val section = app.injector.instanceOf[AboutYouTransactorTaskList]
   val testArn = "testArn"
 
-  "the user has logged in as an Agent" when {
-    "the FullAgentJourney feature switch is enabled" must {
-      "pass all checks when the personal details section exists" in {
-        enable(FullAgentJourney)
-        implicit val cp: CurrentProfile = currentProfile.copy(agentReferenceNumber = Some(testArn))
+  "the user has logged in as an Agent" must {
+    "pass all checks when the personal details section exists" in {
+      implicit val cp: CurrentProfile = currentProfile.copy(agentReferenceNumber = Some(testArn))
 
-        val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(ApplicantDetails(entity = Some(testLimitedCompany))),
-          transactorDetails = Some(TransactorDetails(personalDetails = Some(testPersonalDetails)))
-        )
+      val scheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
+        applicantDetails = Some(ApplicantDetails(entity = Some(testLimitedCompany))),
+        transactorDetails = Some(TransactorDetails(personalDetails = Some(testPersonalDetails)))
+      )
 
-        val res = section.transactorPersonalDetailsRow.build(scheme)
+      val res = section.transactorPersonalDetailsRow.build(scheme)
 
-        res.status mustBe TLCompleted
-        res.url mustBe controllers.transactor.routes.AgentNameController.show.url
-      }
-      "be Not Started when personal details is missing" in {
-        enable(FullAgentJourney)
-        implicit val cp: CurrentProfile = currentProfile.copy(agentReferenceNumber = Some(testArn))
+      res.status mustBe TLCompleted
+      res.url mustBe controllers.transactor.routes.AgentNameController.show.url
+    }
+    "be Not Started when personal details is missing" in {
+      implicit val cp: CurrentProfile = currentProfile.copy(agentReferenceNumber = Some(testArn))
 
-        val scheme = emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(ApplicantDetails(entity = Some(testLimitedCompany)))
-        )
+      val scheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
+        applicantDetails = Some(ApplicantDetails(entity = Some(testLimitedCompany)))
+      )
 
-        val res = section.transactorPersonalDetailsRow.build(scheme)
+      val res = section.transactorPersonalDetailsRow.build(scheme)
 
-        res.status mustBe TLNotStarted
-        res.url mustBe controllers.transactor.routes.AgentNameController.show.url
-
-        disable(FullAgentJourney)
-      }
+      res.status mustBe TLNotStarted
+      res.url mustBe controllers.transactor.routes.AgentNameController.show.url
     }
   }
   "the user is a transactor" when {
@@ -185,6 +179,7 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
           sectionRow.status mustBe TLNotStarted
           sectionRow.url mustBe url
         }
+
         verifySectionRowUrl(RegSociety, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
         verifySectionRowUrl(NonUkNonEstablished, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
       }

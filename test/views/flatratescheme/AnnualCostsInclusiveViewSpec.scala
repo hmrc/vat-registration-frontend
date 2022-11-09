@@ -39,9 +39,6 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
   val bullet8 = "training and memberships"
   val bullet9 = "capital items, for example office equipment, laptops, mobile phones and tablets"
   val bullet10 = "services - that is, anything not classified as ‘goods’"
-  val para2 = "If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date."
-  val link = "VAT Flat Rate Scheme (opens in new tab)"
-  val para3 = s"Find out more about $link."
   val continue = "Save and continue"
 
   implicit val doc: Document = Jsoup.parse(view(OverBusinessGoodsForm.form).body)
@@ -80,11 +77,6 @@ class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
         bullet9,
         bullet10
       )
-    }
-    "have a final paragraph with a help link" in new ViewSetup {
-      doc.para(2) mustBe Some(para2)
-      doc.para(3) mustBe Some(para3)
-      doc.link(1) mustBe Some(Link(link, "https://www.gov.uk/vat-flat-rate-scheme"))
     }
 
     "have a save and continue button" in new ViewSetup {
