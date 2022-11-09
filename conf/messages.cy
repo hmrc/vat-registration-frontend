@@ -1681,6 +1681,7 @@ obi.summary.headingPlural                  = Rydych wedi ychwanegu {0} o gysyllt
 obi.summary.subHeading                     = A oes angen i chi ychwanegu busnes arall?
 obi.summary.hint                           = Mae’n rhaid i chi roi gwybod i ni am unrhyw fusnesau eraill yn y Deyrnas Unedig neu Ynys Manaw y mae’r partneriaid neu’r cyfarwyddwyr yn unig fasnachwyr, yn bartneriaid neu’n gyfarwyddwyr ynddynt.
 validation.obi.summary.error               = Dewiswch ‘Iawn’ os oes angen i chi ychwanegu busnes arall
+obi.summary.max.limit.reached              = We do not need any more than {0} businesses
 
 # DOCUMENT UPLOAD SUMMARY PAGE
 document.upload.summary.heading             = Rydych wedi ychwanegu {0} ddogfen

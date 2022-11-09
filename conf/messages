@@ -1680,6 +1680,7 @@ obi.summary.headingPlural                  = You have added {0} business involve
 obi.summary.subHeading                     = Do you need to add another business?
 obi.summary.hint                           = You must tell us about any other businesses the partners or directors are a sole trader, partner or director of in the United Kingdom or Isle of Man.
 validation.obi.summary.error               = Select yes if you need to add another business
+obi.summary.max.limit.reached              = We do not need any more than {0} businesses
 
 # DOCUMENT UPLOAD SUMMARY PAGE
 document.upload.summary.heading             = You have added {0} document
