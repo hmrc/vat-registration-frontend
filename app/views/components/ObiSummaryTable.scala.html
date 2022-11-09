@@ -26,7 +26,7 @@
 @govukTable(Table(
     rows = otherBusinessInvolvements.map { obi =>
       Seq(
-          TableRow(content = Text(obi.businessName), classes = "govuk-!-width-two-thirds"),
+          TableRow(content = Text(obi.businessName), classes = "govuk-!-width-two-thirds govuk-!-font-weight-regular"),
           TableRow(content = HtmlContent(link(obi.changeAction.url, messages("app.common.change")))),
           TableRow(content = HtmlContent(link(obi.deleteAction.url, messages("app.common.remove"))))
       )
