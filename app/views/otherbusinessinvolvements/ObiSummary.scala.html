@@ -23,6 +23,7 @@
 @this(
     layout: layouts.layout,
     h1: components.h1,
+    h2: components.h2,
     p: components.p,
     subheading: components.subheading,
     button: components.button,
@@ -58,6 +59,7 @@
             }
         } else {
             @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.continue) {
+                @p(content = Html(messages("obi.summary.max.limit.reached", numObis)), classes = "govuk-body govuk-!-font-weight-bold")
                 @button("app.common.continue", showSaveProgressButton = true)
             }
         }

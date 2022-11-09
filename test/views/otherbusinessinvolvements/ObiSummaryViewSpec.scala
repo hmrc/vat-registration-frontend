@@ -100,6 +100,9 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
     "does not have a Yes/No question" in new ViewSetup {
       doc.radioGroup(1) mustBe None
     }
+    "has correct text to inform users of limit reached in a paragraph" in new ViewSetup {
+      doc.para(1) mustBe Some("We do not need any more than 10 businesses")
+    }
     "have a submit button" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedMessages.submitButton)
     }
