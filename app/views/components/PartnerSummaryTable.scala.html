@@ -14,22 +14,38 @@
  * limitations under the License.
  *@
 
-@import viewmodels.PartnerSummaryRow
-
 @this(
         govukTable: GovukTable,
-        link: components.link
+        link: components.link,
+        h2: components.h2
 )
 
-@(partnerRows: List[PartnerSummaryRow])(implicit request: Request[_], messages: Messages)
+@(partnerRows: List[Entity])(implicit request: Request[_], messages: Messages)
 
-@govukTable(Table(
-    rows = partnerRows.map { row =>
-      Seq(
-          TableRow(content = row.name.map(Text).getOrElse(Empty), classes = "govuk-!-width-two-thirds"),
-          TableRow(content = row.changeAction.map(call => HtmlContent(link(call.url, messages("app.common.change")))).getOrElse(HtmlContent(""))),
-          TableRow(content = row.deleteAction.map(call => HtmlContent(link(call.url, messages("app.common.remove")))).getOrElse(HtmlContent("")))
-      )
-    },
-    firstCellIsHeader = true
-))
+@defining(partnerRows.zipWithIndex) { indexedPartners =>
+    @h2(messages("partner.summary.leadPartner"), classes = "govuk-heading-s govuk-!-margin-0")
+    @govukTable(Table(
+        rows = indexedPartners.headOption.map { case (partner, index) =>
+            Seq(
+                TableRow(content = partner.displayName.map(Text).getOrElse(Empty), classes = "govuk-!-width-two-thirds govuk-!-font-weight-regular"),
+                TableRow(),
+                TableRow()
+            )
+        }.toSeq,
+        firstCellIsHeader = true
+    ))
+
+    @if(indexedPartners.length > 1) {
+        @h2(messages("partner.summary.additionalPartners"), classes = "govuk-heading-s govuk-!-margin-0")
+        @govukTable(Table(
+            rows = indexedPartners.tail.map { case (partner, index) =>
+                Seq(
+                    TableRow(content = partner.displayName.map(Text).getOrElse(Empty), classes = "govuk-!-width-two-thirds govuk-!-font-weight-regular"),
+                    TableRow(content = HtmlContent(link(controllers.partners.routes.PartnerEntityTypeController.showPartnerType(index + 1).url, messages("app.common.change")))),
+                    TableRow(content = HtmlContent(link(controllers.partners.routes.RemovePartnerEntityController.show(index + 1).url, messages("app.common.remove"))))
+                )
+            },
+            firstCellIsHeader = true
+        ))
+    }
+}

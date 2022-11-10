@@ -496,6 +496,16 @@ trait StubUtils {
       builder
     }
 
+    def replaceListSection[T: ApiKey](data: List[T], regId: String = "1")(implicit format: Format[T]): PreconditionBuilder = {
+      stubFor(
+        put(urlPathEqualTo(s"/vatreg/registrations/$regId/sections/${ApiKey[T]}"))
+          .withRequestBody(equalToJson(Json.toJson[List[T]](data).toString()))
+          .willReturn(ok(
+            Json.toJson[List[T]](data).toString()
+          )))
+      builder
+    }
+
     def replaceSectionWithoutCheckingData[T: ApiKey](data: T, regId: String = "1", idx: Option[Int] = None)(implicit format: Format[T]): PreconditionBuilder = {
       val url = idx match {
         case Some(index) => s"/vatreg/registrations/$regId/sections/${ApiKey[T]}/$index"

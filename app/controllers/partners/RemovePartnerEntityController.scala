@@ -36,8 +36,8 @@ class RemovePartnerEntityController @Inject()(val authConnector: AuthConnector,
                                               attachmentsService: AttachmentsService,
                                               view: RemovePartnerEntity)
                                              (implicit appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
+                                              val executionContext: ExecutionContext,
+                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with PartnerIndexValidation with SessionProfile {
 
   def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
@@ -55,25 +55,27 @@ class RemovePartnerEntityController @Inject()(val authConnector: AuthConnector,
   def submit(partnerName: Option[String], index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        RemovePartnerEntityForm(partnerName).form.bindFromRequest.fold(
-          errors =>
-            Future.successful(BadRequest(view(errors, partnerName, index))),
-          success => {
-            if (success) {
-              for {
-                nextIndex <- entityService.getNextValidIndex
-                _ <- entityService.deleteEntity(profile.registrationId, index)
-                _ <-
-                  if (nextIndex > appConfig.maxPartnerCount) {
-                    attachmentsService.storeAttachmentDetails(profile.registrationId, AdditionalPartnersDocumentsAnswer(false))
-                  } else {
-                    Future.successful(true)
-                  }
-              } yield Redirect(routes.PartnerSummaryController.show)
-            } else {
-              Future.successful(Redirect(routes.PartnerSummaryController.show))
+        validateIndexSubmit(index, routes.RemovePartnerEntityController.show) {
+          RemovePartnerEntityForm(partnerName).form.bindFromRequest.fold(
+            errors =>
+              Future.successful(BadRequest(view(errors, partnerName, index))),
+            success => {
+              if (success) {
+                for {
+                  nextIndex <- entityService.getNextValidIndex
+                  _ <- entityService.deleteEntity(profile.registrationId, index)
+                  _ <-
+                    if (nextIndex > appConfig.maxPartnerCount) {
+                      attachmentsService.storeAttachmentDetails(profile.registrationId, AdditionalPartnersDocumentsAnswer(false))
+                    } else {
+                      Future.successful(true)
+                    }
+                } yield Redirect(routes.PartnerSummaryController.show)
+              } else {
+                Future.successful(Redirect(routes.PartnerSummaryController.show))
+              }
             }
-          }
-        )
+          )
+        }
   }
 }

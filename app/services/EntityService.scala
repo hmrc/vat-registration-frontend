@@ -39,6 +39,9 @@ class EntityService @Inject()(val s4LService: S4LService,
   def getEntity(regId: String, idx: Int)(implicit hc: HeaderCarrier): Future[Option[Entity]] =
     registrationApiConnector.getSection[Entity](regId, Some(idx))
 
+  def upsertEntityList(regId: String, data: List[Entity])(implicit hc: HeaderCarrier): Future[List[Entity]] =
+    registrationApiConnector.replaceListSection(regId, data)
+
   def upsertEntity[T](regId: String, index: Int, data: T)(implicit hc: HeaderCarrier): Future[Entity] = {
     for {
       entity <- getEntity(regId, index).map(_.getOrElse {

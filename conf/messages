@@ -1196,7 +1196,10 @@ pages.businessPartnerEntityType.heading                  = What type of business
 # PARTNER SUMMARY PAGE
 partner.summary.heading                                  = You have added {0} member of the partnership
 partner.summary.headingPlural                            = You have added {0} members of the partnership
-partner.summary.subHeading                               = Do you need to add another partner?
+partner.summary.leadPartner                              = Lead partner
+partner.summary.additionalPartners                       = Additional partners
+partner.summary.subHeadingPlural                         = Do you need to add another partner?
+partner.summary.subHeading                               = You need to add another partner
 partner.summary.hint                                     = You need a minimum of 2 partners. You can add a maximum of 10 members using this service.
 validation.entity.partnerSummary.error                   = Select yes if you need to add another partner
 entity.removePartner.heading                             = Are you sure you want to remove {0}?
