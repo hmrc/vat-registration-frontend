@@ -615,6 +615,13 @@ pages.accounting.period.radio.february                      = Chwefror, Mai, Aws
 pages.accounting.period.radio.march                         = Mawrth, Mehefin, Medi a Rhagfyr
 validation.accounting.period.missing                        = Dewiswch y cyfnod y bydd y busnes yn cyflwyno ei Ffurflenni TAW
 
+##Vat Correspondence Page
+pages.vatCorrespondence.title                          = What language should we send VAT correspondence in?
+pages.vatCorrespondence.heading                        = What language should we send VAT correspondence in?
+pages.vatCorrespondence.english                        = English
+pages.vatCorrespondence.welsh                          = Welsh
+vatCorrespondence.error.required                       = Select a language for VAT correspondence
+
 ##Contact Preference Page
 pages.contactPreference.title                          = Sut y dylem gysylltu â’r busnes am TAW?
 pages.contactPreference.heading                        = Sut y dylem gysylltu â’r busnes am TAW?
@@ -707,6 +714,7 @@ cya.aboutTheBusiness.daytimePhoneBusiness           = Rhif ffôn y busnes yn yst
 cya.aboutTheBusiness.mobileBusiness                 = Rhif ffôn symudol y busnes
 cya.aboutTheBusiness.hasWebsite                     = A oes gan y busnes wefan?
 cya.aboutTheBusiness.website                        = Cyfeiriad gwefan y busnes
+cya.aboutTheBusiness.correspondenceLanguage         = Correspondence language
 cya.aboutTheBusiness.contactPreference              = Dewis o ran cysylltu
 cya.aboutTheBusiness.buySellLandAndProperty         = A yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo?
 cya.aboutTheBusiness.businessDescription            = Beth mae’r busnes yn ei wneud?

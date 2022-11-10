@@ -17,7 +17,7 @@
 package viewmodels.tasklist
 
 import controllers.partners.PartnerIndexValidation.minPartnerIndex
-import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, OtherBusinessInvolvement => OBI_FS}
+import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, WelshLanguage, OtherBusinessInvolvement => OBI_FS}
 import models.api._
 import models.external.{MinorEntity, PartnershipIdEntity}
 import models.{Business, CurrentProfile, OtherBusinessInvolvement}
@@ -68,6 +68,12 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         scheme.business.exists(_.hasWebsite.isDefined),
         scheme.business.exists(_.contactPreference.isDefined)
       ) ++ {
+        if(isEnabled(WelshLanguage)) {
+          Seq(scheme.business.exists(_.welshLanguage.isDefined))
+        } else {
+          Nil
+        }
+      } ++ {
         if (scheme.business.exists(_.hasWebsite.contains(true))) {
           Seq(scheme.business.exists(_.website.isDefined))
         } else {

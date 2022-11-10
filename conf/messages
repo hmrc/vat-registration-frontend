@@ -615,6 +615,13 @@ pages.accounting.period.radio.february                      = February, May, Aug
 pages.accounting.period.radio.march                         = March, June, September and December
 validation.accounting.period.missing                        = Select the period the business will submit its VAT returns
 
+##Vat Correspondence Page
+pages.vatCorrespondence.title                          = What language should we send VAT correspondence in?
+pages.vatCorrespondence.heading                        = What language should we send VAT correspondence in?
+pages.vatCorrespondence.english                        = English
+pages.vatCorrespondence.welsh                          = Welsh
+vatCorrespondence.error.required                       = Select a language for VAT correspondence
+
 ##Contact Preference Page
 pages.contactPreference.title                          = How should we contact the business about VAT?
 pages.contactPreference.heading                        = How should we contact the business about VAT?
@@ -707,6 +714,7 @@ cya.aboutTheBusiness.daytimePhoneBusiness           = Business daytime phone num
 cya.aboutTheBusiness.mobileBusiness                 = Business mobile number
 cya.aboutTheBusiness.hasWebsite                     = Does the business have a website?
 cya.aboutTheBusiness.website                        = Business website address
+cya.aboutTheBusiness.correspondenceLanguage         = Correspondence language
 cya.aboutTheBusiness.contactPreference              = Contact preference
 cya.aboutTheBusiness.buySellLandAndProperty         = Does the business’s activities include the buying, selling or letting of land or property?
 cya.aboutTheBusiness.businessDescription            = What does the business do?

@@ -22,7 +22,7 @@ import featureswitch.core.config.FeatureSwitching
 import models.api._
 import models.api.vatapplication.{StoringOverseas, StoringWithinUk, VatApplication}
 import models.view.SummaryListRowUtils._
-import models.{Business, Entity}
+import models.{Business, English, Entity, Welsh}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -54,6 +54,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           businessDaytimePhoneNumber(business),
           businessHasWebsite(business),
           businessWebsite(business),
+          correspondenceLanguage(business),
           contactPreference(business),
           buySellLandOrProperty(business),
           businessDescription(business),
@@ -139,6 +140,16 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)
     )
 
+  private def correspondenceLanguage(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowString(
+      s"$sectionId.correspondenceLanguage",
+      business.welshLanguage match {
+        case Some(true) => Some(Welsh.toString)
+        case Some(false) => Some(English.toString)
+        case None => None
+      },
+      Some(controllers.business.routes.VatCorrespondenceController.show.url)
+    )
   private def contactPreference(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.contactPreference",
