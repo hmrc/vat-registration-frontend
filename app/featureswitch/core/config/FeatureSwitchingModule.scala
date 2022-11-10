@@ -38,9 +38,7 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubMinorEntityIdentification,
     UseSoleTraderIdentification,
     SaveAndContinueLater,
-    MultipleRegistrations,
     LandAndProperty,
-    FullAgentJourney,
     OtherBusinessInvolvement,
     UploadDocuments,
     TaskList,
@@ -117,19 +115,9 @@ case object SaveAndContinueLater extends FeatureSwitch {
   val displayName = "Enable Save and Continue Later"
 }
 
-case object MultipleRegistrations extends FeatureSwitch {
-  val configName: String = "feature-switch.multiple-registrations"
-  val displayName: String = "Enable multiple registrations"
-}
-
 case object LandAndProperty extends FeatureSwitch {
   override val configName: String = "feature-switch.land-and-property-fe"
   override val displayName: String = "Enable land and property page (USE WITH ELIGIBILITY L&P FEATURE)"
-}
-
-case object FullAgentJourney extends FeatureSwitch {
-  override val configName: String = "feature-switch.full-agent-journey"
-  override val displayName: String = "Enable full agent journey"
 }
 
 case object OtherBusinessInvolvement extends FeatureSwitch {

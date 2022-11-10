@@ -93,59 +93,9 @@ class JourneyControllerISpec extends ControllerISpec {
     }
 
     "SaveAndContinueLater FS is enabled" when {
-      "the registrations API returns no registrations" must {
-        s"redirect to $newJourneyUrl" in new Setup {
-          enable(SaveAndContinueLater)
-
-          given()
-            .user.isAuthorised()
-            .registrationApi.getAllRegistrations(Nil)
-
-          val res: WSResponse = await(buildClient(showUrl).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
-        }
-      }
-
-      "the registratsions API returns 1 in flight registration" must {
-        "return OK and display the select registration page" in new Setup {
-          enable(SaveAndContinueLater)
-
-          given()
-            .user.isAuthorised()
-            .audit.writesAudit()
-            .audit.writesAuditMerged()
-            .registrationApi.getSection(Some(VatRegStatus.draft))
-            .registrationApi.getAllRegistrations(List(vatSchemeHeader))
-
-          val res: WSResponse = await(buildClient(showUrl).get())
-
-          res.status mustBe OK
-        }
-      }
-
-      "the registrations API returns more than 1 in flight registration" must {
-        "return OK and display the select registration page" in new Setup {
-          enable(SaveAndContinueLater)
-
-          given()
-            .user.isAuthorised()
-            .registrationApi.getSection(Some(VatRegStatus.draft), regId = vatSchemeHeader2.registrationId)
-            .registrationApi.getAllRegistrations(List(vatSchemeHeader, vatSchemeHeader2))
-
-          val res: WSResponse = await(buildClient(showUrl).get())
-
-          res.status mustBe OK
-        }
-      }
-    }
-
-    "SaveAndContinueLater and MultipleRegistrations FS are enabled" when {
       "the registrations API returns in flight registrations" must {
         "redirect to manage registrations page" in new Setup {
           enable(SaveAndContinueLater)
-          enable(MultipleRegistrations)
 
           given()
             .user.isAuthorised()
@@ -162,7 +112,6 @@ class JourneyControllerISpec extends ControllerISpec {
       "the registrations API returns no registrations" must {
         s"redirect to new journey page" in new Setup {
           enable(SaveAndContinueLater)
-          enable(MultipleRegistrations)
 
           given()
             .user.isAuthorised()
@@ -215,38 +164,17 @@ class JourneyControllerISpec extends ControllerISpec {
   }
 
   s"GET $newJourneyUrl" when {
-    "the MultipleRegistrations feature switch is disabled" when {
-      "redirect to the Honesty Declaration page" when {
-        "user is authenticated and authorised to access the app without profile" in new Setup {
-          disable(MultipleRegistrations)
+    "redirect to the Application Reference page" when {
+      "user is authenticated and authorised to access the app without profile" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.registrationCreated()
+          .registrationApi.getSection(Some(VatRegStatus.draft))
 
-          given()
-            .user.isAuthorised()
-            .registrationApi.registrationCreated()
-            .registrationApi.getSection(Some(VatRegStatus.draft))
+        val res: WSResponse = await(buildClient(newJourneyUrl).get())
 
-          val res: WSResponse = await(buildClient(newJourneyUrl).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
-        }
-      }
-    }
-    "the MultipleRegistrations feature switch is enabled" when {
-      "redirect to the Application Reference page" when {
-        "user is authenticated and authorised to access the app without profile" in new Setup {
-          enable(MultipleRegistrations)
-
-          given()
-            .user.isAuthorised()
-            .registrationApi.registrationCreated()
-            .registrationApi.getSection(Some(VatRegStatus.draft))
-
-          val res: WSResponse = await(buildClient(newJourneyUrl).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
-        }
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
       }
     }
   }
@@ -254,7 +182,6 @@ class JourneyControllerISpec extends ControllerISpec {
   s"GET ${continueJourneyUrl(testRegId)}" when {
     "the registration is submitted" must {
       "redirect to the application submission page" in new Setup {
-        enable(MultipleRegistrations)
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.submitted))
@@ -270,7 +197,6 @@ class JourneyControllerISpec extends ControllerISpec {
     }
     "the registration requires attachments" must {
       "redirect to the documents required page" in new Setup {
-        enable(MultipleRegistrations)
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
@@ -287,7 +213,6 @@ class JourneyControllerISpec extends ControllerISpec {
     }
     "the Task List feature is enabled" must {
       "redirect to the documents required page" in new Setup {
-        enable(MultipleRegistrations)
         enable(TaskList)
         given()
           .user.isAuthorised()
@@ -324,27 +249,8 @@ class JourneyControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
     }
-    "the multiple registrations feature switch is enabled" when {
-      "traffic management passes (VatReg)" must {
-        "redirect to the Application Reference page" in new Setup {
-          enable(MultipleRegistrations)
-          given()
-            .user.isAuthorised()
-            .registrationApi.getSection(Some(VatRegStatus.draft))
-            .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
-        }
-      }
-    }
-    "the multiple registrations feature switch is disabled" when {
-      "redirect to the Honesty Declaration page" in new Setup {
-        disable(MultipleRegistrations)
+    "traffic management passes (VatReg)" must {
+      "redirect to the Application Reference page" in new Setup {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
@@ -355,7 +261,7 @@ class JourneyControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
       }
     }
   }
@@ -393,8 +299,7 @@ class JourneyControllerISpec extends ControllerISpec {
             }
           }
           "the user is an agent" must {
-            "redirect to the Agent Name page when the FullAgentJourney FS is enabled" in new Setup {
-              enable(FullAgentJourney)
+            "redirect to the Agent Name page" in new Setup {
               given()
                 .user.isAuthorised(arn = Some(testArn))
                 .registrationApi.getSection(Some(VatRegStatus.draft))
@@ -418,20 +323,6 @@ class JourneyControllerISpec extends ControllerISpec {
               val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
               res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-            }
-            "redirect to the Business Identification resolver when the FullAgentJourney FS and TaskList FS are disnabled" in new Setup {
-              disable(FullAgentJourney)
-              disable(TaskList)
-              given()
-                .user.isAuthorised(arn = Some(testArn))
-                .registrationApi.getSection(Some(VatRegStatus.draft))
-                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-              insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
-
-              res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
             }
           }
         }

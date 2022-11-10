@@ -1008,9 +1008,6 @@ pages.frs.costsInclusive.list.bullet7                     = goods the company wi
 pages.frs.costsInclusive.list.bullet8                     = training and memberships
 pages.frs.costsInclusive.list.bullet9                     = capital items, for example office equipment, laptops, mobile phones and tablets
 pages.frs.costsInclusive.list.bullet10                    = services - that is, anything not classified as ‘goods’
-pages.frs.costsInclusive.para2                            = If you cannot decide right now, answer ‘no’. The business can register for the Flat Rate Scheme at a later date.
-pages.frs.costsInclusive.para3                            = Find out more about
-pages.frs.costsInclusive.para3.1                          = VAT Flat Rate Scheme
 validation.frs.costsInclusive.missing                     = Select yes if the business will spend more than £250 over the next 3 months on ‘relevant goods’
 
 # Estimate Total Sales Page

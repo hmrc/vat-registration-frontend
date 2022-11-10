@@ -59,13 +59,6 @@
              messages("pages.frs.costsInclusive.list.bullet9"),
              messages("pages.frs.costsInclusive.list.bullet10"))
 
-    @p { @messages("pages.frs.costsInclusive.para2") }
-
-    @p {
-        @messages("pages.frs.costsInclusive.para3")
-        @link("https://www.gov.uk/vat-flat-rate-scheme", messages("pages.frs.costsInclusive.para3.1"), isExternal = true).
-    }
-
     @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitAnnualInclusiveCosts) {
         @inputRadio(
             form = annualCostsInclusiveForm,

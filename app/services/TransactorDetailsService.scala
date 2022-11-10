@@ -44,11 +44,11 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
 
   private def isModelComplete(transactorDetails: TransactorDetails): Completion[TransactorDetails] = {
     transactorDetails match {
+      case TransactorDetails(Some(personalDetails), _, _, Some(_), Some(_), Some(true), _, Some(_)) if personalDetails.arn.isDefined =>
+        Complete(transactorDetails.copy(isPartOfOrganisation = None, organisationName = None, address = None))
       case TransactorDetails(Some(_), Some(false), _, Some(_), Some(_), Some(true), Some(_),  Some(_)) =>
         Complete(transactorDetails.copy(organisationName = None))
       case TransactorDetails(Some(_), Some(true), Some(_), Some(_), Some(_), Some(true), Some(_), Some(_)) =>
-        Complete(transactorDetails)
-      case TransactorDetails(Some(personalDetails), None, None, Some(_), Some(_), Some(true), None, Some(_)) if personalDetails.arn.isDefined =>
         Complete(transactorDetails)
       case _ =>
         Incomplete(transactorDetails)
@@ -68,12 +68,17 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
     }
   }
 
+  //scalastyle:off
   private def updateModel[T](data: T, before: TransactorDetails): TransactorDetails = {
     data match {
       case personalDetails: PersonalDetails =>
         before.copy(personalDetails = Some(personalDetails))
       case partOfOrganisation: PartOfOrganisation =>
-        before.copy(isPartOfOrganisation = Some(partOfOrganisation.answer))
+        if (partOfOrganisation.answer) {
+          before.copy(isPartOfOrganisation = Some(partOfOrganisation.answer))
+        } else {
+          before.copy(isPartOfOrganisation = Some(partOfOrganisation.answer), organisationName = None)
+        }
       case organisationName: OrganisationName =>
         before.copy(organisationName = Some(organisationName.answer))
       case telephone: Telephone =>
@@ -85,9 +90,14 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
       case address: Address =>
         before.copy(address = Some(address))
       case declarationCapacity: DeclarationCapacityAnswer =>
-        before.copy(declarationCapacity = Some(declarationCapacity))
+        if (declarationCapacity.equals(AccountantAgent)) {
+          before.copy(declarationCapacity = Some(declarationCapacity), isPartOfOrganisation = None, organisationName = None, address = None)
+        } else {
+          before.copy(declarationCapacity = Some(declarationCapacity))
+        }
     }
   }
+  //scalastyle:on
 }
 
 object TransactorDetailsService {

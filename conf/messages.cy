@@ -1008,9 +1008,6 @@ pages.frs.costsInclusive.list.bullet7                     = nwyddau y bydd y cwm
 pages.frs.costsInclusive.list.bullet8                     = hyfforddiant ac aelodaethau
 pages.frs.costsInclusive.list.bullet9                     = eitemau cyfalaf, er enghraifft offer swyddfa, gliniaduron, ffonau symudol a llechi
 pages.frs.costsInclusive.list.bullet10                    = gwasanaethau – hynny yw, unrhyw beth na chaiff ei ystyried fel ‘nwyddau’
-pages.frs.costsInclusive.para2                            = Os na allwch benderfynu ar hyn o bryd, atebwch ‘Na’. Gall y busnes gofrestru ar gyfer y Cynllun Cyfradd Unffurf yn ddiweddarach.
-pages.frs.costsInclusive.para3                            = Rhagor o wybodaeth am y
-pages.frs.costsInclusive.para3.1                          = Cynllun Cyfradd Unffurf TAW
 validation.frs.costsInclusive.missing                     = Dewiswch ‘Iawn’ os bydd y busnes yn gwario mwy na £250 dros y tri mis nesaf ar ‘nwyddau perthnasol’
 
 # Estimate Total Sales Page

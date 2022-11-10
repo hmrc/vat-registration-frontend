@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, FullAgentJourney}
+import featureswitch.core.config.FeatureSwitching
 import models.CurrentProfile
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
@@ -29,7 +29,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
   def transactorPersonalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutYou.transactor.personalDetails",
     url = _ => {
-      if (profile.agentReferenceNumber.isDefined && isEnabled(FullAgentJourney)) {
+      if (profile.agentReferenceNumber.isDefined) {
         controllers.transactor.routes.AgentNameController.show.url
       } else {
         controllers.transactor.routes.PartOfOrganisationController.show.url
@@ -37,7 +37,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     },
     tagId = "transactorPersonalDetailsRow",
     checks = scheme => {
-      if (profile.agentReferenceNumber.isDefined && isEnabled(FullAgentJourney)) {
+      if (profile.agentReferenceNumber.isDefined) {
         Seq(scheme.transactorDetails.exists(_.personalDetails.isDefined))
       }
       else {
