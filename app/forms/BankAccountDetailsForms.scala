@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object HasCompanyBankAccountForm extends RequiredBooleanForm {
 
-  override val errorMsg = "validation.company.bank.account.missing"
+  override val errorMsg = "validation.hasCompanyBankAccount.missing"
   val HAS_COMPANY_BANK_ACCOUNT_RADIO: String = "value"
 
   val form = Form(

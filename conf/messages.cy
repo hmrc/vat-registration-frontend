@@ -820,9 +820,14 @@ page.IndividualAffinityKickOut.signInLink            = Mewngofnodwch i gyfrif tr
 page.IndividualAffinityKickOut.createLink            = Creu cyfrif treth busnes
 
 # Company Bank Account
-pages.company.bank.account.heading                   = A oes gan y busnes gyfrif banc neu gymdeithas adeiladu?
-pages.company.bank.account.para                      = Nid oes rhaid i’r cyfrif fod yn gyfrif busnes pwrpasol, ond mae’n rhaid iddo fod ar wahân i gyfrif personol. Byddwn yn defnyddio’r cyfrif hwn ar gyfer ad-daliadau TAW.
-validation.company.bank.account.missing              = Dewiswch ‘Iawn’ os oes gan y busnes gyfrif banc neu gymdeithas adeiladu
+pages.hasCompanyBankAccount.heading                   = A oes gan y busnes gyfrif banc neu gymdeithas adeiladu?
+pages.hasCompanyBankAccount.para                      = If we owe the business money, we can repay this directly into your bank by BACS. This is faster and more secure than HMRC cheques.
+pages.hasCompanyBankAccount.para2                     = The account does not have to be a dedicated business account but it must be:
+pages.hasCompanyBankAccount.bullet1                   = separate from a personal account
+pages.hasCompanyBankAccount.bullet2                   = in the name of the registered person or company
+pages.hasCompanyBankAccount.bullet3                   = in the UK
+pages.hasCompanyBankAccount.bullet4                   = able to receive BACS payments
+validation.hasCompanyBankAccount.missing              = Dewiswch ‘Iawn’ os oes gan y busnes gyfrif banc neu gymdeithas adeiladu
 
 # No UK Bank Account
 pages.noUKBankAccount.heading                        = Pam na allwch roi manylion cyfrif banc ar gyfer y busnes?
