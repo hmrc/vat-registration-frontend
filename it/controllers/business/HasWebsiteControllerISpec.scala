@@ -1,6 +1,7 @@
 
 package controllers.business
 
+import featureswitch.core.config.WelshLanguage
 import itutil.ControllerISpec
 import models.Business
 import play.api.test.Helpers._
@@ -78,6 +79,23 @@ class HasWebsiteControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+    }
+
+    "redirect to vat correspondence page if no is chosen and WelshLanguage feature switch is enabled" in new Setup {
+      enable(WelshLanguage)
+      given
+        .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](None)
+        .s4lContainer[Business].isUpdatedWith(Business(hasWebsite = Some(false)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).post(Map("value" -> "false")))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.VatCorrespondenceController.show.url)
+      disable(WelshLanguage)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

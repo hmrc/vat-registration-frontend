@@ -113,6 +113,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     website = Some("/test/url"),
     ppobAddress = Some(addressWithCountry),
     contactPreference = Some(Email),
+    welshLanguage = Some(false),
     businessDescription = Some("test company desc"),
     mainBusinessActivity = Some(SicCode("AB123", "super business", "super business by super people")),
     businessActivities = Some(List(SicCode("AB123", "super business", "super business by super people")))
@@ -345,6 +346,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     website = Some("/test/url"),
     ppobAddress = Some(addressWithCountry),
     contactPreference = Some(Email),
+    welshLanguage = Some(false),
     businessDescription = Some(businessActivityDescription),
     mainBusinessActivity = Some(mainBusinessActivity),
     businessActivities = Some(List(mainBusinessActivity)),

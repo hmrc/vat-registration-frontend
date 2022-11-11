@@ -118,7 +118,12 @@ POST        /bank-details-overseas                                    controller
 GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show
 POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit
 
-## Contact Preference
+## VAT CORRESPONDENCE
+GET         /vat-correspondence-language                              controllers.business.VatCorrespondenceController.show
+POST        /vat-correspondence-language                              controllers.business.VatCorrespondenceController.submit
+
+
+## CONTACT PREFERENCE
 GET         /contact-preference                                       controllers.business.ContactPreferenceController.showContactPreference
 POST        /contact-preference                                       controllers.business.ContactPreferenceController.submitContactPreference
 

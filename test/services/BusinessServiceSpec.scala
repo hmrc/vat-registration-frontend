@@ -118,6 +118,23 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
       result.ppobAddress mustBe Some(testAddress)
     }
 
+    "determine that the model is incomplete and save in S4L - nothing pre-populated, update welshLanguage" in {
+      val business = Business(welshLanguage = None)
+
+      val updatedWelshLanguage = Some(true)
+
+      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(business)))
+
+      mockGetSection(testRegId, None)
+
+      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      val result = await(testService.updateBusiness[Business](business.copy(welshLanguage = updatedWelshLanguage)))
+      result.welshLanguage mustBe updatedWelshLanguage
+    }
+
     "determine that the model is incomplete and save in S4L - nothing pre-populated, update contactPreference" in {
       val business = Business(ppobAddress = None, contactPreference = None)
 
@@ -473,6 +490,36 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
       result.ppobAddress mustBe Some(testAddress)
+    }
+
+    "determine that the model is complete and save in the backend - update welshLanguage" in {
+      val business = Business(
+        ppobAddress = Some(testAddress),
+        email = Some("test@test.com"),
+        telephoneNumber = Some("123456789"),
+        hasWebsite = Some(true),
+        website = Some("test.com"),
+        welshLanguage = None,
+        contactPreference = Some(Email),
+        businessDescription = Some("test desc"),
+        mainBusinessActivity = Some(sicCode),
+        businessActivities = Some(List(sicCode)),
+        labourCompliance = Some(complianceWithLabour)
+      )
+
+      val welshLanguage = Some(true)
+      val updatedBusinessDetails = business.copy(welshLanguage = welshLanguage)
+
+      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(Some(business)))
+
+      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
+
+      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
+        .thenReturn(Future.successful(dummyCacheMap))
+
+      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
+      result.welshLanguage mustBe welshLanguage
     }
 
     "determine that the model is complete and save in the backend - update contactPreference" in {
