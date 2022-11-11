@@ -20,16 +20,21 @@ import forms.HasCompanyBankAccountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.bankdetails.has_company_bank_account
+import views.html.bankdetails.HasCompanyBankAccountView
 
 class HasCompanyBankAccountViewSpec extends VatRegViewSpec {
 
   implicit val doc: Document = Jsoup.parse(view(HasCompanyBankAccountForm.form).body)
-  lazy val view: has_company_bank_account = app.injector.instanceOf[has_company_bank_account]
+  lazy val view: HasCompanyBankAccountView = app.injector.instanceOf[HasCompanyBankAccountView]
 
   val heading = "Are you able to provide bank or building society account details for the business?"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val para = "The account does not have to be a dedicated business account but must be separate from a personal account. We will use this account for VAT repayments."
+  val para = "If we owe the business money, we can repay this directly into your bank by BACS. This is faster and more secure than HMRC cheques."
+  val para2 = "The account does not have to be a dedicated business account but it must be:"
+  val bullet1 = "separate from a personal account"
+  val bullet2 = "in the name of the registered person or company"
+  val bullet3 = "in the UK"
+  val bullet4 = "able to receive BACS payments"
   val yes = "Yes"
   val no = "No"
   val continue = "Save and continue"
@@ -49,6 +54,17 @@ class HasCompanyBankAccountViewSpec extends VatRegViewSpec {
 
     "have correct text" in new ViewSetup {
       doc.para(1) mustBe Some(para)
+      doc.para(2) mustBe Some(para2)
+    }
+
+    "have correct bullets" in new ViewSetup {
+      doc.unorderedList(1) mustBe
+        List(
+          bullet1,
+          bullet2,
+          bullet3,
+          bullet4
+        )
     }
 
     "have yes/no radio options" in new ViewSetup {

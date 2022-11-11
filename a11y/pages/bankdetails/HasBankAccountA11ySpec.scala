@@ -3,14 +3,14 @@ package pages.bankdetails
 
 import forms.HasCompanyBankAccountForm
 import helpers.A11ySpec
-import views.html.bankdetails.has_company_bank_account
+import views.html.bankdetails.HasCompanyBankAccountView
 
 class HasBankAccountA11ySpec extends A11ySpec {
 
-  val view = app.injector.instanceOf[has_company_bank_account]
+  val view = app.injector.instanceOf[HasCompanyBankAccountView]
   val form = HasCompanyBankAccountForm.form
 
-  "the has_company_bank_account page" must {
+  "the HasCompanyBankAccountView page" must {
     "pass all a11y checks" in {
       view(form).body must passAccessibilityChecks
     }

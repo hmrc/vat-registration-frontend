@@ -14,10 +14,10 @@
  * limitations under the License.
  *@
 
-@import play.api.data.Form
-@import play.api.mvc.Request
-@import play.api.i18n.Messages
 @import config.FrontendAppConfig
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
 
 @this(
         layout: layouts.layout,
@@ -27,32 +27,42 @@
         formWithCSRF: FormWithCSRF,
         errorSummary: components.errorSummary,
         panelIndent: components.panelIndent,
-        yesNoRadio: components.yesNoRadio
+        yesNoRadio: components.yesNoRadio,
+        bullets: components.bullets
 )
 
 @(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(hasBankAccountForm, messages("pages.company.bank.account.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(hasBankAccountForm, messages("pages.hasCompanyBankAccount.heading"))), backLink = true) {
 
     @errorSummary(errors = hasBankAccountForm.errors)
 
-
-    @h1("pages.company.bank.account.heading")
-    @p { @messages("pages.company.bank.account.para") }
-
+    @h1("pages.hasCompanyBankAccount.heading")
+    @p {
+        @messages("pages.hasCompanyBankAccount.para")
+    }
+    @p {
+        @messages("pages.hasCompanyBankAccount.para2")
+    }
+    @bullets(
+        "pages.hasCompanyBankAccount.bullet1",
+        "pages.hasCompanyBankAccount.bullet2",
+        "pages.hasCompanyBankAccount.bullet3",
+        "pages.hasCompanyBankAccount.bullet4"
+    )
 
     @formWithCSRF(action = controllers.bankdetails.routes.HasBankAccountController.submit) {
 
         @yesNoRadio(
             form = hasBankAccountForm,
-            headingKey = messages("pages.company.bank.account.heading"),
+            headingKey = messages("pages.hasCompanyBankAccount.heading"),
             isPageHeading = false,
-            inline = false,
+            inline = true,
             classes = "govuk-visually-hidden",
             fieldName = "value"
         )
 
-    @button(messages("app.common.continue"))
+        @button(messages("app.common.continue"))
 
     }
 }
