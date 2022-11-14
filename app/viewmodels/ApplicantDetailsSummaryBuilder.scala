@@ -275,6 +275,8 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         optUrl = url)
 
       Seq(
+        leadPartnerEntityType(partner),
+        leadPartnerBusinessEntityType(partner),
         uniqueTaxpayerReference,
         companyRegistrationNumber,
         companyName,
@@ -284,4 +286,30 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     }.getOrElse(Nil)
   }
 
+  private def leadPartnerEntityType(leadPartner: Entity)(implicit messages: Messages): Option[SummaryListRow] = {
+    optSummaryListRowString(
+      questionId = s"$sectionId.leadPartner.partnerType",
+      leadPartner.partyType match {
+        case Individual | NETP => Some(messages("pages.leadPartnerEntityType.soleTrader"))
+        case _ => Some(messages("pages.leadPartnerEntityType.business"))
+      },
+      Some(controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url)
+    )
+  }
+
+  private def leadPartnerBusinessEntityType(leadPartner: Entity)(implicit messages: Messages): Option[SummaryListRow] = {
+    optSummaryListRowString(
+      questionId = s"$sectionId.leadPartner.businessType",
+      leadPartner.partyType match {
+        case Individual | NETP => None
+        case UkCompany => Some(messages("pages.businessLeadPartnerEntityType.ukCompany"))
+        case CharitableOrg => Some(messages("pages.businessLeadPartnerEntityType.cio"))
+        case LtdLiabilityPartnership => Some(messages("pages.businessLeadPartnerEntityType.limLiaPartner"))
+        case RegSociety => Some(messages("pages.businessLeadPartnerEntityType.regSociety"))
+        case ScotLtdPartnership => Some(messages("pages.businessLeadPartnerEntityType.scotLimPartner"))
+        case ScotPartnership => Some(messages("pages.businessLeadPartnerEntityType.scotPartner"))
+      },
+      Some(controllers.applicant.routes.BusinessLeadPartnerEntityController.showPartnerEntityType.url)
+    )
+  }
 }

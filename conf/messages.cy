@@ -672,6 +672,8 @@ pages.application.progress.saved.link                               = fynd yn ô
 pages.application.progress.saved.inset                              = Dim ond am 7 diwrnod y bydd ceisiadau wedi’u cadw ar gael
 
 # Summary page Applicant details
+cya.applicantDetails.leadPartner.partnerType                        = Math o bartner
+cya.applicantDetails.leadPartner.businessType                       = Math o fusnes
 cya.applicantDetails.leadPartner.uniqueTaxpayerReference            = Cyfeirnod Unigryw y Trethdalwr ar gyfer y partner arweiniol
 cya.applicantDetails.leadPartner.companyUniqueTaxpayerReference     = Cyfeirnod Unigryw y Trethdalwr ar gyfer cwmni’r partner arweiniol
 cya.applicantDetails.leadPartner.companyRegistrationNumber          = Rhif cofrestru cwmni’r partner arweiniol

@@ -108,6 +108,10 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedIndividualSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("An actual person"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
@@ -178,6 +182,10 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedNETPSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("An actual person"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
@@ -247,6 +255,14 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
         )
         val expectedLtdCompanySummaryList: SummaryList = SummaryList(Seq(
+          optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("A business"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
+            questionId = "Business type",
+            optAnswer = Some("UK company"),
+            optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
             questionId = "Lead partner’s company Unique Taxpayer Reference",
             optAnswer = Some("testCtUtr"),
@@ -325,6 +341,14 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
         )
         val expectedScotPartnershipSummaryList: SummaryList = SummaryList(Seq(
+          optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("A business"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
+            questionId = "Business type",
+            optAnswer = Some("Scottish partnership"),
+            optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
@@ -407,6 +431,14 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
         )
         val expectedScotLtdPartnershipSummaryList: SummaryList = SummaryList(Seq(
+          optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("A business"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
+            questionId = "Business type",
+            optAnswer = Some("Scottish limited partnership"),
+            optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
@@ -498,6 +530,14 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedLtdLiabilityPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("A business"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
+            questionId = "Business type",
+            optAnswer = Some("Limited liability partnership"),
+            optUrl = Some("/register-for-vat/business-type-in-partnership")),
+          optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
@@ -580,6 +620,14 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedCharitableOrgSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("A business"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
+            questionId = "Business type",
+            optAnswer = Some("Charitable Incorporated Organisation (CIO)"),
+            optUrl = Some("/register-for-vat/business-type-in-partnership")),
+          optSummaryListRowString(
             questionId = "Lead partner’s company registration number",
             optAnswer = Some("testCrn"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
@@ -657,6 +705,14 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership))
         )
         val expectedRegSocietySummaryList: SummaryList = SummaryList(Seq(
+          optSummaryListRowString(
+            questionId = "Partner type",
+            optAnswer = Some("A business"),
+            optUrl = Some("/register-for-vat/lead-partner-entity")),
+          optSummaryListRowString(
+            questionId = "Business type",
+            optAnswer = Some("Registered society"),
+            optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
             questionId = "Lead partner’s Unique Taxpayer Reference",
             optAnswer = Some("testCtUtr"),
