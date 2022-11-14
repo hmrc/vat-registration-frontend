@@ -33,6 +33,8 @@ case class SicCode(code: String,
 
 object SicCode {
 
+  val SIC_CODES_KEY = "SicCodes"
+
   implicit val format: Format[SicCode] =
     ((__ \ "code").format[String] and
       (__ \ "desc").format[String] and

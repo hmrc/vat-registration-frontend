@@ -19,7 +19,7 @@ package controllers.test
 import models.api.{NonUkNonEstablished, PartyType, Trust, UnincorpAssoc}
 import models.external.minorentityid.MinorEntityIdJourneyConfig
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
+import models.external.{BusinessVerificationStatus, BvPass, MinorEntity, RegisteredStatus}
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -72,7 +72,7 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     postCode = Some("AA11AA"),
     chrn = Some("1234567890"),
     casc = Some("1234567890"),
-    registration = "REGISTERED",
+    registration = RegisteredStatus,
     businessVerification = businessVerification,
     bpSafeId = Some("testBpId"),
     identifiersMatch = true
@@ -84,7 +84,7 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     postCode = Some("AA11AA"),
     chrn = Some("1234567890"),
     casc = None,
-    registration = "REGISTERED",
+    registration = RegisteredStatus,
     businessVerification = businessVerification,
     bpSafeId = Some("testBpId"),
     identifiersMatch = true
@@ -97,7 +97,7 @@ class MinorEntityIdentificationStubController @Inject()(mcc: MessagesControllerC
     postCode = None,
     chrn = None,
     casc = None,
-    registration = "REGISTERED",
+    registration = RegisteredStatus,
     businessVerification = businessVerification,
     bpSafeId = Some("testBpId"),
     identifiersMatch = true

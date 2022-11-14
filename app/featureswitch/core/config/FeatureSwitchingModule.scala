@@ -27,7 +27,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
   val switches: Seq[FeatureSwitch] = Seq(
     StubIncorpIdJourney,
-    StubPersonalDetailsValidation,
     StubEmailVerification,
     StubAlf,
     StubIcl,
@@ -36,7 +35,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubBars,
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
-    UseSoleTraderIdentification,
     SaveAndContinueLater,
     LandAndProperty,
     OtherBusinessInvolvement,
@@ -63,11 +61,6 @@ case object StubIncorpIdJourney extends FeatureSwitch {
 case object StubEmailVerification extends FeatureSwitch {
   val configName = "feature-switch.stub-email-verification"
   val displayName = "Stub email verification flow"
-}
-
-case object StubPersonalDetailsValidation extends FeatureSwitch {
-  val configName = "feature-switch.stub-personal-details-validation"
-  val displayName = "Stub personal details validation flow"
 }
 
 case object StubIcl extends FeatureSwitch {
@@ -103,11 +96,6 @@ case object StubPartnershipIdentification extends FeatureSwitch {
 case object StubMinorEntityIdentification extends FeatureSwitch {
   val configName = "feature-switch.minor-entity-identification"
   val displayName = "Stub Minor Entity Identification"
-}
-
-case object UseSoleTraderIdentification extends FeatureSwitch {
-  val configName = "feature-switch.use-sole-trader-identification"
-  val displayName = "Use sole trader identification journey"
 }
 
 case object SaveAndContinueLater extends FeatureSwitch {

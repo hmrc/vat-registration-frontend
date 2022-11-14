@@ -20,7 +20,7 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api._
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
-import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
+import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
@@ -62,7 +62,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
     ),
     "identifiersMatch" -> true

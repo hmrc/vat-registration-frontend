@@ -16,7 +16,6 @@
 
 package forms
 
-import forms.HomeAddressForm.ADDRESS_ID
 import helpers.FormInspectors._
 import models.api.Address
 import models.view._
@@ -25,8 +24,6 @@ import testHelpers.VatRegSpec
 import java.time.LocalDate
 
 class ApplicantFormsSpec extends VatRegSpec {
-
-
 
   "FormerNameDateForm" should {
     val testForm = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
@@ -86,38 +83,6 @@ class ApplicantFormsSpec extends VatRegSpec {
         "formerNameDate.month" -> "1",
         "formerNameDate.year" -> "2000"
       )
-
-      testForm.fill(testData).data mustBe data
-    }
-  }
-
-  "ApplicantHomeAddressForm" should {
-    val address = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
-    val testForm = HomeAddressForm.form
-    val testData = HomeAddressView(address.id, Some(address))
-
-    "bind successfully with data" in {
-      val data = Map(
-        "homeAddressRadio" -> address.id
-      )
-
-      val result = testForm.bind(data).fold(
-        errors => errors,
-        success => success
-      )
-
-      result mustBe testData.copy(address = None)
-    }
-
-    "have the correct error if no data is provided" in {
-      val data: Map[String, String] = Map()
-      val boundForm = testForm.bind(data)
-
-      boundForm shouldHaveErrors Seq(ADDRESS_ID -> "validation.applicantHomeAddress.missing")
-    }
-
-    "Unbind successfully with full data" in {
-      val data = Map(ADDRESS_ID -> address.id)
 
       testForm.fill(testData).data mustBe data
     }

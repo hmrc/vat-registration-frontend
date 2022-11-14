@@ -21,7 +21,7 @@ import itutil.IntegrationSpecBase
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.minorentityid.{JourneyLabels, MinorEntityIdJourneyConfig, TranslationLabels}
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.external.{BusinessVerificationStatus, BvPass, MinorEntity}
+import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass, MinorEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
@@ -65,7 +65,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
     ),
     "identifiersMatch" -> true
@@ -94,7 +94,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
     ),
     "identifiersMatch" -> true
@@ -128,7 +128,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
     ),
     "identifiersMatch" -> true

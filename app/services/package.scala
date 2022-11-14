@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import cats.data.OptionT
 import config.Logging
 
-import scala.concurrent.Future
-
 package object services extends Logging {
-  type OptionalResponse[T] = OptionT[Future, T]
-
   type Completion[T] = Either[T, T]
-  val Incomplete     = scala.util.Left
-  val Complete       = scala.util.Right
+  val Incomplete = scala.util.Left
+  val Complete = scala.util.Right
 }

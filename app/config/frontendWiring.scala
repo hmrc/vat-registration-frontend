@@ -20,22 +20,24 @@ import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.auth.core.PlayAuthConnector
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
+import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 
+@Singleton
 class AuthClientConnector @Inject()(val http: HttpClient, config: ServicesConfig) extends PlayAuthConnector {
 
   override val serviceUrl: String = config.baseUrl("auth")
 
 }
 
+@Singleton
 class VatShortLivedHttpCaching @Inject()(val http: HttpClient, config: ServicesConfig) extends ShortLivedHttpCaching {
 
   override lazy val defaultSource = config.getString("appName")
-  override lazy val baseUri       = config.baseUrl("cachable.short-lived-cache")
-  override lazy val domain        = config.getConfString("cachable.short-lived-cache.domain",
+  override lazy val baseUri = config.baseUrl("cachable.short-lived-cache")
+  override lazy val domain = config.getConfString("cachable.short-lived-cache.domain",
     throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
 
 }
@@ -45,15 +47,6 @@ class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching,
                                    applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
 
   override implicit lazy val crypto = applicationCrypto.JsonCrypto
-
-}
-
-class VatSessionCache @Inject()(val http: HttpClient, config: ServicesConfig) extends SessionCache {
-
-  override lazy val defaultSource = config.getString("appName")
-  override lazy val baseUri       = config.baseUrl("cachable.session-cache")
-  override lazy val domain        = config.getConfString("cachable.session-cache.domain",
-    throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
 
 }
 

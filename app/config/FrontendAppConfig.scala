@@ -147,28 +147,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def incorpIdPartnerCallbackUrl(index: Int): String = s"$hostUrl/register-for-vat/partner/$index/incorp-id-callback"
 
-  // Personal Details Validation Section
-
-  lazy val personalDetailsValidationHost: String = servicesConfig.baseUrl("personal-details-validation")
-  lazy val personalDetailsValidationFrontendUrl: String = loadConfig("microservice.services.personal-details-validation-frontend.url")
-
-  def getRetrievePersonalDetailsValidationResultUrl(validationId: String): String =
-    if (isEnabled(StubPersonalDetailsValidation)) {
-      s"$host/register-for-vat/test-only/personal-details-validation/$validationId"
-    } else {
-      s"$personalDetailsValidationHost/personal-details-validation/$validationId"
-    }
-
-  def getPersonalDetailsValidationJourneyUrl(): String =
-    if (isEnabled(StubPersonalDetailsValidation)) {
-      controllers.applicant.routes.PersonalDetailsValidationController.personalDetailsValidationCallback("testValidationId").url
-    } else {
-      s"$personalDetailsValidationFrontendUrl/personal-details-validation/start"
-    }
-
-  def getPersonalDetailsCallbackUrl(): String =
-    s"$hostUrl/register-for-vat/personal-details-validation-callback"
-
   // Sole Trader Identification Section
 
   lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")

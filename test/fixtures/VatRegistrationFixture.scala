@@ -64,7 +64,6 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val sicCode = SicCode("88888", "description", "displayDetails")
 
   val currentThreshold = "50000"
-  val taxableThreshold = TaxableThreshold(currentThreshold, "2018-1-1")
   val formattedThreshold = "50,000"
 
   //Responses

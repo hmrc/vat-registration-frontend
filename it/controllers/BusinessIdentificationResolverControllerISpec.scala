@@ -3,7 +3,7 @@
 package controllers
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
@@ -67,7 +67,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
     }
 
     "return a redirect to STI if user is a sole trader" in new Setup {
-      enable(UseSoleTraderIdentification)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
@@ -79,7 +78,6 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(grsRoutes.SoleTraderIdController.startJourney.url)
       }
-      disable(UseSoleTraderIdentification)
     }
   }
 }

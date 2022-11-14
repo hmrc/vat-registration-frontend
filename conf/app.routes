@@ -214,10 +214,6 @@ GET         /incorp-id-callback                                       controller
 GET         /partner/:index/start-incorp-id-journey                   controllers.grs.PartnerIncorpIdController.startJourney(index: Int)
 GET         /partner/:index/incorp-id-callback                        controllers.grs.PartnerIncorpIdController.callback(index: Int, journeyId: String)
 
-## Personal Details Validation Pages
-GET         /start-personal-details-validation-journey                controllers.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-GET         /personal-details-validation-callback                     controllers.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
-
 ## Sole Trader Identification Journey
 GET         /start-sti-journey                                        controllers.grs.SoleTraderIdController.startJourney
 GET         /sti-callback                                             controllers.grs.SoleTraderIdController.callback(journeyId)

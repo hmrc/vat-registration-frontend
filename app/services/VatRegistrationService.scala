@@ -39,8 +39,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
                                        val sessionService: SessionService
                                       )(implicit ec: ExecutionContext) extends FeatureSwitching {
 
-  // -- New Registrations API methods --
-
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration[VatScheme](profile.registrationId)
 
@@ -55,8 +53,6 @@ class VatRegistrationService @Inject()(val s4LService: S4LService,
 
   def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[T] =
     registrationApiConnector.replaceSection[T](regId, data)
-
-  // -- End new Registrations API methods --
 
   def getVatSchemeHeader(regId: String)(implicit hc: HeaderCarrier): Future[VatSchemeHeader] = {
     implicit val reads: Reads[VatSchemeHeader] = VatSchemeHeader.vatSchemeReads

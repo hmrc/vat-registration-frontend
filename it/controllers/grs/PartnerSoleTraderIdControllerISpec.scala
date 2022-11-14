@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api._
-import models.external.{BusinessVerificationStatus, BvPass}
+import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass}
 import models.{ApplicantDetails, Entity}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
@@ -49,9 +49,10 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
-    )
+    ),
+    "identifiersMatch" -> true
   )
 
   def getUrl(index: Int = 1): String = routes.PartnerSoleTraderIdController.startJourney(index).url

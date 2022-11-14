@@ -17,7 +17,7 @@
 package config
 
 import com.google.inject.AbstractModule
-import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
+import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching}
 
 class Module extends AbstractModule {
 
@@ -26,7 +26,6 @@ class Module extends AbstractModule {
   }
 
   private def hmrcDependencyBindings(): Unit = {
-    bind(classOf[SessionCache]).to(classOf[VatSessionCache]).asEagerSingleton()
     bind(classOf[ShortLivedHttpCaching]).to(classOf[VatShortLivedHttpCaching]).asEagerSingleton()
     bind(classOf[ShortLivedCache]).to(classOf[VatShortLivedCache]).asEagerSingleton()
   }

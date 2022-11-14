@@ -18,6 +18,7 @@ package fixtures
 
 import common.enums.VatRegStatus
 import models._
+import models.api.SicCode.SIC_CODES_KEY
 import models.api._
 import models.api.vatapplication._
 import models.external._
@@ -234,10 +235,10 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCtUtr = "testCtUtr"
   val testIncorpDate = Some(LocalDate.of(2020, 2, 3))
 
-  val testIncorpDetails = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
+  val testIncorpDetails = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, RegisteredStatus, Some(BvPass), Some(testBpSafeId))
 
   val testSautr = "1234567890"
-  val testRegistration = "REGISTERED"
+  val testRegistration = RegisteredStatus
   val testSafeId = "X00000123456789"
   val testSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
     firstName = testFirstName,
@@ -329,7 +330,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val sicCodeMapping: Map[String, JsValue] = Map(
     "CurrentProfile" -> Json.toJson(models.CurrentProfile("1", VatRegStatus.draft)),
-    ModelKeys.SIC_CODES_KEY -> Json.parse(jsonListSicCode)
+    SIC_CODES_KEY -> Json.parse(jsonListSicCode)
   )
 
   val iclSicCodeMapping: Map[String, JsValue] = Map(

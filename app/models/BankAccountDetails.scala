@@ -19,7 +19,6 @@ package models
 import models.api.BankAccountDetailsStatus
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import utils.JsonUtilities
 
 case class BankAccount(isProvided: Boolean,
                        details: Option[BankAccountDetails],
@@ -52,14 +51,14 @@ object BankAccountDetails {
   }
 }
 
-object BankAccount extends JsonUtilities {
+object BankAccount {
 
   implicit val apiKey: ApiKey[BankAccount] = ApiKey("bank-account")
 
   implicit val format: Format[BankAccount] = (
     (__ \ "isProvided").format[Boolean] and
-      (__ \ "details").formatNullable[BankAccountDetails](BankAccountDetails.format) and
-      (__ \ "overseasDetails").formatNullable[OverseasBankDetails] and
-      (__ \ "reason").formatNullable[NoUKBankAccount]
-    )(BankAccount.apply, unlift(BankAccount.unapply))
+    (__ \ "details").formatNullable[BankAccountDetails](BankAccountDetails.format) and
+    (__ \ "overseasDetails").formatNullable[OverseasBankDetails] and
+    (__ \ "reason").formatNullable[NoUKBankAccount]
+  ) (BankAccount.apply, unlift(BankAccount.unapply))
 }

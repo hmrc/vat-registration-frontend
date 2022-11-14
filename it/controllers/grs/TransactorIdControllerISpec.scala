@@ -28,7 +28,8 @@ class TransactorIdControllerISpec extends ControllerISpec {
       "lastName" -> testLastName
     ),
     "nino" -> testApplicantNino,
-    "dateOfBirth" -> testApplicantDob
+    "dateOfBirth" -> testApplicantDob,
+    "identifiersMatch" -> true
   )
 
   "GET /start-sti-transactor-journey" when {

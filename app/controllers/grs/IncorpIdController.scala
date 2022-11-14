@@ -18,8 +18,7 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.{TaskList, UseSoleTraderIdentification}
+import featureswitch.core.config.TaskList
 import models.api.{CharitableOrg, RegSociety, UkCompany}
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
 import play.api.i18n.Lang
@@ -73,18 +72,12 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           incorpDetails <- incorpIdService.getDetails(journeyId)
-          isTransactor <- vatRegistrationService.isTransactor
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
         } yield {
           if (isEnabled(TaskList)) {
             Redirect(controllers.routes.TaskListController.show).withSession(request.session)
           } else {
-            if (isTransactor || isEnabled(UseSoleTraderIdentification)) {
-              Redirect(routes.IndividualIdController.startJourney).withSession(request.session)
-            }
-            else {
-              Redirect(applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()).withSession(request.session)
-            }
+            Redirect(routes.IndividualIdController.startJourney).withSession(request.session)
           }
         }
   }

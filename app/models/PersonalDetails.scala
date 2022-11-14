@@ -33,25 +33,14 @@ case class PersonalDetails(firstName: String,
   def fullName: String = firstName + " " + lastName
 }
 
-object PersonalDetails { //TODO remove all defaults here when PDV is removed
-
-  val pdvFormat: OFormat[PersonalDetails] = (
-    (__ \ "firstName").format[String] and
-    (__ \ "lastName").format[String] and
-    (__ \ "nino").formatNullable[String] and
-    (__ \ "trn").formatNullable[String] and
-    (__ \ "identifiersMatch").formatWithDefault[Boolean](true) and
-    (__ \ "dateOfBirth").formatNullable[LocalDate] and
-    OFormat[Option[String]](_ => JsSuccess(None), (_: Option[String]) => Json.obj()) and
-    OFormat[Option[Int]](_ => JsSuccess(None), (_: Option[Int]) => Json.obj())
-  )(PersonalDetails.apply, unlift(PersonalDetails.unapply))
+object PersonalDetails {
 
   def soleTraderIdentificationReads(appConfig: FrontendAppConfig): Reads[PersonalDetails] = (
     (__ \ "fullName" \ "firstName").read[String] and
     (__ \ "fullName" \ "lastName").read[String] and
     (__ \ "nino").readNullable[String] and
     (__ \ "trn").readNullable[String] and
-    (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
+    (__ \ "identifiersMatch").read[Boolean] and
     (__ \ "dateOfBirth").readNullable[LocalDate] and
     Reads.pure(None) and
     (__ \ "reputation" \ appConfig.scoreKey).readNullable[Int]
@@ -62,7 +51,7 @@ object PersonalDetails { //TODO remove all defaults here when PDV is removed
     (__ \ "name" \ "last").read[String] and
     (__ \ "nino").readNullable[String] and
     (__ \ "trn").readNullable[String] and
-    (__ \ "identifiersMatch").readWithDefault[Boolean](true) and
+    (__ \ "identifiersMatch").read[Boolean] and
     (__ \ "dateOfBirth").readNullable[LocalDate] and
     (__ \ "arn").readNullable[String] and
     (__ \ "score").readNullable[Int]

@@ -18,7 +18,7 @@ package controllers.sicandcompliance
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaskList}
 import fixtures.VatRegistrationFixture
-import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode.SIC_CODES_KEY
 import models.api.{NonUkNonEstablished, SicCode, UkCompany}
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest

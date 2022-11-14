@@ -18,9 +18,6 @@ package models.api
 
 import cats.Show.show
 import models.api.Address.inlineShow.inline
-import models.view.HomeAddressView
-import models.view.vatContact.ppob.PpobView
-import models.{ApiModelTransformer => MT}
 import org.apache.commons.text.WordUtils
 import play.api.libs.json._
 
@@ -123,9 +120,4 @@ object Address {
     implicit val inline = show((a: Address) => normalisedSeq(a).mkString(", "))
   }
 
-  implicit def modelTransformerApplicantHomeAddressView(implicit t: MT[HomeAddressView]): MT[Address] =
-    MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
-
-  implicit def modelTransformerPpobView(implicit t: MT[PpobView]): MT[Address] =
-    MT((vatScheme: VatScheme) => t.toViewModel(vatScheme).flatMap(_.address))
 }

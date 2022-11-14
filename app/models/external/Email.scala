@@ -16,19 +16,16 @@
 
 package models.external
 
-import models.S4LKey
 import play.api.libs.json.{Json, OFormat}
 
 case class EmailAddress(email: String)
 
 object EmailAddress {
-  implicit val emailAddress: S4LKey[EmailAddress] = S4LKey("email")
   implicit val format: OFormat[EmailAddress] = Json.format[EmailAddress]
 }
 
 case class EmailVerified(emailVerified: Boolean)
 
 object EmailVerified {
-  implicit val emailVerified: S4LKey[EmailVerified] = S4LKey("emailVerified")
   implicit val format: OFormat[EmailVerified] = Json.format[EmailVerified]
 }

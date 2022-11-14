@@ -37,12 +37,6 @@ trait SessionServiceMock {
   def mockSessionFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
     when(mockSessionService.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model.pure))
 
-  def mockSessionCache[T](key: String, data: T): OngoingStubbing[Future[CacheMap]] =
-    when(mockSessionService.cache(ArgumentMatchers.contains(key), ArgumentMatchers.eq[T](data))(any(), any[Format[T]]())).thenReturn(Future.successful(CacheMap("", Map())))
-
-  def mockSessionCacheError[T](key: String, err: Exception): OngoingStubbing[Future[CacheMap]] =
-    when(mockSessionService.cache(ArgumentMatchers.contains(key), any[T]())(any(), any())).thenReturn(Future.failed(err))
-
   def mockSessionClear(): OngoingStubbing[Future[Boolean]] = when(mockSessionService.remove(any())) thenReturn Future.successful(true)
 
   def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] =

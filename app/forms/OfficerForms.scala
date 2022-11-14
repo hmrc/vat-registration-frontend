@@ -45,16 +45,6 @@ object FormerNameDateForm {
   )
 }
 
-object HomeAddressForm {
-  val ADDRESS_ID: String = "homeAddressRadio"
-
-  val form = Form(
-    mapping(
-      ADDRESS_ID -> textMapping()("applicantHomeAddress")
-    )(HomeAddressView(_))(view => Option(view.addressId))
-  )
-}
-
 object PreviousAddressForm {
   val RADIO_YES_NO: String = "value"
 

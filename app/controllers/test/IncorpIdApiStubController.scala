@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import forms.test.IncorpIdStubForm
 import models.api._
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
-import models.external.{BusinessVerificationStatus, BvFail, BvPass, IncorporatedEntity}
+import models.external.{BusinessVerificationStatus, BvFail, BvPass, IncorporatedEntity, RegisteredStatus}
 import models.test.IncorpStubData
 import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -101,7 +101,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
           chrn = if (journeyId.contains(charitableOrg)) data.chrn else None,
           dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
           identifiersMatch = data.identifiersMatch,
-          registration = "REGISTERED",
+          registration = RegisteredStatus,
           businessVerification = if (data.passBv) { Some(BvPass) } else { Some(BvFail) },
           bpSafeId = data.bpRef
         ))(IncorporatedEntity.apiFormat))
@@ -113,7 +113,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
           chrn = if (journeyId.contains(charitableOrg)) Some("123567890") else None,
           dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
           identifiersMatch = true,
-          registration = "REGISTERED",
+          registration = RegisteredStatus,
           businessVerification = businessVerificationStatus(journeyId),
           bpSafeId = Some("testBpId")
         ))(IncorporatedEntity.apiFormat))

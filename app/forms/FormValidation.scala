@@ -16,7 +16,7 @@
 
 package forms
 
-import models.{DateModel, MonthYearModel}
+import models.DateModel
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isNotBlank
 import play.api.data.format.Formatter
@@ -236,18 +236,18 @@ object FormValidation {
       }
   }
 
-  def isValidPhoneNumber(formName:String): Constraint[String] = Constraint { phone: String =>
-    val isValidNumber:Option[Int] = if(phone.matches("^[A-Z0-9 )/(*#+-]+$")) Some(phone.length) else None
+  def isValidPhoneNumber(formName: String): Constraint[String] = Constraint { phone: String =>
+    val isValidNumber: Option[Int] = if (phone.matches("^[A-Z0-9 )/(*#+-]+$")) Some(phone.length) else None
 
     isValidNumber match {
-      case Some(num) if(num > 24) => Invalid(s"validation.invalid.$formName.tooLong")
+      case Some(num) if (num > 24) => Invalid(s"validation.invalid.$formName.tooLong")
       case Some(_) => Valid
       case _ => Invalid(s"validation.invalid.$formName")
     }
   }
 
-  private def tupleToDate(dateTuple: (String,String,String)) = {
-     LocalDate.parse(s"${dateTuple._1}-${dateTuple._2}-${dateTuple._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
+  private def tupleToDate(dateTuple: (String, String, String)) = {
+    LocalDate.parse(s"${dateTuple._1}-${dateTuple._2}-${dateTuple._3}", DateTimeFormatter.ofPattern("d-M-uuuu").withResolverStyle(ResolverStyle.STRICT))
   }
 
   def validDate(errKey: String): Constraint[(String, String, String)] = Constraint {
@@ -284,18 +284,7 @@ object FormValidation {
         }
       }
 
-    def nonEmptyMonthYearModel(constraint: => Constraint[MonthYearModel] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
-      Constraint { pdm =>
-        mandatoryText.apply(Seq(pdm.month, pdm.year).mkString.trim) match {
-          case Valid => constraint(pdm)
-          case err@_ => err
-        }
-      }
-
     def validDateModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
-      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
-
-    def validPartialMonthYearModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[MonthYearModel] =
       Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
   }
 

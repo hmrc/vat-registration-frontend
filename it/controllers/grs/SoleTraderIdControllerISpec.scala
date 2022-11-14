@@ -8,7 +8,7 @@ import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api._
-import models.external.{BusinessVerificationStatus, BvPass}
+import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -36,9 +36,10 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
-    )
+    ),
+    "identifiersMatch" -> true
   )
 
   "GET /start-sti-journey" when {
