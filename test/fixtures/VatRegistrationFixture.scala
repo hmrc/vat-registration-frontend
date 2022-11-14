@@ -27,7 +27,6 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 trait BaseFixture {
   //Test variables
@@ -177,7 +176,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val validEntities = List[Entity](
     Entity(
       details = Some(validPartnershipIdEntity),
-      partyType = Partnership,
+      partyType = LtdLiabilityPartnership,
       isLeadPartner = Some(true),
       optScottishPartnershipName = None,
       address = Some(testAddress),
@@ -186,7 +185,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     ),
     Entity(
       details = Some(validPartnershipIdEntity),
-      partyType = Partnership,
+      partyType = LtdLiabilityPartnership,
       isLeadPartner = Some(false),
       optScottishPartnershipName = None,
       address = Some(testAddress),

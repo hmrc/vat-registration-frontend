@@ -672,6 +672,8 @@ pages.application.progress.saved.link                               = return to 
 pages.application.progress.saved.inset                              = Saved applications will only be available for 7 days
 
 # Summary page Applicant details
+cya.applicantDetails.leadPartner.partnerType                        = Partner type
+cya.applicantDetails.leadPartner.businessType                       = Business type
 cya.applicantDetails.leadPartner.uniqueTaxpayerReference            = Lead partner’s Unique Taxpayer Reference
 cya.applicantDetails.leadPartner.companyUniqueTaxpayerReference     = Lead partner’s company Unique Taxpayer Reference
 cya.applicantDetails.leadPartner.companyRegistrationNumber          = Lead partner’s company registration number
