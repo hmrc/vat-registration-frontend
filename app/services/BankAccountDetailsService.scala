@@ -40,12 +40,12 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
   def saveHasCompanyBankAccount(hasBankAccount: Boolean)
                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
     val bankAccount = fetchBankAccountDetails map {
-      case Some(BankAccount(oldHasBankAccount, _, _, _)) if oldHasBankAccount != hasBankAccount =>
-        BankAccount(hasBankAccount, None, None, None)
+      case Some(BankAccount(oldHasBankAccount, _, _)) if oldHasBankAccount != hasBankAccount =>
+        BankAccount(hasBankAccount, None, None)
       case Some(bankAccountDetails) =>
         bankAccountDetails.copy(isProvided = hasBankAccount)
       case None =>
-        BankAccount(hasBankAccount, None, None, None)
+        BankAccount(hasBankAccount, None, None)
     }
 
     bankAccount flatMap saveBankAccountDetails
@@ -58,7 +58,6 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
         val bankAccount = BankAccount(
           isProvided = true,
           details = Some(accountDetails.copy(status = Some(status))),
-          overseasDetails = None,
           reason = None
         )
         saveBankAccountDetails(bankAccount) map (_ => true)
@@ -66,23 +65,11 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
     }
   }
 
-  def saveEnteredOverseasBankAccountDetails(accountDetails: OverseasBankDetails)
-                                           (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
-    val bankAccount = BankAccount(
-      isProvided = true,
-      None,
-      Some(accountDetails),
-      None
-    )
-    saveBankAccountDetails(bankAccount) map (_ => true)
-  }
-
   def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
                                 (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[BankAccount] = {
     val bankAccount = BankAccount(
       isProvided = false,
       details = None,
-      overseasDetails = None,
       reason = Some(reason)
     )
     saveBankAccountDetails(bankAccount)

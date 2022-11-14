@@ -110,10 +110,6 @@ POST        /companys-bank-account                                    controller
 GET         /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.show
 POST        /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.submit
 
-## OVERSEAS BANK ACCOUNT
-GET         /bank-details-overseas                                    controllers.bankdetails.OverseasBankAccountController.show
-POST        /bank-details-overseas                                    controllers.bankdetails.OverseasBankAccountController.submit
-
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
 GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show
 POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit

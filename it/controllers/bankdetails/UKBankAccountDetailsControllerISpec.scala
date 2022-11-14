@@ -64,7 +64,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.passes
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
           .registrationApi.replaceSection[BankAccount](bankAccount)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
@@ -85,7 +85,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.fails
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -105,7 +105,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       given
         .user.isAuthorised()
         .bankAccountReputation.passes
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
         .registrationApi.replaceSection[BankAccount](bankAccount)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
@@ -127,7 +127,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given
           .user.isAuthorised()
           .bankAccountReputation.fails
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, None)))
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

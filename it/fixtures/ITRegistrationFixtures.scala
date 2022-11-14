@@ -47,15 +47,10 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testSortCode = "123456"
   val testAccountNumber = "12345678"
   val testUkBankDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
-  val bankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None, None)
-  val emptyBankAccount = BankAccount(isProvided = true, None, None, None)
-  val bankAccountNotProvidedNoReason = BankAccount(isProvided = false, None, None, None)
-  val bankAccountNotProvided = BankAccount(isProvided = false, None, None, Some(BeingSetupOrNameChange))
-  val testBic = "BIC"
-  val testIban = "IBAN"
-  val testOverseasBankAccountDetails: OverseasBankDetails = OverseasBankDetails(testBankName, testBic, testIban)
-  val testOverseasBankAccount: BankAccount = BankAccount(isProvided = true, None, Some(testOverseasBankAccountDetails), None)
-  val testOverseasBankAccountFrs = BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None)
+  val bankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
+  val emptyBankAccount = BankAccount(isProvided = true, None, None)
+  val bankAccountNotProvidedNoReason = BankAccount(isProvided = false, None, None)
+  val bankAccountNotProvided = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
   val testTurnover = 30000
   val fullVatApplication: VatApplication = VatApplication(
     tradeVatGoodsOutsideUk = Some(false),
@@ -182,7 +177,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
     business = Some(businessDetails.copy(hasTradingName = Some(true), tradingName = Some(testCompanyName))),
     vatApplication = Some(fullVatApplication.copy(overseasCompliance = Some(testFullOverseasCompliance))),
-    bankAccount = Some(testOverseasBankAccount)
+    bankAccount = None
   )
 
   val vatRegIncorporated = VatScheme(

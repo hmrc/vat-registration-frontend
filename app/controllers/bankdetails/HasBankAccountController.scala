@@ -53,14 +53,11 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors))),
         hasBankAccount =>
-          bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).flatMap { _ =>
-            vatRegistrationService.partyType.map {
-              case NETP | NonUkNonEstablished =>
-                Redirect(routes.OverseasBankAccountController.show)
-              case _ if hasBankAccount =>
-                Redirect(routes.UkBankAccountDetailsController.show)
-              case _ =>
-                Redirect(routes.NoUKBankAccountController.show)
+          bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).map { _ =>
+            if (hasBankAccount) {
+              Redirect(routes.UkBankAccountDetailsController.show)
+            } else {
+              Redirect(routes.NoUKBankAccountController.show)
             }
           }
       )

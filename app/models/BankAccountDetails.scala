@@ -22,7 +22,6 @@ import play.api.libs.json._
 
 case class BankAccount(isProvided: Boolean,
                        details: Option[BankAccountDetails],
-                       overseasDetails: Option[OverseasBankDetails],
                        reason: Option[NoUKBankAccount])
 
 case class BankAccountDetails(name: String,
@@ -58,7 +57,6 @@ object BankAccount {
   implicit val format: Format[BankAccount] = (
     (__ \ "isProvided").format[Boolean] and
     (__ \ "details").formatNullable[BankAccountDetails](BankAccountDetails.format) and
-    (__ \ "overseasDetails").formatNullable[OverseasBankDetails] and
     (__ \ "reason").formatNullable[NoUKBankAccount]
   ) (BankAccount.apply, unlift(BankAccount.unapply))
 }

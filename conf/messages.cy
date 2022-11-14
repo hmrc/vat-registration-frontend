@@ -1223,20 +1223,6 @@ partner.additional.required.para.1                       = Mae arnom angen ffurf
 partner.additional.required.para.link                    = VAT2 wedi’i chwblhau
 partner.additional.required.para.2                       = gyda manylion unrhyw bartneriaid ychwanegol yn y bartneriaeth.
 
-# OVERSEAS BANK ACCOUNT
-pages.overseasBankAccount.heading                        = Manylion cyfrif banc neu gyfrif cymdeithas adeiladu
-pages.overseasBankAccount.name                           = Yr enw sydd ar y cyfrif
-pages.overseasBankAccount.bic                            = Cod BIC neu SWIFT
-pages.overseasBankAccount.bicHint                        = Mae’n rhaid i hyn fod rhwng 8 ac 11 o gymeriadau. Gallwch ofyn i’ch banc neu wirio’ch cyfriflen banc
-pages.overseasBankAccount.iban                           = IBAN
-pages.overseasBankAccount.ibanHint                       = Gallwch ofyn i’ch banc neu wirio’ch cyfriflen banc
-validation.overseasBankAccount.name.missing              = Nodwch yr enw sydd ar y cyfrif
-validation.overseasBankAccount.name.invalid              = Nodwch enw heb gynnwys cymeriadau arbennig
-validation.overseasBankAccount.bic.missing               = Nodwch god BIC neu SWIFT
-validation.overseasBankAccount.bic.invalid               = Nodwch god BIC neu SWIFT sydd rhwng 8 ac 11 o gymeriadau
-validation.overseasBankAccount.iban.missing              = Nodwch IBAN
-validation.overseasBankAccount.iban.invalid              = Nodwch IBAN sy’n cynnwys 34 o gymeriadau neu lai
-
 # NETP - SEND GOODS OVERSEAS
 netp.overseas.heading                                    = A fydd y busnes yn anfon nwyddau’n uniongyrchol at gwsmeriaid o wledydd tramor?
 netp.overseas.hint                                       = Yr Alban, Cymru, Gogledd Iwerddon a Lloegr yw’r unig wledydd na chânt eu hystyried yn wledydd tramor at ddibenion TAW.
