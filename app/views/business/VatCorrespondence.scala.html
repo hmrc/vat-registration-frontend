@@ -36,8 +36,6 @@
 
     @errorSummary(form.errors)
 
-    @h1(messages("pages.vatCorrespondence.heading"))
-
     @formWithCSRF(action = controllers.business.routes.VatCorrespondenceController.submit) {
         @inputRadio(
             form = form,
@@ -54,8 +52,7 @@
                     checked = form("value").value.contains("welsh")
                 )
             ),
-            legendAsHeading = false,
-            classes = "govuk-visually-hidden",
+            legendAsHeading = true,
             inline = true
         )
 
