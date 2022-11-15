@@ -21,7 +21,7 @@ import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
-import models.external.{BvFail, BvPass, IncorporatedEntity}
+import models.external.{BvFail, BvPass, FailedStatus, IncorporatedEntity, RegisteredStatus}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -147,7 +147,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         enable(StubIncorpIdJourney)
         given().user.isAuthorised()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", Some(BvFail), None)
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, FailedStatus, Some(BvFail), None)
         stubGet(s"/register-for-vat/test-only/api/incorp-id-journey/testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
@@ -158,7 +158,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         disable(StubIncorpIdJourney)
         given().user.isAuthorised()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, "REGISTRATION_FAILED", Some(BvFail), None)
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, FailedStatus, Some(BvFail), None)
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
@@ -170,7 +170,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         disable(StubIncorpIdJourney)
         given().user.isAuthorised()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, RegisteredStatus, Some(BvPass), Some(testBpSafeId))
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))
@@ -182,7 +182,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         disable(StubIncorpIdJourney)
         given().user.isAuthorised()
 
-        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, "REGISTERED", Some(BvPass), Some(testBpSafeId))
+        val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), None, Some(testChrn), testIncorpDate, "GB", identifiersMatch = true, RegisteredStatus, Some(BvPass), Some(testBpSafeId))
         stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
         val res = await(connector.getDetails(testIncorpId))

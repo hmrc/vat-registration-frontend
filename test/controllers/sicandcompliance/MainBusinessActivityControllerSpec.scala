@@ -18,7 +18,7 @@ package controllers.sicandcompliance
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import fixtures.VatRegistrationFixture
-import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode.SIC_CODES_KEY
 import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

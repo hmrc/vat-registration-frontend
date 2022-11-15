@@ -31,10 +31,6 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
 
   val vatRegUrl: String = config.baseUrl("vat-registration")
 
-  def setupCurrentProfile(implicit hc: HeaderCarrier): Future[Result] = {
-    http.POSTEmpty[HttpResponse](s"$vatRegUrl/vatreg/test-only/current-profile-setup").map(_ => Results.Ok)
-  }
-
   def retrieveVatSubmission(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
   }

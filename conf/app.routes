@@ -110,10 +110,6 @@ POST        /companys-bank-account                                    controller
 GET         /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.show
 POST        /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.submit
 
-## OVERSEAS BANK ACCOUNT
-GET         /bank-details-overseas                                    controllers.bankdetails.OverseasBankAccountController.show
-POST        /bank-details-overseas                                    controllers.bankdetails.OverseasBankAccountController.submit
-
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
 GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show
 POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit
@@ -213,10 +209,6 @@ GET         /start-incorp-id-journey                                  controller
 GET         /incorp-id-callback                                       controllers.grs.IncorpIdController.incorpIdCallback(journeyId)
 GET         /partner/:index/start-incorp-id-journey                   controllers.grs.PartnerIncorpIdController.startJourney(index: Int)
 GET         /partner/:index/incorp-id-callback                        controllers.grs.PartnerIncorpIdController.callback(index: Int, journeyId: String)
-
-## Personal Details Validation Pages
-GET         /start-personal-details-validation-journey                controllers.applicant.PersonalDetailsValidationController.startPersonalDetailsValidationJourney()
-GET         /personal-details-validation-callback                     controllers.applicant.PersonalDetailsValidationController.personalDetailsValidationCallback(validationId)
 
 ## Sole Trader Identification Journey
 GET         /start-sti-journey                                        controllers.grs.SoleTraderIdController.startJourney

@@ -21,8 +21,8 @@ import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
 import models._
+import models.api.VatScheme
 import models.api.vatapplication._
-import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -44,11 +44,10 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
   val sectionId = "cya.registrationDetails"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
-    val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Missing Eligibility"))
     val vatApplication = vatScheme.vatApplication.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Missing Returns"))
 
     govukSummaryList(SummaryList(
-      bankAccountSection(vatScheme, partyType) ++
+      bankAccountSection(vatScheme) ++
         List(
           startDate(vatApplication),
           currentlyTrading(vatApplication),
@@ -58,7 +57,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
           paymentMethod(vatApplication),
           taxRep(vatApplication)
         ).flatten ++
-        flatRateSchemeSection(vatScheme, partyType)
+        flatRateSchemeSection(vatScheme)
     ))
   }
 
@@ -130,7 +129,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     )
   }
 
-  private def bankAccountSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {
+  private def bankAccountSection(vatScheme: VatScheme)(implicit messages: Messages): List[SummaryListRow] = {
     val bankAccount: Option[BankAccount] = vatScheme.bankAccount
 
     val accountIsProvidedRow = optSummaryListRowBoolean(
@@ -141,14 +140,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     val companyBankAccountDetails = optSummaryListRowSeq(
       s"$sectionId.companyBankAccount.details",
-      partyType match {
-        case NETP | NonUkNonEstablished => bankAccount.flatMap(_.overseasDetails.map(OverseasBankDetails.overseasBankSeq))
-        case _ => bankAccount.flatMap(_.details.map(BankAccountDetails.bankSeq))
-      },
-      partyType match {
-        case NETP | NonUkNonEstablished => Some(controllers.bankdetails.routes.OverseasBankAccountController.show.url)
-        case _ => Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
-      }
+      bankAccount.flatMap(_.details.map(BankAccountDetails.bankSeq)),
+      Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
     )
 
     val noUKBankAccount = optSummaryListRowString(
@@ -171,7 +164,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     ).flatten
   }
 
-  private def flatRateSchemeSection(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] = {
+  private def flatRateSchemeSection(vatScheme: VatScheme)(implicit messages: Messages): List[SummaryListRow] = {
 
     val optFlatRateScheme: Option[FlatRateScheme] = vatScheme.flatRateScheme
     val isLimitedCostTrader: Boolean = optFlatRateScheme.exists(_.limitedCostTrader.contains(true))

@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.{EmailAddress, Name}
@@ -310,51 +310,25 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
       }
     }
     "the user is a Uk Company" when {
-      "the UseSoleTraderIdentification feature switch is enabled" must {
-        "use the Sole Trader journey url" in {
-          enable(UseSoleTraderIdentification)
+      "use the Sole Trader journey url" in {
 
-          val scheme = emptyVatScheme.copy(
-            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-              partyType = UkCompany,
-              isTransactor = false
-            )),
-            applicantDetails = Some(ApplicantDetails(
-              entity = Some(testSoleTrader),
-              personalDetails = Some(testPersonalDetails),
-              roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate))
-            ))
-          )
-          val res = section.personalDetailsRow.build(scheme)
-          res.status mustBe TLCompleted
-          res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
-        }
-      }
-      "the UseSoleTraderIdentification feature switch is disabled" must {
-        "use the PDV url" in {
-          disable(UseSoleTraderIdentification)
-
-          val scheme = emptyVatScheme.copy(
-            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-              partyType = UkCompany,
-              isTransactor = false
-            )),
-            applicantDetails = Some(ApplicantDetails(
-              entity = Some(testSoleTrader),
-              personalDetails = Some(testPersonalDetails),
-              roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate))
-            ))
-          )
-          val res = section.personalDetailsRow.build(scheme)
-          res.status mustBe TLCompleted
-          res.url mustBe controllers.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
-        }
+        val scheme = emptyVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = UkCompany,
+            isTransactor = false
+          )),
+          applicantDetails = Some(ApplicantDetails(
+            entity = Some(testSoleTrader),
+            personalDetails = Some(testPersonalDetails),
+            roleInTheBusiness = testRole,
+            hasFormerName = Some(true),
+            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
+            formerNameDate = Some(FormerNameDateView(testDate))
+          ))
+        )
+        val res = section.personalDetailsRow.build(scheme)
+        res.status mustBe TLCompleted
+        res.url mustBe controllers.grs.routes.IndividualIdController.startJourney.url
       }
     }
     "the user is anything else" when {

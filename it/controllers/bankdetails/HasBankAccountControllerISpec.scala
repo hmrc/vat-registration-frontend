@@ -52,7 +52,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with 'Yes' pre-populated from S4L" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(true, None, None, None)))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(true, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -78,7 +78,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated from S4L" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(false, None, None, None)))
+        .registrationApi.getSection[BankAccount](Some(BankAccount(false, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -108,7 +108,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
-        .registrationApi.replaceSection[BankAccount](BankAccount(true, None, None, None))
+        .registrationApi.replaceSection[BankAccount](BankAccount(true, None, None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -118,25 +118,11 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
     }
-    "redirect to the Overseas bank page if the user is a NETP" in new Setup {
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](None)
-        .registrationApi.replaceSection[BankAccount](BankAccount(true, None, None, None))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = await(buildClient(url).post(Map("value" -> "true")))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.OverseasBankAccountController.show.url)
-    }
     "redirect to the reason for no bank account page if the user doesn't have a bank account" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
-        .registrationApi.replaceSection[BankAccount](BankAccount(false, None, None, None))
+        .registrationApi.replaceSection[BankAccount](BankAccount(false, None, None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

@@ -59,12 +59,11 @@ trait BaseFixture {
 
 trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with ApplicantDetailsFixtures {
 
-  val ukBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None, None)
+  val ukBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None)
 
   val sicCode = SicCode("88888", "description", "displayDetails")
 
   val currentThreshold = "50000"
-  val taxableThreshold = TaxableThreshold(currentThreshold, "2018-1-1")
   val formattedThreshold = "50,000"
 
   //Responses
@@ -215,9 +214,9 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
 
   val validAasDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
 
-  val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
+  val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
 
-  val noUkBankAccount = BankAccount(isProvided = false, None, None, Some(BeingSetupOrNameChange))
+  val noUkBankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
 
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,

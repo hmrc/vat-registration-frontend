@@ -27,7 +27,8 @@ class IndividualIdControllerISpec extends ControllerISpec {
       "lastName" -> testLastName
     ),
     "nino" -> testApplicantNino,
-    "dateOfBirth" -> testApplicantDob
+    "dateOfBirth" -> testApplicantDob,
+    "identifiersMatch" -> true
   )
 
   "GET /start-sti-individual-journey" when {

@@ -18,7 +18,7 @@ package controllers.test
 
 import models.api.{LtdLiabilityPartnership, LtdPartnership, PartyType, ScotLtdPartnership}
 import models.external.partnershipid.PartnershipIdJourneyConfig
-import models.external.{BvPass, PartnershipIdEntity}
+import models.external.{BvPass, PartnershipIdEntity, RegisteredStatus}
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -48,7 +48,7 @@ class PartnershipIdentificationStubController @Inject()(mcc: MessagesControllerC
     val partnershipEntity: JsValue = Json.toJson(PartnershipIdEntity(
       sautr = Some("1234567890"),
       postCode = Some("AA11AA"),
-      registration = "REGISTERED",
+      registration = RegisteredStatus,
       businessVerification = if (journeyId.contains(excludeBv)) None else Some(BvPass),
       bpSafeId = Some("testBpId"),
       identifiersMatch = true

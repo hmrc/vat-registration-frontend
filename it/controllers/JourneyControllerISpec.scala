@@ -34,9 +34,6 @@ class JourneyControllerISpec extends ControllerISpec {
   lazy val controller: JourneyController = app.injector.instanceOf(classOf[JourneyController])
   lazy val appConfig: FrontendAppConfig = app.injector.instanceOf(classOf[FrontendAppConfig])
 
-  val thresholdUrl = s"/vatreg/threshold/${LocalDate.now()}"
-  val currentThreshold = "50000"
-
   val showUrl: String = routes.JourneyController.show.url
   val submitUrl: String = routes.JourneyController.submit.url
   val newJourneyUrl: String = routes.JourneyController.startNewJourney.url

@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
 import forms.test.SicStubForm
-import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode.SIC_CODES_KEY
 import models.api.SicCode
 import models.test._
 import play.api.mvc.{Action, AnyContent}

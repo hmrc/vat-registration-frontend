@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.FeatureSwitching
 import forms.MainBusinessActivityForm
-import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode.SIC_CODES_KEY
 import models.api.SicCode
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.MainBusinessActivity

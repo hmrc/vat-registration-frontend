@@ -18,8 +18,6 @@ GET         /api/incorp-id-journey/response-values/:journeyId controllers.test.I
 POST        /api/incorp-id-journey/response-values/:journeyId controllers.test.IncorpIdApiStubController.submitStubPage(journeyId: String)
 GET         /api/incorp-id-journey/:journeyId                 controllers.test.IncorpIdApiStubController.getDetails(journeyId)
 
-GET         /personal-details-validation/:validationId        controllers.test.PersonalDetailsValidationStubController.retrieveValidationResult(validationId)
-
 + nocsrf
 POST        /sole-trader-identification                       controllers.test.SoleTraderIdentificationStubController.createJourney(partyType: Option[String])
 + nocsrf

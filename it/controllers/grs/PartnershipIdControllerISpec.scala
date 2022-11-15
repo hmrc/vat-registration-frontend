@@ -21,7 +21,7 @@ import controllers.applicant.{routes => applicantRoutes}
 import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
-import models.external.{BusinessVerificationStatus, BvPass, PartnershipIdEntity}
+import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import models.{ApplicantDetails, Partner}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
@@ -47,7 +47,7 @@ class PartnershipIdControllerISpec extends ControllerISpec {
       "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
     ),
     "registration" -> Json.obj(
-      "registrationStatus" -> testRegistration,
+      "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
       "registeredBusinessPartnerId" -> testSafeId
     ),
     "identifiersMatch" -> true

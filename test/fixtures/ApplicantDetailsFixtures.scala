@@ -71,7 +71,7 @@ trait ApplicantDetailsFixtures {
     Some(testIncorpDate),
     "GB",
     identifiersMatch = true,
-    "REGISTERED",
+    RegisteredStatus,
     Some(BvPass),
     Some(testBpSafeId)
   )
@@ -94,7 +94,7 @@ trait ApplicantDetailsFixtures {
   val testTrn = "testTrn"
   val testIncorpCountry = "GB"
   val testPostcode = "AA11AA"
-  val testRegistration = "REGISTERED"
+  val testRegistration: BusinessRegistrationStatus = RegisteredStatus
   val testSafeId = "X00000123456789"
 
   val testSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(

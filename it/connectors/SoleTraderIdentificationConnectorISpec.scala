@@ -21,7 +21,7 @@ import itutil.IntegrationSpecBase
 import models.PersonalDetails
 import models.api.Individual
 import models.external.soletraderid.{JourneyLabels, OverseasIdentifierDetails, SoleTraderIdJourneyConfig, TranslationLabels}
-import models.external.{BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
+import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass, SoleTraderIdEntity}
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
@@ -150,9 +150,10 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
           "score" -> 1
         ),
         "registration" -> Json.obj(
-          "registrationStatus" -> testRegistration,
+          "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
           "registeredBusinessPartnerId" -> testSafeId
-        )
+        ),
+        "identifiersMatch" -> true
       )
 
       stubGet(retrieveDetailsUrl, OK, Json.stringify(testSTIResponse))
@@ -176,7 +177,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
           "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
         ),
         "registration" -> Json.obj(
-          "registrationStatus" -> testRegistration,
+          "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
           "registeredBusinessPartnerId" -> testSafeId
         ),
         "identifiersMatch" -> false
@@ -203,7 +204,7 @@ class SoleTraderIdentificationConnectorISpec extends IntegrationSpecBase with Ap
           "verificationStatus" -> Json.toJson[BusinessVerificationStatus](BvPass)
         ),
         "registration" -> Json.obj(
-          "registrationStatus" -> testRegistration,
+          "registrationStatus" -> Json.toJson[BusinessRegistrationStatus](testRegistration),
           "registeredBusinessPartnerId" -> testSafeId
         ),
         "overseas" -> Json.obj(

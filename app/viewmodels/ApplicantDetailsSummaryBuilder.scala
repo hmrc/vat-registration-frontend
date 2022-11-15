@@ -18,7 +18,7 @@ package viewmodels
 
 import controllers.applicant.{routes => applicantRoutes}
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import featureswitch.core.config.FeatureSwitching
 import models.Entity.leadEntityIndex
 import models._
 import models.api._
@@ -57,12 +57,8 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
             case Some(Individual | NETP) => grsRoutes.PartnerSoleTraderIdController.startJourney(leadEntityIndex).url
             case _ => grsRoutes.IndividualIdController.startJourney.url
           }
-        case Trust | UnincorpAssoc | NonUkNonEstablished | LtdLiabilityPartnership =>
-          grsRoutes.IndividualIdController.startJourney.url
-        case _ if isEnabled(UseSoleTraderIdentification) => //The low volume entities are already set up to use individual flow, incorp id entities are still switched to PDV in prod
-          grsRoutes.IndividualIdController.startJourney.url
         case _ =>
-          applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
+          grsRoutes.IndividualIdController.startJourney.url
       }
     }
 

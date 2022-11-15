@@ -17,7 +17,7 @@
 package controllers.grs
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.{StubIncorpIdJourney, TaskList, UseSoleTraderIdentification}
+import featureswitch.core.config.{StubIncorpIdJourney, TaskList}
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api._
@@ -30,7 +30,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
   val incorpDetailsJson: JsValue = Json.toJson(testIncorpDetails)(IncorporatedEntity.apiFormat)
 
-  "GET /start-incorp-id-journey" should {
+  "GET /start-incorp-id-journey" must {
     "redirect to the returned journey url for UkCompany" in new Setup {
       disable(StubIncorpIdJourney)
 
@@ -93,155 +93,49 @@ class IncorpIdControllerISpec extends ControllerISpec {
   }
 
   "GET /incorp-id-callback" when {
-    "the Task List is enabled" when {
-      "the UseSoleTraderIdentification feature switch is enabled and user is not transactor" should {
-        "redirect to the Task List" in {
-          enable(UseSoleTraderIdentification)
-          disable(StubIncorpIdJourney)
-          enable(TaskList)
+    "the Task List is enabled" must {
+      "redirect to the Task List" in {
+        disable(StubIncorpIdJourney)
+        enable(TaskList)
 
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-            .registrationApi.getSection[ApplicantDetails](None)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
+          .registrationApi.getSection[ApplicantDetails](None)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-          stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-          val res = buildClient("/incorp-id-callback?journeyId=1").get()
+        val res = buildClient("/incorp-id-callback?journeyId=1").get()
 
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-          }
-        }
-      }
-
-      "the UseSoleTraderIdentification feature switch is disabled and user is transactor" should {
-        "redirect to the Task List" in {
-          disable(UseSoleTraderIdentification)
-          disable(StubIncorpIdJourney)
-          enable(TaskList)
-
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-            .registrationApi.getSection[ApplicantDetails](None)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-          stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-          val res = buildClient("/incorp-id-callback?journeyId=1").get()
-
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-          }
-        }
-      }
-
-      "the UseSoleTraderIdentification feature switch is disabled and user is not transactor" should {
-        "redirect to the Task List" in {
-          disable(UseSoleTraderIdentification)
-          disable(StubIncorpIdJourney)
-          enable(TaskList)
-
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-            .registrationApi.getSection[ApplicantDetails](None)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-          stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-          val res = buildClient("/incorp-id-callback?journeyId=1").get()
-
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-          }
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
         }
       }
     }
-    "the Task List is disabled" when {
-      "the UseSoleTraderIdentification feature switch is enabled and user is not transactor" should {
-        "redirect to STI" in {
-          enable(UseSoleTraderIdentification)
-          disable(StubIncorpIdJourney)
-          disable(TaskList)
+    "the Task List is disabled" must {
+      "redirect to STI" in {
+        disable(StubIncorpIdJourney)
+        disable(TaskList)
 
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-            .registrationApi.getSection[ApplicantDetails](None)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
+          .registrationApi.getSection[ApplicantDetails](None)
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-          stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-          val res = buildClient("/incorp-id-callback?journeyId=1").get()
+        val res = buildClient("/incorp-id-callback?journeyId=1").get()
 
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
-          }
-        }
-      }
-
-      "the UseSoleTraderIdentification feature switch is disabled and user is transactor" should {
-        "redirect to STI" in {
-          disable(UseSoleTraderIdentification)
-          disable(StubIncorpIdJourney)
-          disable(TaskList)
-
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-            .registrationApi.getSection[ApplicantDetails](None)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-          stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-          val res = buildClient("/incorp-id-callback?journeyId=1").get()
-
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
-          }
-        }
-      }
-
-      "the UseSoleTraderIdentification feature switch is disabled and user is not transactor" should {
-        "redirect to PDV" in {
-          disable(UseSoleTraderIdentification)
-          disable(StubIncorpIdJourney)
-          disable(TaskList)
-
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-            .registrationApi.getSection[ApplicantDetails](None)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-          stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-          val res = buildClient("/incorp-id-callback?journeyId=1").get()
-
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(controllers.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url)
-          }
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
         }
       }
     }

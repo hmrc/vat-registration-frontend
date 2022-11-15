@@ -22,7 +22,7 @@ import org.mockito.Mockito.reset
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.cache.SyncCacheApi
 import services._
-import services.mocks.{BusinessServiceMock, IncorpIdServiceMock, PersonalDetailsValidationServiceMock}
+import services.mocks.{BusinessServiceMock, IncorpIdServiceMock}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -33,7 +33,6 @@ trait VatMocks
     with SessionServiceMock
     with BusinessServiceMock
     with IncorpIdServiceMock
-    with PersonalDetailsValidationServiceMock
     with MockRegistrationApiConnector {
   this: MockitoSugar =>
 

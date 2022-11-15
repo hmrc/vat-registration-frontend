@@ -91,7 +91,8 @@ class SoleTraderIdentificationStubController @Inject()(mcc: MessagesControllerCo
       "registration" -> Json.obj(
         "registrationStatus" -> "REGISTERED",
         "registeredBusinessPartnerId" -> "X00000123456789"
-      )
+      ),
+      "identifiersMatch" -> true
     )
     businessVerificationStatus(businessVerification, json)
   }

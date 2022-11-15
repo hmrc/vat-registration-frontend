@@ -1223,20 +1223,6 @@ partner.additional.required.para.1                       = We need a completed
 partner.additional.required.para.link                    = VAT2 form
 partner.additional.required.para.2                       = with details of the partners in the partnership.
 
-# OVERSEAS BANK ACCOUNT
-pages.overseasBankAccount.heading                        = Bank or building society account details
-pages.overseasBankAccount.name                           = Name on the account
-pages.overseasBankAccount.bic                            = BIC or SWIFT code
-pages.overseasBankAccount.bicHint                        = Must be between 8 and 11 characters long. You can ask your bank or check your bank statement
-pages.overseasBankAccount.iban                           = IBAN
-pages.overseasBankAccount.ibanHint                       = You can ask your bank or check your bank statement
-validation.overseasBankAccount.name.missing              = Enter the name on the account
-validation.overseasBankAccount.name.invalid              = Enter a name that does not contain special characters.
-validation.overseasBankAccount.bic.missing               = Enter a BIC or SWIFT code
-validation.overseasBankAccount.bic.invalid               = Enter a BIC or SWIFT code between 8 and 11 characters long
-validation.overseasBankAccount.iban.missing              = Enter an IBAN
-validation.overseasBankAccount.iban.invalid              = Enter an IBAN that is 34 characters or fewer
-
 # NETP - SEND GOODS OVERSEAS
 netp.overseas.heading                                    = Will the business send goods directly to customers from overseas countries?
 netp.overseas.hint                                       = England, Scotland, Wales and Northern Ireland are the only countries not considered as overseas for the purposes of VAT.

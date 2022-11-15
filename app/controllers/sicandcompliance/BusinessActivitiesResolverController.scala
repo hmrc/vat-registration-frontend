@@ -19,7 +19,7 @@ package controllers.sicandcompliance
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
-import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode.SIC_CODES_KEY
 import models.api.{NETP, NonUkNonEstablished, SicCode}
 import play.api.mvc.{Action, AnyContent}
 import services._

@@ -17,7 +17,7 @@
 package services
 
 import connectors.mocks.MockRegistrationApiConnector
-import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange, OverseasBankDetails}
+import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.Assertion
@@ -36,16 +36,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
   "fetchBankAccountDetails" should {
 
-    val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
-    val overseasBankAccount = BankAccount(isProvided = true, None, Some(OverseasBankDetails("testName", "123456", "12345678")), None)
-
-    "return a BankAccount if the account is from overseas" in new Setup {
-      mockGetSection[BankAccount](testRegId, Some(overseasBankAccount))
-
-      val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
-
-      result mustBe Some(overseasBankAccount)
-    }
+    val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
     "return a BankAccount" in new Setup {
       mockGetSection[BankAccount](testRegId, Some(bankAccount))
@@ -66,7 +57,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
   "saveBankAccountDetails" should {
     "return a BankAccount and save to the backend" in new Setup {
-      val fullBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
+      val fullBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
       mockReplaceSection[BankAccount](testRegId, fullBankAccount)
 
@@ -80,7 +71,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
   "saveHasCompanyBankAccount" should {
     "patch and return an already persisted completed ProvidedBankAccount" in new Setup {
       val existingProvidedBankAccountState: BankAccount =
-        BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
+        BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
       mockGetSection[BankAccount](testRegId, Some(existingProvidedBankAccountState))
       mockReplaceSection[BankAccount](testRegId, existingProvidedBankAccountState)
@@ -92,7 +83,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
     "patch and return an already persisted completed NoBankAccount with a reason" in new Setup {
       val existingNoBankAccountState: BankAccount =
-        BankAccount(isProvided = false, None, None, Some(BeingSetupOrNameChange))
+        BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
 
       mockGetSection[BankAccount](testRegId, Some(existingNoBankAccountState))
       mockReplaceSection[BankAccount](testRegId, existingNoBankAccountState)
@@ -104,9 +95,9 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
     "return a new blank BankAccount model if the user changes answer" in new Setup {
       val existingNoBankAccountState: BankAccount =
-        BankAccount(isProvided = false, None, None, Some(BeingSetupOrNameChange))
+        BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
       val clearedBankAccount: BankAccount =
-        BankAccount(isProvided = true, None, None, None)
+        BankAccount(isProvided = true, None, None)
 
       mockGetSection[BankAccount](testRegId, Some(existingNoBankAccountState))
       mockReplaceSection[BankAccount](testRegId, clearedBankAccount)
@@ -118,7 +109,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
     "return a new blank BankAccount model if no previous bank account state available" in new Setup {
       def verifyIncompleteBankAccount(service: BankAccountDetailsService, hasBankAccount: Boolean): Assertion = {
-        val incompleteBankAccount: BankAccount = BankAccount(hasBankAccount, None, None, None)
+        val incompleteBankAccount: BankAccount = BankAccount(hasBankAccount, None, None)
 
         mockGetSection[BankAccount](testRegId, None)
 

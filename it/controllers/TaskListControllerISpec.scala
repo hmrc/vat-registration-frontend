@@ -506,7 +506,7 @@ class TaskListControllerISpec extends ControllerISpec {
             startDate = Some(LocalDate.of(2017, 10, 10)),
             hasTaxRepresentative = Some(false)
           )),
-          bankAccount = Some(bankAccount.copy(isProvided = false, None, None, Some(BeingSetupOrNameChange)))
+          bankAccount = Some(bankAccount.copy(isProvided = false, None, Some(BeingSetupOrNameChange)))
         )
 
         given

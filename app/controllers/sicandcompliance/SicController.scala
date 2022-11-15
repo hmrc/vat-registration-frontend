@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import models.CurrentProfile
-import models.ModelKeys.SIC_CODES_KEY
+import models.api.SicCode.SIC_CODES_KEY
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, Result}
 import services._

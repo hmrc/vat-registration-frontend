@@ -23,10 +23,7 @@ case class OtherBusinessInvolvement(businessName: Option[String] = None,
                                     vrn: Option[String] = None,
                                     hasUtr: Option[Boolean] = None,
                                     utr: Option[String] = None,
-                                    stillTrading: Option[Boolean] = None) {
-
-
-}
+                                    stillTrading: Option[Boolean] = None)
 
 object OtherBusinessInvolvement {
   implicit val format: OFormat[OtherBusinessInvolvement] = Json.format[OtherBusinessInvolvement]

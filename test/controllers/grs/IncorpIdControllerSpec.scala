@@ -17,8 +17,7 @@
 package controllers.grs
 
 import _root_.models._
-import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.api.{CharitableOrg, GovOrg, RegSociety, UkCompany}
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
@@ -100,33 +99,16 @@ class IncorpIdControllerSpec extends ControllerSpec
   }
 
   "incorpIdCallback" when {
-    "the UseSoleTraderIdentification feature switch is enabled" should {
-      "store the incorporation details and redirect to IndividualIdentification when the response is valid" in new Setup {
-        enable(UseSoleTraderIdentification)
-        val onwardUrl = routes.IndividualIdController.startJourney.url
-        mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
-        mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
-        mockIsTransactor(Future(true))
+    "store the incorporation details and redirect to IndividualIdentification when the response is valid" in new Setup {
+      val onwardUrl = routes.IndividualIdController.startJourney.url
+      mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
+      mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
+      mockIsTransactor(Future(true))
 
-        val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
+      val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 
-        status(res) mustBe SEE_OTHER
-        redirectLocation(res) must contain(onwardUrl)
-      }
-    }
-    "the UseSoleTraderIdentification feature switch is disabled" should {
-      "store the incorporation details and redirect to PersonalDetailsVerification when the response is valid" in new Setup {
-        disable(UseSoleTraderIdentification)
-        val onwardUrl = applicantRoutes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
-        mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
-        mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
-        mockIsTransactor(Future(false))
-
-        val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
-
-        status(res) mustBe SEE_OTHER
-        redirectLocation(res) must contain(onwardUrl)
-      }
+      status(res) mustBe SEE_OTHER
+      redirectLocation(res) must contain(onwardUrl)
     }
   }
 

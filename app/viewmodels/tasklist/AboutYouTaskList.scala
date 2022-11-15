@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, UseSoleTraderIdentification}
+import featureswitch.core.config.FeatureSwitching
 import models.CurrentProfile
 import models.api._
 import uk.gov.hmrc.http.InternalServerException
@@ -46,38 +46,34 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
         controllers.applicant.routes.FormerNameController.show.url
       } else {
-        if (scheme.partyType.contains(UkCompany) && !isEnabled(UseSoleTraderIdentification)) {
-          controllers.applicant.routes.PersonalDetailsValidationController.startPersonalDetailsValidationJourney().url
-        } else {
-          controllers.grs.routes.IndividualIdController.startJourney.url
-        }
+        controllers.grs.routes.IndividualIdController.startJourney.url
       }
     },
     tagId = "applicantPersonalDetailsRow",
     checks = scheme => {
       Seq(scheme.applicantDetails.exists(_.hasFormerName.isDefined))
-      .++ {
-        if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
-          Nil
-        } else if (Seq(Partnership, LtdPartnership, ScotLtdPartnership, ScotPartnership, LtdLiabilityPartnership).exists(scheme.partyType.contains)) {
-          Seq(scheme.applicantDetails.exists(_.personalDetails.isDefined))
-        } else {
-          Seq(
-            scheme.applicantDetails.exists(_.personalDetails.isDefined),
-            scheme.applicantDetails.exists(_.roleInTheBusiness.isDefined)
-          )
+        .++ {
+          if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
+            Nil
+          } else if (Seq(Partnership, LtdPartnership, ScotLtdPartnership, ScotPartnership, LtdLiabilityPartnership).exists(scheme.partyType.contains)) {
+            Seq(scheme.applicantDetails.exists(_.personalDetails.isDefined))
+          } else {
+            Seq(
+              scheme.applicantDetails.exists(_.personalDetails.isDefined),
+              scheme.applicantDetails.exists(_.roleInTheBusiness.isDefined)
+            )
+          }
         }
-      }
-      .++ {
-        if (scheme.applicantDetails.exists(_.hasFormerName.contains(true))) {
-          Seq(
-            scheme.applicantDetails.exists(_.formerName.isDefined),
-            scheme.applicantDetails.exists(_.formerNameDate.isDefined)
-          )
-        } else {
-          Nil
+        .++ {
+          if (scheme.applicantDetails.exists(_.hasFormerName.contains(true))) {
+            Seq(
+              scheme.applicantDetails.exists(_.formerName.isDefined),
+              scheme.applicantDetails.exists(_.formerNameDate.isDefined)
+            )
+          } else {
+            Nil
+          }
         }
-      }
     },
     prerequisites = scheme => Seq(
       if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.transactorPersonalDetailsRow) else None,

@@ -155,14 +155,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           claimVatRefunds = Some(true),
           returnsFrequency = Some(Monthly))
         ),
-        bankAccount = Some(validUkBankAccount)
+        bankAccount = None
       )
 
       val expectedSummaryList = SummaryList(List(
-        optSummaryListRowBoolean(
-          questionId = TestContent.bankAccount,
-          optAnswer = Some(true),
-          optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
         optSummaryListRowString(
           questionId = TestContent.startDate,
           optAnswer = Some("10 October 2017"),
