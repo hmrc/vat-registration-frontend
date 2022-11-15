@@ -41,14 +41,9 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticated { implicit request =>
-    if (isEnabled(SaveAndContinueLater)) {
-      vatRegistrationService.getAllRegistrations.map {
-        case head :: tail => Redirect(routes.ManageRegistrationsController.show)
-        case Nil => Redirect(routes.JourneyController.startNewJourney)
-      }
-    }
-    else {
-      Future.successful(Redirect(routes.JourneyController.startNewJourney))
+    vatRegistrationService.getAllRegistrations.map {
+      case head :: tail => Redirect(routes.ManageRegistrationsController.show)
+      case Nil => Redirect(routes.JourneyController.startNewJourney)
     }
   }
 

@@ -16,7 +16,7 @@
 
 package views.bankdetails
 
-import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons, SaveAndContinueLater}
+import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
 import forms.NoUKBankAccountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -45,11 +45,9 @@ class NoUKBankAccountViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   "No UK Bank Account Page" when {
     "the NewNoBankReasons FS is disabled" should {
-      enable(SaveAndContinueLater)
       disable(NewNoBankReasons)
       val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
       implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
-      disable(SaveAndContinueLater)
 
       "have the correct title" in new ViewSetup() {
         doc.title mustBe ExpectedContent.title
@@ -80,12 +78,10 @@ class NoUKBankAccountViewSpec extends VatRegViewSpec with FeatureSwitching {
       }
     }
     "the NewNoBankReasons FS is enabled" should {
-      enable(SaveAndContinueLater)
       enable(NewNoBankReasons)
       val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
       implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
       disable(NewNoBankReasons)
-      disable(SaveAndContinueLater)
 
       "have the correct title" in new ViewSetup() {
         doc.title mustBe ExpectedContent.title

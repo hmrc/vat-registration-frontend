@@ -16,7 +16,6 @@
 
 package views.applicant
 
-import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import forms.PartnerForm
 import models.Entity.leadEntityIndex
 import org.jsoup.Jsoup
@@ -24,7 +23,7 @@ import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.applicant.PartnerEntityType
 
-class PartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitching {
+class PartnerEntityTypeViewSpec extends VatRegViewSpec {
 
   implicit val errorKey: String = "pages.leadPartnerEntityType.missing"
 
@@ -50,12 +49,8 @@ class PartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   "Partner Entity Type Page for lead partner" should {
 
-    enable(SaveAndContinueLater)
-
     val view: PartnerEntityType = app.injector.instanceOf[PartnerEntityType]
     implicit val doc: Document = Jsoup.parse(view(PartnerForm.form, isTransactor = false, index = leadEntityIndex).body)
-
-    disable(SaveAndContinueLater)
 
     "have the correct title" in new ViewSetup() {
       doc.title mustBe LeadPartnerExpectedContent.title
@@ -93,13 +88,9 @@ class PartnerEntityTypeViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   "Partner Entity Type Page for additional partners" should {
 
-    enable(SaveAndContinueLater)
-
     val partnerIndex = 2
     val view: PartnerEntityType = app.injector.instanceOf[PartnerEntityType]
     implicit val doc: Document = Jsoup.parse(view(PartnerForm.form, isTransactor = true, index = partnerIndex).body)
-
-    disable(SaveAndContinueLater)
 
     "have the correct title" in new ViewSetup() {
       doc.title mustBe AdditionalPartnerExpectedContent.title

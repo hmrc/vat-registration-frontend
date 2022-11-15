@@ -35,7 +35,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubBars,
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
-    SaveAndContinueLater,
     LandAndProperty,
     OtherBusinessInvolvement,
     UploadDocuments,
@@ -96,11 +95,6 @@ case object StubPartnershipIdentification extends FeatureSwitch {
 case object StubMinorEntityIdentification extends FeatureSwitch {
   val configName = "feature-switch.minor-entity-identification"
   val displayName = "Stub Minor Entity Identification"
-}
-
-case object SaveAndContinueLater extends FeatureSwitch {
-  val configName = "feature-switch.save-and-continue-later"
-  val displayName = "Enable Save and Continue Later"
 }
 
 case object LandAndProperty extends FeatureSwitch {

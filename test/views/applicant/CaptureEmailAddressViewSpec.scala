@@ -36,31 +36,31 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
     val nonTransactorView = app.injector.instanceOf[capture_email_address].apply(testCall, form, None)
     val transactorView = app.injector.instanceOf[capture_email_address].apply(testCall, form, Some(name))
 
-    val nonTransactorDoc = Jsoup.parse(nonTransactorView.body)
+    implicit val nonTransactorDoc = Jsoup.parse(nonTransactorView.body)
     val transactorDoc = Jsoup.parse(transactorView.body)
 
-    "have the correct title" in {
-      nonTransactorDoc.title must include(title)
+    "have the correct title" in new ViewSetup {
+      doc.title must include(title)
     }
 
-    "have the correct heading" in {
-      nonTransactorDoc.select(Selectors.h1).text mustBe heading
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
     }
 
-    "have the correct heading when the user is a transactor" in {
-      transactorDoc.select(Selectors.h1).text mustBe namedHeading
+    "have the correct heading when the user is a transactor" in new ViewSetup()(transactorDoc) {
+      doc.select(Selectors.h1).text mustBe namedHeading
     }
 
-    "have the correct paragraph" in {
-      nonTransactorDoc.getElementById("use-of-email").text mustBe paragraph
+    "have the correct paragraph" in new ViewSetup {
+      doc.getElementById("use-of-email").text mustBe paragraph
     }
 
-    "have the correct privacy information" in {
-      nonTransactorDoc.getElementById("privacy-information").text mustBe privacyInformation
+    "have the correct privacy information" in new ViewSetup {
+      doc.getElementById("privacy-information").text mustBe privacyInformation
     }
 
-    "have the correct continue button" in {
-      nonTransactorDoc.select(Selectors.button).text mustBe buttonText
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
 
   }

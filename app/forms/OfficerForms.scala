@@ -17,7 +17,7 @@
 package forms
 
 import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, missingBooleanFieldMapping, textMapping}
+import forms.FormValidation.{ErrorCode, inRange, missingBooleanFieldMapping}
 import models.DateModel
 import models.view._
 import play.api.data.Form

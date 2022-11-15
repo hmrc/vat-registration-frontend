@@ -31,18 +31,18 @@ class ImportsOrExportsViewSpec extends VatRegViewSpec {
   "ImportsOrExports Page" should {
     lazy val form = ImportsOrExportsForm.form
     lazy val view = viewInstance(form)
-    lazy val doc = Jsoup.parse(view.body)
+    implicit lazy val doc = Jsoup.parse(view.body)
 
-    "have the correct title" in {
+    "have the correct title" in new ViewSetup {
       doc.title must include(title)
     }
 
-    "have the correct heading" in {
-      doc.select(Selectors.h1).text mustBe heading
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
     }
 
-    "have the correct continue button" in {
-      doc.select(Selectors.button).text mustBe buttonText
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
   }
 }

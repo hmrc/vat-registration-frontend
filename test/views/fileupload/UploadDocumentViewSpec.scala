@@ -65,7 +65,7 @@ class UploadDocumentViewSpec extends VatRegViewSpec {
     }
 
     "have no panel text" in new ViewSetup {
-      doc.panelIndent(0) mustBe None
+      doc.panelIndent(1) mustBe None
     }
 
     "have a primary action" in new ViewSetup {
@@ -98,7 +98,7 @@ class UploadDocumentViewSpec extends VatRegViewSpec {
     }
 
     "have the correct panel text" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.testHint)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.testHint)
     }
 
     "have a primary action" in new ViewSetup {

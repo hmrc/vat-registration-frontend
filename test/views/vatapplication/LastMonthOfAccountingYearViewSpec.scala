@@ -44,37 +44,37 @@ class LastMonthOfAccountingYearViewSpec extends VatRegViewSpec {
 
     val view = app.injector.instanceOf[last_month_of_accounting_year].apply(AnnualStaggerForm.form)
 
-    val doc = Jsoup.parse(view.body)
+    implicit val doc = Jsoup.parse(view.body)
 
-    "have the right title" in {
+    "have the right title" in new ViewSetup {
       doc.title() mustBe title
     }
 
-    "have the right header" in {
-      doc.select(Selectors.h1).text() mustBe header
+    "have the right header" in new ViewSetup {
+      doc.heading mustBe Some(header)
     }
 
-    "have the right text" in {
-      doc.select(Selectors.p(1)).text() mustBe text
+    "have the right text" in new ViewSetup {
+      doc.para(1) mustBe Some(text)
     }
 
-    "have the right button" in {
-      doc.select(Selectors.button).text() mustBe buttonText
+    "have the right button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
 
-    "have the right radio buttons" in {
-      doc.select(Selectors.radio(1)).text() mustBe radio1
-      doc.select(Selectors.radio(2)).text() mustBe radio2
-      doc.select(Selectors.radio(3)).text() mustBe radio3
-      doc.select(Selectors.radio(4)).text() mustBe radio4
-      doc.select(Selectors.radio(5)).text() mustBe radio5
-      doc.select(Selectors.radio(6)).text() mustBe radio6
-      doc.select(Selectors.radio(7)).text() mustBe radio7
-      doc.select(Selectors.radio(8)).text() mustBe radio8
-      doc.select(Selectors.radio(9)).text() mustBe radio9
-      doc.select(Selectors.radio(10)).text() mustBe radio10
-      doc.select(Selectors.radio(11)).text() mustBe radio11
-      doc.select(Selectors.radio(12)).text() mustBe radio12
+    "have the right radio buttons" in new ViewSetup {
+      doc.radio("january") mustBe Some(radio1)
+      doc.radio("february") mustBe Some(radio2)
+      doc.radio("march") mustBe Some(radio3)
+      doc.radio("april") mustBe Some(radio4)
+      doc.radio("may") mustBe Some(radio5)
+      doc.radio("june") mustBe Some(radio6)
+      doc.radio("july") mustBe Some(radio7)
+      doc.radio("august") mustBe Some(radio8)
+      doc.radio("september") mustBe Some(radio9)
+      doc.radio("october") mustBe Some(radio10)
+      doc.radio("november") mustBe Some(radio11)
+      doc.radio("december") mustBe Some(radio12)
     }
   }
 }

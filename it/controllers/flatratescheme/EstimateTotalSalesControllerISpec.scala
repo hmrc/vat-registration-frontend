@@ -17,7 +17,7 @@
 package controllers.flatratescheme
 
 import itutil.ControllerISpec
-import models.{FlatRateScheme, S4LKey}
+import models.FlatRateScheme
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse

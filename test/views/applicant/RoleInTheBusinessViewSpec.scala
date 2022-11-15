@@ -16,14 +16,13 @@
 
 package views.applicant
 
-import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import forms.RoleInTheBusinessForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.applicant.role_in_the_business
 
-class RoleInTheBusinessViewSpec extends VatRegViewSpec with FeatureSwitching {
+class RoleInTheBusinessViewSpec extends VatRegViewSpec {
 
   implicit val errorKey: String = "pages.leadPartnerEntityType.missing"
 
@@ -41,12 +40,8 @@ class RoleInTheBusinessViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   "Role In The Business Page" should {
 
-    enable(SaveAndContinueLater)
-
     val view: role_in_the_business = app.injector.instanceOf[role_in_the_business]
     implicit val doc: Document = Jsoup.parse(view(RoleInTheBusinessForm(), name = Some(ExpectedContent.name), isTrust = false).body)
-
-    disable(SaveAndContinueLater)
 
     "have the correct title" in new ViewSetup() {
       doc.title mustBe ExpectedContent.title

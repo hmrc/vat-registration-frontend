@@ -84,7 +84,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
 
     "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.insetText)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText)
     }
 
     "have the correct link" in new ViewSetup {
@@ -124,7 +124,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
 
     "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.insetText)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText)
     }
 
     "have the correct links" in new ViewSetup {
@@ -165,7 +165,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
 
     "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.insetText)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText)
     }
 
     "have the correct links" in new ViewSetup {
@@ -206,7 +206,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
 
     "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.insetText3pt)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText3pt)
     }
 
     "have the correct links" in new ViewSetup {
@@ -247,7 +247,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
 
     "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.insetText3pt)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText3pt)
     }
 
     "have the correct links" in new ViewSetup {

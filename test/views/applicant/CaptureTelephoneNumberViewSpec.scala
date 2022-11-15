@@ -16,13 +16,12 @@
 
 package views.applicant
 
-import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import forms.TelephoneNumberForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
 import views.html.applicant.capture_telephone_number
 
-class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitching {
+class CaptureTelephoneNumberViewSpec extends VatRegViewSpec {
 
 
   val heading = "What is your telephone number?"
@@ -32,25 +31,23 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitchin
   val buttonText = "Save and continue"
   val name = "testFirstName"
 
-  disable(SaveAndContinueLater)
-
   "Capture Telephone Number Page" should {
     lazy val form = TelephoneNumberForm.form
     lazy val view = app.injector.instanceOf[capture_telephone_number].apply(testCall, form, None)
-    lazy val doc = Jsoup.parse(view.body)
+    implicit lazy val doc = Jsoup.parse(view.body)
     lazy val transactorView = app.injector.instanceOf[capture_telephone_number].apply(testCall, form, Some(name))
     lazy val transactorDoc = Jsoup.parse(transactorView.body)
 
-    "have the correct title" in {
+    "have the correct title" in new ViewSetup {
       doc.title mustBe title
     }
 
-    "have the correct heading" in {
-      doc.select(Selectors.h1).text mustBe heading
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
     }
 
-    "have the correct heading when the user is a transactor" in {
-      transactorDoc.select(Selectors.h1).text mustBe namedHeading
+    "have the correct heading when the user is a transactor" in new ViewSetup()(transactorDoc) {
+      doc.heading mustBe Some(namedHeading)
     }
 
     "have the correct label" in {
@@ -65,8 +62,8 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec with FeatureSwitchin
       doc.getElementById("telephone-number-collection-reason").text mustBe paragraph
     }
 
-    "have the correct continue button" in {
-      doc.select(Selectors.button).text() mustBe buttonText
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
 
   }

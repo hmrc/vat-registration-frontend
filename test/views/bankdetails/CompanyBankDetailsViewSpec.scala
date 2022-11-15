@@ -38,22 +38,22 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
   val buttonText = "Save and continue"
 
   "Company Bank Details Page" should {
-    lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
+    implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
 
-    "have the correct title" in {
+    "have the correct title" in new ViewSetup {
       doc.title must include(title)
     }
 
-    "have the correct heading" in {
-      doc.select(Selectors.h1).text mustBe heading
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
     }
 
-    "have the correct p1" in {
-      doc.select(Selectors.p(1)).text mustBe p1
+    "have the correct p1" in new ViewSetup {
+      doc.para(1) mustBe Some(p1)
     }
 
-    "have the correct panel text" in {
-      doc.select(Selectors.indent).text mustBe panelText
+    "have the correct panel text" in new ViewSetup {
+      doc.panelIndent(1) mustBe Some(panelText)
     }
 
     "have the correct Account Name label text" in {
@@ -76,8 +76,8 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
       doc.select(Selectors.multipleHints(1)).get(2).text mustBe sortCodeHint
     }
 
-    "have the correct continue button" in {
-      doc.select(Selectors.button).text() mustBe buttonText
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
 
   }
