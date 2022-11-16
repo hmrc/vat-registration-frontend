@@ -103,7 +103,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     }
 
     "have the correct indent test" in new ViewSetup {
-      doc.panelIndent(0) mustBe Some(ExpectedContent.inset)
+      doc.panelIndent(1) mustBe Some(ExpectedContent.inset)
     }
 
     "have a final paragraph with a help link" in new ViewSetup {

@@ -29,18 +29,18 @@ class EmailVerifiedViewSpec extends VatRegViewSpec {
   "Email Verified Page" should {
     val view = app.injector.instanceOf[email_verified].apply(testCall)
 
-    val doc = Jsoup.parse(view.body)
+    implicit val doc = Jsoup.parse(view.body)
 
-    "have the correct title" in {
+    "have the correct title" in new ViewSetup {
       doc.title() mustBe title
     }
 
-    "have the correct heading" in {
-      doc.select(Selectors.h1).text() mustBe heading
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
     }
 
-    "have the correct button" in {
-      doc.select(Selectors.button).text() mustBe buttonText
+    "have the correct button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
 
   }

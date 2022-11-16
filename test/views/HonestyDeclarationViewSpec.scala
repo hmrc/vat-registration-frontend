@@ -16,11 +16,10 @@
 
 package views
 
-import featureswitch.core.config.{FeatureSwitching, SaveAndContinueLater}
 import org.jsoup.Jsoup
 import views.html.honesty_declaration
 
-class HonestyDeclarationViewSpec extends VatRegViewSpec with FeatureSwitching {
+class HonestyDeclarationViewSpec extends VatRegViewSpec {
 
   val title = "Declaration - Register for VAT - GOV.UK"
   val header = "Declaration"
@@ -29,7 +28,6 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec with FeatureSwitching {
 
   "Honesty Declaration Page" must {
 
-    enable(SaveAndContinueLater)
 
     val view = new honesty_declaration(
       layout,
@@ -40,8 +38,6 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec with FeatureSwitching {
     ).apply(testCall)
 
     val doc = Jsoup.parse(view.body)
-
-    disable(SaveAndContinueLater)
 
     "have the right title" in {
       doc.title() mustBe title

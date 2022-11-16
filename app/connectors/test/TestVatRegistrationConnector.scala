@@ -17,9 +17,8 @@
 package connectors.test
 
 import play.api.libs.json.JsValue
-import play.api.mvc.{Result, Results}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}

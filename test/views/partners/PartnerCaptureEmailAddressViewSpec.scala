@@ -56,8 +56,8 @@ class PartnerCaptureEmailAddressViewSpec extends VatRegViewSpec {
       doc.link(1) mustBe Some(Link(link, appConfig.privacyNoticeUrl))
     }
 
-    "have a save and continue button" in {
-      doc.select(Selectors.button).text mustBe buttonText
+    "have a save and continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
   }
 }

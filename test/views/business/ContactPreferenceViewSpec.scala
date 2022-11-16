@@ -35,26 +35,26 @@ class ContactPreferenceViewSpec extends VatRegViewSpec {
   "Contact Preference Page" should {
     lazy val form = ContactPreferenceForm()
     lazy val view = viewInstance(form, testCall)
-    lazy val doc = Jsoup.parse(view.body)
+    implicit lazy val doc = Jsoup.parse(view.body)
 
-    "have the correct title" in {
+    "have the correct title" in new ViewSetup {
       doc.title must include(title)
     }
 
-    "have the correct heading" in {
-      doc.select(Selectors.h1).text mustBe heading
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(heading)
     }
 
-    "have the correct paragraph" in {
-      doc.select(Selectors.p(1)).text mustBe paragraph
+    "have the correct paragraph" in new ViewSetup {
+      doc.para(1) mustBe Some(paragraph)
     }
 
-    "have the correct paragraph2" in {
-      doc.select(Selectors.p(2)).text mustBe paragraph2
+    "have the correct paragraph2" in new ViewSetup {
+      doc.para(2) mustBe Some(paragraph2)
     }
 
-    "have the correct continue button" in {
-      doc.select(Selectors.button).text mustBe buttonText
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(buttonText)
     }
 
   }

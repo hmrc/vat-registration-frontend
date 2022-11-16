@@ -58,67 +58,30 @@ class JourneyControllerISpec extends ControllerISpec {
   )
 
   s"GET $showUrl" when {
-    "SaveAndContinueLater FS is disabled" must {
-      s"return a redirect to $newJourneyUrl" when {
-        "user is authenticated and authorised to access the app without profile" in new Setup {
-          disable(SaveAndContinueLater)
-          given()
-            .user.isAuthorised()
-            .registrationApi.registrationCreated()
-            .registrationApi.getSection(Some(VatRegStatus.draft))
+    "the registrations API returns in flight registrations" must {
+      "redirect to manage registrations page" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection(Some(VatRegStatus.draft))
+          .registrationApi.getAllRegistrations(List(vatSchemeHeader, vatSchemeHeader2))
 
-          val res: WSResponse = await(buildClient(showUrl).get())
+        val res: WSResponse = await(buildClient(showUrl).get())
 
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
-        }
-
-        "user is authenticated and authorised to access the app with profile" in new Setup {
-          disable(SaveAndContinueLater)
-
-          given()
-            .user.isAuthorised()
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: WSResponse = await(buildClient(showUrl).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
-        }
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ManageRegistrationsController.show.url)
       }
     }
 
-    "SaveAndContinueLater FS is enabled" when {
-      "the registrations API returns in flight registrations" must {
-        "redirect to manage registrations page" in new Setup {
-          enable(SaveAndContinueLater)
+    "the registrations API returns no registrations" must {
+      s"redirect to new journey page" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getAllRegistrations(Nil)
 
-          given()
-            .user.isAuthorised()
-            .registrationApi.getSection(Some(VatRegStatus.draft))
-            .registrationApi.getAllRegistrations(List(vatSchemeHeader, vatSchemeHeader2))
+        val res: WSResponse = await(buildClient(showUrl).get())
 
-          val res: WSResponse = await(buildClient(showUrl).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.ManageRegistrationsController.show.url)
-        }
-      }
-
-      "the registrations API returns no registrations" must {
-        s"redirect to new journey page" in new Setup {
-          enable(SaveAndContinueLater)
-
-          given()
-            .user.isAuthorised()
-            .registrationApi.getAllRegistrations(Nil)
-
-          val res: WSResponse = await(buildClient(showUrl).get())
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
-        }
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
       }
     }
   }
