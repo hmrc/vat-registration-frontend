@@ -18,7 +18,6 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.SupplySupportingDocumentsForm
 import models.api.LandPropertyOtherDocs
 import play.api.mvc.{Action, AnyContent}
@@ -63,11 +62,7 @@ class SupplySupportingDocumentsController @Inject()(val authConnector: AuthConne
                 Future.successful(Redirect(routes.UploadSupportingDocumentController.show))
               } else {
                 upscanService.deleteUpscanDetailsByType(profile.registrationId, LandPropertyOtherDocs).map { _ =>
-                  if (isEnabled(TaskList)) {
-                    Redirect(controllers.routes.TaskListController.show.url)
-                  } else {
-                    Redirect(controllers.routes.SummaryController.show.url)
-                  }
+                  Redirect(controllers.routes.TaskListController.show.url)
                 }
               }
             }

@@ -1,7 +1,6 @@
 
 package controllers.transactor
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.TransactorDetails
 import models.api.{Address, Country}
@@ -74,61 +73,46 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
   "POST /your-address/international" must {
     "Store the address and redirect to the next page if a minimal address is provided" in new Setup {
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[TransactorDetails](None)
+        .s4lContainer[TransactorDetails].contains(TransactorDetails())
+        .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 
-      private def verifyRedirect(redirectUrl: String) = {
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
-          .registrationApi.getSection[TransactorDetails](None)
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
-          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      val res = await(buildClient(url).post(Map(
+        "line1" -> "testLine1",
+        "line2" -> "testLine2",
+        "country" -> "Norway"
+      )))
 
-        val res = await(buildClient(url).post(Map(
-          "line1" -> "testLine1",
-          "line2" -> "testLine2",
-          "country" -> "Norway"
-        )))
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(routes.TelephoneNumberController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
     "Store the address and redirect to the next page if a full address is provided" in new Setup {
-      private def verifyRedirect(redirectUrl: String) = {
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
-          .registrationApi.getSection[TransactorDetails](None)
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
-          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .registrationApi.getSection[TransactorDetails](None)
+        .s4lContainer[TransactorDetails].contains(TransactorDetails())
+        .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(address = Some(testForeignAddress)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map(
-          "line1" -> "testLine1",
-          "line2" -> "testLine2",
-          "line3" -> "testLine3",
-          "line4" -> "testLine4",
-          "line5" -> "testLine5",
-          "postcode" -> "AB12 3YZ",
-          "country" -> "Norway"
-        )))
+      val res = await(buildClient(url).post(Map(
+        "line1" -> "testLine1",
+        "line2" -> "testLine2",
+        "line3" -> "testLine3",
+        "line4" -> "testLine4",
+        "line5" -> "testLine5",
+        "postcode" -> "AB12 3YZ",
+        "country" -> "Norway"
+      )))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(routes.TelephoneNumberController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given

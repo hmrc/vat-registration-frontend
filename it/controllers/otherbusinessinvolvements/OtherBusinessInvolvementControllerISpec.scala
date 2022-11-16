@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.business
+package controllers.otherbusinessinvolvements
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
-import models.{Business, OtherBusinessInvolvement}
+import models.Business
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -65,52 +63,12 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to Imports or Exports if no other business involvement for UkCompany" in new Setup {
-      given
-        .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
-        .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.deleteSection[OtherBusinessInvolvement]()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "false"))
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
-      }
-    }
-
-    "redirect to Turnover if no other business involvement for NonUkCompany" in new Setup {
-      given
-        .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
-        .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
-        .registrationApi.deleteSection[OtherBusinessInvolvement]()
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "false"))
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
-      }
-    }
-
-    "redirect to the task list page if TaskList FS is on" in new Setup {
-      enable(TaskList)
+    "redirect to the task list page if the answer is no" in new Setup {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[Business](None)
-        .registrationApi.deleteSection[OtherBusinessInvolvement]()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -120,10 +78,9 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         result.status mustBe SEE_OTHER
         result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
-      disable(TaskList)
     }
 
-    "redirect to other business involvement workflow" in new Setup {
+    "redirect to other business involvement if the answer is yes" in new Setup {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty

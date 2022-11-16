@@ -18,7 +18,6 @@ package controllers.flatratescheme
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.FRSStartDateForm
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionService, TimeService}
@@ -66,11 +65,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
         answers => {
           val (choice, optDate) = answers
           flatRateService.saveStartDate(choice, optDate) map { _ =>
-            if (isEnabled(TaskList)) {
-              Redirect(controllers.routes.TaskListController.show)
-            } else {
-              Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
-            }
+            Redirect(controllers.routes.TaskListController.show)
           }
         }
       )

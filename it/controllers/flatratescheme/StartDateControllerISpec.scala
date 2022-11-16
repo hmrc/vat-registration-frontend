@@ -127,7 +127,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 
@@ -145,7 +145,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 
@@ -183,7 +183,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 
@@ -202,7 +202,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 

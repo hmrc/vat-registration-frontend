@@ -1,7 +1,6 @@
 
 package controllers.bankdetails
 
-import featureswitch.core.config.TaskList
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
@@ -59,27 +58,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
   }
 
   "POST /account-details" when {
-    "bank details are valid and the user is TOGC/COLE" must {
-      "return to the returns frequency page" in new Setup {
-        given
-          .user.isAuthorised()
-          .bankAccountReputation.passes
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
-          .registrationApi.replaceSection[BankAccount](bankAccount)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).post(Map(
-          "accountName" -> testBankName,
-          "accountNumber" -> testAccountNumber,
-          "sortCode" -> testSortCode
-        )))
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
-      }
-    }
     "bank details and Bank Account Reputation states are invalid" must {
       "return BAD_REQUEST" in new Setup {
         given
@@ -100,8 +78,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       }
     }
 
-    "redirect to the application-progress page if Tasklist FS is enabled" in new Setup {
-      enable(TaskList)
+    "redirect to the Tasklist if the account details are valid" in new Setup {
       given
         .user.isAuthorised()
         .bankAccountReputation.passes
@@ -119,7 +96,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
     }
 
     "bank details are incorrect" must {

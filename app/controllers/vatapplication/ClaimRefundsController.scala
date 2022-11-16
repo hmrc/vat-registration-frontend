@@ -18,7 +18,6 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.vatapplication.ChargeExpectancyForm
 import models.api.{NETP, NonUkNonEstablished}
 import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
@@ -74,11 +73,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
               case NETP | NonUkNonEstablished =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show.url)
-                } else {
-                  Redirect(controllers.bankdetails.routes.HasBankAccountController.show)
-                }
+                Redirect(controllers.routes.TaskListController.show.url)
             }
           }
         )

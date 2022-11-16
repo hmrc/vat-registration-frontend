@@ -20,7 +20,6 @@ import common.validators.AddressFormResultsHandler
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.ConfigConnector
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.InternationalAddressForm
 import models.api.Country
 import models.view.PreviousAddressView
@@ -58,20 +57,17 @@ class InternationalPreviousAddressController  @Inject()(val authConnector: AuthC
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
 
-      addressFormResultsHandler.handle(
-        countries,
-        headingMessageKey,
-        formProvider.form().bindFromRequest,
-        submitAction,
-        internationalAddress => {
-          applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = true, Some(internationalAddress))) map { _ =>
-            if (isEnabled(TaskList)) {
-              Redirect(controllers.routes.TaskListController.show)
-            } else {
-              Redirect(routes.CaptureEmailAddressController.show)
-            }
-          }
+    addressFormResultsHandler.handle(
+      countries,
+      headingMessageKey,
+      formProvider.form().bindFromRequest,
+      submitAction,
+      internationalAddress => {
+        applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = true, Some(internationalAddress))) map { _ =>
+          Redirect(controllers.routes.TaskListController.show)
         }
-      )
+      }
+    )
   }
+
 }

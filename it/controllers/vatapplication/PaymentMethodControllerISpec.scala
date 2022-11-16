@@ -16,7 +16,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import forms.PaymentMethodForm._
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NETP}
@@ -96,51 +95,37 @@ class PaymentMethodControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "return a redirect to the Join Flat Rate page and update S4L" in new Setup {
-      private def verifyRedirect(redirectUrl: String) = {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
-          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
+        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))
 
-        whenReady(response) { res =>
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-        }
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
     "return a redirect to the Join Flat Rate page and update backend with full model" in new Setup {
-      private def verifyRedirect(redirectUrl: String) = {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testFullVatApplication)
-          .s4lContainer[VatApplication].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
-          .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
+      given()
+        .user.isAuthorised()
+        .s4lContainer[VatApplication].contains(testFullVatApplication)
+        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
+        .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response: Future[WSResponse] = buildClient(url).post(Map("value" -> chaps))
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> chaps))
 
-        whenReady(response) { res =>
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-        }
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
     }
 
     "return a redirect to the Tax Representative page if the selected party type is NonUK" in new Setup {

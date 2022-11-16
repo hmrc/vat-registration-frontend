@@ -16,7 +16,7 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.{StubEmailVerification, TaskList}
+import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
 import models.external.{EmailAddress, EmailVerified}
@@ -79,39 +79,84 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   s"POST $url" when {
     "the ApplicantDetails model is incomplete" should {
-      "update S4L and redirect to trading name resolver" in new Setup {
+      "update S4L and redirect to Task List" in new Setup {
         disable(StubEmailVerification)
-
-        private def verifyRedirect(redirectUrl: String) = {
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-          res.status mustBe SEE_OTHER
-          res.header("LOCATION") mustBe Some(redirectUrl)
-        }
-
-        enable(TaskList)
-        verifyRedirect(controllers.routes.TaskListController.show.url)
-        disable(TaskList)
-        verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
-      }
-    }
-
-    "update S4L and redirect to trading name resolver for a NETP" in new Setup {
-      disable(StubEmailVerification)
-
-      private def verifyRedirect(redirectUrl: String) = {
         given()
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
           .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "update S4L and redirect to Task List for a NETP" in new Setup {
+      disable(StubEmailVerification)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
+    }
+
+    "update S4L and redirect to Task List for a Non UK Company" in new Setup {
+      disable(StubEmailVerification)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
+    }
+
+    "the ApplicantDetails model is complete" should {
+      "post to the backend and redirect to Task List" in new Setup {
+        disable(StubEmailVerification)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
+          telephoneNumber = Some(TelephoneNumber(testPhoneNumber.replace(" ", "")))
+        ))
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+
+        res.status mustBe SEE_OTHER
+        res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+
+      "post to the backend and redirect to Task List for a NETP" in new Setup {
+        disable(StubEmailVerification)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
+        given()
+          .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
+          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -119,92 +164,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
         res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
-    }
-
-    "update S4L and redirect to trading name resolver for a Non UK Company" in new Setup {
-      disable(StubEmailVerification)
-
-      private def verifyRedirect(redirectUrl: String) = {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
-    }
-
-    "the ApplicantDetails model is complete" should {
-      "post to the backend and redirect to trading name resolver" in new Setup {
-        disable(StubEmailVerification)
-
-        private def verifyRedirect(redirectUrl: String) = {
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
-            .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
-            telephoneNumber = Some(TelephoneNumber(testPhoneNumber.replace(" ", "")))
-          ))
-            .s4lContainer[ApplicantDetails].clearedByKey
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-          res.status mustBe SEE_OTHER
-          res.header("LOCATION") mustBe Some(redirectUrl)
-        }
-
-        enable(TaskList)
-        verifyRedirect(controllers.routes.TaskListController.show.url)
-        disable(TaskList)
-        verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
-      }
-
-      "post to the backend and redirect to trading name resolver for a NETP" in new Setup {
-        disable(StubEmailVerification)
-
-        private def verifyRedirect(redirectUrl: String) = {
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
-            .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
-            .s4lContainer[ApplicantDetails].clearedByKey
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-          res.status mustBe SEE_OTHER
-          res.header("LOCATION") mustBe Some(redirectUrl)
-        }
-
-        enable(TaskList)
-        verifyRedirect(controllers.routes.TaskListController.show.url)
-        disable(TaskList)
-        verifyRedirect(controllers.routes.TradingNameResolverController.resolve.url)
+        res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
   }

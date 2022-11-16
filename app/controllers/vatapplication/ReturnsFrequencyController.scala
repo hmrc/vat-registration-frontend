@@ -18,10 +18,9 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.vatapplication.ReturnsFrequencyForm
-import models.api.{NETP, NonUkNonEstablished}
 import models.api.vatapplication.{Annual, Monthly}
+import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.vatapplication.return_frequency_view
@@ -75,13 +74,10 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
                 returnFrequency match {
                   case Monthly =>
                     partyType match {
-                      case NETP | NonUkNonEstablished => Redirect(controllers.vatapplication.routes.TaxRepController.show)
+                      case NETP | NonUkNonEstablished =>
+                        Redirect(controllers.vatapplication.routes.TaxRepController.show)
                       case _ =>
-                        if (isEnabled(TaskList)) {
-                          Redirect(controllers.routes.TaskListController.show)
-                        } else {
-                          Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show)
-                        }
+                        Redirect(controllers.routes.TaskListController.show)
                     }
                   case Annual => Redirect(routes.LastMonthOfAccountingYearController.show)
                   case _ => Redirect(routes.AccountingPeriodController.show)

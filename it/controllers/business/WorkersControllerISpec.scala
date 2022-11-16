@@ -1,30 +1,58 @@
 
 package controllers.business
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaskList}
-import featureswitch.core.models.FeatureSwitch
+import featureswitch.core.config.FeatureSwitching
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
 import models.{Business, LabourCompliance}
+import org.jsoup.Jsoup
 import play.api.http.HeaderNames
-import play.api.mvc.Call
 import play.api.test.Helpers._
+import views.html.sicandcompliance.workers
 
 class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
 
-  def verifyRedirectLocation(optFeatureSwitch: Option[FeatureSwitch], resolvedLocation: Call) = {
-    optFeatureSwitch.foreach(enable)
-    val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
+  val view = app.injector.instanceOf[workers]
 
-    whenReady(response) { res =>
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(resolvedLocation.url)
+  "show" should {
+    "return OK with the form unpopulated" in new Setup {
+      val dataModel = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].contains(dataModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[Business].clearedByKey
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/number-of-workers-supplied").get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).select("#numberOfWorkers").attr("value") mustBe ""
+      }
     }
-    optFeatureSwitch.foreach(disable)
+    "return OK with the form prepopulated" in new Setup {
+      val dataModel = fullModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].contains(dataModel)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[Business].clearedByKey
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/number-of-workers-supplied").get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).select("#numberOfWorkers").attr("value") mustBe "1"
+      }
+    }
   }
 
-  "workers controller" should {
-    "have correct FS based redirects for UkCompany" in new Setup {
+  "submit" should {
+    "redirect to the Task List" in new Setup {
       val initialModel = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
@@ -36,12 +64,15 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      verifyRedirectLocation(Some(TaskList), controllers.routes.TaskListController.show)
-      verifyRedirectLocation(None, controllers.vatapplication.routes.ImportsOrExportsController.show)
-      verifyRedirectLocation(Some(OtherBusinessInvolvement), controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
     }
 
-    "have correct FS based redirects for NonUkCompany" in new Setup {
+    "return BAD_REQUEST" in new Setup {
       val initialModel = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
@@ -53,9 +84,11 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      verifyRedirectLocation(Some(TaskList), controllers.routes.TaskListController.show)
-      verifyRedirectLocation(None, controllers.vatapplication.routes.TurnoverEstimateController.show)
-      verifyRedirectLocation(Some(OtherBusinessInvolvement), controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> ""))
+
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
     }
   }
 

@@ -18,7 +18,6 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -44,11 +43,8 @@ class UploadDocumentController @Inject()(view: UploadDocument,
     implicit request =>
       implicit profile =>
         attachmentsService.getIncompleteAttachments(profile.registrationId).flatMap {
-          case Nil => if (isEnabled(TaskList)) {
+          case Nil =>
             Future.successful(Redirect(controllers.routes.TaskListController.show.url))
-          } else {
-            Future.successful(Redirect(controllers.routes.SummaryController.show.url))
-          }
           case list =>
             upscanService.initiateUpscan(profile.registrationId, list.head).flatMap { upscanResponse =>
               uploadDocumentHint.build(list.head).map { hintHtml =>

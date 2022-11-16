@@ -16,7 +16,7 @@
 
 package controllers.business
 
-import featureswitch.core.config.{FeatureSwitching, LandAndProperty}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.ContactPreference
 import org.mockito.ArgumentMatchers
@@ -101,22 +101,15 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
     }
 
     "return a 303" when {
-      "user selects email and redirect to the business activity description" in new SubmissionSetup {
+      "user selects email and redirect to the Task List" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "email")) {
-          _ redirectsTo controllers.business.routes.BusinessActivityDescriptionController.show.url
+          _ redirectsTo controllers.routes.TaskListController.show.url
         }
       }
 
-      "user selects letter and redirect to the business activity description" in new SubmissionSetup {
+      "user selects letter and redirect to the Task List" in new SubmissionSetup {
         submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "letter")) {
-          _ redirectsTo controllers.business.routes.BusinessActivityDescriptionController.show.url
-        }
-      }
-
-      "land and property feature switch is enabled" in new SubmissionSetup {
-        enable(LandAndProperty)
-        submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "letter")) {
-          _ redirectsTo controllers.business.routes.LandAndPropertyController.show.url
+          _ redirectsTo controllers.routes.TaskListController.show.url
         }
       }
     }

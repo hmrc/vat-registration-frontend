@@ -16,7 +16,6 @@
 
 package controllers.flatratescheme
 
-import featureswitch.core.config.TaskList
 import fixtures.VatRegistrationFixture
 import models.FlatRateScheme
 import org.mockito.ArgumentMatchers.any
@@ -238,12 +237,11 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitRegisterForFrs, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
+        redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
 
-    "redirect to task list when task list feature switch is on and Flat Rate Scheme selected No" in new Setup {
-      enable(TaskList)
+    "redirect to task list when selected No" in new Setup {
       when(mockFlatRateService.saveRegister(any())(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
@@ -258,7 +256,6 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
         status(result) mustBe 303
         redirectLocation(result) mustBe Some("/register-for-vat/application-progress")
       }
-      disable(TaskList)
     }
   }
 
@@ -320,7 +317,7 @@ class FlatRateControllerSpec extends ControllerSpec with VatRegistrationFixture 
 
       submitAuthorised(controller.submitYourFlatRate, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some("/register-for-vat/attachments-resolve")
+        redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
   }

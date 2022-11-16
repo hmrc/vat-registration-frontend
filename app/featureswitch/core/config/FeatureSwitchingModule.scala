@@ -38,7 +38,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     LandAndProperty,
     OtherBusinessInvolvement,
     UploadDocuments,
-    TaskList,
     NewNoBankReasons,
     WelshLanguage,
     OptionToTax,
@@ -110,11 +109,6 @@ case object OtherBusinessInvolvement extends FeatureSwitch {
 case object UploadDocuments extends FeatureSwitch {
   override val configName: String = "feature-switch.upload-documents"
   override val displayName: String = "Enable upload documents attachment method"
-}
-
-case object TaskList extends FeatureSwitch {
-  override val configName: String = "feature-switch.task-list"
-  override val displayName: String = "Enable Task List"
 }
 
 case object NewNoBankReasons extends FeatureSwitch {

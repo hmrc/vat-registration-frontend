@@ -17,7 +17,6 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -25,7 +24,7 @@ import viewmodels.tasklist._
 import views.html.TaskList
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class TaskListController @Inject()(vatRegistrationService: VatRegistrationService,
@@ -51,34 +50,30 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
 
 
   def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    if (isEnabled(TaskList)) {
-      for {
-        vatScheme <- vatRegistrationService.getVatScheme
-        applicantDetails <- applicantDetailsService.getApplicantDetails
-        transactorDetails <- transactorDetailsService.getTransactorDetails
-        business <- businessService.getBusiness
-        vatApplication <- vatApplicationService.getVatApplication
-        attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
-        scheme = vatScheme.copy(
-          applicantDetails = Some(applicantDetails),
-          transactorDetails = Some(transactorDetails),
-          business = Some(business),
-          vatApplication = Some(vatApplication)
-        ) // Grabbing the data from two sources is temporary, until we've removed S4L
-        sections = List(
-          Some(registrationReasonSection.build(scheme)),
-          if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(scheme)) else None,
-          Some(verifyBusinessTaskList.build(scheme)),
-          Some(aboutYouTaskList.build(scheme)),
-          Some(aboutTheBusinessTaskList.build(scheme)),
-          Some(vatRegistrationTaskList.build(scheme)),
-          attachmentsTaskListRow.map(attachmentsTaskList.build(scheme, _)),
-          Some(summaryTaskList.build(scheme, attachmentsTaskListRow))
-        ).flatten
-      } yield Ok(view(sections: _*))
-    } else {
-      Future.successful(NotFound)
-    }
+    for {
+      vatScheme <- vatRegistrationService.getVatScheme
+      applicantDetails <- applicantDetailsService.getApplicantDetails
+      transactorDetails <- transactorDetailsService.getTransactorDetails
+      business <- businessService.getBusiness
+      vatApplication <- vatApplicationService.getVatApplication
+      attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
+      scheme = vatScheme.copy(
+        applicantDetails = Some(applicantDetails),
+        transactorDetails = Some(transactorDetails),
+        business = Some(business),
+        vatApplication = Some(vatApplication)
+      ) // Grabbing the data from two sources is temporary, until we've removed S4L
+      sections = List(
+        Some(registrationReasonSection.build(scheme)),
+        if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(scheme)) else None,
+        Some(verifyBusinessTaskList.build(scheme)),
+        Some(aboutYouTaskList.build(scheme)),
+        Some(aboutTheBusinessTaskList.build(scheme)),
+        Some(vatRegistrationTaskList.build(scheme)),
+        attachmentsTaskListRow.map(attachmentsTaskList.build(scheme, _)),
+        Some(summaryTaskList.build(scheme, attachmentsTaskListRow))
+      ).flatten
+    } yield Ok(view(sections: _*))
   }
 
 }

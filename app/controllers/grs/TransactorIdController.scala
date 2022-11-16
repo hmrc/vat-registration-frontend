@@ -18,8 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
-import models.api.{NETP, NonUkNonEstablished}
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent}
@@ -33,7 +31,6 @@ import scala.concurrent.ExecutionContext
 class TransactorIdController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthConnector,
                                        val transactorDetailsService: TransactorDetailsService,
-                                       vatRegistrationService: VatRegistrationService,
                                        soleTraderIdentificationService: SoleTraderIdentificationService
                                       )(implicit val appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
@@ -70,18 +67,6 @@ class TransactorIdController @Inject()(val sessionService: SessionService,
         for {
           personalDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
           _ <- transactorDetailsService.saveTransactorDetails(personalDetails)
-          partyType <- vatRegistrationService.partyType
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            partyType match {
-              case NETP | NonUkNonEstablished =>
-                Redirect(controllers.transactor.routes.TransactorInternationalAddressController.show)
-              case _ =>
-                Redirect(controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf)
-            }
-          }
-        }
+        } yield Redirect(controllers.routes.TaskListController.show)
     }
 }

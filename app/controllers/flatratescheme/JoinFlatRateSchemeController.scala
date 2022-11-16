@@ -18,7 +18,6 @@ package controllers.flatratescheme
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import models.GroupRegistration
 import play.api.data.Form
@@ -71,10 +70,8 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
           joiningFRS => flatRateService.saveFlatRate(JoinFrsAnswer(joiningFRS.answer)).map { _ =>
             if (joiningFRS.answer) {
               Redirect(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage)
-            } else if (isEnabled(TaskList)) {
-              Redirect(controllers.routes.TaskListController.show)
             } else {
-              Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+              Redirect(controllers.routes.TaskListController.show)
             }
           }
         )

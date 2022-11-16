@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import featureswitch.core.config.TaskList
 @import config.FrontendAppConfig
 @import views.html.layouts.layout
 
@@ -39,7 +38,7 @@
 
     <div class="govuk-button-group">
         @link(
-            link = if(appConfig.isEnabled(TaskList)) controllers.routes.TaskListController.show.url else controllers.routes.SummaryController.show.url,
+            link = controllers.routes.TaskListController.show.url,
             messageKey = "app.common.continueNoSave",
             isButton = true
         )

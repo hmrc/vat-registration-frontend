@@ -153,7 +153,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the documents page if the user answers No" in new Setup {
+    "redirect to the Task List if the user answers No" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
@@ -165,7 +165,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
 

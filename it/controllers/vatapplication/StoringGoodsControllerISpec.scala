@@ -1,7 +1,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
@@ -104,25 +103,9 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         }
       }
       "the user submits Storing Overseas" must {
-        "redirect to the returns frequency page" in new Setup {
-          given()
-            .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(testVatApplication)
-            .s4lContainer[VatApplication].clearedByKey
-            .registrationApi.replaceSection(testVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
-          ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Map("value" -> "OVERSEAS")))
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
-        }
-
-        "redirect to the application-progress page if TaskList FS enabled" in new Setup {
-          enable(TaskList)
+        "redirect to the Task List page" in new Setup {
           given()
             .user.isAuthorised()
             .s4lContainer[VatApplication].contains(testVatApplication)
@@ -137,7 +120,6 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-          disable(TaskList)
         }
       }
       "the user submits an invalid answer" must {

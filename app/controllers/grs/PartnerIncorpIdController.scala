@@ -19,7 +19,6 @@ package controllers.grs
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.partners.PartnerIndexValidation
-import featureswitch.core.config.TaskList
 import models.Entity
 import models.Entity.leadEntityIndex
 import models.external.BusinessEntity
@@ -78,11 +77,7 @@ class PartnerIncorpIdController @Inject()(val authConnector: AuthConnector,
             _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, index, incorpDetails)
           } yield {
             if (index == leadEntityIndex) {
-              if (isEnabled(TaskList)) {
-                Redirect(controllers.routes.TaskListController.show)
-              } else {
-                Redirect(routes.IndividualIdController.startJourney)
-              }
+              Redirect(controllers.routes.TaskListController.show)
             } else {
               Redirect(controllers.partners.routes.PartnerAddressController.redirectToAlf(index))
             }

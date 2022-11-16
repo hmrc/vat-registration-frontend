@@ -1,7 +1,6 @@
 
 package controllers.partners
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.Entity
 import models.api._
@@ -124,10 +123,9 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
       }
 
       "the answer is 'No" must {
-        "redirect to the task list page if TaskList FS is on" in new Setup {
+        "redirect to the task list page" in new Setup {
           val testAttachmentDetails: Attachments = Attachments(Some(Attached), None, None, Some(true))
 
-          enable(TaskList)
           given()
             .user.isAuthorised()
             .registrationApi.getListSection[Entity](Some(entities))
@@ -140,7 +138,6 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-          disable(TaskList)
         }
       }
     }

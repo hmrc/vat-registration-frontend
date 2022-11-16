@@ -18,8 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.TaskList
 import models.api._
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
@@ -93,12 +91,7 @@ class SoleTraderIdController @Inject()(val sessionService: SessionService,
           (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
           _ <- applicantDetailsService.saveApplicantDetails(soleTrader)
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            Redirect(applicantRoutes.FormerNameController.show)
-          }
-        }
+        } yield Redirect(controllers.routes.TaskListController.show)
+
     }
 }

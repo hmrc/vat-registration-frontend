@@ -18,7 +18,6 @@ package controllers.flatratescheme
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms._
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import play.api.data.Form
@@ -126,10 +125,8 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           view => flatRateService.saveRegister(view.answer) map { _ =>
             if (view.answer) {
               Redirect(controllers.flatratescheme.routes.StartDateController.show)
-            } else if (isEnabled(TaskList)) {
-              Redirect(controllers.routes.TaskListController.show)
             } else {
-              Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+              Redirect(controllers.routes.TaskListController.show)
             }
           }
         )
@@ -160,12 +157,12 @@ class FlatRateController @Inject()(val flatRateService: FlatRateService,
           },
           view => for {
             _ <- flatRateService.saveFlatRate(UseThisRateAnswer(view.answer))
-          } yield if (view.answer) {
-            Redirect(controllers.flatratescheme.routes.StartDateController.show)
-          } else if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
+          } yield {
+            if (view.answer) {
+              Redirect(controllers.flatratescheme.routes.StartDateController.show)
+            } else {
+              Redirect(controllers.routes.TaskListController.show)
+            }
           }
         )
   }

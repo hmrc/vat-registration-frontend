@@ -18,7 +18,6 @@ package controllers.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.TelephoneNumberForm
 import models.TelephoneNumber
 import play.api.mvc.{Action, AnyContent}
@@ -60,11 +59,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
             },
           telephone =>
             applicantDetailsService.saveApplicantDetails(TelephoneNumber(telephone)).map { _ =>
-              if (isEnabled(TaskList)) {
-                Redirect(controllers.routes.TaskListController.show)
-              } else {
-                Redirect(controllers.routes.TradingNameResolverController.resolve)
-              }
+              Redirect(controllers.routes.TaskListController.show)
             }
         )
   }

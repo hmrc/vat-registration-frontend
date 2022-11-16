@@ -112,7 +112,7 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
 
       submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
+        redirectLocation(res) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
    "return SEE_OTHER with valid Contact Details entered for a NETP" in new Setup {
@@ -122,8 +122,8 @@ class CaptureTelephoneNumberControllerSpec extends ControllerSpec
      mockPartyType(Future.successful(NETP))
 
      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("telephone-number" -> phone)) { res =>
-         status(res) mustBe SEE_OTHER
-         redirectLocation(res) mustBe Some(controllers.routes.TradingNameResolverController.resolve.url)
+       status(res) mustBe SEE_OTHER
+       redirectLocation(res) mustBe Some(controllers.routes.TaskListController.show.url)
      }
    }
   }

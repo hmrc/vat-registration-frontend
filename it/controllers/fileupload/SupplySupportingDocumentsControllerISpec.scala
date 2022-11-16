@@ -16,7 +16,6 @@
 
 package controllers.fileupload
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.{Attachments, LandPropertyOtherDocs, VAT5L}
 import models.external.upscan.{Ready, UpscanDetails}
@@ -95,7 +94,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadSupportingDocumentController.show.url)
     }
 
-    "remove old supplySupportingDocuments files and redirect to Summary page if 'no' is selected and tasklist is off" in new Setup {
+    "remove old supplySupportingDocuments files and redirect to Tasklist page if 'no' is selected" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false))))
@@ -106,29 +105,10 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
-    }
-
-    "remove old supplySupportingDocuments files and redirect to Tasklist page if 'no' is selected and tasklist is on" in new Setup {
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false))))
-        .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false), supplySupportingDocuments = Some(false)))
-        .upscanApi.fetchAllUpscanDetails(List(testDetails, testDetails2, testDetails3))
-        .upscanApi.deleteUpscanDetails(testRegId, testReference)
-        .upscanApi.deleteUpscanDetails(testRegId, testReference2)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      enable(TaskList)
       val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

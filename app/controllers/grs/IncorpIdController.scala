@@ -18,7 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import models.api.{CharitableOrg, RegSociety, UkCompany}
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
 import play.api.i18n.Lang
@@ -73,12 +72,6 @@ class IncorpIdController @Inject()(val authConnector: AuthConnector,
         for {
           incorpDetails <- incorpIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(incorpDetails)
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show).withSession(request.session)
-          } else {
-            Redirect(routes.IndividualIdController.startJourney).withSession(request.session)
-          }
-        }
+        } yield Redirect(controllers.routes.TaskListController.show).withSession(request.session)
   }
 }

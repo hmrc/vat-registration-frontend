@@ -1,7 +1,7 @@
 
 package controllers
 
-import featureswitch.core.config.{TaskList, OtherBusinessInvolvement => OBI_FS}
+import featureswitch.core.config.{OtherBusinessInvolvement => OBI_FS}
 import itutil.ControllerISpec
 import models._
 import models.api._
@@ -106,441 +106,329 @@ class TaskListControllerISpec extends ControllerISpec {
   }
 
   "GET /application-progress" when {
-    "the TaskList feature switch is enabled" must {
-      "return OK and render all relevant rows when all data is present" in new Setup {
-        enable(TaskList)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
-          applicantDetails = Some(validFullApplicantDetails),
-          entities = Some(List(Entity(Some(testSoleTrader), Partnership, isLeadPartner = Some(true), None, None, None, None)))
-        )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
-        sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(ExpectedMessages.section3.heading, List(
-          ExpectedMessages.section3.leadPartnerCompletedRow,
-          ExpectedMessages.section3.personalDetailsCompletedRow,
-          ExpectedMessages.section3.addressesCompletedRow,
-          ExpectedMessages.section3.contactDetailsCompletedRow
-        ))
-      }
-
-      "return OK and not render lead partner details row for non-partnership party type even when all data is present in the BE" in new Setup {
-        enable(TaskList)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData),
-          applicantDetails = Some(validFullApplicantDetails),
-          entities = Some(List(Entity(Some(testSoleTrader), Individual, isLeadPartner = Some(true), None, None, None, None)))
-        )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](None)
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
-        sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(ExpectedMessages.section3.heading, List(
-          ExpectedMessages.section3.personalDetailsCompletedRow,
-          ExpectedMessages.section3.addressesCompletedRow,
-          ExpectedMessages.section3.contactDetailsCompletedRow
-        ))
-      }
-
-      "show the transactor section when all data is present" in new Setup {
-        enable(TaskList)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
-        )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
-        sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
-          ExpectedMessages.section1a.transactorPersonalDetailsCompletedRow,
-          ExpectedMessages.section3.transactorAddressesCompletedRow,
-          ExpectedMessages.section3.transactorContactDetailsCompletedRow
-        ))
-        sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
-        sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
-          ExpectedMessages.section3.applicantPersonalDetailsCompletedRow,
-          ExpectedMessages.section3.applicantAddressesCompletedRow,
-          ExpectedMessages.section3.applicantContactDetailsCompletedRow
-        ))
-      }
-
-      "show the transactor section without address tasklist when in agent flow" in new Setup {
-        enable(TaskList)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-            applicantDetails = Some(validFullApplicantDetails)
-        )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        given
-          .user.isAuthorised(arn = Some(testArn))
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
-        sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
-          ExpectedMessages.section1a.transactorPersonalDetailsCompletedRow,
-          ExpectedMessages.section3.transactorContactDetailsCompletedRow
-        ))
-        sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
-        sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
-          ExpectedMessages.section3.applicantPersonalDetailsCompletedRow,
-          ExpectedMessages.section3.applicantAddressesCompletedRow,
-          ExpectedMessages.section3.applicantContactDetailsCompletedRow
-        ))
-      }
-
-      "show the lead partner section when the user is a partnership" in new Setup {
-        enable(TaskList)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
-          applicantDetails = Some(validFullApplicantDetails)
-        )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
-          .registrationApi.getSection[ApplicantDetails](
-            Some(validFullApplicantDetails.copy(
-              entity = Some(testPartnership), personalDetails = None,
-              homeAddress = None,
-              previousAddress = Some(PreviousAddressView(false, None)),
-              emailAddress = None, emailVerified = None, telephoneNumber = None
-            ))
-          )
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
-        sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
-        sectionMustExist(3)(ExpectedMessages.section3.heading, List(
-          ExpectedMessages.section3.leadPartnerNotStartedRow,
-          "Personal information Cannot start yet",
-          ExpectedMessages.section3.addressesCannotStartRow,
-          ExpectedMessages.section3.contactDetailsCannotStartRow
-        ))
-      }
-
-      "show business activities section with correct states when pre-requisites are not complete" in new Setup {
-        enable(TaskList)
-        enable(OBI_FS)
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
-        )
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
-          ExpectedMessages.aboutTheBusinessSection.businessDetailsNotStartedRow,
-          ExpectedMessages.aboutTheBusinessSection.businessActivitiesCannotStartYetRow,
-          ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
-        ))
-        disable(OBI_FS)
-      }
-
-      "show business activities section with business details section complete" in new Setup {
-        enable(OBI_FS)
-        enable(TaskList)
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        val scheme = fullVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          business = Some(businessDetails.copy(
-            hasWebsite = Some(true), businessActivities = None, mainBusinessActivity = None, businessDescription = None
-          ))
-        )
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
-          ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
-          ExpectedMessages.aboutTheBusinessSection.businessActivitiesNotStartedRow,
-          ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
-        ))
-        disable(OBI_FS)
-      }
-
-      "show business activities section with business details and activities section complete" in new Setup {
-        enable(OBI_FS)
-        enable(TaskList)
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        val scheme = fullVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          business = Some(businessDetails.copy(
-            hasWebsite = Some(true), hasLandAndProperty = Some(false)
-          ))
-        )
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
-          ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
-          ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow,
-          ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsNotStartedRow
-        ))
-        disable(OBI_FS)
-      }
-
-      "show vat registration section with correct states when pre-requisites are not met" in new Setup {
-        enable(TaskList)
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        val scheme = emptyUkCompanyVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
-        )
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}", List(
-          ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
-        ))
-      }
-
-      "show vat registration section when pre-requisites met but no registration tasks started" in new Setup {
-        enable(TaskList)
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        val scheme = fullVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          business = Some(businessDetails.copy(
-            hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
-          )),
-          vatApplication = None,
-          bankAccount = None
-        )
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}", List(
-          ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow,
-          ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
-        ))
-      }
-
-      "show vat registration section when pre-requisites and all tasks completed" in new Setup {
-        enable(TaskList)
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
-        val scheme = fullVatScheme.copy(
-          eligibilitySubmissionData = Some(testEligibilitySubmissionData),
-          business = Some(businessDetails.copy(
-            hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
-          )),
-          vatApplication = Some(fullVatApplication.copy(
-            overseasCompliance = Some(OverseasCompliance(
-              goodsToOverseas = Some(false),
-              storingGoodsForDispatch = Some(StoringOverseas)
-            )),
-            northernIrelandProtocol = Some(NIPTurnover(
-              goodsToEU = Some(ConditionalValue(answer = false, None)),
-              goodsFromEU = Some(ConditionalValue(answer = false, None)),
-            )),
-            startDate = Some(LocalDate.of(2017, 10, 10)),
-            hasTaxRepresentative = Some(false)
-          )),
-          bankAccount = Some(bankAccount.copy(isProvided = false, None, Some(BeingSetupOrNameChange)))
-        )
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .registrationApi.getSection[BankAccount](scheme.bankAccount)
-          .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
-          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get)
-        implicit val doc = Jsoup.parse(res.body)
-
-        res.status mustBe OK
-        sectionMustExist(5)(s"5. ${ExpectedMessages.vatRegistrationSection.heading}", List(
-          ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
-          ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
-          ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
-          ExpectedMessages.vatRegistrationSection.vatReturnsCompletedRow,
-          ExpectedMessages.vatRegistrationSection.frsCompletedRow
-        ))
-      }
+    "return OK and render all relevant rows when all data is present" in new Setup {
+      val scheme = emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
+        applicantDetails = Some(validFullApplicantDetails),
+        entities = Some(List(Entity(Some(testSoleTrader), Partnership, isLeadPartner = Some(true), None, None, None, None)))
+      )
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .registrationApi.getSection[Business](Some(businessDetails))
+        .registrationApi.getSection[VatApplication](Some(fullVatApplication))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+      sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
+      sectionMustExist(3)(ExpectedMessages.section3.heading, List(
+        ExpectedMessages.section3.leadPartnerCompletedRow,
+        ExpectedMessages.section3.personalDetailsCompletedRow,
+        ExpectedMessages.section3.addressesCompletedRow,
+        ExpectedMessages.section3.contactDetailsCompletedRow
+      ))
     }
 
-    "show vat registration section with correct state for bank account details flow not started" in new Setup {
+    "return OK and not render lead partner details row for non-partnership party type even when all data is present in the BE" in new Setup {
+      val scheme = emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+        applicantDetails = Some(validFullApplicantDetails),
+        entities = Some(List(Entity(Some(testSoleTrader), Individual, isLeadPartner = Some(true), None, None, None, None)))
+      )
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](None)
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+      sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
+      sectionMustExist(3)(ExpectedMessages.section3.heading, List(
+        ExpectedMessages.section3.personalDetailsCompletedRow,
+        ExpectedMessages.section3.addressesCompletedRow,
+        ExpectedMessages.section3.contactDetailsCompletedRow
+      ))
+    }
+
+    "show the transactor section when all data is present" in new Setup {
+      val scheme = emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+        applicantDetails = Some(validFullApplicantDetails)
+      )
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+      sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
+        ExpectedMessages.section1a.transactorPersonalDetailsCompletedRow,
+        ExpectedMessages.section3.transactorAddressesCompletedRow,
+        ExpectedMessages.section3.transactorContactDetailsCompletedRow
+      ))
+      sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
+      sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
+        ExpectedMessages.section3.applicantPersonalDetailsCompletedRow,
+        ExpectedMessages.section3.applicantAddressesCompletedRow,
+        ExpectedMessages.section3.applicantContactDetailsCompletedRow
+      ))
+    }
+
+    "show the transactor section without address tasklist when in agent flow" in new Setup {
+      val scheme = emptyUkCompanyVatScheme.copy(
+          eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+          applicantDetails = Some(validFullApplicantDetails)
+      )
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      given
+        .user.isAuthorised(arn = Some(testArn))
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+      sectionMustExist(2)(ExpectedMessages.section1a.heading, List(
+        ExpectedMessages.section1a.transactorPersonalDetailsCompletedRow,
+        ExpectedMessages.section3.transactorContactDetailsCompletedRow
+      ))
+      sectionMustExist(3)(ExpectedMessages.section2.heading2, List(ExpectedMessages.section2.row1))
+      sectionMustExist(4)(ExpectedMessages.section3.heading2, List(
+        ExpectedMessages.section3.applicantPersonalDetailsCompletedRow,
+        ExpectedMessages.section3.applicantAddressesCompletedRow,
+        ExpectedMessages.section3.applicantContactDetailsCompletedRow
+      ))
+    }
+
+    "show the lead partner section when the user is a partnership" in new Setup {
+      val scheme = emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
+        applicantDetails = Some(validFullApplicantDetails)
+      )
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
+        .registrationApi.getSection[ApplicantDetails](
+          Some(validFullApplicantDetails.copy(
+            entity = Some(testPartnership), personalDetails = None,
+            homeAddress = None,
+            previousAddress = Some(PreviousAddressView(false, None)),
+            emailAddress = None, emailVerified = None, telephoneNumber = None
+          ))
+        )
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
+      sectionMustExist(2)(ExpectedMessages.section2.heading, List(ExpectedMessages.section2.row1))
+      sectionMustExist(3)(ExpectedMessages.section3.heading, List(
+        ExpectedMessages.section3.leadPartnerNotStartedRow,
+        "Personal information Cannot start yet",
+        ExpectedMessages.section3.addressesCannotStartRow,
+        ExpectedMessages.section3.contactDetailsCannotStartRow
+      ))
+    }
+
+    "show business activities section with correct states when pre-requisites are not complete" in new Setup {
+      enable(OBI_FS)
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      val scheme = emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+        applicantDetails = Some(validFullApplicantDetails)
+      )
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[Business](scheme.business)
+        .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
+        ExpectedMessages.aboutTheBusinessSection.businessDetailsNotStartedRow,
+        ExpectedMessages.aboutTheBusinessSection.businessActivitiesCannotStartYetRow,
+        ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
+      ))
+      disable(OBI_FS)
+    }
+
+    "show business activities section with business details section complete" in new Setup {
+      enable(OBI_FS)
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      val scheme = fullVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+        business = Some(businessDetails.copy(
+          hasWebsite = Some(true), businessActivities = None, mainBusinessActivity = None, businessDescription = None
+        ))
+      )
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[Business](scheme.business)
+        .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
+        ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
+        ExpectedMessages.aboutTheBusinessSection.businessActivitiesNotStartedRow,
+        ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsCannotStartYetRow
+      ))
+      disable(OBI_FS)
+    }
+
+    "show business activities section with business details and activities section complete" in new Setup {
+      enable(OBI_FS)
+
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      val scheme = fullVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+        business = Some(businessDetails.copy(
+          hasWebsite = Some(true), hasLandAndProperty = Some(false)
+        ))
+      )
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[Business](scheme.business)
+        .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
+        ExpectedMessages.aboutTheBusinessSection.businessDetailsCompletedRow,
+        ExpectedMessages.aboutTheBusinessSection.businessActivitiesCompletedRow,
+        ExpectedMessages.aboutTheBusinessSection.otherBusinessInvolvementsNotStartedRow
+      ))
+      disable(OBI_FS)
+    }
+
+    "show vat registration section with correct states when pre-requisites are not met" in new Setup {
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      val scheme = emptyUkCompanyVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+        applicantDetails = Some(validFullApplicantDetails)
+      )
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[Business](scheme.business)
+        .registrationApi.getSection[VatApplication](scheme.vatApplication)
+        .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}", List(
+        ExpectedMessages.vatRegistrationSection.goodsAndServicesCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
+      ))
+    }
+
+    "show vat registration section when pre-requisites met but no registration tasks started" in new Setup {
       implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
       val scheme = fullVatScheme.copy(
@@ -548,16 +436,7 @@ class TaskListControllerISpec extends ControllerISpec {
         business = Some(businessDetails.copy(
           hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
         )),
-        vatApplication = Some(fullVatApplication.copy(
-          overseasCompliance = Some(OverseasCompliance(
-            goodsToOverseas = Some(false),
-            storingGoodsForDispatch = Some(StoringOverseas)
-          )),
-          northernIrelandProtocol = Some(NIPTurnover(
-            goodsToEU = Some(ConditionalValue(answer = false, None)),
-            goodsFromEU = Some(ConditionalValue(answer = false, None))
-          ))
-        )),
+        vatApplication = None,
         bankAccount = None
       )
 
@@ -573,34 +452,126 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
+      if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
+
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
 
       res.status mustBe OK
-      sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}",
-        List(
-          ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
-          ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow,
-          ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
-          ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
-        )
+      sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}", List(
+        ExpectedMessages.vatRegistrationSection.goodsAndServicesNotStartedRow,
+        ExpectedMessages.vatRegistrationSection.bankAccountDetailsCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
+      ))
+    }
+
+    "show vat registration section when pre-requisites and all tasks completed" in new Setup {
+      implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      val scheme = fullVatScheme.copy(
+        eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+        business = Some(businessDetails.copy(
+          hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+        )),
+        vatApplication = Some(fullVatApplication.copy(
+          overseasCompliance = Some(OverseasCompliance(
+            goodsToOverseas = Some(false),
+            storingGoodsForDispatch = Some(StoringOverseas)
+          )),
+          northernIrelandProtocol = Some(NIPTurnover(
+            goodsToEU = Some(ConditionalValue(answer = false, None)),
+            goodsFromEU = Some(ConditionalValue(answer = false, None)),
+          )),
+          startDate = Some(LocalDate.of(2017, 10, 10)),
+          hasTaxRepresentative = Some(false)
+        )),
+        bankAccount = Some(bankAccount.copy(isProvided = false, None, Some(BeingSetupOrNameChange)))
       )
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getRegistration(scheme)
+        .registrationApi.getSection[Business](scheme.business)
+        .registrationApi.getSection[VatApplication](scheme.vatApplication)
+        .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
+        .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+        .registrationApi.getSection[BankAccount](scheme.bankAccount)
+        .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+      if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get)
+      implicit val doc = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      sectionMustExist(5)(s"5. ${ExpectedMessages.vatRegistrationSection.heading}", List(
+        ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+        ExpectedMessages.vatRegistrationSection.bankAccountDetailsCompletedRow,
+        ExpectedMessages.vatRegistrationSection.registrationDateCompletedRow,
+        ExpectedMessages.vatRegistrationSection.vatReturnsCompletedRow,
+        ExpectedMessages.vatRegistrationSection.frsCompletedRow
+      ))
     }
+  }
 
-    "the TaskList feature switch is disabled" must {
-      "return NOT FOUND" in new Setup {
-        disable(TaskList)
+  "show vat registration section with correct state for bank account details flow not started" in new Setup {
+    implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
-        given.user.isAuthorised()
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+    val scheme = fullVatScheme.copy(
+      eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
+      business = Some(businessDetails.copy(
+        hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
+      )),
+      vatApplication = Some(fullVatApplication.copy(
+        overseasCompliance = Some(OverseasCompliance(
+          goodsToOverseas = Some(false),
+          storingGoodsForDispatch = Some(StoringOverseas)
+        )),
+        northernIrelandProtocol = Some(NIPTurnover(
+          goodsToEU = Some(ConditionalValue(answer = false, None)),
+          goodsFromEU = Some(ConditionalValue(answer = false, None))
+        ))
+      )),
+      bankAccount = None
+    )
 
-        val res = await(buildClient(url).get)
-        res.status mustBe NOT_FOUND
-      }
-    }
+    given
+      .user.isAuthorised()
+      .registrationApi.getRegistration(scheme)
+      .registrationApi.getSection[Business](scheme.business)
+      .registrationApi.getSection[VatApplication](scheme.vatApplication)
+      .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
+      .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
+      .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+      .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+      .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
+      .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+
+    insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+    val res = await(buildClient(url).get)
+    implicit val doc = Jsoup.parse(res.body)
+
+    res.status mustBe OK
+    sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}",
+      List(
+        ExpectedMessages.vatRegistrationSection.goodsAndServicesCompletedRow,
+        ExpectedMessages.vatRegistrationSection.bankAccountDetailsNotStartedRow,
+        ExpectedMessages.vatRegistrationSection.registrationDateCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.vatReturnsCannotStartYetRow,
+        ExpectedMessages.vatRegistrationSection.frsCannotStartYetRow
+      )
+    )
+
   }
 
 }
