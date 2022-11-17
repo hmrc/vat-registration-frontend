@@ -89,8 +89,9 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockIsTransactor(Future.successful(true))
       mockPartyType(Future.successful(UkCompany))
 
-      verifyRedirectLocation(disable, controllers.vatapplication.routes.ImportsOrExportsController.show)
-      verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
+        "numberOfWorkers" -> "5"
+      ))(_ redirectsTo controllers.routes.TaskListController.show.url)
     }
 
     "redirect to the Turnover or OBI for NonUkCompany" in new Setup {
@@ -98,8 +99,9 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
       mockIsTransactor(Future.successful(true))
       mockPartyType(Future.successful(NonUkNonEstablished))
 
-      verifyRedirectLocation(disable, controllers.vatapplication.routes.TurnoverEstimateController.show)
-      verifyRedirectLocation(enable, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
+        "numberOfWorkers" -> "5"
+      ))(_ redirectsTo controllers.routes.TaskListController.show.url)
     }
   }
 }

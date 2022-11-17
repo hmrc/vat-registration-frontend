@@ -60,7 +60,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 
@@ -77,7 +77,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 
@@ -147,7 +147,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+          result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
 

@@ -16,7 +16,6 @@
 
 package controllers.fileupload
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.{AttachmentType, EligibilitySubmissionData, PrimaryIdentityEvidence}
 import play.api.http.HeaderNames
@@ -42,25 +41,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
       verifyDocumentUploadPage(s"$url?errorCode=EntityTooLarge")
     }
 
-    "redirect to CYA when all attachments are complete" in new Setup {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getIncompleteAttachments(List[AttachmentType]())
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url).get()
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
-      }
-    }
-
-    "redirect to task list page when task list feature switch is on and all attachments are complete" in new Setup {
-      enable(TaskList)
+    "redirect to task list page when all attachments are complete" in new Setup {
       given()
         .user.isAuthorised()
         .audit.writesAudit()
@@ -75,7 +56,6 @@ class UploadDocumentControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
-      disable(TaskList)
     }
   }
 

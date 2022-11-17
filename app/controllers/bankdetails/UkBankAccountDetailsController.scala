@@ -18,12 +18,10 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.EnterBankAccountDetailsForm
 import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
-import models.TransferOfAGoingConcern
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
+import services.{BankAccountDetailsService, SessionService}
 import views.html.bankdetails.enter_company_bank_account_details
 
 import javax.inject.Inject
@@ -32,7 +30,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                                val bankAccountDetailsService: BankAccountDetailsService,
                                                val sessionService: SessionService,
-                                               val vatRegistrationService: VatRegistrationService,
                                                view: enter_company_bank_account_details)
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
@@ -54,19 +51,14 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
           formWithErrors =>
             Future.successful(BadRequest(view(formWithErrors))),
           accountDetails =>
-            for {
-              accountDetailsValid <- bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails)
-              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
-            } yield (accountDetailsValid, eligibilityData.registrationReason) match {
-              case (true, _) if isEnabled(TaskList) =>
+            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails).map { accountDetailsValid =>
+              if (accountDetailsValid) {
                 Redirect(controllers.routes.TaskListController.show.url)
-              case (true, TransferOfAGoingConcern) =>
-                Redirect(controllers.vatapplication.routes.ReturnsFrequencyController.show)
-              case (true, _) =>
-                Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
-              case (false, _) =>
+              }
+              else {
                 val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
                 BadRequest(view(invalidDetails))
+              }
             }
         )
   }

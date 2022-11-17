@@ -18,11 +18,9 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.NoUKBankAccountForm
-import models.TransferOfAGoingConcern
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile, SessionService, VatRegistrationService}
+import services.{BankAccountDetailsService, SessionProfile, SessionService}
 import views.html.bankdetails.NoUkBankAccount
 
 import javax.inject.{Inject, Singleton}
@@ -32,7 +30,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
                                           val authConnector: AuthClientConnector,
                                           val bankAccountDetailsService: BankAccountDetailsService,
-                                          val vatRegistrationService: VatRegistrationService,
                                           val sessionService: SessionService)
                                          (implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
@@ -56,15 +53,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
           reason =>
             for {
               _ <- bankAccountDetailsService.saveNoUkBankAccountDetails(reason)
-              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
-            } yield eligibilityData.registrationReason match {
-              case _ if isEnabled(TaskList) =>
-                Redirect(controllers.routes.TaskListController.show.url)
-              case TransferOfAGoingConcern =>
-                Redirect(controllers.vatapplication.routes.ReturnsFrequencyController.show)
-              case _ =>
-                Redirect(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve)
-            }
+            } yield Redirect(controllers.routes.TaskListController.show.url)
         )
       }
   }

@@ -16,12 +16,11 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, TaskList}
+import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import fixtures.VatRegistrationFixture
 import models.api.SicCode.SIC_CODES_KEY
-import models.api.{NonUkNonEstablished, SicCode, UkCompany}
+import models.api.{SicCode, UkCompany}
 import org.mockito.Mockito.when
-import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.InternalServerException
@@ -35,8 +34,7 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
     val controller: BusinessActivitiesResolverController = new BusinessActivitiesResolverController(
       mockSessionService,
       mockAuthClientConnector,
-      mockBusinessService,
-      vatRegistrationServiceMock
+      mockBusinessService
     )
 
     mockAuthenticated()
@@ -55,24 +53,6 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
       }
     }
 
-    "redirect to ImportsOrExports if session cache has multiple codes and is main business activity submission flow" in new Setup {
-      disable(TaskList)
-      disable(OtherBusinessInvolvement)
-
-      mockPartyType(Future.successful(UkCompany))
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(sicCode, sicCode.copy(code = "81222"))))
-
-      val requestWithReferer = FakeRequest().withHeaders(
-        REFERER -> controllers.sicandcompliance.routes.MainBusinessActivityController.submit.url
-      )
-
-      requestWithAuthorisedUser(controller.resolve, requestWithReferer) {
-        res =>
-          status(res) mustBe 303
-          res redirectsTo controllers.vatapplication.routes.ImportsOrExportsController.show.url
-      }
-    }
-
     "redirect to compliance handler if sic code need compliance questions" in new Setup {
       val sicCodes: List[SicCode] = List(sicCode)
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(sicCodes))
@@ -85,9 +65,7 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
       }
     }
 
-    "redirect to task-list if sic code doesn't need compliance questions, if task-list FS enabled" in new Setup {
-      enable(TaskList)
-
+    "redirect to task-list if sic code doesn't need compliance questions" in new Setup {
       val sicCodes: List[SicCode] = List(sicCode)
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(sicCodes))
       when(mockBusinessService.needComplianceQuestions(sicCodes)).thenReturn(false)
@@ -96,49 +74,6 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
         res =>
           status(res) mustBe 303
           res redirectsTo controllers.routes.TaskListController.show.url
-      }
-
-      disable(TaskList)
-    }
-
-    "redirect to OBI if sic code doesn't need compliance questions and task-list FS disabled and OBI enabled" in new Setup {
-      enable(OtherBusinessInvolvement)
-
-      val sicCodes: List[SicCode] = List(sicCode)
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(sicCodes))
-      when(mockBusinessService.needComplianceQuestions(sicCodes)).thenReturn(false)
-
-      callAuthorised(controller.resolve) {
-        res =>
-          status(res) mustBe 303
-          res redirectsTo controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
-      }
-
-      disable(OtherBusinessInvolvement)
-    }
-
-    "redirect to turn-over estimate if task-list and OBI FS disabled and party type is NonUK" in new Setup {
-      val sicCodes: List[SicCode] = List(sicCode)
-      mockPartyType(Future.successful(NonUkNonEstablished))
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(sicCodes))
-      when(mockBusinessService.needComplianceQuestions(sicCodes)).thenReturn(false)
-
-      callAuthorised(controller.resolve) {
-        res =>
-          status(res) mustBe 303
-          res redirectsTo controllers.vatapplication.routes.TurnoverEstimateController.show.url
-      }
-    }
-
-    "redirect to imports and exports if task-list and OBI FS disabled and party type is UK bound" in new Setup {
-      val sicCodes: List[SicCode] = List(sicCode)
-      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(sicCodes))
-      when(mockBusinessService.needComplianceQuestions(sicCodes)).thenReturn(false)
-
-      callAuthorised(controller.resolve) {
-        res =>
-          status(res) mustBe 303
-          res redirectsTo controllers.vatapplication.routes.TurnoverEstimateController.show.url
       }
     }
 

@@ -1,7 +1,7 @@
 
 package controllers.business
 
-import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
+import featureswitch.core.config.OtherBusinessInvolvement
 import itutil.ControllerISpec
 import models.api._
 import models.{Business, LabourCompliance}
@@ -39,10 +39,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      enable(TaskList)
       verifyRedirectForGivenPartyType(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirectForGivenPartyType(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
     }
 
     "return SEE_OTHER on submit redirecting to Turnover for NonUkCompany" in new Setup {
@@ -57,10 +54,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      enable(TaskList)
       verifyRedirectForGivenPartyType(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirectForGivenPartyType(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
     }
   }
 

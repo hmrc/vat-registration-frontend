@@ -18,9 +18,7 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
 import controllers.partners.PartnerIndexValidation
-import featureswitch.core.config.TaskList
 import models.Entity
 import models.Entity.leadEntityIndex
 import models.external.BusinessEntity
@@ -112,11 +110,7 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
               _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, index, soleTrader)
             } yield {
               if (index == leadEntityIndex) {
-                if (isEnabled(TaskList)) {
-                  Redirect(controllers.routes.TaskListController.show)
-                } else {
-                  Redirect(applicantRoutes.FormerNameController.show)
-                }
+                Redirect(controllers.routes.TaskListController.show)
               } else {
                 Redirect(controllers.partners.routes.PartnerAddressController.redirectToAlf(index))
               }

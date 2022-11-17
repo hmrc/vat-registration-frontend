@@ -18,7 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import models.api.{NonUkNonEstablished, Trust, UnincorpAssoc}
 import models.external.minorentityid.{JourneyLabels, MinorEntityIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang
@@ -73,13 +72,7 @@ class MinorEntityIdController @Inject()(val authConnector: AuthConnector,
         for {
           businessDetails <- minorEntityIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(businessDetails)
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            Redirect(routes.IndividualIdController.startJourney)
-          }
-        }
+        } yield Redirect(controllers.routes.TaskListController.show)
   }
 
 }

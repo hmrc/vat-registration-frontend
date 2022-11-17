@@ -17,7 +17,7 @@
 package controllers.grs
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.{StubIncorpIdJourney, TaskList}
+import featureswitch.core.config.StubIncorpIdJourney
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api._
@@ -93,50 +93,24 @@ class IncorpIdControllerISpec extends ControllerISpec {
   }
 
   "GET /incorp-id-callback" when {
-    "the Task List is enabled" must {
-      "redirect to the Task List" in {
-        disable(StubIncorpIdJourney)
-        enable(TaskList)
+    "redirect to the Task List" in {
+      disable(StubIncorpIdJourney)
 
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
+        .registrationApi.getSection[ApplicantDetails](None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+      stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-        val res = buildClient("/incorp-id-callback?journeyId=1").get()
+      val res = buildClient("/incorp-id-callback?journeyId=1").get()
 
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-        }
-      }
-    }
-    "the Task List is disabled" must {
-      "redirect to STI" in {
-        disable(StubIncorpIdJourney)
-        disable(TaskList)
-
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testIncorpDetails)))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-        val res = buildClient("/incorp-id-callback?journeyId=1").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
-        }
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
   }

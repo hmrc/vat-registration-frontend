@@ -18,10 +18,8 @@ package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
 import forms.IntermediarySupplyForm
 import models.LabourCompliance
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.sicandcompliance.intermediary_supply
@@ -34,7 +32,6 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                                                     val sessionService: SessionService,
                                                     val businessService: BusinessService,
                                                     val applicantDetailsService: ApplicantDetailsService,
-                                                    vatRegistrationService: VatRegistrationService,
                                                     view: intermediary_supply)
                                                    (implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -68,18 +65,7 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                   .copy(intermediaryArrangement = Some(data))
 
                 businessService.updateBusiness(updatedLabourCompliance).flatMap { _ =>
-                  if (isEnabled(TaskList)) {
-                    Future.successful(Redirect(controllers.routes.TaskListController.show.url))
-                  } else {
-                    if (isEnabled(OtherBusinessInvolvement)) {
-                      Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show))
-                    } else {
-                      vatRegistrationService.partyType.map {
-                        case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                        case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-                      }
-                    }
-                  }
+                  Future.successful(Redirect(controllers.routes.TaskListController.show.url))
                 }
               }
             )

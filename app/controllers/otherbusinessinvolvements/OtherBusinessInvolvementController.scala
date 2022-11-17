@@ -18,9 +18,7 @@ package controllers.otherbusinessinvolvements
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.OtherBusinessInvolvementForm
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.OtherBusinessInvolvementAnswer
 import services._
@@ -32,8 +30,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class OtherBusinessInvolvementController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthClientConnector,
                                                    businessService: BusinessService,
-                                                   otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
-                                                   vatRegistrationService: VatRegistrationService,
                                                    view: OtherBusinessInvolvement)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,
@@ -56,22 +52,12 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
       implicit profile =>
         OtherBusinessInvolvementForm.form.bindFromRequest.fold(
           errors => Future.successful(BadRequest(view(errors))),
-          success => businessService.updateBusiness(OtherBusinessInvolvementAnswer(success)).flatMap {
-            _ =>
-              if (success) {
-                Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)))
-              } else {
-                if (isEnabled(TaskList)) {
-                  Future.successful(Redirect(controllers.routes.TaskListController.show))
-                } else {
-                  otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.flatMap { _ =>
-                    vatRegistrationService.partyType.map {
-                      case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                      case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-                    }
-                  }
-                }
-              }
+          success => businessService.updateBusiness(OtherBusinessInvolvementAnswer(success)).flatMap { _ =>
+            if (success) {
+              Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)))
+            } else {
+              Future.successful(Redirect(controllers.routes.TaskListController.show))
+            }
           }
         )
   }

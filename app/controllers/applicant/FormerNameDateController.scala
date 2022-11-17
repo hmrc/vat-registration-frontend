@@ -18,10 +18,7 @@ package controllers.applicant
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.TaskList
 import forms.FormerNameDateForm
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -34,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
                                          val sessionService: SessionService,
                                          val applicantDetailsService: ApplicantDetailsService,
-                                         vatRegistrationService: VatRegistrationService,
                                          formerNameDatePage: former_name_date
                                         )(implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
@@ -67,16 +63,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
               } yield BadRequest(formerNameDatePage(badForm, formerName.asLabel, name)),
               data => {
                 applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
-                  if (isEnabled(TaskList)) {
-                    Future.successful(Redirect(controllers.routes.TaskListController.show))
-                  } else {
-                    vatRegistrationService.partyType map {
-                      case NETP | NonUkNonEstablished =>
-                        Redirect(applicantRoutes.InternationalHomeAddressController.show)
-                      case _ =>
-                        Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
-                    }
-                  }
+                  Future.successful(Redirect(controllers.routes.TaskListController.show))
                 }
               }
             )

@@ -18,9 +18,9 @@ package controllers.sicandcompliance
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{OtherBusinessInvolvement, TaskList}
+import featureswitch.core.config.OtherBusinessInvolvement
+import models.api.SicCode
 import models.api.SicCode.SIC_CODES_KEY
-import models.api.{NETP, NonUkNonEstablished, SicCode}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -32,12 +32,10 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BusinessActivitiesResolverController @Inject()(val sessionService: SessionService,
                                                      val authConnector: AuthConnector,
-                                                     businessService: BusinessService,
-                                                     vatRegistrationService: VatRegistrationService
-                                          )(implicit val appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+                                                     businessService: BusinessService)
+                                                    (implicit val appConfig: FrontendAppConfig,
+                                                     val executionContext: ExecutionContext,
+                                                     baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   // scalastyle:off
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -45,7 +43,6 @@ class BusinessActivitiesResolverController @Inject()(val sessionService: Session
       implicit profile =>
         for {
           iclCodes <- sessionService.fetchAndGet[List[SicCode]](SIC_CODES_KEY).map(_.getOrElse(List.empty[SicCode]))
-          partyType <- vatRegistrationService.partyType
           mainBusinessActivitySubmissionFlow <- Future.successful(request.headers.get(REFERER).exists(
             _.contains(controllers.sicandcompliance.routes.MainBusinessActivityController.submit.url)
           ))
@@ -57,15 +54,8 @@ class BusinessActivitiesResolverController @Inject()(val sessionService: Session
               throw new InternalServerException("[SicResolverController][resolve] Failed to resolve due to empty sic code list")
             case codes if businessService.needComplianceQuestions(codes) =>
               Redirect(controllers.business.routes.ComplianceIntroductionController.show)
-            case _ if isEnabled(TaskList) =>
-              Redirect(controllers.routes.TaskListController.show)
-            case _ if isEnabled(OtherBusinessInvolvement) =>
-              Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
             case _ =>
-              partyType match {
-                case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-              }
+              Redirect(controllers.routes.TaskListController.show)
           }
         }
   }

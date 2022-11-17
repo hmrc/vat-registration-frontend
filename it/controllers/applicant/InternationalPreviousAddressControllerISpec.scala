@@ -1,7 +1,6 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.{Address, Country, EligibilitySubmissionData, UkCompany}
@@ -78,64 +77,50 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
   }
 
   "POST /previous-address/international" must {
-    "Store the address and redirect to the email address page if a minimal address is provided" in new Setup {
-      def verifyRedirect(redirectUrl: String) = {
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given
-          .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
+    "Store the address and redirect to the Task List page if a minimal address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[ApplicantDetails](None)
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testShortForeignAddress)))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map(
-          "line1" -> "testLine1",
-          "line2" -> "testLine2",
-          "country" -> "Norway"
-        )))
+      val res = await(buildClient(url).post(Map(
+        "line1" -> "testLine1",
+        "line2" -> "testLine2",
+        "country" -> "Norway"
+      )))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(routes.CaptureEmailAddressController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
-    "Store the address and redirect to the email address page if a full address is provided" in new Setup {
-      def verifyRedirect(redirectUrl: String) = {
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given
-          .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
+    "Store the address and redirect to the Task List page if a full address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[ApplicantDetails](None)
+        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
+        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(previousAddress = Some(PreviousAddressView(false, Some(testForeignAddress)))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map(
-          "line1" -> "testLine1",
-          "line2" -> "testLine2",
-          "line3" -> "testLine3",
-          "line4" -> "testLine4",
-          "line5" -> "testLine5",
-          "postcode" -> "AB12 3YZ",
-          "country" -> "Norway"
-        )))
+      val res = await(buildClient(url).post(Map(
+        "line1" -> "testLine1",
+        "line2" -> "testLine2",
+        "line3" -> "testLine3",
+        "line4" -> "testLine4",
+        "line5" -> "testLine5",
+        "postcode" -> "AB12 3YZ",
+        "country" -> "Norway"
+      )))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(routes.CaptureEmailAddressController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "return BAD_REQUEST if line 1 is missing" in new Setup {

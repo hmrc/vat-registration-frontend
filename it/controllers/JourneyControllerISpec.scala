@@ -18,16 +18,12 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import controllers.transactor.{routes => transactorRoutes}
-import featureswitch.core.config._
 import itutil.ControllerISpec
 import models.api.{Attached, Attachments, EligibilitySubmissionData, VatSchemeHeader}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-
-import java.time.LocalDate
 
 class JourneyControllerISpec extends ControllerISpec {
 
@@ -171,26 +167,27 @@ class JourneyControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
       }
     }
-    "the Task List feature is enabled" must {
-      "redirect to the documents required page" in new Setup {
-        enable(TaskList)
+    "the eligibility section of the registration is populated and attachments aren't required" must {
+      "redirect to the Task List" in new Setup {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
-          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject]
-          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(
+            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
+            applicationReference = Some("application reference")
+          )).as[JsObject])
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.DocumentsRequiredController.resolve.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
     "on failure with missing vat schema details for given reg-id" must {
       "return INTERNAL_SERVER_ERROR" in new Setup {
-        disable(TaskList)
         given().user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -209,7 +206,7 @@ class JourneyControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
     }
-    "traffic management passes (VatReg)" must {
+    "the application reference doesn't exist" must {
       "redirect to the Application Reference page" in new Setup {
         given()
           .user.isAuthorised()
@@ -229,62 +226,17 @@ class JourneyControllerISpec extends ControllerISpec {
   s"GET ${routes.JourneyController.initJourney(testRegId)}" when {
     "eligibility data exists for the user" when {
       "the current profile has been set up successfully" when {
-        "the user isn't a transactor" must {
-          "redirect to the business identification resolver" in new Setup {
-            given()
-              .user.isAuthorised()
-              .registrationApi.getSection(Some(VatRegStatus.draft))
-              .registrationApi.getSection(Some(testEligibilitySubmissionData))
+        "redirect to the Task List when the Task List" in new Setup {
+          given()
+            .user.isAuthorised(arn = Some(testArn))
+            .registrationApi.getSection(Some(VatRegStatus.draft))
+            .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-            insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-            val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
+          val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.BusinessIdentificationResolverController.resolve.url)
-          }
-        }
-        "the user is a transactor" when {
-          "the user is not an agent" must {
-            "redirect to the Part of An Organisation page" in new Setup {
-              given()
-                .user.isAuthorised()
-                .registrationApi.getSection(Some(VatRegStatus.draft))
-                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-              insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
-
-              res.header(HeaderNames.LOCATION) mustBe Some(transactorRoutes.PartOfOrganisationController.show.url)
-            }
-          }
-          "the user is an agent" must {
-            "redirect to the Agent Name page" in new Setup {
-              given()
-                .user.isAuthorised(arn = Some(testArn))
-                .registrationApi.getSection(Some(VatRegStatus.draft))
-                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-              insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
-
-              res.header(HeaderNames.LOCATION) mustBe Some(controllers.transactor.routes.AgentNameController.show.url)
-            }
-            "redirect to the Task List when the Task List FS is enabled" in new Setup {
-              enable(TaskList)
-              given()
-                .user.isAuthorised(arn = Some(testArn))
-                .registrationApi.getSection(Some(VatRegStatus.draft))
-                .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-              insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-              val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
-
-              res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-            }
-          }
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
     }
@@ -292,7 +244,7 @@ class JourneyControllerISpec extends ControllerISpec {
       "redirect to the start of the journey" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](None)
+          .registrationApi.getSection[VatRegStatus.Value](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

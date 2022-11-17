@@ -16,7 +16,6 @@
 
 package controllers.bankdetails
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{BankAccount, BeingSetupOrNameChange, TransferOfAGoingConcern}
@@ -63,42 +62,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to returns frequency page when the user is TOGC/COLE" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
-        .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> "beingSetup"))
-
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
-      }
-    }
-
-    "redirect to the start date resolver page when the user is non-NETP" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
-        .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> "beingSetup"))
-
-      whenReady(response) { res =>
-        res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)
-      }
-    }
-
-    "redirect to the application-progress page if Tasklist FS is enabled" in new Setup {
-      enable(TaskList)
+    "redirect to the Tasklist FS" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
@@ -113,7 +77,6 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
-      disable(TaskList)
     }
 
     "return BAD_REQUEST if no valid reason selected" in new Setup {

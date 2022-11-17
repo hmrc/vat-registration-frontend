@@ -110,7 +110,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/register-for-vat/join-flat-rate")
+        redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
 

@@ -16,7 +16,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
@@ -93,25 +92,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to the returns frequency page when the answer is no" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res = buildClient(url).post(Map("value" -> "false"))
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
-      }
-    }
-
-    "redirect to the application progress page when the answer is no and TaskList FS enabled" in new Setup {
-      enable(TaskList)
-
+    "redirect to the application progress page when the answer is no" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
@@ -125,7 +106,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
-      disable(TaskList)
     }
 
     "return a bad request when the answer is invalid" in new Setup {

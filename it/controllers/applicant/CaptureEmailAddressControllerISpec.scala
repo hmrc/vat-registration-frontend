@@ -57,7 +57,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
     }
 
-    "returns an OK with prepopulated data" in new Setup {
+    "returns an OK with pre-populated data" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)

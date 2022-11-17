@@ -19,7 +19,7 @@ package controllers.fileupload
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.fileupload.DocumentUploadSummaryController.maxSupportingLandAndPropertyDocs
-import featureswitch.core.config.{OptionToTax, TaskList}
+import featureswitch.core.config.OptionToTax
 import forms.DocumentUploadSummaryForm
 import models.api._
 import models.external.upscan.{Ready, UpscanDetails}
@@ -83,11 +83,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
         } else if (canSupply1614Form(uploadedAttachments) && !areSupportingDocumentsComplete(attachmentDetails, uploadedAttachments)) {
           Redirect(routes.SupplySupportingDocumentsController.show)
         } else {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show.url)
-          } else {
-            Redirect(controllers.routes.SummaryController.show.url)
-          }
+          Redirect(controllers.routes.TaskListController.show.url)
         }
       }
   }
@@ -104,11 +100,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
           if (success) {
             Future.successful(Redirect(routes.UploadSupportingDocumentController.show.url))
           } else {
-            if (isEnabled(TaskList)) {
-              Future.successful(Redirect(controllers.routes.TaskListController.show.url))
-            } else {
-              Future.successful(Redirect(controllers.routes.SummaryController.show.url))
-            }
+            Future.successful(Redirect(controllers.routes.TaskListController.show.url))
           }
         }
       )

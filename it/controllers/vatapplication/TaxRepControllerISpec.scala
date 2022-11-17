@@ -2,7 +2,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
@@ -59,47 +58,33 @@ class TaxRepControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to Join Flat Rate Scheme page if yes is selected" in new Setup {
-      private def verifyRedirect(redirectUrl: String) = {
-        given
-          .user.isAuthorised()
-          .registrationApi.getSection[VatApplication](None)
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(true)))
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](None)
+        .s4lContainer[VatApplication].isEmpty
+        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map("value" -> "true")))
+      val res = await(buildClient(url).post(Map("value" -> "true")))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "redirect to Join Flat Rate Scheme page if no is selected" in new Setup {
-      private def verifyRedirect(redirectUrl: String) = {
-        given
-          .user.isAuthorised()
-          .registrationApi.getSection[VatApplication](None)
-          .s4lContainer[VatApplication].isEmpty
-          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(false)))
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](None)
+        .s4lContainer[VatApplication].isEmpty
+        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(false)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map("value" -> "false")))
+      val res = await(buildClient(url).post(Map("value" -> "false")))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

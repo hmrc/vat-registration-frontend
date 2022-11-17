@@ -18,7 +18,6 @@ package controllers.vatapplication
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.vatapplication.CurrentlyTradingForm
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.CurrentlyTrading
@@ -73,11 +72,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
                 errors => Future.successful(BadRequest(view(errors, msgKeySuffix, registrationDate))),
                 success => {
                   vatApplicationService.saveVatApplication(CurrentlyTrading(success)).map { _ =>
-                    if (isEnabled(TaskList)) {
-                      Redirect(controllers.routes.TaskListController.show)
-                    } else {
-                      Redirect(routes.ReturnsFrequencyController.show)
-                    }
+                    Redirect(controllers.routes.TaskListController.show)
                   }
                 }
               )

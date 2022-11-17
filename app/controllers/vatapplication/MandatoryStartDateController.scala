@@ -18,7 +18,6 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.vatapplication.MandatoryDateForm
 import models._
 import play.api.mvc.{Action, AnyContent}
@@ -73,11 +72,7 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
 
   private def handleMandatoryStartDate(startDate: LocalDate)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile) = {
     vatApplicationService.saveVatApplication(startDate).map(_ =>
-      if (isEnabled(TaskList)) {
-        Redirect(controllers.routes.TaskListController.show.url)
-      } else {
-        Redirect(routes.ReturnsFrequencyController.show)
-      }
+      Redirect(controllers.routes.TaskListController.show.url)
     )
   }
 }

@@ -17,7 +17,7 @@
 package controllers.grs
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.{StubIncorpIdJourney, TaskList}
+import featureswitch.core.config.StubIncorpIdJourney
 import itutil.ControllerISpec
 import models.Entity
 import models.api._
@@ -124,69 +124,25 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
   }
 
   "GET /partner/index/incorp-id-callback" when {
-    "the Task List is enabled" must {
-      "redirect to the Task List" in new Setup {
-        disable(StubIncorpIdJourney)
-        enable(TaskList)
+    "redirect to the Task List" in new Setup {
+      disable(StubIncorpIdJourney)
 
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
-          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None), idx = Some(1))
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
+        .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None), idx = Some(1))
 
-        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
+      stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
+      val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
 
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-        }
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
-    "the Task List is disabled" must {
-      "return INTERNAL_SERVER_ERROR if no partyType set" in new Setup {
-        disable(StubIncorpIdJourney)
-        disable(TaskList)
-
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection[Entity](None, idx = Some(1))
-
-        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-        insertIntoDb(sessionId, Map(
-          "CurrentProfile" -> Json.toJson(currentProfile)
-        ))
-
-        val res: WSResponse = await(buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get())
-        res.status mustBe INTERNAL_SERVER_ERROR
-      }
-
-      "redirect to STI" in new Setup {
-        disable(StubIncorpIdJourney)
-        disable(TaskList)
-
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection(Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
-          .registrationApi.replaceSection(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None), idx = Some(1))
-
-        stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(grsRoutes.IndividualIdController.startJourney.url)
-        }
-      }
-    }
-
     "the index is bigger than 1" must {
       "redirect to ALF for partner flow" in new Setup {
         given()

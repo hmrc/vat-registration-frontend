@@ -2,7 +2,6 @@
 package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api._
 import models.external.{EmailAddress, EmailVerified, Name}
@@ -74,28 +73,21 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "patch Applicant Details in backend when no previous address" in new Setup {
-      def verifyRedirect(redirectUrl: String) = {
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
-          .registrationApi.replaceSection(s4lData.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .registrationApi.replaceSection(s4lData.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("value" -> Seq("true")))
-        whenReady(response) { res =>
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-        }
+      val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("value" -> Seq("true")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.applicant.routes.CaptureEmailAddressController.show.url)
     }
   }
 
@@ -147,7 +139,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.applicant.routes.CaptureEmailAddressController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
   }

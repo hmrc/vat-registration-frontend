@@ -134,7 +134,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
         "value" -> "true"
       )) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show.url)
+        redirectLocation(res) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
     "redirect the user to TxM address capture page with No selected" in new Setup {
@@ -170,7 +170,7 @@ class PreviousAddressControllerSpec extends ControllerSpec
 
       callAuthorised(controller.addressLookupCallback("addressId")) { res =>
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) mustBe Some(routes.CaptureEmailAddressController.show.url)
+        redirectLocation(res) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
   }

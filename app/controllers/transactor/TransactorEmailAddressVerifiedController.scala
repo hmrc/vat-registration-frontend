@@ -18,7 +18,6 @@ package controllers.transactor
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -40,13 +39,7 @@ class TransactorEmailAddressVerifiedController @Inject()(view: email_verified,
       Future.successful(Ok(view(routes.TransactorEmailAddressVerifiedController.submit)))
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    _ => _ => {
-      if (isEnabled(TaskList)) {
-        Future.successful(Redirect(controllers.routes.TaskListController.show))
-      } else {
-        Future.successful(Redirect(controllers.routes.BusinessIdentificationResolverController.resolve))
-      }
-    }
+  val submit: Action[AnyContent] = isAuthenticatedWithProfile { _ => _ =>
+    Future.successful(Redirect(controllers.routes.TaskListController.show))
   }
 }

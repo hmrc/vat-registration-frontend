@@ -80,7 +80,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the Returns Frequency page when the answer has a name" in new Setup {
+    "redirect to the Task List page when the answer has a name" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
@@ -94,7 +94,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
 

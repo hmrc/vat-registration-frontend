@@ -18,10 +18,8 @@ package controllers.otherbusinessinvolvements
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.TaskList
 import forms.otherbusinessinvolvements.ObiSummaryForm
 import models.OtherBusinessInvolvement
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -72,29 +70,13 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                 Redirect(routes.OtherBusinessNameController.show(nextIndex))
               }
             } else {
-              if (isEnabled(TaskList)) {
-                Future.successful(Redirect(controllers.routes.TaskListController.show))
-              } else {
-                vatRegistrationService.partyType.map {
-                  case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-                  case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-                }
-              }
+              Future.successful(Redirect(controllers.routes.TaskListController.show))
             }
         )
   }
 
-  def continue: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        if (isEnabled(TaskList)) {
-          Future.successful(Redirect(controllers.routes.TaskListController.show))
-        } else {
-          vatRegistrationService.partyType.map {
-            case NonUkNonEstablished | NETP => Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-            case _ => Redirect(controllers.vatapplication.routes.ImportsOrExportsController.show)
-          }
-        }
+  def continue: Action[AnyContent] = isAuthenticatedWithProfile { _ =>_ =>
+    Future.successful(Redirect(controllers.routes.TaskListController.show))
   }
 
   private def buildRows(otherBusinessInvolvements: List[OtherBusinessInvolvement]): List[ObiSummaryRow] =

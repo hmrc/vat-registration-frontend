@@ -17,7 +17,6 @@
 package controllers.grs
 
 import config.FrontendAppConfig
-import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
 import models.api._
 import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass}
@@ -148,7 +147,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
     "redirect to the FormerName page if the user is a NETP" in new Setup {
@@ -169,7 +168,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
 
@@ -191,7 +190,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
     "redirect to the FormerName page when the model in S4l is full and the user is a NETP" in new Setup {
@@ -212,7 +211,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.FormerNameController.show.url)
+        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
 

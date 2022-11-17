@@ -1,7 +1,7 @@
 
 package controllers.fileupload
 
-import featureswitch.core.config.{FeatureSwitching, OptionToTax, TaskList}
+import featureswitch.core.config.{FeatureSwitching, OptionToTax}
 import itutil.ControllerISpec
 import models.api._
 import models.external.upscan.{Ready, UploadDetails, UpscanDetails}
@@ -118,43 +118,8 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
       disable(OptionToTax)
     }
 
-    "redirect to Summary Page if all attachments are submitted and there is no VAT5L" in new Setup {
+    "redirect to Task List page if all option to tax conditions are met" in new Setup {
       enable(OptionToTax)
-      given
-        .user.isAuthorised()
-        .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
-        .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: WSResponse = await(buildClient(continueUrl).post(""))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
-      disable(OptionToTax)
-    }
-
-    "redirect to Summary Page if all option to tax conditions are met" in new Setup {
-      enable(OptionToTax)
-      given
-        .user.isAuthorised()
-        .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(Attachment1614h) :+ attachmentDetails(LandPropertyOtherDocs))
-        .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(false), Some(true), Some(true))))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: WSResponse = await(buildClient(continueUrl).post(""))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
-      disable(OptionToTax)
-    }
-
-    "redirect to Task List page if all option to tax conditions are met and tasklist FS is enabled" in new Setup {
-      enable(OptionToTax)
-      enable(TaskList)
       given
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(LandPropertyOtherDocs))
@@ -167,7 +132,6 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
       disable(OptionToTax)
     }
   }
@@ -184,28 +148,15 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
       res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadSupportingDocumentController.show.url)
     }
 
-    "redirect to Summary page if No is selected" in new Setup {
+    "redirect to Task list page if No is selected" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
       given
         .user.isAuthorised()
 
-      val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "false")))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.SummaryController.show.url)
-    }
-
-    "redirect to Task list page if Yes is selected and tasklist FS is enabled" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-      given
-        .user.isAuthorised()
-
-      enable(TaskList)
       val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
     }
   }
 }

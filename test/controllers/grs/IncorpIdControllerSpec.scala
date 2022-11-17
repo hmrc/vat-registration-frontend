@@ -100,7 +100,6 @@ class IncorpIdControllerSpec extends ControllerSpec
 
   "incorpIdCallback" when {
     "store the incorporation details and redirect to IndividualIdentification when the response is valid" in new Setup {
-      val onwardUrl = routes.IndividualIdController.startJourney.url
       mockGetDetails(testJourneyId)(Future.successful(testLimitedCompany))
       mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
       mockIsTransactor(Future(true))
@@ -108,7 +107,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 
       status(res) mustBe SEE_OTHER
-      redirectLocation(res) must contain(onwardUrl)
+      redirectLocation(res) must contain(controllers.routes.TaskListController.show.url)
     }
   }
 

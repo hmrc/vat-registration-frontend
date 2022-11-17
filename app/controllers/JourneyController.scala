@@ -18,8 +18,6 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import controllers.transactor.{routes => transactorRoutes}
-import featureswitch.core.config._
 import forms.StartNewApplicationForm
 import models.api.EligibilitySubmissionData
 import play.api.mvc._
@@ -42,7 +40,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
 
   def show: Action[AnyContent] = isAuthenticated { implicit request =>
     vatRegistrationService.getAllRegistrations.map {
-      case head :: tail => Redirect(routes.ManageRegistrationsController.show)
+      case _ :: _ => Redirect(routes.ManageRegistrationsController.show)
       case Nil => Redirect(routes.JourneyController.startNewJourney)
     }
   }
@@ -78,8 +76,8 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
         } yield header.status match {
           case VatRegStatus.submitted => Redirect(routes.ApplicationSubmissionController.show)
           case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
-          case _ if isEnabled(TaskList) && eligibilitySubmissionData.isDefined => Redirect(controllers.routes.TaskListController.show)
           case _ if header.applicationReference.isEmpty => Redirect(routes.ApplicationReferenceController.show)
+          case _ if eligibilitySubmissionData.isDefined => Redirect(controllers.routes.TaskListController.show)
           case _ => Redirect(routes.HonestyDeclarationController.show)
         }
       case None =>
@@ -88,24 +86,13 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
   }
 
   def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    (for {
-      isTransactor <- vatRegistrationService.isTransactor
-      isAgentTransactor = isTransactor && profile.agentReferenceNumber.nonEmpty
-      _ <- journeyService.buildCurrentProfile(regId)
-    } yield {
-      if (isEnabled(TaskList)) {
+    journeyService.buildCurrentProfile(regId)
+      .map { _ =>
         Redirect(controllers.routes.TaskListController.show)
-      } else {
-        if (isAgentTransactor)
-          Redirect(transactorRoutes.AgentNameController.show)
-        else if (isTransactor)
-          Redirect(transactorRoutes.PartOfOrganisationController.show)
-        else
-          Redirect(controllers.routes.BusinessIdentificationResolverController.resolve)
       }
-    }).recover {
-      case e: IllegalStateException => Redirect(routes.JourneyController.show)
-    }
+      .recover {
+        case _ => Redirect(routes.JourneyController.show)
+      }
   }
 
 }

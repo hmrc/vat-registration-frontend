@@ -2,7 +2,6 @@
 
 package controllers.vatapplication
 
-import featureswitch.core.config.TaskList
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
@@ -64,49 +63,35 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
     "save to backend when model is complete and redirect to relevant page if yes is selected" in new Setup {
       val vatApplication = fullVatApplication.copy(startDate = Some(regStartDate))
 
-      private def verifyRedirect(redirectUrl: String) = {
-        given
-          .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(vatApplication)
-          .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(true)))
-          .s4lContainer[VatApplication].clearedByKey
+      given
+        .user.isAuthorised()
+        .s4lContainer[VatApplication].contains(vatApplication)
+        .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map("value" -> "true")))
+      val res = await(buildClient(url).post(Map("value" -> "true")))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "save to backend when model is complete and redirect to relevant page if no is selected" in new Setup {
       val vatApplication = fullVatApplication.copy(startDate = Some(regStartDate))
 
-      private def verifyRedirect(redirectUrl: String) = {
-        given
-          .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(vatApplication)
-          .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(false)))
-          .s4lContainer[VatApplication].clearedByKey
+      given
+        .user.isAuthorised()
+        .s4lContainer[VatApplication].contains(vatApplication)
+        .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(false)))
+        .s4lContainer[VatApplication].clearedByKey
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map("value" -> "false")))
+      val res = await(buildClient(url).post(Map("value" -> "false")))
 
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(redirectUrl)
-      }
-
-      enable(TaskList)
-      verifyRedirect(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
-      verifyRedirect(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

@@ -1,7 +1,6 @@
 
 package controllers.business
 
-import featureswitch.core.config.{LandAndProperty, TaskList}
 import forms.ContactPreferenceForm
 import itutil.ControllerISpec
 import models.{Business, Email, Letter}
@@ -62,40 +61,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to business activity description page" in new Setup {
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(contactPreference = Some(Email)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: WSResponse = await(buildClient(url).post(Map("value" -> ContactPreferenceForm.email)))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)
-    }
-
-    "redirect to land and property page if L&P FS is on" in new Setup {
-      enable(LandAndProperty)
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(contactPreference = Some(Letter)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: WSResponse = await(buildClient(url).post(Map("value" -> ContactPreferenceForm.letter)))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.LandAndPropertyController.show.url)
-      disable(LandAndProperty)
-    }
-
-    "redirect to task list page if TaskList FS is on" in new Setup {
-      enable(TaskList)
+    "redirect to task list page" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
@@ -108,7 +74,6 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      disable(TaskList)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {

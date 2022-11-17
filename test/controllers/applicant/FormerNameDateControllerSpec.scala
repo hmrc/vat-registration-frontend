@@ -17,9 +17,9 @@
 package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.{FeatureSwitching, TaskList}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.ApplicantDetailsFixtures
-import models.api.{NETP, UkCompany}
+import models.api.UkCompany
 import models.external.Name
 import models.view.FormerNameDateView
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
@@ -43,7 +43,6 @@ class FormerNameDateControllerSpec extends ControllerSpec
       mockAuthClientConnector,
       mockSessionService,
       mockApplicantDetailsService,
-      vatRegistrationServiceMock,
       app.injector.instanceOf[former_name_date]
     )
 
@@ -120,80 +119,18 @@ class FormerNameDateControllerSpec extends ControllerSpec
   }
 
   "submit" when {
-    "the task list is enabled" must {
-      "redirect to the task list" in new Setup {
-        enable(TaskList)
+    "redirect to the task list" in new Setup {
+      mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
+      mockPartyType(Future.successful(UkCompany))
+      mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
 
-        mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
-        mockPartyType(Future.successful(UkCompany))
-        mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
-
-        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-          "formerNameDate.day" -> "1",
-          "formerNameDate.month" -> "2",
-          "formerNameDate.year" -> "2020"
-        )) { res =>
-          status(res) mustBe SEE_OTHER
-          redirectLocation(res) mustBe Some(controllers.routes.TaskListController.show.url)
-        }
-      }
-    }
-    "the task list is disabled" must {
-      "return BAD_REQUEST with Empty data" in new Setup {
-        disable(TaskList)
-        mockGetApplicantDetails(currentProfile)(incompleteApplicantDetails)
-        mockGetTransactorApplicantName(currentProfile)(Some(testFirstName))
-
-        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
-          status(_) mustBe BAD_REQUEST
-        }
-      }
-
-      "return BAD_REQUEST when Former name Date selected and DOB is not set" in new Setup {
-        disable(TaskList)
-        mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None))))
-
-        val ex = intercept[IllegalStateException] {
-          submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-            "formerNameDate.day" -> "1",
-            "formerNameDate.month" -> "2",
-            "formerNameDate.year" -> "2020"
-          )) {
-            status(_) mustBe BAD_REQUEST
-          }
-        }
-        ex.getMessage mustBe "Missing date of birth"
-      }
-
-      "Redirect to ALF when Former name Date selected" in new Setup {
-        disable(TaskList)
-        mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
-        mockPartyType(Future.successful(UkCompany))
-        mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
-
-        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-          "formerNameDate.day" -> "1",
-          "formerNameDate.month" -> "2",
-          "formerNameDate.year" -> "2020"
-        )) { res =>
-          status(res) mustBe SEE_OTHER
-          redirectLocation(res) mustBe Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
-        }
-      }
-      "Redirect to International home address as a NETP when Former name Date selected" in new Setup {
-        disable(TaskList)
-        mockGetApplicantDetails(currentProfile)(onlyTranscatorDetails)
-        mockPartyType(Future.successful(NETP))
-        mockSaveApplicantDetails(FormerNameDateView(LocalDate.parse("2020-02-01")))(onlyTranscatorDetails)
-
-        submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-          "formerNameDate.day" -> "1",
-          "formerNameDate.month" -> "2",
-          "formerNameDate.year" -> "2020"
-        )) { res =>
-          status(res) mustBe SEE_OTHER
-          redirectLocation(res) mustBe Some(applicantRoutes.InternationalHomeAddressController.show.url)
-        }
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
+        "formerNameDate.day" -> "1",
+        "formerNameDate.month" -> "2",
+        "formerNameDate.year" -> "2020"
+      )) { res =>
+        status(res) mustBe SEE_OTHER
+        redirectLocation(res) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
 

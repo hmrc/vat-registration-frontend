@@ -17,10 +17,9 @@
 package controllers.business
 
 import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
-import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
-import models.api.{NETP, NonUkNonEstablished, UkCompany}
-import play.api.mvc.{AnyContentAsEmpty, Call}
+import models.api.UkCompany
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{BusinessServiceMock, MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -38,7 +37,6 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockSessionService,
       mockBusinessService,
       mockApplicantDetailsService,
-      vatRegistrationServiceMock,
       view
     )
 
@@ -46,17 +44,6 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     mockWithCurrentProfile(Some(currentProfile))
 
     val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.SupplyWorkersIntermediaryController.show)
-
-    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, selection: Boolean, resolvedLocation: Call): Unit = {
-      featureSwitchFn(OtherBusinessInvolvement)
-      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-        "value" -> selection.toString
-      )) {
-        response =>
-          status(response) mustBe SEE_OTHER
-          redirectLocation(response).getOrElse("") mustBe resolvedLocation.url
-      }
-    }
   }
 
   s"GET ${controllers.business.routes.SupplyWorkersIntermediaryController.show}" should {
@@ -102,38 +89,10 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
       mockGetTransactorApplicantName(currentProfile)(None)
       mockPartyType(Future.successful(UkCompany))
 
-      verifyRedirectLocation(disable, selection = true, controllers.vatapplication.routes.ImportsOrExportsController.show)
-      verifyRedirectLocation(enable, selection = true, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
-    }
-
-    "redirect to Imports or Exports or OBI with No selected for UkCompany" in new Setup {
-      mockUpdateBusiness(Future.successful(validBusiness))
-      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
-      mockPartyType(Future.successful(UkCompany))
-
-      verifyRedirectLocation(disable, selection = false, controllers.vatapplication.routes.ImportsOrExportsController.show)
-      verifyRedirectLocation(enable, selection = false, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
-    }
-
-    "redirect to Turnover or OBI with Yes selected for NonUkCompany" in new Setup {
-      mockUpdateBusiness(Future.successful(validBusiness))
-      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
-      mockPartyType(Future.successful(NETP))
-
-      verifyRedirectLocation(disable, selection = true, controllers.vatapplication.routes.TurnoverEstimateController.show)
-      verifyRedirectLocation(enable, selection = true, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
-    }
-
-    "redirect to Turnover or OBI with No selected for NonUkCompany" in new Setup {
-      mockUpdateBusiness(Future.successful(validBusiness))
-      mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
-      mockPartyType(Future.successful(NonUkNonEstablished))
-
-      verifyRedirectLocation(disable, selection = false, controllers.vatapplication.routes.TurnoverEstimateController.show)
-      verifyRedirectLocation(enable, selection = false, controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show)
+      submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "true")) { response =>
+        status(response) mustBe SEE_OTHER
+        redirectLocation(response).getOrElse("") mustBe controllers.routes.TaskListController.show.url
+      }
     }
   }
 

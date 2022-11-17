@@ -18,8 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.TaskList
 import models.Partner
 import models.api._
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
@@ -77,16 +75,7 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
           partnershipDetails <- partnershipIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
           _ <- applicantDetailsService.saveApplicantDetails(Partner)
-          partyType <- vatRegistrationService.partyType
-        } yield {
-          if (isEnabled(TaskList)) {
-            Redirect(controllers.routes.TaskListController.show)
-          } else {
-            partyType match {
-              case LtdLiabilityPartnership => Redirect(routes.IndividualIdController.startJourney)
-              case _ => Redirect(applicantRoutes.LeadPartnerEntityController.showLeadPartnerEntityType)
-            }
-          }
-        }
+        } yield Redirect(controllers.routes.TaskListController.show)
+
   }
 }

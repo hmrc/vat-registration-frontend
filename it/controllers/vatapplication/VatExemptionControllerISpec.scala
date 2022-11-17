@@ -79,7 +79,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the bank account page when the user is TOGC/COLE" in {
+    "redirect to the Task List page when the user is TOGC/COLE" in {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testVatApplication)
@@ -90,11 +90,11 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
 
-    "redirect to the bank account page when the user is non-NETP" in {
+    "redirect to the Task List page when the user is non-NETP" in {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testVatApplication)
@@ -105,7 +105,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
 

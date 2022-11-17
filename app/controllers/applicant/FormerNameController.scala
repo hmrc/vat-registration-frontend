@@ -19,9 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
-import featureswitch.core.config.TaskList
 import forms.FormerNameForm
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.ApplicantDetailsService.HasFormerName
 import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
@@ -60,24 +58,16 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
             applicantDetailsService.getTransactorApplicantName.map { name =>
               BadRequest(formerNamePage(badForm, name))
             },
-          data => applicantDetailsService.saveApplicantDetails(HasFormerName(data)) flatMap { _ =>
-            if (data) {
-              Future.successful(Redirect(applicantRoutes.FormerNameCaptureController.show))
-            }
-            else {
-              if (isEnabled(TaskList)) {
+          answeredYes =>
+            applicantDetailsService.saveApplicantDetails(HasFormerName(answeredYes)) flatMap { _ =>
+              if (answeredYes) {
+                Future.successful(Redirect(applicantRoutes.FormerNameCaptureController.show))
+              }
+              else {
                 Future.successful(Redirect(controllers.routes.TaskListController.show))
-              } else {
-                vatRegistrationService.partyType map {
-                  case NETP | NonUkNonEstablished =>
-                    Redirect(applicantRoutes.InternationalHomeAddressController.show)
-                  case _ =>
-                    Redirect(applicantRoutes.HomeAddressController.redirectToAlf)
-                }
               }
             }
-          }
-        )
+          )
   }
 
 }
