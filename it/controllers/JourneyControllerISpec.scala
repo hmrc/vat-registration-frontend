@@ -31,7 +31,6 @@ class JourneyControllerISpec extends ControllerISpec {
   lazy val appConfig: FrontendAppConfig = app.injector.instanceOf(classOf[FrontendAppConfig])
 
   val showUrl: String = routes.JourneyController.show.url
-  val submitUrl: String = routes.JourneyController.submit.url
   val newJourneyUrl: String = routes.JourneyController.startNewJourney.url
 
   def continueJourneyUrl(regId: String): String =
@@ -78,43 +77,6 @@ class JourneyControllerISpec extends ControllerISpec {
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(newJourneyUrl)
-      }
-    }
-  }
-
-  s"POST $submitUrl" when {
-    "the user wants to start a new registration" must {
-      "redirect to the new journey url" in new Setup {
-        given()
-          .user.isAuthorised()
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-        val res: WSResponse = await(buildClient(showUrl).post(Map("value" -> "true")))
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.startNewJourney.url)
-      }
-    }
-    "the user wants to continue their existing registration" must {
-      "redirect to the continue journey url" in new Setup {
-        given()
-          .user.isAuthorised()
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-        val res: WSResponse = await(buildClient(showUrl).post(Map("value" -> "false")))
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.JourneyController.continueJourney(Some(testRegId)).url)
-      }
-    }
-    "the user has not selected journey option" must {
-      "return a BAD_REQUEST" in new Setup {
-        given()
-          .user.isAuthorised()
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-        val res: WSResponse = await(buildClient(showUrl).post(""))
-        res.status mustBe BAD_REQUEST
       }
     }
   }

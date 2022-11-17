@@ -16,6 +16,7 @@
 
 package views.applicant
 
+import fixtures.VatRegistrationFixture
 import forms.PreviousAddressForm
 import models.view.PreviousAddressView
 import org.jsoup.Jsoup
@@ -25,20 +26,21 @@ import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.applicant.previous_address
 
-class PreviousAddressViewSpec extends VatRegViewSpec {
+class PreviousAddressViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   val previousAddressPage: previous_address = app.injector.instanceOf[previous_address]
 
   val name = "testFirstName"
   lazy val form: Form[PreviousAddressView] = PreviousAddressForm.form()
-  lazy val nonTransactorView: Html = previousAddressPage(form, None)
+  lazy val nonTransactorView: Html = previousAddressPage(form, None, testAddress)
   implicit val nonTransactorDoc: Document = Jsoup.parse(nonTransactorView.body)
-  lazy val transactorView: Html = previousAddressPage(form, Some(name))
+  lazy val transactorView: Html = previousAddressPage(form, Some(name), testAddress)
   val transactorDoc: Document = Jsoup.parse(transactorView.body)
 
-  val heading = "Have you lived at your current address for 3 years or more?"
-  val namedHeading = "Has testFirstName lived at their current address for 3 years or more?"
+  val heading = "Have you lived at this home address for 3 years or more?"
+  val namedHeading = "Has testFirstName lived at this home address for 3 years or more?"
   val title = s"$heading - Register for VAT - GOV.UK"
+  val address = "Line1 Line2 AA11AA United Kingdom"
   val yes = "Yes"
   val no = "No"
   val continue = "Save and continue"
@@ -52,7 +54,7 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
     "display the page with form pre populated" in {
       val validPreviousAddress = PreviousAddressView(yesNo = true, None)
 
-      lazy val view = previousAddressPage(form.fill(validPreviousAddress), None)
+      lazy val view = previousAddressPage(form.fill(validPreviousAddress), None, testAddress)
       lazy val document = Jsoup.parse(view.body)
 
       document.getElementsByAttributeValue("name", "value").size mustBe 2
@@ -73,6 +75,10 @@ class PreviousAddressViewSpec extends VatRegViewSpec {
 
     "have the correct page title" in new ViewSetup {
       nonTransactorDoc.title mustBe title
+    }
+
+    "have the correct address displayed" in new ViewSetup {
+      nonTransactorDoc.getElementById("address").text() mustBe address
     }
 
     "have yes/no radio options" in new ViewSetup {

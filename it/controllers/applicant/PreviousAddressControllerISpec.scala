@@ -6,7 +6,8 @@ import itutil.ControllerISpec
 import models.api._
 import models.external.{EmailAddress, EmailVerified, Name}
 import models.view.{FormerNameDateView, HomeAddressView, PreviousAddressView}
-import models.{ApplicantDetails, Director, TelephoneNumber}
+import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
+import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -27,30 +28,87 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
   val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
-  "POST Previous Address page" should {
-    val s4lData = ApplicantDetails(
-      entity = Some(testIncorpDetails),
-      personalDetails = Some(testPersonalDetails),
-      homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      emailAddress = Some(EmailAddress("test@t.test")),
-      emailVerified = Some(EmailVerified(true)),
-      telephoneNumber = Some(TelephoneNumber("1234")),
-      hasFormerName = Some(true),
-      formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
-      formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-      previousAddress = None,
-      roleInTheBusiness = Some(Director)
-    )
+  val pageUrl: String = routes.PreviousAddressController.show.url
 
-    "redirect to International Address capture if the user is a NETP" in new Setup {
+  val applicantDetails = ApplicantDetails(
+    entity = Some(testIncorpDetails),
+    personalDetails = Some(testPersonalDetails),
+    homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
+    emailAddress = Some(EmailAddress("test@t.test")),
+    emailVerified = Some(EmailVerified(true)),
+    telephoneNumber = Some(TelephoneNumber("1234")),
+    hasFormerName = Some(true),
+    formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
+    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
+    previousAddress = None,
+    roleInTheBusiness = Some(Director)
+  )
+
+  s"GET $pageUrl" must {
+    "redirect user back to the Current Address route if address missing" in new Setup {
+      implicit val format = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails.copy(homeAddress = None)), testRegId, None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient(pageUrl).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.HomeAddressController.redirectToAlf.url)
+    }
+
+    "render the page for a transactor" in new Setup {
+      implicit val format = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].contains(applicantDetails)(ApplicantDetails.s4LWrites)
+        .registrationApi.getSection[ApplicantDetails](None, testRegId)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+        .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient(pageUrl).get())
+
+      res.status mustBe OK
+      Jsoup.parse(res.body).select("input[id=value]").hasAttr("checked") mustBe false
+      Jsoup.parse(res.body).select("input[id=value-no]").hasAttr("checked") mustBe false
+    }
+
+    "render the page with prepop" in new Setup {
+      implicit val format = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = false, Some(address))))), testRegId, None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: WSResponse = await(buildClient(pageUrl).get())
+
+      res.status mustBe OK
+      Jsoup.parse(res.body).select("input[id=value]").hasAttr("checked") mustBe false
+      Jsoup.parse(res.body).select("input[id=value-no]").hasAttr("checked") mustBe true
+    }
+  }
+
+  s"POST $pageUrl" must {
+    "redirect to International Address capture if the user is a NETP" in new Setup {
+      implicit val format = ApplicantDetails.apiFormat(NETP)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails), testRegId, None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit.url)
+      val res = await(buildClient(pageUrl)
         .post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
@@ -58,14 +116,16 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "redirect to International Address capture if the user is a Non UK Company" in new Setup {
+      implicit val format = ApplicantDetails.apiFormat(NonUkNonEstablished)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails), testRegId, None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(applicantRoutes.PreviousAddressController.submit.url)
+      val res = await(buildClient(pageUrl)
         .post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
@@ -76,8 +136,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
-        .registrationApi.replaceSection(s4lData.copy(previousAddress = Some(PreviousAddressView(yesNo = false, None))))
+        .s4lContainer[ApplicantDetails].contains(applicantDetails)(ApplicantDetails.s4LWrites)
+        .registrationApi.replaceSection(applicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = true, None))))
         .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -91,7 +151,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET Txm ALF callback for Previous Address" should {
+  "GET Txm ALF callback for Previous Address" must {
     val s4lData = ApplicantDetails(
       entity = Some(testIncorpDetails),
       personalDetails = Some(testPersonalDetails),

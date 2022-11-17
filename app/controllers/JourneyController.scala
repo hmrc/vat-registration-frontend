@@ -18,11 +18,9 @@ package controllers
 
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import forms.StartNewApplicationForm
 import models.api.EligibilitySubmissionData
 import play.api.mvc._
 import services._
-import views.html.start_new_application
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,8 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class JourneyController @Inject()(val vatRegistrationService: VatRegistrationService,
                                   val journeyService: JourneyService,
                                   val authConnector: AuthClientConnector,
-                                  val sessionService: SessionService,
-                                  view: start_new_application)
+                                  val sessionService: SessionService)
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
@@ -43,19 +40,6 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
       case _ :: _ => Redirect(routes.ManageRegistrationsController.show)
       case Nil => Redirect(routes.JourneyController.startNewJourney)
     }
-  }
-
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    StartNewApplicationForm.form.bindFromRequest().fold(
-      formWithErrors =>
-        Future.successful(BadRequest(view(formWithErrors))),
-      startNew =>
-        if (startNew) {
-          Future.successful(Redirect(routes.JourneyController.startNewJourney))
-        } else {
-          Future.successful(Redirect(routes.JourneyController.continueJourney(Some(profile.registrationId))))
-        }
-    )
   }
 
   def startNewJourney: Action[AnyContent] = isAuthenticated { implicit request =>
