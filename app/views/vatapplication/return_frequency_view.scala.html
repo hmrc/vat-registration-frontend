@@ -99,17 +99,16 @@
 }
 
 @detailsBlock = {
-@p {
-    @messages("pages.vat.return.frequency.details.para1")
+
+    @p { @messages("pages.vat.return.frequency.details.para1") }
     @bullets(
         messages("pages.vat.return.frequency.details.para1.bullet1"),
         messages("pages.vat.return.frequency.details.para1.bullet2")
     )
-    @messages("pages.vat.return.frequency.details.para2")
+    @p { @messages("pages.vat.return.frequency.details.para2") }
     @bullets(
         messages("pages.vat.return.frequency.details.para2.bullet1"),
         messages("pages.vat.return.frequency.details.para2.bullet2")
     )
-}
-@link(appConfig.vatAasUrl, "pages.vat.return.frequency.aas.link", isExternal = true)
+    @p { @link(appConfig.vatAasUrl, "pages.vat.return.frequency.aas.link", isExternal = true) }
 }

@@ -45,6 +45,6 @@
     @p{ @messages("pages.confirmsic.p4") }
 
     @formWithCSRF(action = controllers.sicandcompliance.routes.SicController.startICLJourney) {
-        @button("app.common.continue")
+        @button("app.common.continueNoSave", showSaveProgressButton = false)
     }
 }

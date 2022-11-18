@@ -42,10 +42,11 @@
             id = "value",
             name = "value",
             label = messages("applicationReference.label"),
+            hint = Some(Html(messages("applicationReference.hint"))),
             isPageHeading = false
         )
 
-        @button("app.common.continue", showSaveProgressButton = false)
+        @button("app.common.continueNoSave", showSaveProgressButton = false)
     }
 
 }

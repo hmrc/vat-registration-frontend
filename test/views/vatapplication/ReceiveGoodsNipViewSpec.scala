@@ -29,7 +29,7 @@ class ReceiveGoodsNipViewSpec extends VatRegViewSpec {
 
   object ExpectedContent {
     val heading = "Does the business expect to receive goods in Northern Ireland from an EU country?"
-    val hint = "What is the value of these goods?"
+    val hint = "What is the estimated value of these goods?"
     val yes = "Yes"
     val no = "No"
     val continue = "Save and continue"

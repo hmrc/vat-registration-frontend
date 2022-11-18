@@ -47,12 +47,9 @@ tasklist.verifyBusiness.heading                     = Dilysu’r busnes
 tasklist.verifyBusiness.businessInfo                = Gwybodaeth busnes
 tasklist.aboutYou.heading                           = Amdanoch chi
 tasklist.aboutYou.leadPartnerDetails                = Manylion y partner arweiniol
-tasklist.aboutYou.addressDetails                    = Cyfeiriadau
-tasklist.aboutYou.personalDetails                   = Gwybodaeth bersonol
-tasklist.aboutYou.contactDetails                    = Manylion cyswllt
-tasklist.aboutYou.transactor.addressDetails         = Eich cyfeiriadau
-tasklist.aboutYou.transactor.contactDetails         = Eich manylion cyswllt
-tasklist.aboutYou.transactor.personalDetails        = Eich gwybodaeth bersonol
+tasklist.aboutYou.addressDetails                    = Eich cyfeiriadau
+tasklist.aboutYou.personalDetails                   = Eich gwybodaeth bersonol
+tasklist.aboutYou.contactDetails                    = Eich manylion cyswllt
 tasklist.aboutBusinessContact.addressDetails        = Ei gyfeiriadau
 tasklist.aboutBusinessContact.contactDetails        = Ei fanylion cyswllt
 tasklist.aboutBusinessContact.personalDetails       = Ei wybodaeth bersonol
@@ -555,7 +552,8 @@ validation.startDateManIncorp.error                          = Nodwch ddyddiad d
 
 # Turnover Estimate Page
 pages.turnoverEstimate.heading                              = Beth rydych yn meddwl fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf?
-pages.turnoverEstimate.text                                 = Cofiwch gynnwys yr holl nwyddau a gwasanaethau a werthir nad ydynt wedi’u heithrio rhag TAW. Mae’n rhaid i chi gynnwys nwyddau a gwasanaethau sydd â chyfradd TAW o 0%.
+pages.turnoverEstimate.text1                                = Tell us the estimated value.
+pages.turnoverEstimate.text2                                = Cofiwch gynnwys yr holl nwyddau a gwasanaethau a werthir nad ydynt wedi’u heithrio rhag TAW. Mae’n rhaid i chi gynnwys nwyddau a gwasanaethau sydd â chyfradd TAW o 0%.
 pages.turnoverEstimate.link                                 = Dysgu rhagor am y nwyddau a’r gwasanaethau sydd wedi’u heithrio rhag TAW
 pages.turnoverEstimate.hint                                 = Er enghraifft, £600 neu £90000
 validation.turnoverEstimate.missing                         = Nodwch y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf
@@ -865,7 +863,7 @@ validation.mainBusinessActivity.missing                   = Dewiswch brif ffynho
 # Confirm SIC
 pages.confirmsic.heading                                  = Rydych ar fin cadarnhau codau Dosbarthiad Diwydiannol Safonol (SIC) y busnes ar gyfer TAW
 pages.confirmsic.p1                                       = Mae cod SIC yn disgrifio gweithgaredd busnes.
-pages.confirmsic.p2                                       = Mae gan bob busnes un neu fwy o godau SIC o’r adeg pan gofrestrodd gyda Thŷ’r Cwmnïau.
+pages.confirmsic.p2                                       = Mae gan bob busnes un neu fwy o godau SIC. Os oedd y busnes wedi cofrestru gyda Thŷ’r Cwmnïau, roedd yn rhaid iddo ddarparu o leiaf un o’r rhain.
 pages.confirmsic.p3                                       = Mae’n rhaid i chi wneud y canlynol:
 pages.confirmsic.bullet1                                  = gwirio bod y codau SIC ar gyfer y busnes hwn yn dal i fod yn gywir
 pages.confirmsic.bullet2                                  = ychwanegu unrhyw godau SIC eraill sy’n berthnasol i weithgaredd y busnes
@@ -956,7 +954,7 @@ validation.formerNameCapture.last.maxlen                 = Nodwch enw gan ddefny
 # Former Name Date
 pages.formerNameDate.yourHeading                         = Pryd newidioch eich enw?
 pages.formerNameDate.namedHeading                        = Pryd newidiwyd enw {0}?
-pages.formerNameDate.hint1                               = Er enghraifft, 31 3 2006.
+pages.formerNameDate.hint1                               = Er enghraifft, 27 3 2007
 validation.formerNameDate.invalid                        = Nodwch ddyddiad dilys
 validation.formerNameDate.missing                        = Nodwch y dyddiad pan newidiodd yr enw
 validation.formerNameDate.range.below                    = Nodwch ddyddiad sydd ar neu ar ôl y dyddiad geni
@@ -1119,9 +1117,11 @@ capture-email-passcode.error.incorrect_length           = Nodwch y cod cadarnhau
 email-verified.heading                                   = Cyfeiriad e-bost wedi’i gadarnhau
 
 # CAPTURE TELEPHONE NUMBER MESSAGES
+capture-telephone-number.hint                            = Ar gyfer rhifau rhyngwladol, cofiwch gynnwys cod y wlad
 capture-telephone-number.yourHeading                     = Beth yw’ch rhif ffôn?
 capture-telephone-number.namedHeading                    = Beth yw rhif ffôn {0}?
 capture-telephone-number.paragraph                       = Efallai y bydd yn rhaid i ni gysylltu â chi ynghylch y cais.
+capture-telephone-number.namedParagraph                  = We may need to contact them about the application.
 capture-telephone-number.error.invalid                   = Nodwch rif ffôn yn y fformat cywir, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
 capture-telephone-number.error.missing                   = Nodwch y rhif ffôn
 capture-telephone-number.error.minlength                 = Mae’n rhaid i’r rhif ffôn gynnwys o leiaf 8 o gymeriadau
@@ -1422,7 +1422,7 @@ pages.CoverSheet.vat1TRLink                        = wedi’i chwblhau
 
 # Northern Ireland Protocol - Receive Goods
 pages.northernIrelandReceiveGoods.heading                                   = A yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE?
-pages.northernIrelandReceiveGoods.label                                     = Beth yw gwerth y nwyddau hyn?
+pages.northernIrelandReceiveGoods.label                                     = Beth yw gwerth amcangyfrifedig y nwyddau hyn?
 pages.northernIrelandReceiveGoods.hint                                      = Er enghraifft, £600 neu £90000
 nip.receiveGoods.missing                                                    = Dewiswch ‘Iawn’ os yw’r busnes yn disgwyl derbyn nwyddau yng Ngogledd Iwerddon o un o wledydd yr UE yn ystod y 12 mis nesaf
 validation.northernIrelandReceiveGoods.missing                              = Nodwch werth amcangyfrifedig y nwyddau
@@ -1435,7 +1435,7 @@ nip.sellOrMove.heading                                   = A yw’r busnes yn di
 nip.sellOrMove.para                                      = Rhowch wybod i ni os bydd y cwmni’n gwneud unrhyw un o’r canlynol:
 nip.sellOrMove.bullet1                                   = gwerthu nwyddau sydd wedi’u lleoli yng Ngogledd Iwerddon i unrhyw wlad
 nip.sellOrMove.bullet2                                   = gwerthu neu symud nwyddau o Ogledd Iwerddon i wlad yn yr UE
-nip.sellOrMove.label                                     = Beth yw gwerth y nwyddau hyn?
+nip.sellOrMove.label                                     = Beth yw gwerth amcangyfrifedig y nwyddau hyn??
 nip.sellOrMove.hint                                      = Er enghraifft, £600 neu £90000
 nip.error.missing                                        = Dewiswch ‘Iawn’ os yw’r busnes yn disgwyl gwneud unrhyw un o’r canlynol yn ystod y 12 mis nesaf
 validation.sellOrMoveNip.missing                         = Nodwch werth amcangyfrifedig y nwyddau
@@ -1455,7 +1455,6 @@ validation.businessName.maxlen                           = Nodwch enw busnes swy
 
 # BUSINESS TELEPHONE NUMBER
 business.telephoneNumber.heading                         = Beth yw rhif ffôn y busnes?
-business.telephoneNumber.hint                            = Ar gyfer rhifau rhyngwladol, cofiwch gynnwys cod y wlad
 validation.business.telephoneNumber.invalid              = Nodwch rif ffôn yn y fformat cywir, megis 01632 960 001, 07700 900 982 neu +44 808 157 0192
 validation.business.telephoneNumber.missing              = Nodwch rif ffôn y busnes
 validation.business.telephoneNumber.minlength            = Mae’n rhaid i rif ffôn y busnes gynnwys o leiaf 8 o gymeriadau
@@ -1469,7 +1468,7 @@ validation.shortOrgName.maxlen                       = Nodwch enw busnes swyddog
 
 # PART OF ORGANISATION
 partOfOrganisation.heading                               = A ydych yn rhan o sefydliad?
-partOfOrganisation.indentText                            = Gan eich bod yn cofrestru ar ran rhywun arall, mae angen i ni gasglu’ch manylion er mwyn gwybod ychydig yn fwy amdanoch chi.
+partOfOrganisation.para                                  = Gan eich bod yn cofrestru ar ran rhywun arall, mae angen i ni gasglu’ch manylion er mwyn gwybod ychydig yn fwy amdanoch chi.
 validation.partOfOrganisation.missing                    = Dewiswch ‘Iawn’ os ydych yn rhan o sefydliad
 
 # DECLARATION CAPACITY
@@ -1568,7 +1567,8 @@ pages.vat1TRRequired.para2                               = with details of your 
 # APPLICATION REFERENCE PAGE
 applicationReference.heading                             = Dewis cyfeirnod cais
 applicationReference.para                                = Gallwch ychwanegu gair, ymadrodd neu rif cofiadwy at bob cais. Gallai hyn fod yn enw busnes neu’n rhif unigryw i’ch helpu i reoli ceisiadau sydd ohoni.
-applicationReference.label                               = Nodwch eich cyfeirnod cais dethol
+applicationReference.label                               = Cyfeirnod y cais
+applicationReference.hint                                = Er enghraifft, Blue Steelworks
 applicationReference.error.missing                       = Nodwch gyfeirnod cais
 applicationReference.error.invalid                       = Nodwch gyfeirnod cais heb gynnwys cymeriadau arbennig
 applicationReference.error.length                        = Nodwch gyfeirnod cais sy’n 100 o gymeriadau neu lai
@@ -1610,10 +1610,8 @@ attachments.transactorIdentityEvidenceRequired.additionalBullet6            = ty
 
 # LAND AND PROPERTY
 landAndProperty.heading                  = A yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo?
-landAndProperty.p1                       = Os yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo, mae’n rhaid i chi roi gwybod am hyn i CThEM drwy gwblhau
-landAndProperty.link1                    = ffurflen VAT5L
-landAndProperty.p2                       = Mae rhai trafodion sy’n ymwneud ag adeiladu tir wedi’u heithrio rhag TAW. Gallwch
-landAndProperty.link2                    = ddarllen yr arweiniad ar dir ac eiddo
+landAndProperty.p1                       = Mae rhai trafodion sy’n ymwneud ag adeiladu tir wedi’u heithrio rhag TAW. Gallwch
+landAndProperty.link1                    = ddarllen yr arweiniad ar dir ac eiddo
 landAndProperty.error.missing            = Dewiswch ‘Iawn’ os yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo
 
 # IMPORTS OR EXPORTS

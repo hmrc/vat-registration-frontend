@@ -31,8 +31,9 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec {
     val heading = "Choose an application reference"
     val para1 = "You can add a memorable word, phrase or number to every application." +
       " This could be a business name or a unique number to help you manage ongoing applications."
-    val label = "Enter your chosen application reference"
-    val button = "Save and continue"
+    val label = "Application reference"
+    val hint = "For example, Blue Steelworks"
+    val button = "Continue"
   }
 
   "the Application Reference page" must {
@@ -47,6 +48,9 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec {
     }
     "have an input with the correct label" in new ViewSetup {
       doc.textBox("value") mustBe Some(ExpectedMessages.label)
+    }
+    "have the correct hint text" in new ViewSetup {
+      doc.hintText mustBe Some(ExpectedMessages.hint)
     }
     "have a button with the correct label" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedMessages.button)

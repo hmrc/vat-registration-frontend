@@ -36,7 +36,7 @@
     @h1(name.fold(messages("capture-telephone-number.yourHeading"))(name => messages("capture-telephone-number.namedHeading", name)))
 
     <div class="govuk-body">
-        <p id="telephone-number-collection-reason">@messages("capture-telephone-number.paragraph")</p>
+        <p id="telephone-number-collection-reason">@messages(name.fold("capture-telephone-number.paragraph")(_ => "capture-telephone-number.namedParagraph"))</p>
     </div>
 
     @formWithCSRF(action = formAction) {
@@ -47,6 +47,7 @@
             label = name.fold(messages("capture-telephone-number.yourHeading"))(name => messages("capture-telephone-number.namedHeading", name)),
             isLabelHidden = true,
             isPageHeading = false,
+            hint = Some(Html(messages("capture-telephone-number.hint"))),
             classes = Some("govuk-input--width-20")
         )
 

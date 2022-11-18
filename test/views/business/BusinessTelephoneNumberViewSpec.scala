@@ -26,7 +26,7 @@ class BusinessTelephoneNumberViewSpec extends VatRegViewSpec {
   val view: BusinessTelephoneNumber = app.injector.instanceOf[BusinessTelephoneNumber]
 
   object ExpectedContent {
-    val heading = "What is the business’s telephone number?"
+    val heading = "What is the business telephone number?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val continue = "Save and continue"
   }

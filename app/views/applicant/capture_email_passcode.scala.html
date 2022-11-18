@@ -83,13 +83,13 @@
             classes = Some("govuk-input--width-10")
         )
 
+        @details(
+            summary = messages("capture-email-passcode.details.summary"),
+            content = detailsContent
+        )
+
         @button("app.common.continue")
     }
-
-    @details(
-        summary = messages("capture-email-passcode.details.summary"),
-        content = detailsContent
-    )
 }
 
 @detailsContent = {

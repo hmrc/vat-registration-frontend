@@ -27,7 +27,7 @@ import javax.inject.Inject
 class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) extends FeatureSwitching {
 
   def transactorPersonalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
-    messageKey = _ => "tasklist.aboutYou.transactor.personalDetails",
+    messageKey = _ => "tasklist.aboutYou.personalDetails",
     url = _ => {
       if (profile.agentReferenceNumber.isDefined) {
         controllers.transactor.routes.AgentNameController.show.url
@@ -57,7 +57,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
 
   def transactorAddressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = _ => "tasklist.aboutYou.transactor.addressDetails",
+      messageKey = _ => "tasklist.aboutYou.addressDetails",
       url = vatScheme => resolveAddressRowUrl(vatScheme),
       tagId = "addressDetailsRow",
       checks = scheme => {
@@ -73,7 +73,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
 
   def transactorContactDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
     TaskListRowBuilder(
-      messageKey = _ => "tasklist.aboutYou.transactor.contactDetails",
+      messageKey = _ => "tasklist.aboutYou.contactDetails",
       url = _ => controllers.transactor.routes.TelephoneNumberController.show.url,
       tagId = "contactDetailsRow",
       checks = scheme => {
