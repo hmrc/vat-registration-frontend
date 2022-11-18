@@ -54,7 +54,7 @@ class UploadingDocumentViewSpec extends VatRegViewSpec {
     }
 
     "have the correct title" in new ViewSetup {
-      doc.title mustBe ExpectedContent.title
+      doc.getElementsByTag("title").text mustBe ExpectedContent.title
     }
 
     "have the correct subheading" in new ViewSetup {
