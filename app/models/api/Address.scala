@@ -16,10 +16,10 @@
 
 package models.api
 
-import cats.Show.show
-import models.api.Address.inlineShow.inline
 import org.apache.commons.text.WordUtils
 import play.api.libs.json._
+import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
 case class Country(code: Option[String], name: Option[String])
 
@@ -38,9 +38,7 @@ case class Address(line1: String,
 
   val id: String = Seq(Some(line1), if (postcode.isDefined) postcode else country).flatten.mkString.replaceAll(" ", "")
 
-  val asLabel: String = inline show this
-
-  /***
+  /** *
     * trims spaces and converts any Some("  ") to None
     */
   def normalise(): Address =
@@ -63,7 +61,7 @@ case class Address(line1: String,
               code = country.code.map(_.trim).filterNot(_.isEmpty),
               name = country.name.map(_.trim).filterNot(_.isEmpty)
             ))
-          }
+        }
       },
       this.addressValidated
     )
@@ -107,17 +105,11 @@ object Address {
       address.postcode.map(Postcode),
       address.country.flatMap(_.name).map(AddressLine)
     ).collect {
-      case Some(AddressLine(line))  => WordUtils.capitalizeFully(line)
+      case Some(AddressLine(line)) => WordUtils.capitalizeFully(line)
       case Some(Postcode(postcode)) => postcode.toUpperCase()
     }
   }
 
-  object htmlShow {
-    implicit val html = (a: Address) => normalisedSeq(a)
-  }
-
-  object inlineShow {
-    implicit val inline = show((a: Address) => normalisedSeq(a).mkString(", "))
-  }
+  def toHtml(address: Address): Html = Html(normalisedSeq(address).map(line => HtmlFormat.escape(line)).mkString("<br>"))
 
 }
