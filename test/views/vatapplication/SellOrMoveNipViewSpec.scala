@@ -31,7 +31,7 @@ class SellOrMoveNipViewSpec extends VatRegViewSpec {
     val para = "Tell us if the business will do any of the following:"
     val bullet1 = "sell goods located in Northern Ireland to any country"
     val bullet2 = "sell or move goods from Northern Ireland to an EU country"
-    val hint = "What is the value of these goods?"
+    val hint = "What is the estimated value of these goods?"
     val yes = "Yes"
     val no = "No"
     val continue = "Save and continue"

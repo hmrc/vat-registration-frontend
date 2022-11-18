@@ -91,8 +91,8 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
         }
 
         "have the correct links" in new ViewSetup {
-          doc.link(2) mustBe Some(Link(linkText1, applicantRoutes.CaptureEmailPasscodeController.requestNew.url))
-          doc.link(3) mustBe Some(Link(linkText2, applicantRoutes.CaptureEmailAddressController.show.url))
+          doc.link(1) mustBe Some(Link(linkText1, applicantRoutes.CaptureEmailPasscodeController.requestNew.url))
+          doc.link(2) mustBe Some(Link(linkText2, applicantRoutes.CaptureEmailAddressController.show.url))
         }
       }
 
@@ -140,8 +140,8 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
         }
 
         "have the correct links" in new ViewSetup {
-          doc.link(2) mustBe Some(Link(linkText1, applicantRoutes.CaptureEmailPasscodeController.requestNew.url))
-          doc.link(3) mustBe Some(Link(linkText2, applicantRoutes.CaptureEmailAddressController.show.url))
+          doc.link(1) mustBe Some(Link(linkText1, applicantRoutes.CaptureEmailPasscodeController.requestNew.url))
+          doc.link(2) mustBe Some(Link(linkText2, applicantRoutes.CaptureEmailAddressController.show.url))
         }
       }
     }
@@ -191,8 +191,8 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
         }
 
         "have the correct links" in new ViewSetup {
-          doc.link(2) mustBe Some(Link(linkText1, transactorRoutes.TransactorCaptureEmailPasscodeController.requestNew.url))
-          doc.link(3) mustBe Some(Link(linkText2, transactorRoutes.TransactorCaptureEmailAddressController.show.url))
+          doc.link(1) mustBe Some(Link(linkText1, transactorRoutes.TransactorCaptureEmailPasscodeController.requestNew.url))
+          doc.link(2) mustBe Some(Link(linkText2, transactorRoutes.TransactorCaptureEmailAddressController.show.url))
         }
       }
 
@@ -240,8 +240,8 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
         }
 
         "have the correct links" in new ViewSetup {
-          doc.link(2) mustBe Some(Link(linkText1, transactorRoutes.TransactorCaptureEmailPasscodeController.requestNew.url))
-          doc.link(3) mustBe Some(Link(linkText2, transactorRoutes.TransactorCaptureEmailAddressController.show.url))
+          doc.link(1) mustBe Some(Link(linkText1, transactorRoutes.TransactorCaptureEmailPasscodeController.requestNew.url))
+          doc.link(2) mustBe Some(Link(linkText2, transactorRoutes.TransactorCaptureEmailAddressController.show.url))
         }
       }
     }

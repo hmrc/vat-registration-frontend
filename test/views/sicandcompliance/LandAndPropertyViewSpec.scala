@@ -28,10 +28,8 @@ class LandAndPropertyViewSpec extends VatRegViewSpec {
   implicit val doc: Document = Jsoup.parse(view(LandAndPropertyForm.form).body)
 
   object ExpectedContent {
-    val link1 = "VAT5L form (opens in new tab)"
-    val p1 = s"If the business’s activities include the buying, selling or letting of land or property you must inform HMRC about this by completing a $link1."
-    val link2 = "read the guidance on land and property (opens in new tab)"
-    val p2 = s"Some transactions involving land building are exempt from VAT. You can $link2."
+    val link1 = "read the guidance on land and property (opens in new tab)"
+    val p1 = s"Some transactions involving land building are exempt from VAT. You can $link1."
     val heading = "Does the business’s activities include the buying, selling or letting of land or property?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val yes = "Yes"
@@ -42,12 +40,10 @@ class LandAndPropertyViewSpec extends VatRegViewSpec {
   "the Land And Property page" must {
     "have the correct paragraphs" in new ViewSetup {
       doc.para(1) mustBe Some(ExpectedContent.p1)
-      doc.para(2) mustBe Some(ExpectedContent.p2)
     }
 
     "have the correct link text" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.link1, "https://www.gov.uk/government/publications/vat-vat-registration-land-and-property-vat-5l"))
-      doc.link(2) mustBe Some(Link(ExpectedContent.link2, "https://www.gov.uk/guidance/vat-on-land-and-property-notice-742"))
+      doc.link(1) mustBe Some(Link(ExpectedContent.link1, "https://www.gov.uk/guidance/vat-on-land-and-property-notice-742"))
     }
 
     "have the correct page title" in new ViewSetup {

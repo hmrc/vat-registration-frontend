@@ -47,18 +47,15 @@ tasklist.verifyBusiness.heading                     = Verify the business
 tasklist.verifyBusiness.businessInfo                = Business information
 tasklist.aboutYou.heading                           = About you
 tasklist.aboutYou.leadPartnerDetails                = Lead partner details
-tasklist.aboutYou.addressDetails                    = Addresses
-tasklist.aboutYou.personalDetails                   = Personal information
-tasklist.aboutYou.contactDetails                    = Contact details
-tasklist.aboutYou.transactor.addressDetails         = Your addresses
-tasklist.aboutYou.transactor.contactDetails         = Your contact details
-tasklist.aboutYou.transactor.personalDetails        = Your personal information
+tasklist.aboutYou.addressDetails                    = Your addresses
+tasklist.aboutYou.personalDetails                   = Your personal information
+tasklist.aboutYou.contactDetails                    = Your contact details
 tasklist.aboutBusinessContact.addressDetails        = Their addresses
 tasklist.aboutBusinessContact.contactDetails        = Their contact details
 tasklist.aboutBusinessContact.personalDetails       = Their personal information
 tasklist.aboutBusinessContact.heading               = About the business contact
 tasklist.aboutTheBusiness.heading                   = About the business
-tasklist.aboutTheBusiness.partnersDetail            = Partners within a partnership
+tasklist.aboutTheBusiness.partnersDetail            = Partners within the partnership
 tasklist.aboutTheBusiness.businessDetails           = Business details
 tasklist.aboutTheBusiness.businessActivities        = Business activities
 tasklist.aboutTheBusiness.otherBusinessInvolvements = Other business involvements
@@ -511,8 +508,8 @@ validation.startDate.missing                          = Enter a date
 
 currentlyTrading.heading.past                         = Was the business trading taxable goods or services by {0}?
 currentlyTrading.heading.future                       = Will the business be trading taxable goods or services by {0}?
-currentlyTrading.no.past                              = No, it started trading after this date
-currentlyTrading.no.future                            = No, it will start trading after this date
+currentlyTrading.no.past                              = No - it started trading after this date
+currentlyTrading.no.future                            = No - it will start trading after this date
 currentlyTrading.error.required.past                  = Select yes if the business was trading taxable goods or services by {0}
 currentlyTrading.error.required.future                = Select yes if the business will be trading taxable goods or services by {0}
 
@@ -554,8 +551,9 @@ validation.startDateManIncorp.range.below4y                  = Enter a date whic
 validation.startDateManIncorp.error                          = Enter the registration start date
 
 # Turnover Estimate Page
-pages.turnoverEstimate.heading                              = What do you think the business’s VAT-taxable turnover will be for the next 12 months?
-pages.turnoverEstimate.text                                 = Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate.
+pages.turnoverEstimate.heading                              = What do you think the VAT-taxable turnover will be for the next 12 months?
+pages.turnoverEstimate.text1                                = Tell us the estimated value.
+pages.turnoverEstimate.text2                                = Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate.
 pages.turnoverEstimate.link                                 = Find out more about which goods and services are exempt from VAT
 pages.turnoverEstimate.hint                                 = For example, £600 or £90000
 validation.turnoverEstimate.missing                         = Enter the VAT-taxable turnover expected for the next 12 months
@@ -865,7 +863,7 @@ validation.mainBusinessActivity.missing                   = Select the business�
 # Confirm SIC
 pages.confirmsic.heading                                  = You are about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
 pages.confirmsic.p1                                       = A SIC code describes a business activity.
-pages.confirmsic.p2                                       = Every business has one or more SIC codes from when it registered with Companies House.
+pages.confirmsic.p2                                       = Every business has one or more SIC codes. If the business registered with Companies House, it had to provide at least one.
 pages.confirmsic.p3                                       = You must:
 pages.confirmsic.bullet1                                  = check the SIC codes for this business are still correct.
 pages.confirmsic.bullet2                                  = add any more SIC codes that are relevant to the business’s activity.
@@ -938,7 +936,7 @@ pages.roleInTheBusiness.error.message                    = Select the role withi
 # Former Name
 pages.formerName.yourHeading                             = Have you ever changed your name?
 pages.formerName.namedHeading                            = Has {0} ever changed their name?
-pages.formerName.married                                 = This could be if you got married or changed your name by deed poll.
+pages.formerName.married                                 = This could be if they got married or changed your name by deed poll.
 validation.formerName.choice.missing                     = Select yes if there’s been a name change
 
 # Former Name Capture
@@ -956,7 +954,7 @@ validation.formerNameCapture.last.maxlen                 = Enter a name using 35
 # Former Name Date
 pages.formerNameDate.yourHeading                         = When did you change your name?
 pages.formerNameDate.namedHeading                        = When did {0} change their name?
-pages.formerNameDate.hint1                               = For example, 31 3 2006.
+pages.formerNameDate.hint1                               = For example, 27 3 2007
 validation.formerNameDate.invalid                        = Enter a valid date
 validation.formerNameDate.missing                        = Enter the date when the name changed
 validation.formerNameDate.range.below                    = Enter a date which is on or after the date of birth
@@ -1119,9 +1117,11 @@ capture-email-passcode.error.incorrect_length           = Enter the 6 digit conf
 email-verified.heading                                   = Email address confirmed
 
 # CAPTURE TELEPHONE NUMBER MESSAGES
+capture-telephone-number.hint                            = For international numbers include the country code
 capture-telephone-number.yourHeading                     = What is your telephone number?
 capture-telephone-number.namedHeading                    = What is {0}’s telephone number?
 capture-telephone-number.paragraph                       = We may need to contact you about the application.
+capture-telephone-number.namedParagraph                  = We may need to contact them about the application.
 capture-telephone-number.error.invalid                   = Enter a telephone number in the correct format, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 capture-telephone-number.error.missing                   = Enter the telephone number
 capture-telephone-number.error.minlength                 = The telephone number must be at least 8 characters
@@ -1421,7 +1421,7 @@ pages.CoverSheet.vat1TRLink                        = VAT1TR form
 
 # Northern Ireland Protocol
 pages.northernIrelandReceiveGoods.heading                = Does the business expect to receive goods in Northern Ireland from an EU country?
-pages.northernIrelandReceiveGoods.label                  = What is the value of these goods?
+pages.northernIrelandReceiveGoods.label                  = What is the estimated value of these goods?
 pages.northernIrelandReceiveGoods.hint                   = For example, £600 or £9000
 nip.receiveGoods.missing                                 = Select yes if the business expects to receive goods in Northern Ireland from an EU country in the next 12 months
 validation.northernIrelandReceiveGoods.missing           = Enter the estimated value of the goods
@@ -1434,7 +1434,7 @@ nip.sellOrMove.heading                                   = Does the business exp
 nip.sellOrMove.para                                      = Tell us if the business will do any of the following:
 nip.sellOrMove.bullet1                                   = sell goods located in Northern Ireland to any country
 nip.sellOrMove.bullet2                                   = sell or move goods from Northern Ireland to an EU country
-nip.sellOrMove.label                                     = What is the value of these goods?
+nip.sellOrMove.label                                     = What is the estimated value of these goods?
 nip.sellOrMove.hint                                      = For example, £600 or £9000
 nip.error.missing                                        = Select yes if the business expects to do any of the following in the next 12 months
 validation.sellOrMoveNip.missing                         = Enter the estimated value of the goods
@@ -1453,8 +1453,7 @@ validation.businessName.missing                          = Enter the official na
 validation.businessName.maxlen                           = Enter an official business name using 105 characters or less
 
 # BUSINESS TELEPHONE NUMBER
-business.telephoneNumber.heading                         = What is the business’s telephone number?
-business.telephoneNumber.hint                            = For international numbers include the country code
+business.telephoneNumber.heading                         = What is the business telephone number?
 validation.business.telephoneNumber.invalid              = Enter a telephone number in the correct format, like 01632 960 001, 07700 900 982 or +44 808 157 0192
 validation.business.telephoneNumber.missing              = Enter the business telephone number
 validation.business.telephoneNumber.minlength            = The business telephone number must be at least 8 characters
@@ -1468,7 +1467,7 @@ validation.shortOrgName.maxlen                       = Enter an official busines
 
 # PART OF ORGANISATION
 partOfOrganisation.heading                               = Are you a part of an organisation?
-partOfOrganisation.indentText                            = As you are registering on behalf of someone else we need to collect your details in order to know a bit more about you.
+partOfOrganisation.para                                  = As you are registering on behalf of someone else we need to collect your details in order to know a bit more about you.
 validation.partOfOrganisation.missing                    = Select yes if you are part of an organisation
 
 # DECLARATION CAPACITY
@@ -1567,7 +1566,8 @@ pages.vat1TRRequired.para2                               = with details of your 
 # APPLICATION REFERENCE PAGE
 applicationReference.heading                             = Choose an application reference
 applicationReference.para                                = You can add a memorable word, phrase or number to every application. This could be a business name or a unique number to help you manage ongoing applications.
-applicationReference.label                               = Enter your chosen application reference
+applicationReference.label                               = Application reference
+applicationReference.hint                                = For example, Blue Steelworks
 applicationReference.error.missing                       = Enter an application reference
 applicationReference.error.invalid                       = Enter an application reference that does not contain special characters
 applicationReference.error.length                        = Enter an application reference that is 100 characters or less
@@ -1609,10 +1609,8 @@ attachments.transactorIdentityEvidenceRequired.additionalBullet6            = a 
 
 # LAND AND PROPERTY
 landAndProperty.heading                  = Does the business’s activities include the buying, selling or letting of land or property?
-landAndProperty.p1                       = If the business’s activities include the buying, selling or letting of land or property you must inform HMRC about this by completing a
-landAndProperty.link1                    = VAT5L form
-landAndProperty.p2                       = Some transactions involving land building are exempt from VAT. You can
-landAndProperty.link2                    = read the guidance on land and property
+landAndProperty.p1                       = Some transactions involving land building are exempt from VAT. You can
+landAndProperty.link1                    = read the guidance on land and property
 landAndProperty.error.missing            = Select yes if the business’s activities include the buying, selling or letting of land or property
 
 # IMPORTS OR EXPORTS
@@ -1744,7 +1742,7 @@ fileUpload.error.EntityTooSmall                      = The selected file is empt
 fileUpload.error.InvalidFileType                     = The selected file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT
 
 # BUSINESS EMAIL PAGE
-businessEmail.heading                                = What is the business’s email address?
+businessEmail.heading                                = What is the business email address?
 businessEmail.hint                                   = We use this to send business communications and VAT updates.
 businessEmail.para                                   = Full details of how we use contact information are in the
 businessEmail.link                                   = HMRC Privacy Notice
@@ -1757,7 +1755,7 @@ pages.business.hasWebsite.heading                    = Does the business have a 
 validation.business.hasWebsite.missing               = Select yes if the business has a website
 
 # BUSINESS WEBSITE ADDRESS PAGE
-businessWebsiteAddress.heading                       = What is the business’s website address?
+businessWebsiteAddress.heading                       = What is the business website address?
 validation.businessWebsiteAddress.invalid            = Enter the website address in the correct format, like https://www.example.com
 validation.businessWebsiteAddress.missing            = Enter the business website address
 validation.businessWebsiteAddress.maxlen             = The business website address must be 132 characters or fewer

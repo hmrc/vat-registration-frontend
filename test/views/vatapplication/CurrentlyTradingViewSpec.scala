@@ -32,7 +32,7 @@ class CurrentlyTradingViewSpec extends VatRegViewSpec {
     val heading = s"Was the business trading taxable goods or services by $regDate?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val yes = "Yes"
-    val no = "No, it started trading after this date"
+    val no = "No - it started trading after this date"
     val continue = "Save and continue"
   }
 
@@ -40,7 +40,7 @@ class CurrentlyTradingViewSpec extends VatRegViewSpec {
     val heading = s"Will the business be trading taxable goods or services by $regDate?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val yes = "Yes"
-    val no = "No, it will start trading after this date"
+    val no = "No - it will start trading after this date"
     val continue = "Save and continue"
   }
 

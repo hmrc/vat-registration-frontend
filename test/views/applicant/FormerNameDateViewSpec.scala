@@ -40,7 +40,7 @@ class FormerNameDateViewSpec extends VatRegViewSpec {
   val namedHeading = "When did testFirstName change their name?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para = "This could be if you got married or changed your name by deed poll."
-  val hint = "For example, 31 3 2006."
+  val hint = "For example, 27 3 2007"
   val continue = "Save and continue"
 
   "Former Name Page" should {

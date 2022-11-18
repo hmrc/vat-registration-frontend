@@ -28,6 +28,7 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec {
   val title = s"$heading - Register for VAT - GOV.UK"
   val namedHeading = "What is testFirstName’s telephone number?"
   val paragraph = "We may need to contact you about the application."
+  val namedParagraph = "We may need to contact them about the application."
   val buttonText = "Save and continue"
   val name = "testFirstName"
 
@@ -46,16 +47,9 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(heading)
     }
 
-    "have the correct heading when the user is a transactor" in new ViewSetup()(transactorDoc) {
+    "have the correct heading and paragraph when the user is a transactor" in new ViewSetup()(transactorDoc) {
       doc.heading mustBe Some(namedHeading)
-    }
-
-    "have the correct label" in {
-      doc.select(Selectors.label).text mustBe heading
-    }
-
-    "have the correct label when the user is a transactor" in {
-      transactorDoc.select(Selectors.label).text mustBe namedHeading
+      doc.getElementById("telephone-number-collection-reason").text mustBe namedParagraph
     }
 
     "have the correct paragraph" in {

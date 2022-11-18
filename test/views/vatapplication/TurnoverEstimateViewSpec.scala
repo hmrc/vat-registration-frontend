@@ -23,9 +23,10 @@ import views.html.vatapplication.TurnoverEstimate
 
 class TurnoverEstimateViewSpec extends VatRegViewSpec {
 
-  val heading = "What do you think the business’s VAT-taxable turnover will be for the next 12 months?"
+  val heading = "What do you think the VAT-taxable turnover will be for the next 12 months?"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val text = "Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate."
+  val para1Text = "Tell us the estimated value."
+  val para2Text = "Include the sale of all goods and services that are not exempt from VAT. You must include goods and services that have a 0% VAT rate."
   val link = "Find out more about which goods and services are exempt from VAT (opens in new tab)"
   val buttonText = "Save and continue"
 
@@ -42,8 +43,12 @@ class TurnoverEstimateViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(heading)
     }
 
-    "have the correct text" in new ViewSetup {
-      doc.para(1) mustBe Some(text)
+    "have the correct first para" in new ViewSetup {
+      doc.para(1) mustBe Some(para1Text)
+    }
+
+    "have the correct second para" in new ViewSetup {
+      doc.para(2) mustBe Some(para2Text)
     }
 
     "have the correct link" in new ViewSetup {

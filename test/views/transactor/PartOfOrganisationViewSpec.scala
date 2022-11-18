@@ -45,7 +45,7 @@ class PartOfOrganisationViewSpec extends VatRegViewSpec {
       doc.select(Selectors.h1).text() mustBe heading
     }
     "have the correct indent text" in new ViewSetup {
-      doc.select(Selectors.indent).first().text() mustBe indentText
+      doc.para(1) mustBe Some(indentText)
     }
 
     "have yes/no radio options" in new ViewSetup {
