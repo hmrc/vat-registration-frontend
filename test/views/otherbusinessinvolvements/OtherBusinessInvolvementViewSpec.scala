@@ -25,12 +25,12 @@ import views.html.otherbusinessinvolvements.OtherBusinessInvolvement
 class OtherBusinessInvolvementViewSpec extends VatRegViewSpec {
 
   val view = app.injector.instanceOf[OtherBusinessInvolvement]
-  implicit val doc: Document = Jsoup.parse(view(OtherBusinessInvolvementForm.form).body)
+  implicit val doc: Document = Jsoup.parse(view(OtherBusinessInvolvementForm.form, isVatGroup = false).body)
 
   object ExpectedContent {
-    val heading = "Have you or any of the partners or directors in this business been involved in any other businesses in the last 2 years?"
+    val heading = "Has there been involvement in any other businesses in the last 2 years?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val p1 = "Select ‘yes’ if any of the partners or directors in the business have acted as a sole trader, partner or director in any other business in the United Kingdom or Isle of Man in the last 2 years."
+    def p1(token: String) = s"Tell us if any of the partners or directors in the $token have acted as a sole trader, partner or director in any other business in the United Kingdom or Isle of Man in the last 2 years."
 
     val yes = "Yes"
     val no = "No"
@@ -38,8 +38,13 @@ class OtherBusinessInvolvementViewSpec extends VatRegViewSpec {
   }
 
   "the Other Business Involvement page" must {
-    "have the correct paragraph" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedContent.p1)
+    "have the correct paragraph when isVatGroup flat is true" in new ViewSetup {
+      val docWithVatGroup: Document = Jsoup.parse(view(OtherBusinessInvolvementForm.form, isVatGroup = true).body)
+      docWithVatGroup.para(1) mustBe Some(ExpectedContent.p1("VAT group"))
+    }
+
+    "have the correct paragraph when isVatGroup flat is false" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.p1("Business"))
     }
 
     "have the correct page title" in new ViewSetup {

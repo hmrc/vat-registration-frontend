@@ -17,7 +17,6 @@
 @import play.api.data.Form
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
-@import views.html.layouts.layout
 @import config.FrontendAppConfig
 
 @this(
@@ -31,7 +30,15 @@
     yesNoRadio: yesNoRadio
 )
 
-@(otherBusinessInvolvementForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(otherBusinessInvolvementForm: Form[Boolean], isVatGroup: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@para = @{
+    if (isVatGroup) {
+        messages("otherBusinessInvolvement.para", "VAT group")
+    } else {
+        messages("otherBusinessInvolvement.para", "Business")
+    }
+}
 
 @layout(pageTitle = Some(title(otherBusinessInvolvementForm, messages("otherBusinessInvolvement.heading"))), backLink = true) {
 
@@ -39,7 +46,7 @@
 
     @h1(messages("otherBusinessInvolvement.heading"))
 
-    @p{ @messages("otherBusinessInvolvement.para") }
+    @p{ @para }
 
     @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.submit) {
 
