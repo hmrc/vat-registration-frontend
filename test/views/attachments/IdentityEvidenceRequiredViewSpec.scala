@@ -26,11 +26,11 @@ class IdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
   implicit val doc = Jsoup.parse(view().body)
 
   object ExpectedContent {
-    val heading = "We require three pieces of additional information from you so we can prove your identity"
+    val heading = "You must send us three identity documents in order for us to process this VAT application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "We need one piece of primary evidence which consists of a copy of government issued photo which could include:"
+    val para1 = "We need one document to verify your identity. The document must have a government issued photo, for example:"
     val bullet1 = "a passport"
-    val bullet2 = "a photo drivers licence"
+    val bullet2 = "a photocard driving licence"
     val bullet3 = "a national identity card"
     val para2 = "We need two additional pieces of evidence which can be copies of:"
     val additionalBullet1 = "a mortgage statement"

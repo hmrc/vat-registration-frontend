@@ -1323,18 +1323,22 @@ attachments.multipleDocumentsRequired.VAT1614.para3                 = if you hav
 attachments.multipleDocumentsRequired.supportingDocs.para1          = any supporting documents
 
 # IDENTITY EVIDENCE REQUIRED
-attachments.identityEvidenceRequired.title                = Mae arnom angen tri darn o wybodaeth ychwanegol gennych fel y gallwn brofi pwy ydych
-attachments.identityEvidenceRequired.evidence             = Mae angen un darn o dystiolaeth sylfaenol arnom sy’n cynnwys copi o lun a gyhoeddwyd gan y llywodraeth a allai gynnwys:
-attachments.identityEvidenceRequired.bullet1              = pasbort
-attachments.identityEvidenceRequired.bullet2              = trwydded yrru cerdyn-llun
-attachments.identityEvidenceRequired.bullet3              = cerdyn adnabod cenedlaethol
-attachments.identityEvidenceRequired.additionalEvidence   = Mae arnom angen dau ddarn ychwanegol o dystiolaeth a all fod yn gopïau o’r canlynol:
-attachments.identityEvidenceRequired.additionalBullet1    = datganiad morgais
-attachments.identityEvidenceRequired.additionalBullet2    = cytundeb tenantiaeth neu brydles
-attachments.identityEvidenceRequired.additionalBullet3    = trwydded waith neu fisa
-attachments.identityEvidenceRequired.additionalBullet4    = unrhyw ohebiaeth gan yr Adran Gwaith a Phensiynau sy’n cadarnhau hawl i fudd-daliadau
-attachments.identityEvidenceRequired.additionalBullet5    = bil cyfleustodau diweddar
-attachments.identityEvidenceRequired.additionalBullet6    = tystysgrif geni
+attachments.identityEvidenceRequired.title                      = You must send us three identity documents in order for us to process this VAT application
+attachments.identityEvidenceRequired.evidence.start             = We need
+attachments.identityEvidenceRequired.evidence.bold              = one
+attachments.identityEvidenceRequired.evidence.end               = document to verify your identity. The document must have a government issued photo, for example:
+attachments.identityEvidenceRequired.bullet1                    = pasbort
+attachments.identityEvidenceRequired.bullet2                    = trwydded yrru cerdyn-llun
+attachments.identityEvidenceRequired.bullet3                    = cerdyn adnabod cenedlaethol
+attachments.identityEvidenceRequired.additionalEvidence.start   = We need
+attachments.identityEvidenceRequired.additionalEvidence.bold    = two
+attachments.identityEvidenceRequired.additionalEvidence.end     = additional pieces of evidence which can be copies of:
+attachments.identityEvidenceRequired.additionalBullet1          = datganiad morgais
+attachments.identityEvidenceRequired.additionalBullet2          = cytundeb tenantiaeth neu brydles
+attachments.identityEvidenceRequired.additionalBullet3          = trwydded waith neu fisa
+attachments.identityEvidenceRequired.additionalBullet4          = unrhyw ohebiaeth gan yr Adran Gwaith a Phensiynau sy’n cadarnhau hawl i fudd-daliadau
+attachments.identityEvidenceRequired.additionalBullet5          = bil cyfleustodau diweddar
+attachments.identityEvidenceRequired.additionalBullet6          = tystysgrif geni
 
 # DOCUMENTS POST
 attachments.documentsPost.title                    = Mae angen i chi anfon y dogfennau i’r cyfeiriad CThEM canlynol

@@ -46,9 +46,9 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitc
 
   object IdentityDetails {
     val summary = "What identity documents can I provide?"
-    val content: String = "We need one piece of primary evidence which consists of a copy of government issued photo which could include: " +
+    val content: String = "We need one document to verify your identity. The document must have a government issued photo, for example: " +
       "a passport " +
-      "a photo drivers licence " +
+      "a photocard driving licence " +
       "a national identity card " +
       "We need two additional pieces of evidence which can be copies of: " +
       "a mortgage statement " +
