@@ -23,10 +23,9 @@ import play.api.data.Forms.{single, text}
 object SupplyWorkersForm {
   val RADIO_YES_NO: String = "value"
   val defaultErrorCode: String = "labourCompliance.supplyWorkers"
-  val thirdPartyErrorCode: String = "labourCompliance.supplyWorkers.3pt"
 
-  def form(isTransactor: Boolean): Form[Boolean] = {
-    implicit val errorCode: ErrorCode = if(isTransactor) thirdPartyErrorCode else defaultErrorCode
+  val form: Form[Boolean] = {
+    implicit val errorCode: ErrorCode = defaultErrorCode
     Form(
       single(
         RADIO_YES_NO -> missingBooleanFieldMapping()
@@ -38,10 +37,9 @@ object SupplyWorkersForm {
 object WorkersForm {
   val NUMBER_OF_WORKERS: String = "numberOfWorkers"
   val defaultErrorCode: String = "labourCompliance.numberOfWorkers"
-  val thirdPartyErrorCode: String = "labourCompliance.numberOfWorkers.3pt"
 
-  def form(isTransactor: Boolean): Form[Int] = {
-    implicit val errorCode: ErrorCode = if(isTransactor) thirdPartyErrorCode else defaultErrorCode
+  val form: Form[Int] = {
+    implicit val errorCode: ErrorCode = defaultErrorCode
     Form(
       single(
         NUMBER_OF_WORKERS -> text
@@ -53,10 +51,9 @@ object WorkersForm {
   }
 }
 
-case class IntermediarySupplyForm(name: Option[String]) extends RequiredBooleanForm {
+object IntermediarySupplyForm extends RequiredBooleanForm {
   val RADIO_YES_NO: String = "value"
-  override val errorMsg: String = if(name.isDefined) "validation.labourCompliance.intermediarySupply.3pt.missing" else "validation.labourCompliance.intermediarySupply.missing"
-  override lazy val errorMsgArgs: Seq[Any] = if(name.isDefined) Array(name.get) else Nil
+  override val errorMsg: String = "validation.labourCompliance.intermediarySupply.missing"
 
   val form = Form(
     single(

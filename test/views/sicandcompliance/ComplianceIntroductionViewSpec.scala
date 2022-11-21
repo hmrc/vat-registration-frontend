@@ -23,9 +23,9 @@ import views.html.sicandcompliance.compliance_introduction
 
 class ComplianceIntroductionViewSpec extends VatRegViewSpec {
   object ExpectedContent {
-    val heading  = "Tell us more about your business"
+    val heading  = "Tell us more about the business"
     val title    = s"$heading - Register for VAT - GOV.UK"
-    val para     = "We’re going to ask you a few questions about your business activities so we can understand what the business does."
+    val para     = "We’re going to ask you a few questions so we can understand what the business does."
     val continue = "Save and continue"
   }
 
