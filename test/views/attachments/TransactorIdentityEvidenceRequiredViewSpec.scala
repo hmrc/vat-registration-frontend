@@ -33,12 +33,12 @@ class TransactorIdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
     }
     def title(headingText: String) = s"$headingText - Register for VAT - GOV.UK"
     def para1(transactorName: Option[String], applicantName: Option[String]): String = (transactorName, applicantName) match {
-      case (Some(transactor), Some(applicant)) => s"We need one document to verify both $transactor and $applicant’s identity, this must include a government issued photo for example:"
-      case (Some(transactor), None) => s"We need one document to verify $transactor’s identity, this must include a government issued photo for example:"
-      case (None, Some(applicant)) => s"We need one document to verify $applicant’s identity, this must include a government issued photo for example:"
+      case (Some(transactor), Some(applicant)) => s"We need one document to verify both $transactor and $applicant’s identity. The document must have a government issued photo, for example:"
+      case (Some(transactor), None) => s"We need one document to verify $transactor’s identity. The document must have a government issued photo, for example:"
+      case (None, Some(applicant)) => s"We need one document to verify $applicant’s identity. The document must have a government issued photo, for example:"
     }
     val bullet1 = "a passport"
-    val bullet2 = "a photo drivers licence"
+    val bullet2 = "a photocard driving licence"
     val bullet3 = "a national identity card"
     val para2 = "We need two additional pieces of evidence which can be copies of:"
     val additionalBullet1 = "a mortgage statement"

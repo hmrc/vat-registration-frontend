@@ -22,7 +22,8 @@
         p: components.p,
         bullets: components.bullets,
         form: FormWithCSRF,
-        button: components.button
+        button: components.button,
+        strong: components.strong
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
@@ -31,14 +32,22 @@
 
     @h1("attachments.identityEvidenceRequired.title")
 
-    @p { @messages("attachments.identityEvidenceRequired.evidence") }
+    @p {
+        @messages("attachments.identityEvidenceRequired.evidence.start")
+        @strong{ @messages("attachments.identityEvidenceRequired.evidence.bold") }
+        @messages(s"attachments.identityEvidenceRequired.evidence.end")
+    }
     @bullets(
         "attachments.identityEvidenceRequired.bullet1",
         "attachments.identityEvidenceRequired.bullet2",
         "attachments.identityEvidenceRequired.bullet3"
     )
 
-    @p { @messages("attachments.identityEvidenceRequired.additionalEvidence") }
+    @p {
+        @messages("attachments.identityEvidenceRequired.additionalEvidence.start")
+        @strong { @messages("attachments.identityEvidenceRequired.additionalEvidence.bold") }
+        @messages("attachments.identityEvidenceRequired.additionalEvidence.end")
+    }
     @bullets(
         "attachments.identityEvidenceRequired.additionalBullet1",
         "attachments.identityEvidenceRequired.additionalBullet2",
