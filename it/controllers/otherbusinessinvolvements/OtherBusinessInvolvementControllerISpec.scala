@@ -18,6 +18,7 @@ package controllers.otherbusinessinvolvements
 
 import itutil.ControllerISpec
 import models.Business
+import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -35,6 +36,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,6 +52,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[Business].contains(Business(otherBusinessInvolvement = Some(true)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -69,6 +72,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[Business](None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -86,6 +90,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -103,6 +108,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[Business](None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

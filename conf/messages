@@ -1618,8 +1618,8 @@ importsOrExports.heading                   = Will the business trade VAT-taxable
 validation.ImportsOrExports.error          = Select yes if the business will trade VAT-taxable goods with countries outside the UK
 
 # OTHER BUSINESS INVOLVEMENT
-otherBusinessInvolvement.heading           = Have you or any of the partners or directors in this business been involved in any other businesses in the last 2 years?
-otherBusinessInvolvement.para              = Select ‘yes’ if any of the partners or directors in the business have acted as a sole trader, partner or director in any other business in the United Kingdom or Isle of Man in the last 2 years.
+otherBusinessInvolvement.heading           = Has there been involvement in any other businesses in the last 2 years?
+otherBusinessInvolvement.para              = Tell us if any of the partners or directors in the {0} have acted as a sole trader, partner or director in any other business in the United Kingdom or Isle of Man in the last 2 years.
 validation.OtherBusinessInvolvement.error  = Select yes if there has been involvement in any other businesses in the last 2 years
 
 # OTHER BUSINESS NAME
@@ -1662,12 +1662,12 @@ obi.cya.title                                                    = Check your an
 obi.cya.titleWithName                                            = Change {0} details
 obi.cya.businessName                                             = Business name
 obi.cya.businessName.hiddenText                                  = Business name for {0} Other Business Involvement
-obi.cya.hasVatNumber                                             = Other business has VAT number
-obi.cya.hasVatNumber.hiddenText                                  = Other business has VAT number for {0} Other Business Involvement
+obi.cya.hasVatNumber                                             = Have a VAT number
+obi.cya.hasVatNumber.hiddenText                                  = Have a VAT number for {0} Other Business Involvement
 obi.cya.vatNumber                                                = VAT number
 obi.cya.vatNumber.hiddenText                                     = VAT number for {0} Other Business Involvement
-obi.cya.hasUtr                                                   = Other business has Unique Taxpayer Reference
-obi.cya.hasUtr.hiddenText                                        = Other business has Unique Taxpayer Reference for {0} Other Business Involvement
+obi.cya.hasUtr                                                   = Have a Unique Taxpayer Reference
+obi.cya.hasUtr.hiddenText                                        = Have a Unique Taxpayer Reference for {0} Other Business Involvement
 obi.cya.utr                                                      = Unique Taxpayer Reference for other business
 obi.cya.utr.hiddenText                                           = Unique Taxpayer Reference for other business for {0} Other Business Involvement
 obi.cya.stillActivelyTrading                                     = Still actively trading
