@@ -56,7 +56,7 @@ class ShortOrgNameController @Inject()(val sessionService: SessionService,
             for {
               _ <- businessService.updateBusiness(ShortOrgNameAnswer(success))
             } yield {
-              Redirect(routes.TradingNameController.show)
+              Redirect(routes.ConfirmTradingNameController.show)
             }
           }
         )

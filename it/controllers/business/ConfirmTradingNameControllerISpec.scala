@@ -26,9 +26,9 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class TradingNameControllerISpec extends ControllerISpec {
+class ConfirmTradingNameControllerISpec extends ControllerISpec {
   val companyName = "testCompanyName"
-  val url: String = controllers.business.routes.TradingNameController.show.url
+  val url: String = controllers.business.routes.ConfirmTradingNameController.show.url
 
   "show Trading Name page" should {
     "return OK" in new Setup {
@@ -52,23 +52,23 @@ class TradingNameControllerISpec extends ControllerISpec {
   }
 
   "submit Trading Name page" should {
-    "return SEE_OTHER with redirect to PPOB" in new Setup {
+    "return SEE_OTHER with redirect to capture trading name page" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[Business].contains(businessDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true), tradingName = Some("Test Trading Name")))
+        .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(false)))
         .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("true"), "tradingName" -> Seq("Test Trading Name")))
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("false")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.PpobAddressController.startJourney.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureTradingNameController.show.url)
       }
     }
 
@@ -79,33 +79,16 @@ class TradingNameControllerISpec extends ControllerISpec {
         .s4lContainer[Business].contains(businessDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
-        .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(false)))
+        .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
         .s4lContainer[Business].clearedByKey
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("false")))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.InternationalPpobAddressController.show.url)
-      }
-    }
-
-    "return BAD_REQUEST if true is selected without a name" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("true")))
 
       whenReady(response) { res =>
-        res.status mustBe BAD_REQUEST
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPpobAddressController.show.url)
       }
     }
 

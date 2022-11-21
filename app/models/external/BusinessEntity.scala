@@ -26,6 +26,13 @@ import java.time.LocalDate
 
 sealed trait BusinessEntity {
   val dateOfIncorporation: Option[LocalDate] = None
+
+  def getBusinessName: Option[String] = this match {
+    case incorporatedEntity: IncorporatedEntity => incorporatedEntity.companyName
+    case minorEntity: MinorEntity => minorEntity.companyName
+    case partnershipIdEntity: PartnershipIdEntity => partnershipIdEntity.companyName
+    case _ => throw new InternalServerException("Attempted to get company name for a business entity without one (Sole trader/NETP)")
+  }
 }
 
 object BusinessEntity {

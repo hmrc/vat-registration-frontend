@@ -21,6 +21,7 @@ import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featureswitch.core.config.FeatureSwitching
 import models.api._
 import models.api.vatapplication.{StoringOverseas, StoringWithinUk, VatApplication}
+import models.external.BusinessEntity
 import models.view.SummaryListRowUtils._
 import models.{Business, English, Entity, Welsh}
 import play.api.i18n.Messages
@@ -40,6 +41,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     new InternalServerException(s"[AboutTheBusinessCheckYourAnswersBuilder] Couldn't construct CYA due to missing section: $section")
 
   def build(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): HtmlFormat.Appendable = {
+    val businessEntity = vatScheme.applicantDetails.flatMap(_.entity)
     val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
     val vatApplication = vatScheme.vatApplication.getOrElse(throw missingSection("Vat Application"))
     val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
@@ -49,6 +51,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       govukSummaryList(SummaryList(
         rows = List(
           partnershipMembers(entities),
+          tradingName(business, partyType, businessEntity),
           ppobAddress(business, partyType),
           businessEmailAddress(business),
           businessDaytimePhoneNumber(business),
@@ -65,7 +68,6 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
         ).flatten ++
           complianceSection(business) ++
           List(
-            tradingName(business, partyType),
             importsOrExports(vatApplication, partyType),
             applyForEori(vatApplication, partyType),
             turnoverEstimate(vatApplication),
@@ -150,6 +152,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       },
       Some(controllers.business.routes.VatCorrespondenceController.show.url)
     )
+
   private def contactPreference(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.contactPreference",
@@ -219,23 +222,19 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)
     )
 
-  private def tradingName(business: Business, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] = {
+  private def tradingName(business: Business, partyType: PartyType, businessEntity: Option[BusinessEntity])(implicit messages: Messages): Option[SummaryListRow] = {
     val tradingNameOptional = Business.tradingNameOptional(partyType)
 
     optSummaryListRowString(
-      if (tradingNameOptional) {
-        s"$sectionId.tradingName"
-      } else {
-        s"$sectionId.mandatoryName"
-      },
+      s"$sectionId.tradingName",
       business.tradingName match {
-        case None => Some("app.common.no")
+        case None if business.hasTradingName.contains(true) => businessEntity.flatMap(_.getBusinessName)
         case optTradingName => optTradingName
       },
       if (tradingNameOptional) {
-        Some(controllers.business.routes.TradingNameController.show.url)
+        Some(controllers.business.routes.ConfirmTradingNameController.show.url)
       } else {
-        Some(controllers.business.routes.MandatoryTradingNameController.show.url)
+        Some(controllers.business.routes.CaptureTradingNameController.show.url)
       }
     )
   }

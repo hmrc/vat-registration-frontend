@@ -42,19 +42,19 @@ class TradingNameResolverController @Inject()(val sessionService: SessionService
       implicit profile =>
         vatRegistrationService.partyType.flatMap {
           case Individual | NETP =>
-            Future.successful(Redirect(controllers.business.routes.MandatoryTradingNameController.show))
+            Future.successful(Redirect(controllers.business.routes.CaptureTradingNameController.show))
           case Partnership | ScotPartnership =>
             Future.successful(Redirect(controllers.business.routes.PartnershipNameController.show))
           case UkCompany | RegSociety | CharitableOrg | Trust | UnincorpAssoc | NonUkNonEstablished =>
             applicantDetailsService.getCompanyName.map {
               case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
-              case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
+              case Some(_) => Redirect(controllers.business.routes.ConfirmTradingNameController.show)
               case None => Redirect(controllers.business.routes.BusinessNameController.show)
             }
           case ScotLtdPartnership | LtdPartnership | LtdLiabilityPartnership =>
             applicantDetailsService.getCompanyName.map {
               case Some(companyName) if companyName.length > 105 => Redirect(controllers.business.routes.ShortOrgNameController.show)
-              case Some(_) => Redirect(controllers.business.routes.TradingNameController.show)
+              case Some(_) => Redirect(controllers.business.routes.ConfirmTradingNameController.show)
               case None => Redirect(controllers.business.routes.PartnershipNameController.show)
             }
           case pt => throw new InternalServerException(s"PartyType: $pt not supported")

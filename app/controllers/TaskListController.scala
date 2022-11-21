@@ -42,7 +42,6 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    transactorDetailsService: TransactorDetailsService,
                                    businessService: BusinessService,
                                    vatApplicationService: VatApplicationService,
-                                   flatRateService: FlatRateService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,

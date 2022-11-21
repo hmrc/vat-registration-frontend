@@ -31,25 +31,25 @@
     button: components.button
 )
 
-@(soleTraderNameForm: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(captureTradingNameForm: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(soleTraderNameForm, messages("soleTrader.tradingName.heading"))), backLink = true) {
-    @errorSummary(soleTraderNameForm.errors)
-    @h1(messages("soleTrader.tradingName.heading"))
+@layout(pageTitle = Some(title(captureTradingNameForm, messages("captureTradingName.heading"))), backLink = true) {
+    @errorSummary(captureTradingNameForm.errors)
+    @h1(messages("captureTradingName.heading"))
 
     @details(
-        summary = messages("soleTrader.tradingName.summary"),
+        summary = messages("captureTradingName.summary"),
         content = detailsContent
     )
 
-    @form(action = controllers.business.routes.MandatoryTradingNameController.submit) {
+    @form(action = controllers.business.routes.CaptureTradingNameController.submit) {
         @inputText(
-            soleTraderNameForm,
-            id = "trading-name",
-            name = "trading-name",
-            label = messages("soleTrader.tradingName.label"),
+            captureTradingNameForm,
+            id = "captureTradingName",
+            name = "captureTradingName",
+            label = messages("captureTradingName.label"),
             isPageHeading = false,
-            hint = Some(Html(messages("soleTrader.tradingName.hint")))
+            hint = Some(Html(messages("captureTradingName.hint")))
         )
 
         @button("app.common.continue", showSaveProgressButton = true)
@@ -57,6 +57,6 @@
 }
 
 @detailsContent = {
-    @p { @messages("soleTrader.tradingName.para1") }
-    @p { @messages("soleTrader.tradingName.para2") }
+    @p { @messages("captureTradingName.para1") }
+    @p { @messages("captureTradingName.para2") }
 }

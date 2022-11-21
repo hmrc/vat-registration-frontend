@@ -32,7 +32,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
   "Trading name page resolver" should {
     List(Individual, NETP).foreach { partyType =>
-      s"return SEE_OTHER and redirects to ${controllers.business.routes.MandatoryTradingNameController.show.url} for ${partyType.toString}" in new Setup {
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.CaptureTradingNameController.show.url} for ${partyType.toString}" in new Setup {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
@@ -47,7 +47,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.MandatoryTradingNameController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.CaptureTradingNameController.show.url)
         }
       }
     }
@@ -99,7 +99,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
     }
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
-      s"return SEE_OTHER and redirects to ${controllers.business.routes.TradingNameController.show.url} for ${partyType.toString}" in new Setup {
+      s"return SEE_OTHER and redirects to ${controllers.business.routes.ConfirmTradingNameController.show.url} for ${partyType.toString}" in new Setup {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
@@ -114,7 +114,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
 
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ConfirmTradingNameController.show.url)
         }
       }
     }

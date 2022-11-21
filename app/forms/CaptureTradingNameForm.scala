@@ -22,36 +22,35 @@ import play.api.data.Forms.{single, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
-object SoleTraderNameForm {
-  val errMsg = "validation.soleTrader.tradingName.missing"
-  val tradingNameKey = "trading-name"
+object CaptureTradingNameForm {
+  val tradingNameKey = "captureTradingName"
   val invalidNameSet: Set[String] = Set("limited", "ltd", "llp", "plc")
   implicit val errorCode: ErrorCode = tradingNameKey
   val tradingNameRegEx = """^[A-Za-z0-9 ,.&''\/-]+$""".r
 
 
   val form = Form(
-      single(
-        tradingNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
-          nonEmptyValidText(tradingNameRegEx),
-          isValidTradingName("tradingName"),
-          maxLenText(160)
-        ))
-      )
+    single(
+      tradingNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+        nonEmptyValidText(tradingNameRegEx),
+        isValidTradingName,
+        maxLenText(160)
+      ))
     )
+  )
 
-  private def isValidTradingName(soleTraderNameForm: String): Constraint[String] = Constraint { tradingName: String =>
+  private def isValidTradingName: Constraint[String] = Constraint { tradingName: String =>
     val isValidTradingName: Boolean = tradingName.matches("""^[A-Za-z0-9 ,.&''\/-]+$""")
     val wordSet = tradingName.toLowerCase.split(" ").toSet
 
     if (isValidTradingName) {
       if (invalidNameSet.intersect(wordSet).nonEmpty) {
-        Invalid(s"validation.$soleTraderNameForm.invalid")
+        Invalid(s"validation.captureTradingName.invalid")
       } else {
         Valid
       }
     } else {
-      Invalid(s"validation.$soleTraderNameForm.invalid")
+      Invalid(s"validation.captureTradingName.invalid")
     }
   }
 }

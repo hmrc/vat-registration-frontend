@@ -82,7 +82,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
           Nil
         }
       } ++ {
-        if (scheme.business.exists(_.hasTradingName.contains(true)) ||
+        if (scheme.business.exists(_.hasTradingName.contains(false)) ||
           !scheme.partyType.exists(Business.tradingNameOptional)) {
           Seq(scheme.business.exists(_.tradingName.isDefined))
         } else {

@@ -103,7 +103,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   val businessDetails: Business = Business(
-    hasTradingName = Some(false),
+    hasTradingName = Some(true),
     email = Some("test@foo.com"),
     telephoneNumber = Some("987654"),
     website = Some("/test/url"),
@@ -175,7 +175,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
-    business = Some(businessDetails.copy(hasTradingName = Some(true), tradingName = Some(testCompanyName))),
+    business = Some(businessDetails.copy(tradingName = Some(testCompanyName))),
     vatApplication = Some(fullVatApplication.copy(overseasCompliance = Some(testFullOverseasCompliance))),
     bankAccount = None
   )

@@ -2,14 +2,14 @@
 
 package pages.business
 
-import forms.SoleTraderNameForm
+import forms.CaptureTradingNameForm
 import helpers.A11ySpec
-import views.html.business.soletrader_name
+import views.html.business.CaptureTradingNameView
 
-class SoleTraderNameA11ySpec extends A11ySpec {
+class CaptureTradingNameA11ySpec extends A11ySpec {
 
-  val view = app.injector.instanceOf[soletrader_name]
-  val form = SoleTraderNameForm.form
+  val view = app.injector.instanceOf[CaptureTradingNameView]
+  val form = CaptureTradingNameForm.form
 
   "the SoleTraderName page" when {
     "there are no form errors" must {

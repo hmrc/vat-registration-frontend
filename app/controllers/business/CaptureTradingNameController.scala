@@ -18,45 +18,45 @@ package controllers.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.SoleTraderNameForm
+import forms.CaptureTradingNameForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.TradingName
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.business.soletrader_name
+import views.html.business.CaptureTradingNameView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class MandatoryTradingNameController @Inject()(val sessionService: SessionService,
-                                               val authConnector: AuthConnector,
-                                               val applicantDetailsService: ApplicantDetailsService,
-                                               val businessService: BusinessService,
-                                               val vatRegistrationService: VatRegistrationService,
-                                               view: soletrader_name
-                                              )(implicit val appConfig: FrontendAppConfig,
-                                                val executionContext: ExecutionContext,
-                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+class CaptureTradingNameController @Inject()(val sessionService: SessionService,
+                                             val authConnector: AuthConnector,
+                                             val applicantDetailsService: ApplicantDetailsService,
+                                             val businessService: BusinessService,
+                                             val vatRegistrationService: VatRegistrationService,
+                                             view: CaptureTradingNameView
+                                            )(implicit val appConfig: FrontendAppConfig,
+                                              val executionContext: ExecutionContext,
+                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
           optTradingName <- businessService.getBusiness.map(_.tradingName)
-          form = optTradingName.fold(SoleTraderNameForm.form)(SoleTraderNameForm.form.fill)
+          form = optTradingName.fold(CaptureTradingNameForm.form)(CaptureTradingNameForm.form.fill)
         } yield Ok(view(form))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        SoleTraderNameForm.form.bindFromRequest().fold(
+        CaptureTradingNameForm.form.bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors))),
           success => {
-            businessService.updateBusiness(TradingName(success)) flatMap {
+            businessService.updateBusiness(TradingName(success)).flatMap {
               _ =>
                 vatRegistrationService.partyType.map {
                   case NETP | NonUkNonEstablished => Redirect(controllers.business.routes.InternationalPpobAddressController.show)
