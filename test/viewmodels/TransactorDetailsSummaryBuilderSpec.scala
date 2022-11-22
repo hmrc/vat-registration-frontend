@@ -68,7 +68,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
   object TestContent {
     val isPartOfOrganisation = "Part of an organisation"
     val organisationName = "Organisation name"
-    val roleInTheBusiness = "Role in business registering for VAT"
+    val roleInTheBusiness = "Role with the business"
     val fullName = "Full name"
     val dateOfBirth = "Date of birth"
     val nino = "National Insurance number"

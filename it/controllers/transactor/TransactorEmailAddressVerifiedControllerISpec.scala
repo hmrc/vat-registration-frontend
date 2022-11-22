@@ -38,7 +38,7 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
   }
 
   "POST /transactor-details/email-address-verified" should {
-    "redirect to Business Identification Resolver" in new Setup {
+    "redirect to Task list page" in new Setup {
       disable(StubEmailVerification)
 
       given()
