@@ -16,26 +16,20 @@
 
 package views.business
 
-import forms.TradingNameForm
+import forms.ConfirmTradingNameForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.business.trading_name
+import views.html.business.ConfirmTradingNameView
 
-class TradingNameViewSpec extends VatRegViewSpec {
+class ConfirmTradingNameViewSpec extends VatRegViewSpec {
 
   val testCompanyName = "testCompanyName"
-  val form = TradingNameForm.form
-  val view = app.injector.instanceOf[trading_name]
+  val form = ConfirmTradingNameForm.form
+  val view = app.injector.instanceOf[ConfirmTradingNameView]
   implicit val doc = Jsoup.parse(view(form, testCompanyName).body)
 
   object ExpectedContent {
-    val heading = s"Does or will the business trade using a name that is different from $testCompanyName?"
-    val detailsSummary = "What is a trading name?"
-    val detailsContent = "A business can trade using a name that’s different from its official or registered name. " +
-      "This is also known as a ’trading name’. " +
-      "Some businesses choose a different trading name to help with branding or getting a domain name for their website."
-    val hint = "You cannot include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’"
-    val label = "Enter the trading name"
+    val heading = "Is this your trading name?"
     val yes = "Yes"
     val no = "No"
     val continue = "Save and continue"
@@ -50,21 +44,17 @@ class TradingNameViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
 
-    "have correct descriptive label" in new ViewSetup {
-      doc.select("legend").text() mustBe ExpectedContent.heading
+    "play back the companyName" in new ViewSetup {
+      doc.para(1) mustBe Some(testCompanyName)
     }
 
-    "have a progressive disclosure" in new ViewSetup {
-      doc.details mustBe Some(Details(ExpectedContent.detailsSummary, ExpectedContent.detailsContent))
+    "have correct descriptive label" in new ViewSetup {
+      doc.select("legend").text() mustBe ExpectedContent.heading
     }
 
     "have yes/no radio options" in new ViewSetup {
       doc.radio("true") mustBe Some(ExpectedContent.yes)
       doc.radio("false") mustBe Some(ExpectedContent.no)
-    }
-
-    "have a textbox with the correct label" in new ViewSetup {
-      doc.textBox("tradingName") mustBe Some(ExpectedContent.label)
     }
 
     "have a primary action" in new ViewSetup {

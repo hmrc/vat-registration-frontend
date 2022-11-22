@@ -519,18 +519,20 @@ voluntaryStartDateNoChoice.para                       = You can choose the date 
 voluntaryStartDateNoChoice.panel                      = Once the business is successfully registered for VAT you cannot change its start date
 voluntaryStartDateNoChoice.hint                       = For example, {0}
 
-# Trading Name Page
-pages.tradingName.heading                           = Does or will the business trade using a name that is different from {0}?
-pages.tradingName.tradingNameLabel                  = Enter the trading name
-pages.tradingName.panel.para1                       = What is a trading name?
-pages.tradingName.panel.para2                       = A business can trade using a name that’s different from its official or registered name. This is also known as a ’trading name’.
-pages.tradingName.panel.para3                       = Some businesses choose a different trading name to help with branding or getting a domain name for their website.
-pages.tradingdetails.input.hint-text                = You cannot include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’
+# Confirm Trading Name Page
+confirmTradingName.heading                      = Is this your trading name?
+validation.confirmTradingName.missing           = Select yes if this is the business’s trading name
 
-validation.tradingName.invalid                      = Enter a valid trading name
-validation.tradingName.maxlen                       = Enter a trading name using 35 characters or less
-validation.tradingName.missing                      = Enter a trading name
-validation.tradingNameRadio.missing                 = Select yes if the business will trade under another name
+# Trading Name Page
+captureTradingName.heading                      = What is your trading name?
+captureTradingName.label                        = Enter the trading name
+captureTradingName.summary                      = What is a trading name?
+captureTradingName.para1                        = A business can trade using a name that’s different from their registered name. This is also known as a ‘trading name’.
+captureTradingName.para2                        = Some businesses choose a different trading name to help with branding or getting a domain name for their website.
+captureTradingName.hint                         = You cannot include ‘limited’, ‘Ltd’, ‘limited liability partnership’, ‘LLP’, ‘public limited company’ or ‘plc’
+validation.captureTradingName.invalid           = Enter a valid trading name
+validation.captureTradingName.maxlen            = Enter a trading name using 160 characters or less
+validation.captureTradingName.missing           = Enter a trading name
 
 # Voluntary Registration Reason Summary
 pages.summary.voluntaryReason.sells                           = The company is already selling goods or services
@@ -724,8 +726,7 @@ cya.aboutTheBusiness.sicCodes                       = Confirm the business’s S
 cya.aboutTheBusiness.supplyWorkers                  = Supplying workers to provide a service to another business
 cya.aboutTheBusiness.numberOfWorkers                = Number of workers supplied
 cya.aboutTheBusiness.intermediarySupply             = Intermediary arranging the supply of workers
-cya.aboutTheBusiness.tradingName                    = Different Trading name
-cya.aboutTheBusiness.mandatoryName                  = Trading name
+cya.aboutTheBusiness.tradingName                    = Trading name
 cya.aboutTheBusiness.importsOrExports               = Trade VAT-taxable goods outside UK
 cya.aboutTheBusiness.applyForEori                   = Apply for EORI?
 cya.aboutTheBusiness.turnoverEstimate               = What do you think the business’s VAT-taxable turnover will be for the next 12 months?
@@ -1167,17 +1168,6 @@ aas.paymentMethod.standingOrder                          = Standing order
 aas.paymentMethod.error.required                         = Select the VAT payment method
 aas.paymentMethod.bacs.hiddenContent                     = To pay by Direct Debit, complete this VAT registration to get the VAT Registration Number. The business can then
 aas.paymentMethod.bacs.linkText                          = print off and fill in a Direct debit mandate
-
-# SOLE TRADER - TRADING NAME
-soleTrader.tradingName.heading                           = What is your trading name?
-soleTrader.tradingName.label                             = Enter the trading name
-soleTrader.tradingName.summary                           = What is a trading name?
-soleTrader.tradingName.para1                             = A sole trader can trade using a name that’s different from their registered name. This is also known as a ‘business name’.
-soleTrader.tradingName.para2                             = Some sole traders choose a different trading name to help with branding or getting a domain name for their website.
-soleTrader.tradingName.hint                              = You cannot include ’limited’, ’Ltd’, ’limited liability partnership’, ’LLP’, ’public limited company’ or ’plc’.
-validation.trading-name.invalid                          = Enter a valid trading name
-validation.trading-name.maxlen                           = Enter a trading name using 160 characters or less
-validation.trading-name.missing                          = Enter a trading name
 
 # LEAD PARTNER ENTITY TYPE
 pages.leadPartnerEntityType.heading                      = What type of partner are you?

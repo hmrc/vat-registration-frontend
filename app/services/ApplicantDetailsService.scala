@@ -57,12 +57,7 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
     for {
       applicant <- getApplicantDetails
     } yield {
-      applicant.entity.flatMap {
-        case incorporatedEntity: IncorporatedEntity => incorporatedEntity.companyName
-        case minorEntity: MinorEntity => minorEntity.companyName
-        case partnershipIdEntity: PartnershipIdEntity => partnershipIdEntity.companyName
-        case _ => throw new InternalServerException("Attempted to get company name for a partyType without one")
-      }
+      applicant.entity.flatMap(_.getBusinessName)
     }
 
   def getTransactorApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =

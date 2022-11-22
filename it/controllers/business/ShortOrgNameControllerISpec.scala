@@ -79,7 +79,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.TradingNameController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.ConfirmTradingNameController.show.url)
       }
     }
 

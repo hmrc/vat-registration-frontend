@@ -16,26 +16,27 @@
 
 package views.business
 
-import forms.SoleTraderNameForm
+import forms.CaptureTradingNameForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.business.soletrader_name
+import views.html.business.CaptureTradingNameView
 
-class SoleTraderNameViewSpec extends VatRegViewSpec {
-  val view: soletrader_name = app.injector.instanceOf[soletrader_name]
+class CaptureTradingNameViewSpec extends VatRegViewSpec {
+  val view: CaptureTradingNameView = app.injector.instanceOf[CaptureTradingNameView]
 
   object ExpectedContent {
-    val heading  = "What is your trading name?"
-    val title    = s"$heading - Register for VAT - GOV.UK"
-    val summary  = "What is a trading name?"
-    val content  = "A sole trader can trade using a name that’s different from their registered name. This is also known as a ‘business name’. " +
-                   "Some sole traders choose a different trading name to help with branding or getting a domain name for their website."
-    val label    = "Enter the trading name"
+    val heading = "What is your trading name?"
+    val title = s"$heading - Register for VAT - GOV.UK"
+    val summary = "What is a trading name?"
+    val content = "A business can trade using a name that’s different from their registered name. This is also known as a ‘trading name’. " +
+      "Some businesses choose a different trading name to help with branding or getting a domain name for their website."
+    val label = "Enter the trading name"
+    val hint = "You cannot include ‘limited’, ‘Ltd’, ‘limited liability partnership’, ‘LLP’, ‘public limited company’ or ‘plc’"
     val continue = "Save and continue"
   }
 
-  implicit val doc: Document = Jsoup.parse(view(SoleTraderNameForm.form).body)
+  implicit val doc: Document = Jsoup.parse(view(CaptureTradingNameForm.form).body)
 
   "Sole Trader Name page" must {
     "have a back link" in new ViewSetup {
@@ -51,11 +52,15 @@ class SoleTraderNameViewSpec extends VatRegViewSpec {
     }
 
     "have the correct label" in new ViewSetup {
-      doc.textBox("trading-name") mustBe Some(ExpectedContent.label)
+      doc.textBox("captureTradingName") mustBe Some(ExpectedContent.label)
     }
 
     "have the correct details" in new ViewSetup {
       doc.details mustBe Some(Details(ExpectedContent.summary, ExpectedContent.content))
+    }
+
+    "have the correct hint" in new ViewSetup {
+      doc.hintText mustBe Some(ExpectedContent.hint)
     }
 
     "have a primary action" in new ViewSetup {

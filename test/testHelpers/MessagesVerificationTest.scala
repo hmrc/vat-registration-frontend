@@ -22,10 +22,9 @@ import scala.io.Source
 
 class MessagesVerificationTest extends PlaySpec {
 
-  "Messages file" should {
+  def key(line: String): String = line.takeWhile(_ != '=')
 
-    def key(line: String): String = line.takeWhile(_ != '=')
-
+  "Messages file" must {
     "not contain unescaped single quotes" in {
       for {
         line <- Source.fromFile("conf/messages").getLines()
@@ -36,6 +35,22 @@ class MessagesVerificationTest extends PlaySpec {
     "not contain attribute values unenclosed in double quotes" in {
       for {
         line <- Source.fromFile("conf/messages").getLines()
+        if line.matches("""^.+=.+=\s*[{].*$""")
+      } fail(s"Found an open brace not preceded by double quotes, but preceded by an equals sign: ${key(line)}")
+    }
+  }
+
+  "Welsh Messages file" must {
+    "not contain unescaped single quotes" in {
+      for {
+        line <- Source.fromFile("conf/messages.cy").getLines()
+        if line.matches("""^.+[=].*[^']'[^'].*$""")
+      } fail(s"Found an unescaped single quote in messages file under key: ${key(line)}")
+    }
+
+    "not contain attribute values unenclosed in double quotes" in {
+      for {
+        line <- Source.fromFile("conf/messages.cy").getLines()
         if line.matches("""^.+=.+=\s*[{].*$""")
       } fail(s"Found an open brace not preceded by double quotes, but preceded by an equals sign: ${key(line)}")
     }

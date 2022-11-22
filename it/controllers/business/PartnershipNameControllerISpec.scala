@@ -72,7 +72,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient("/partnership-official-name").post(Map("partnershipName" -> Seq(partnershipName)))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.TradingNameController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ConfirmTradingNameController.show.url)
       }
     }
 

@@ -62,7 +62,7 @@ class BusinessNameController @Inject()(val sessionService: SessionService,
               }
               _ <- applicantDetailsService.saveApplicantDetails(updatedEntity)
             } yield {
-              Redirect(routes.TradingNameController.show)
+              Redirect(routes.ConfirmTradingNameController.show)
             }
           }
         )

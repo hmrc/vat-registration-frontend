@@ -519,18 +519,20 @@ voluntaryStartDateNoChoice.para                       = Gallwch ddewis y dyddiad
 voluntaryStartDateNoChoice.panel                      = Unwaith y bydd y busnes wedi’i gofrestru’n llwyddiannus ar gyfer TAW, ni allwch newid ei ddyddiad dechrau
 voluntaryStartDateNoChoice.hint                       = Er enghraifft, {0}
 
-# Trading Name Page
-pages.tradingName.heading                           = A yw neu a fydd y busnes yn masnachu gan ddefnyddio enw sy’n wahanol i {0}?
-pages.tradingName.tradingNameLabel                  = Nodwch yr enw masnachu
-pages.tradingName.panel.para1                       = Beth yw enw masnachu?
-pages.tradingName.panel.para2                       = Gall busnes fasnachu gan ddefnyddio enw sy’n wahanol i’w enw swyddogol neu gofrestredig. Gelwir hyn hefyd yn ‘enw masnachu’.
-pages.tradingName.panel.para3                       = Mae rhai busnesau’n dewis enw masnachu gwahanol i helpu gyda brandio neu i gael enw parth ar gyfer eu gwefan.
-pages.tradingdetails.input.hint-text                = Ni allwch gynnwys ‘cyfyngedig’ / ‘limited’, ‘Cyf’ / ‘Ltd’, ‘partneriaeth atebolrwydd cyfyngedig’ / ‘limited liability partnership’, ‘PAC’ / ‘LLP’, ‘cwmni cyfyngedig cyhoeddus’ / ‘limited liability partnership’ nac ‘ccc’ / ‘plc’
+# Confirm Trading Name Page
+confirmTradingName.heading                      = Is this your trading name?
+validation.confirmTradingName.missing           = Select yes if this is the business’s trading name
 
-validation.tradingName.invalid                      = Nodwch enw masnachu dilys
-validation.tradingName.maxlen                       = Nodwch enw masnachu gan ddefnyddio 35 o gymeriadau neu lai
-validation.tradingName.missing                      = Nodwch enw masnachu
-validation.tradingNameRadio.missing                 = Dewiswch ‘Iawn’ os bydd y busnes yn masnachu o dan enw arall
+# Trading Name Page
+captureTradingName.heading                      = Beth yw’ch enw masnachu?
+captureTradingName.label                        = Nodwch yr enw masnachu
+captureTradingName.summary                      = Beth yw enw masnachu?
+captureTradingName.para1                        = Gall busnes fasnachu gan ddefnyddio enw sy’n wahanol i’w enw cofrestredig. Gelwir hyn hefyd yn ‘enw masnachu’.
+captureTradingName.para2                        = Mae rhai busnesau’n dewis enw masnachu gwahanol i helpu gyda brandio neu i gael enw parth ar gyfer eu gwefan.
+captureTradingName.hint                         = Ni allwch gynnwys ‘cyfyngedig’ / ‘limited’, ‘Cyf’ / ‘Ltd’, ‘partneriaeth atebolrwydd cyfyngedig’ / ‘limited liability partnership’, ‘PAC’ / ‘LLP’, ‘cwmni cyfyngedig cyhoeddus’ / ‘limited liability partnership’ nac ‘ccc’ / ‘plc’
+validation.captureTradingName.invalid           = Nodwch enw masnachu dilys
+validation.captureTradingName.maxlen            = Nodwch enw masnachu gan ddefnyddio 160 o gymeriadau neu lai
+validation.captureTradingName.missing           = Nodwch enw masnachu
 
 # Voluntary Registration Reason Summary
 pages.summary.voluntaryReason.sells                           = Mae’r cwmni eisoes yn gwerthu nwyddau neu wasanaethau
@@ -582,7 +584,7 @@ pages.vat.charge.expectancy.heading                         = A yw’r busnes yn
 pages.vat.charge.expectancy.para1                           = Nid yw’r rhan fwyaf o fusnesau’n hawlio ad-daliadau TAW. Mae ond yn bosibl pan fydd y TAW y mae busnes yn ei thalu ar bryniannau sy’n gysylltiedig â’r busnes yn fwy na’r TAW y mae’n ei chodi ar gwsmeriaid.
 pages.pages.vat.charge.expectancy.example                   = Dangoswch enghraifft i mi
 pages.pages.vat.charge.expectancy.example.para1             = Os yw busnes yn gwerthu eitemau cyfradd sero yn bennaf (y TAW arnynt yw 0%), gall dalu mwy o TAW i redeg ei fusnes nag y gall ei chodi. Er enghraifft, mae’r rhan fwyaf o lyfrau ar gyfradd sero, felly efallai y bydd siop lyfrau yn ei chael ei hun yn y sefyllfa hon.
-validation.vat.charge.expectancy.missing                    = Dewiswch ‘Iawn’ os ydych yn disgwyl i'r busnes hawlio ad-daliadau TAW yn rheolaidd gan CThEM
+validation.vat.charge.expectancy.missing                    = Dewiswch ‘Iawn’ os ydych yn disgwyl i’r busnes hawlio ad-daliadau TAW yn rheolaidd gan CThEM
 
 # Exemption Page
 pages.vatExemption.heading                                  = A yw’r busnes yn dymuno gwneud cais am eithriad rhag TAW?
@@ -724,8 +726,7 @@ cya.aboutTheBusiness.sicCodes                       = Cadarnhewch godau Dosbarth
 cya.aboutTheBusiness.supplyWorkers                  = Cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
 cya.aboutTheBusiness.numberOfWorkers                = Nifer y gweithwyr a gyflenwyd
 cya.aboutTheBusiness.intermediarySupply             = Cyfryngwr sy’n trefnu’r cyflenwad o weithwyr
-cya.aboutTheBusiness.tradingName                    = Enw masnachu gwahanol
-cya.aboutTheBusiness.mandatoryName                  = Enw masnachu
+cya.aboutTheBusiness.tradingName                    = Enw masnachu
 cya.aboutTheBusiness.importsOrExports               = Masnachu nwyddau sy’n agored i TAW y tu allan i’r DU
 cya.aboutTheBusiness.applyForEori                   = Gwneud cais am EORI?
 cya.aboutTheBusiness.turnoverEstimate               = Beth rydych yn meddwl fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf?
@@ -849,7 +850,7 @@ pages.bankDetails.accountNumber.hint                = Mae’n rhaid iddo fod rhw
 pages.bankDetails.sortCode.label                    = Cod didoli
 pages.bankDetails.sortCode.hint                     = Mae’n rhaid iddo fod yn 6 digid o hyd
 validation.companyBankAccount.name.missing          = Nodwch enw’r cyfrif
-validation.companyBankAccount.name.invalid          = Nodwch enw’r cyfrif gan ddefnyddio llythrennau, rhifau a \ - ' , / & ]
+validation.companyBankAccount.name.invalid          = Nodwch enw’r cyfrif gan ddefnyddio llythrennau, rhifau a \ - ’ , / & ]
 validation.companyBankAccount.number.missing        = Nodwch rif y cyfrif
 validation.companyBankAccount.number.invalid        = Nodwch rif cyfrif dilys
 validation.companyBankAccount.sortCode.missing      = Nodwch god didoli’r cyfrif
@@ -1167,17 +1168,6 @@ aas.paymentMethod.standingOrder                          = Archeb sefydlog
 aas.paymentMethod.error.required                         = Dewiswch y dull o dalu TAW
 aas.paymentMethod.bacs.hiddenContent                     = Er mwyn talu drwy Ddebyd Uniongyrchol, cwblhewch y cofrestriad TAW hwn er mwyn cael y Rhif Cofrestru TAW. Yna, gall y busnes
 aas.paymentMethod.bacs.linkText                          = argraffu a llenwi mandad Debyd Uniongyrchol
-
-# SOLE TRADER - TRADING NAME
-soleTrader.tradingName.heading                           = Beth yw’ch enw masnachu?
-soleTrader.tradingName.label                             = Nodwch yr enw masnachu
-soleTrader.tradingName.summary                           = Beth yw enw masnachu?
-soleTrader.tradingName.para1                             = Gall unig fasnachwr fasnachu gan ddefnyddio enw sy’n wahanol i’w enw cofrestredig. Gelwir hyn hefyd yn ‘enw busnes’.
-soleTrader.tradingName.para2                             = Mae rhai unig fasnachwyr yn dewis enw masnachu gwahanol i helpu gyda brandio neu i gael enw parth ar gyfer eu gwefan.
-soleTrader.tradingName.hint                              = Ni allwch gynnwys ‘cyfyngedig’ / ‘limited’, ‘Cyf’ / ‘Ltd’, ‘partneriaeth atebolrwydd cyfyngedig’ / ‘limited liability partnership’, ‘PAC’ / ‘LLP’, ‘cwmni cyfyngedig cyhoeddus’ / ‘public limited company’ nac ‘ccc’ / ‘plc’.
-validation.trading-name.invalid                          = Nodwch enw masnachu dilys
-validation.trading-name.maxlen                           = Nodwch enw masnachu gan ddefnyddio 160 o gymeriadau neu lai
-validation.trading-name.missing                          = Nodwch enw masnachu
 
 # LEAD PARTNER ENTITY TYPE
 pages.leadPartnerEntityType.heading                      = Pa fath o bartner ydych chi?

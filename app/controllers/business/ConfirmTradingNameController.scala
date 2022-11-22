@@ -18,26 +18,26 @@ package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.TradingNameForm
+import forms.ConfirmTradingNameForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessService.{HasTradingName, TradingName}
+import services.BusinessService.ConfirmTradingName
 import services._
 import uk.gov.hmrc.http.InternalServerException
-import views.html.business.trading_name
+import views.html.business.ConfirmTradingNameView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class TradingNameController @Inject()(val sessionService: SessionService,
-                                      val authConnector: AuthClientConnector,
-                                      val applicantDetailsService: ApplicantDetailsService,
-                                      val businessService: BusinessService,
-                                      val vatRegistrationService: VatRegistrationService,
-                                      view: trading_name)
-                                     (implicit appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext,
-                                      baseControllerComponents: BaseControllerComponents)
+class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
+                                             val authConnector: AuthClientConnector,
+                                             val applicantDetailsService: ApplicantDetailsService,
+                                             val businessService: BusinessService,
+                                             val vatRegistrationService: VatRegistrationService,
+                                             view: ConfirmTradingNameView)
+                                            (implicit appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext,
+                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -46,27 +46,31 @@ class TradingNameController @Inject()(val sessionService: SessionService,
         for {
           companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(throw new InternalServerException("Missing company name")))
           business <- businessService.getBusiness
-          form = TradingNameForm.fillWithPrePop(business)
+          form = business.hasTradingName.fold(ConfirmTradingNameForm.form)(ConfirmTradingNameForm.form.fill)
         } yield Ok(view(form, companyName))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        TradingNameForm.form.bindFromRequest.fold(
+        ConfirmTradingNameForm.form.bindFromRequest.fold(
           errors =>
             for {
               companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(throw new InternalServerException("Missing company name")))
             } yield BadRequest(view(errors, companyName)),
-          success => {
-            val (hasName, optName) = success
+          confirmTradingName => {
             for {
-              business <- businessService.updateBusiness(HasTradingName(hasName))
-              _ <- optName.fold(Future.successful(business))(name => businessService.updateBusiness(TradingName(name)))
+              _ <- businessService.updateBusiness(ConfirmTradingName(confirmTradingName))
               partyType <- vatRegistrationService.partyType
-            } yield partyType match {
-              case NETP | NonUkNonEstablished => Redirect(controllers.business.routes.InternationalPpobAddressController.show)
-              case _ => Redirect(controllers.business.routes.PpobAddressController.startJourney)
+            } yield {
+              if (confirmTradingName) {
+                partyType match {
+                  case NETP | NonUkNonEstablished => Redirect(routes.InternationalPpobAddressController.show)
+                  case _ => Redirect(routes.PpobAddressController.startJourney)
+                }
+              } else {
+                Redirect(routes.CaptureTradingNameController.show)
+              }
             }
           }
         )

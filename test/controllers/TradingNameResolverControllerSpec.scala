@@ -50,11 +50,11 @@ class TradingNameResolverControllerSpec extends ControllerSpec
 
   "resolve" must {
     List(Individual, NETP).foreach { partyType =>
-      s"redirects to ${controllers.business.routes.MandatoryTradingNameController.show.url} for partyType ${partyType.toString}" in new Setup {
+      s"redirects to ${controllers.business.routes.CaptureTradingNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(partyType))
         val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) must contain(controllers.business.routes.MandatoryTradingNameController.show.url)
+        redirectLocation(res) must contain(controllers.business.routes.CaptureTradingNameController.show.url)
       }
     }
 
@@ -77,14 +77,14 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     }
 
     List(UkCompany, RegSociety, CharitableOrg, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
-      s"redirects to ${controllers.business.routes.TradingNameController.show.url} for partyType ${partyType.toString} when business name is present" in new Setup {
+      s"redirects to ${controllers.business.routes.ConfirmTradingNameController.show.url} for partyType ${partyType.toString} when business name is present" in new Setup {
         when(mockApplicantDetailsService.getCompanyName(any(), any()))
           .thenReturn(Future.successful(Some(testBusinessName)))
 
         mockPartyType(Future.successful(partyType))
         val res = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
-        redirectLocation(res) must contain(controllers.business.routes.TradingNameController.show.url)
+        redirectLocation(res) must contain(controllers.business.routes.ConfirmTradingNameController.show.url)
       }
     }
 

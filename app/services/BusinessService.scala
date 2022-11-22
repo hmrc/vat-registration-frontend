@@ -68,7 +68,15 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
   // scalastyle:off
   private def updateBusinessModel[T](data: T, business: Business): Business = {
     data match {
-      case HasTradingName(answer) => business.copy(hasTradingName = Some(answer))
+      case ConfirmTradingName(answer) =>
+        if (answer) {
+          business.copy(
+            hasTradingName = Some(answer),
+            tradingName = None
+          )
+        } else {
+          business.copy(hasTradingName = Some(answer))
+        }
       case TradingName(answer) => business.copy(tradingName = Some(answer))
       case ShortOrgNameAnswer(answer) => business.copy(shortOrgName = Some(answer))
       case address: Address => business.copy(ppobAddress = Some(address))
@@ -117,7 +125,7 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
 }
 
 object BusinessService {
-  case class HasTradingName(answer: Boolean)
+  case class ConfirmTradingName(answer: Boolean)
   case class TradingName(answer: String)
   case class ShortOrgNameAnswer(answer: String)
   case class Email(answer: String)

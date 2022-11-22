@@ -99,6 +99,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.ConfirmTradingNameController.show.url)),
             optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -112,7 +113,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(true), Some(controllers.business.routes.SupplyWorkersController.show.url)),
             optSummaryListRowString(s"$sectionId.numberOfWorkers", Some(testNumWorkers), Some(controllers.business.routes.WorkersController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.intermediarySupply", Some(true), Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)),
-            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testZeroTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
@@ -135,6 +135,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.ConfirmTradingNameController.show.url)),
             optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -147,7 +148,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(true), Some(controllers.business.routes.SupplyWorkersController.show.url)),
             optSummaryListRowString(s"$sectionId.numberOfWorkers", Some(testNumWorkers), Some(controllers.business.routes.WorkersController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.intermediarySupply", Some(true), Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)),
-            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
@@ -173,6 +173,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.ConfirmTradingNameController.show.url)),
             optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -183,7 +184,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.obi", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(controllers.business.routes.SupplyWorkersController.show.url)),
-            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
@@ -212,6 +212,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.ConfirmTradingNameController.show.url)),
             optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
             optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -222,7 +223,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.obi", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(controllers.business.routes.SupplyWorkersController.show.url)),
-            optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
@@ -253,6 +253,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
           res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
             rows = List(
               optSummaryListRowSeq(s"$sectionId.partnershipMembers", Some(List[String](testCompanyName)), Some(controllers.partners.routes.PartnerSummaryController.show.url)),
+              optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.ConfirmTradingNameController.show.url)),
               optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
               optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
               optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -267,7 +268,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
               optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(true), Some(controllers.business.routes.SupplyWorkersController.show.url)),
               optSummaryListRowString(s"$sectionId.numberOfWorkers", Some(testNumWorkers), Some(controllers.business.routes.WorkersController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.intermediarySupply", Some(true), Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)),
-              optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
               optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
@@ -325,6 +325,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
           res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
             rows = List(
+              optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.CaptureTradingNameController.show.url)),
               optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.InternationalPpobAddressController.show.url)),
               optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
               optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -335,7 +336,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
               optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.obi", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(controllers.business.routes.SupplyWorkersController.show.url)),
-              optSummaryListRowString(s"$sectionId.mandatoryName", Some(testTradingName), Some(controllers.business.routes.MandatoryTradingNameController.show.url)),
               optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
               optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
               optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
@@ -376,6 +376,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
             res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
               rows = List(
+                optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.CaptureTradingNameController.show.url)),
                 optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.InternationalPpobAddressController.show.url)),
                 optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
                 optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -386,7 +387,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                 optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.obi", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(controllers.business.routes.SupplyWorkersController.show.url)),
-                optSummaryListRowString(s"$sectionId.mandatoryName", Some(testTradingName), Some(controllers.business.routes.MandatoryTradingNameController.show.url)),
                 optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
                 optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
                 optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
@@ -429,6 +429,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
             res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
               rows = List(
+                optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.CaptureTradingNameController.show.url)),
                 optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.InternationalPpobAddressController.show.url)),
                 optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
                 optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -439,7 +440,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
                 optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.obi", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)),
                 optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(false), Some(controllers.business.routes.SupplyWorkersController.show.url)),
-                optSummaryListRowString(s"$sectionId.mandatoryName", Some(testTradingName), Some(controllers.business.routes.MandatoryTradingNameController.show.url)),
                 optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
                 optSummaryListRowString(s"$sectionId.zeroRated", Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
                 optSummaryListRowSeq(s"$sectionId.sellOrMoveNip", Some(Seq("No")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
@@ -462,6 +462,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
     res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
       rows = List(
+        optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.ConfirmTradingNameController.show.url)),
         optSummaryListRowSeq(s"$sectionId.homeAddress", Some(Address.normalisedSeq(testAddress)), Some(controllers.business.routes.PpobAddressController.startJourney.url)),
         optSummaryListRowString(s"$sectionId.emailBusiness", Some(testEmail), Some(controllers.business.routes.BusinessEmailController.show.url)),
         optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
@@ -476,7 +477,6 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowBoolean(s"$sectionId.supplyWorkers", Some(true), Some(controllers.business.routes.SupplyWorkersController.show.url)),
         optSummaryListRowString(s"$sectionId.numberOfWorkers", Some(testNumWorkers), Some(controllers.business.routes.WorkersController.show.url)),
         optSummaryListRowBoolean(s"$sectionId.intermediarySupply", Some(true), Some(controllers.business.routes.SupplyWorkersIntermediaryController.show.url)),
-        optSummaryListRowString(s"$sectionId.tradingName", Some(testTradingName), Some(controllers.business.routes.TradingNameController.show.url)),
         optSummaryListRowBoolean(s"$sectionId.importsOrExports", Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
         optSummaryListRowBoolean(s"$sectionId.applyForEori", Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
         optSummaryListRowString(s"$sectionId.turnoverEstimate", Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),

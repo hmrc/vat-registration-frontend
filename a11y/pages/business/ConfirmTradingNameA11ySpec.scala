@@ -2,14 +2,14 @@
 
 package pages.business
 
-import forms.TradingNameForm
+import forms.ConfirmTradingNameForm
 import helpers.A11ySpec
-import views.html.business.trading_name
+import views.html.business.ConfirmTradingNameView
 
-class TradingNameA11ySpec extends A11ySpec {
+class ConfirmTradingNameA11ySpec extends A11ySpec {
 
-  val view = app.injector.instanceOf[trading_name]
-  val form = TradingNameForm.form
+  val view = app.injector.instanceOf[ConfirmTradingNameView]
+  val form = ConfirmTradingNameForm.form
   val testCompanyName = "testCompanyName"
   val emptyCompanyName = ""
 

@@ -402,14 +402,11 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
           .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
           .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -443,14 +440,11 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
           .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
           .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -482,7 +476,7 @@ class TaskListControllerISpec extends ControllerISpec {
             )),
             northernIrelandProtocol = Some(NIPTurnover(
               goodsToEU = Some(ConditionalValue(answer = false, None)),
-              goodsFromEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None))
             )),
             startDate = Some(LocalDate.of(2017, 10, 10)),
             hasTaxRepresentative = Some(false)
@@ -495,15 +489,11 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
           .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[FlatRateScheme](scheme.flatRateScheme)
           .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
-          .registrationApi.getSection[BankAccount](scheme.bankAccount)
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
-
-        if (scheme.bankAccount.isDefined) given.registrationApi.getSection[BankAccount](scheme.bankAccount)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

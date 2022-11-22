@@ -26,16 +26,16 @@ import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.business.soletrader_name
+import views.html.business.CaptureTradingNameView
 
 import scala.concurrent.Future
 
-class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
-  val fakeRequest = FakeRequest(controllers.business.routes.MandatoryTradingNameController.show)
+class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
+  val fakeRequest = FakeRequest(controllers.business.routes.CaptureTradingNameController.show)
 
   class Setup {
-    val view = app.injector.instanceOf[soletrader_name]
-    val testController = new MandatoryTradingNameController(
+    val view = app.injector.instanceOf[CaptureTradingNameView]
+    val testController = new CaptureTradingNameController(
       mockSessionService,
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
@@ -48,7 +48,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  "show" should {
+  "show" must {
     "return an Ok when there is a trading name answer" in new Setup {
       mockGetBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
 
@@ -58,26 +58,26 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
         }
       }
     }
-  }
 
-  "return an Ok when there is no trading name answer" in new Setup {
-    mockGetBusiness(Future.successful(validBusiness.copy(tradingName = None)))
+    "return an Ok when there is no trading name answer" in new Setup {
+      mockGetBusiness(Future.successful(validBusiness.copy(tradingName = None)))
 
-    callAuthorised(testController.show) {
-      result => {
-        status(result) mustBe OK
+      callAuthorised(testController.show) {
+        result => {
+          status(result) mustBe OK
+        }
       }
     }
   }
 
-  "submit" should {
+  "submit" must {
     "return 303 with a provided trading name" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
       when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
         .thenReturn(Future.successful(UkCompany))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-        "trading-name" -> testTradingName
+        "captureTradingName" -> testTradingName
       )
 
       submitAuthorised(testController.submit, request) { result =>
@@ -88,7 +88,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
 
     "return 400 without a provided trading name" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-        "trading-name" -> ""
+        "captureTradingName" -> ""
       )
 
       submitAuthorised(testController.submit, request) { result =>
@@ -106,7 +106,7 @@ class MandatoryTradingNameControllerSpec extends ControllerSpec with VatRegistra
 
     "return 400 when the trading name they have provided is invalid" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
-        "trading-name" -> "$0M3 T3$T"
+        "captureTradingName" -> "$0M3 T3$T"
       )
 
       submitAuthorised(testController.submit, request) { result =>

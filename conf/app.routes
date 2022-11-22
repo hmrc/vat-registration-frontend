@@ -54,9 +54,13 @@ POST        /voluntary-vat-start-date                                 controller
 GET         /trading-taxable-goods-and-services-date                  controllers.vatapplication.CurrentlyTradingController.show
 POST        /trading-taxable-goods-and-services-date                  controllers.vatapplication.CurrentlyTradingController.submit
 
-## TRADING NAME PAGE
-GET         /trading-name                                             controllers.business.TradingNameController.show
-POST        /trading-name                                             controllers.business.TradingNameController.submit
+## CONFIRM TRADING NAME PAGE
+GET         /confirm-trading-name                                     controllers.business.ConfirmTradingNameController.show
+POST        /confirm-trading-name                                     controllers.business.ConfirmTradingNameController.submit
+
+## CAPTURE TRADING NAME PAGE
+GET         /trading-name                                             controllers.business.CaptureTradingNameController.show
+POST        /trading-name                                             controllers.business.CaptureTradingNameController.submit
 
 ## BUSINESS NAME PAGE
 GET         /business-name                                            controllers.business.BusinessNameController.show
@@ -325,10 +329,6 @@ POST        /how-do-you-want-to-pay                                   controller
 ## PaymentFrequencyController
 GET         /how-often-you-pay                                        controllers.vatapplication.PaymentFrequencyController.show
 POST        /how-often-you-pay                                        controllers.vatapplication.PaymentFrequencyController.submit
-
-## MandatoryTradingNameController
-GET         /trading-name-not-incorporated                            controllers.business.MandatoryTradingNameController.show
-POST        /trading-name-not-incorporated                            controllers.business.MandatoryTradingNameController.submit
 
 ## LeadPartnerEntityController
 GET         /lead-partner-entity                                      controllers.applicant.LeadPartnerEntityController.showLeadPartnerEntityType
