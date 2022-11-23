@@ -700,7 +700,7 @@ cya.applicantDetails.telephone                                      = Telephone 
 # Summary Page Transactor Details
 cya.transactor.isPartOfOrganisation                  = Part of an organisation
 cya.transactor.organisationName                      = Organisation name
-cya.transactor.roleInTheBusiness                     = Role in business registering for VAT
+cya.transactor.roleInTheBusiness                     = Role with the business
 cya.transactor.fullName                              = Full name
 cya.transactor.dateOfBirth                           = Date of birth
 cya.transactor.nino                                  = National Insurance number
