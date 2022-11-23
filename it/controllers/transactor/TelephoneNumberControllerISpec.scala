@@ -14,15 +14,17 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
   val url = controllers.transactor.routes.TelephoneNumberController.show.url
 
   private val testPhoneNumber = "12345 123456"
+  val cleanedPhoneNumber = "12345123456"
   val testDetails = TransactorDetails(
     telephone = Some(testPhoneNumber)
   )
 
-  s"GET $url" should {
+  s"GET $url" must {
     "show the view" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -35,7 +37,8 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
     "show the view with organisation name" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(testDetails)
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -49,12 +52,14 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
     }
   }
 
-  s"POST $url" should {
+  s"POST $url" must {
     "Redirect to Transactor Email Address page" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(TransactorDetails())
-        .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
+        .s4lContainer[TransactorDetails].isEmpty
+        .s4lContainer[TransactorDetails].clearedByKey
+        .registrationApi.getSection[TransactorDetails](None)
+        .registrationApi.replaceSection[TransactorDetails](TransactorDetails(telephone = Some(cleanedPhoneNumber)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

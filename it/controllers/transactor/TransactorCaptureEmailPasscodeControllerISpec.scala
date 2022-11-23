@@ -19,7 +19,6 @@ package controllers.transactor
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.TransactorDetails
-import models.api.EligibilitySubmissionData
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -30,16 +29,16 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
   private val testEmail = "test@test.com"
   private val testPasscode = "123456"
 
-  val s4lContents = TransactorDetails(email = Some(testEmail))
+  val testTransactor = TransactorDetails(email = Some(testEmail))
 
-  "GET /transactor-details/enter-the-verification-code" should {
+  "GET /transactor-details/enter-the-verification-code" must {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lContents)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get)
 
@@ -48,12 +47,12 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
   }
 
 
-  "GET /email-address-verification-retry" should {
+  "GET /email-address-verification-retry" must {
     "show the view after requesting a passcode successfully" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lContents)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -67,9 +66,10 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "redirect to email verified after requesting a passcode and getting an email verified response" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lContents)
-        .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor))
+        .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
+        .s4lContainer[TransactorDetails].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -84,7 +84,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lContents)
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,15 +96,16 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
   }
 
   "POST /transactor-details/enter-the-verification-code" when {
-    "the email verification feature switch is enabled" should {
-      "verify the entered passcode against the stub and redirect to Transactor Email Verified page" in new Setup {
+    "the email verification feature switch is enabled" must {
+      "verify the entered passcode and redirect to Transactor Email Verified page" in new Setup {
         disable(StubEmailVerification)
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(s4lContents)
-          .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor))
+          .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
+          .s4lContainer[TransactorDetails].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -120,8 +122,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(s4lContents)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -137,8 +139,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(s4lContents)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -157,8 +159,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(s4lContents)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -175,8 +177,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(s4lContents)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -190,9 +192,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(s4lContents.copy(email = None))
-          .s4lContainer[TransactorDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(true)))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -42,59 +42,42 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
     }
   }
 
-  private def isModelComplete(transactorDetails: TransactorDetails): Completion[TransactorDetails] = {
-    transactorDetails match {
-      case TransactorDetails(Some(personalDetails), _, _, Some(_), Some(_), Some(true), _, Some(_)) if personalDetails.arn.isDefined =>
-        Complete(transactorDetails.copy(isPartOfOrganisation = None, organisationName = None, address = None))
-      case TransactorDetails(Some(_), Some(false), _, Some(_), Some(_), Some(true), Some(_),  Some(_)) =>
-        Complete(transactorDetails.copy(organisationName = None))
-      case TransactorDetails(Some(_), Some(true), Some(_), Some(_), Some(_), Some(true), Some(_), Some(_)) =>
-        Complete(transactorDetails)
-      case _ =>
-        Incomplete(transactorDetails)
-
-    }
-  }
-
   def saveTransactorDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[TransactorDetails] = {
-    getTransactorDetails.flatMap { transactorDetails =>
-      isModelComplete(updateModel(data, transactorDetails)).fold(
-        incomplete => s4LService.save[TransactorDetails](incomplete).map(_ => incomplete),
-        complete => for {
-          _ <- registrationsApiConnector.replaceSection[TransactorDetails](cp.registrationId, complete)
-          _ <- s4LService.clearKey[TransactorDetails]
-        } yield complete
-      )
-    }
+    for {
+      transactorDetails <- getTransactorDetails
+      updatedTransactorDetails = updateModel(data, transactorDetails)
+      result <- registrationsApiConnector.replaceSection[TransactorDetails](cp.registrationId, updatedTransactorDetails)
+      _ <- s4LService.clearKey[TransactorDetails]
+    } yield result
   }
 
   //scalastyle:off
   private def updateModel[T](data: T, before: TransactorDetails): TransactorDetails = {
     data match {
       case personalDetails: PersonalDetails =>
-        before.copy(personalDetails = Some(personalDetails))
-      case partOfOrganisation: PartOfOrganisation =>
-        if (partOfOrganisation.answer) {
-          before.copy(isPartOfOrganisation = Some(partOfOrganisation.answer))
+        if (personalDetails.arn.isDefined) {
+          before.copy(personalDetails = Some(personalDetails), isPartOfOrganisation = None, organisationName = None, address = None)
         } else {
-          before.copy(isPartOfOrganisation = Some(partOfOrganisation.answer), organisationName = None)
+          before.copy(personalDetails = Some(personalDetails))
         }
-      case organisationName: OrganisationName =>
-        before.copy(organisationName = Some(organisationName.answer))
-      case telephone: Telephone =>
-        before.copy(telephone = Some(telephone.answer))
-      case email: TransactorEmail =>
-        before.copy(email = Some(email.answer))
-      case emailVerified: TransactorEmailVerified =>
-        before.copy(emailVerified = Some(emailVerified.answer))
+      case PartOfOrganisation(answer) =>
+        if (answer) {
+          before.copy(isPartOfOrganisation = Some(answer))
+        } else {
+          before.copy(isPartOfOrganisation = Some(answer), organisationName = None)
+        }
+      case OrganisationName(answer) =>
+        before.copy(organisationName = Some(answer))
+      case Telephone(answer) =>
+        before.copy(telephone = Some(answer))
+      case TransactorEmail(answer) =>
+        before.copy(email = Some(answer))
+      case TransactorEmailVerified(answer) =>
+        before.copy(emailVerified = Some(answer))
       case address: Address =>
         before.copy(address = Some(address))
       case declarationCapacity: DeclarationCapacityAnswer =>
-        if (declarationCapacity.equals(AccountantAgent)) {
-          before.copy(declarationCapacity = Some(declarationCapacity), isPartOfOrganisation = None, organisationName = None, address = None)
-        } else {
-          before.copy(declarationCapacity = Some(declarationCapacity))
-        }
+        before.copy(declarationCapacity = Some(declarationCapacity))
     }
   }
   //scalastyle:on

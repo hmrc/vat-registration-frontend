@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.InternalServerException
 
 class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
-  val section = app.injector.instanceOf[AboutYouTransactorTaskList]
+  val section: AboutYouTransactorTaskList = app.injector.instanceOf[AboutYouTransactorTaskList]
   val testArn = "testArn"
 
   "the user has logged in as an Agent" must {
@@ -35,7 +35,10 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(isTransactor = true)),
         applicantDetails = Some(ApplicantDetails(entity = Some(testLimitedCompany))),
-        transactorDetails = Some(TransactorDetails(personalDetails = Some(testPersonalDetails)))
+        transactorDetails = Some(TransactorDetails(
+          personalDetails = Some(testPersonalDetails),
+          declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent))
+        ))
       )
 
       val res = section.transactorPersonalDetailsRow.build(scheme)
@@ -79,7 +82,8 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
           transactorDetails = Some(TransactorDetails(
             personalDetails = Some(testPersonalDetails),
             isPartOfOrganisation = Some(true),
-            organisationName = Some(testCompanyName)
+            organisationName = Some(testCompanyName),
+            declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent))
           ))
         )
 

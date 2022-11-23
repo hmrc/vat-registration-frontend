@@ -24,7 +24,7 @@ import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
-import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
+import services.TransactorDetailsService.TransactorEmailVerified
 import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -81,7 +81,6 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: capture_email_pas
               emailVerificationService.verifyEmailVerificationPasscode(email, emailPasscode) flatMap {
                 case EmailAlreadyVerified | EmailVerifiedSuccessfully =>
                   for {
-                    _ <- transactorDetailsService.saveTransactorDetails(TransactorEmail(email))
                     _ <- transactorDetailsService.saveTransactorDetails(TransactorEmailVerified(true))
                   } yield {
                     Redirect(routes.TransactorEmailAddressVerifiedController.show)

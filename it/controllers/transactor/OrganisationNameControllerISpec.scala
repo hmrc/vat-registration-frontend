@@ -19,13 +19,12 @@ class OrganisationNameControllerISpec extends ControllerISpec {
     organisationName = Some(orgName)
   )
 
-  s"GET $url" should {
+  s"GET $url" must {
     "show the view" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
-        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -38,8 +37,8 @@ class OrganisationNameControllerISpec extends ControllerISpec {
     "show the view with organisation name" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(testDetails)
-        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,18 +52,18 @@ class OrganisationNameControllerISpec extends ControllerISpec {
     }
   }
 
-  s"POST $url" should {
+  s"POST $url" must {
     "Redirect to Declaration Capacity" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
+        .s4lContainer[TransactorDetails].clearedByKey
         .registrationApi.getSection[TransactorDetails](None)
-        .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .registrationApi.replaceSection[TransactorDetails](testDetails)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = buildClient(url).post(Map(organisationNameKey -> organisationNameKey))
+      val res = buildClient(url).post(Map(organisationNameKey -> orgName))
 
       whenReady(res) { res =>
         res.status mustBe SEE_OTHER
