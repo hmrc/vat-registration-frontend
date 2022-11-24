@@ -35,10 +35,9 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get)
 
@@ -51,7 +50,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "show the view after requesting a passcode successfully" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -66,10 +64,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "redirect to email verified after requesting a passcode and getting an email verified response" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
         .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
-        .s4lContainer[TransactorDetails].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -84,7 +80,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -102,10 +97,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
           .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
-          .s4lContainer[TransactorDetails].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -122,7 +115,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -139,7 +131,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -159,7 +150,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -177,7 +167,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -192,7 +181,6 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

@@ -30,8 +30,6 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
-        .s4lContainer[TransactorDetails].isUpdatedWith(validTransactorDetails)
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = false)))
@@ -48,8 +46,6 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
-        .s4lContainer[TransactorDetails].isUpdatedWith(validTransactorDetails)
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
@@ -68,8 +64,6 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
       val applicantDetailsWithoutEmail = validFullApplicantDetails.copy(emailAddress = None)
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
-        .s4lContainer[TransactorDetails].isUpdatedWith(transactorDetailsWithoutEmail)
         .registrationApi.getSection[TransactorDetails](Some(transactorDetailsWithoutEmail))
         .registrationApi.getSection[ApplicantDetails](Some(applicantDetailsWithoutEmail))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))

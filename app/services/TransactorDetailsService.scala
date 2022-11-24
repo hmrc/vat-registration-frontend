@@ -27,18 +27,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TransactorDetailsService @Inject()(val s4LService: S4LService,
-                                         registrationsApiConnector: RegistrationApiConnector
-                                        )(implicit ec: ExecutionContext) extends Logging {
+class TransactorDetailsService @Inject()(registrationsApiConnector: RegistrationApiConnector)
+                                        (implicit ec: ExecutionContext) extends Logging {
 
   def getTransactorDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[TransactorDetails] = {
-    s4LService.fetchAndGet[TransactorDetails].flatMap {
-      case None | Some(TransactorDetails(None, None, None, None, None, None, None, None)) =>
-        registrationsApiConnector.getSection[TransactorDetails](cp.registrationId).map {
-          case Some(details) => details
-          case None => TransactorDetails()
-        }
-      case Some(transactorDetails) => Future.successful(transactorDetails)
+    registrationsApiConnector.getSection[TransactorDetails](cp.registrationId).map {
+      case Some(details) => details
+      case None => TransactorDetails()
     }
   }
 
@@ -47,7 +42,6 @@ class TransactorDetailsService @Inject()(val s4LService: S4LService,
       transactorDetails <- getTransactorDetails
       updatedTransactorDetails = updateModel(data, transactorDetails)
       result <- registrationsApiConnector.replaceSection[TransactorDetails](cp.registrationId, updatedTransactorDetails)
-      _ <- s4LService.clearKey[TransactorDetails]
     } yield result
   }
 
