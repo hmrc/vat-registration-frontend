@@ -158,5 +158,17 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
+
+    "return a 400 if nothing is selected" in new Setup {
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      given
+        .user.isAuthorised()
+        .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
+        .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
+
+      val res: WSResponse = await(buildClient(pageUrl).post(Map[String, String]()))
+
+      res.status mustBe BAD_REQUEST
+    }
   }
 }

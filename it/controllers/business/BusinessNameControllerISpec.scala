@@ -18,7 +18,7 @@ package controllers.business
 
 import itutil.ControllerISpec
 import models.ApplicantDetails
-import models.api.{EligibilitySubmissionData, Trust, UkCompany}
+import models.api.{EligibilitySubmissionData, PartyType, Trust, UkCompany}
 import models.external.BusinessEntity
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
@@ -66,15 +66,14 @@ class BusinessNameControllerISpec extends ControllerISpec {
 
   "submit Business Name page" should {
     "return SEE_OTHER for valid business entity type" in new Setup {
-
-      private def validateBusinessNameControllerFlow(entity: BusinessEntity, entityWithBusinessName: BusinessEntity) = {
+      private def validateBusinessNameControllerFlow(entity: BusinessEntity, entityWithBusinessName: BusinessEntity, partyType: PartyType) = {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(entity))))
           .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(entityWithBusinessName)))
           .s4lContainer[ApplicantDetails].isEmpty
           .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -87,8 +86,8 @@ class BusinessNameControllerISpec extends ControllerISpec {
 
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
 
-      validateBusinessNameControllerFlow(testMinorEntity, testMinorEntity.copy(companyName = Some(businessName)))
-      validateBusinessNameControllerFlow(testApplicantIncorpDetails, testApplicantIncorpDetails.copy(companyName = Some(businessName)))
+      validateBusinessNameControllerFlow(testMinorEntity, testMinorEntity.copy(companyName = Some(businessName)), Trust)
+      validateBusinessNameControllerFlow(testApplicantIncorpDetails, testApplicantIncorpDetails.copy(companyName = Some(businessName)), UkCompany)
     }
 
     "return INTERNAL_SERVER_ERROR for invalid business entity type" in new Setup {
