@@ -26,7 +26,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
-        .registrationApi.getSection[Business](Some(businessDetails))
+        .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

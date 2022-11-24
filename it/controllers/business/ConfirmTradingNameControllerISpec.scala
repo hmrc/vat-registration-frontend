@@ -19,6 +19,7 @@ package controllers.business
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NonUkNonEstablished, UkCompany}
 import models.{ApplicantDetails, Business}
+import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -49,6 +50,26 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         res.status mustBe OK
       }
     }
+
+    "return OK with prepopulated data" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
+        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).getElementsByAttribute("checked").first().parent().text() mustBe "Yes"
+      }
+    }
   }
 
   "submit Trading Name page" should {
@@ -69,6 +90,26 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.CaptureTradingNameController.show.url)
+      }
+    }
+
+    "return SEE_OTHER with redirect to PPOB" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].contains(businessDetails)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
+        .s4lContainer[Business].clearedByKey
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("true")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PpobAddressController.startJourney.url)
       }
     }
 
