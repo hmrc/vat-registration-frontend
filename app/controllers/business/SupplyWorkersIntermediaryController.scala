@@ -42,23 +42,21 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
       implicit profile =>
         for {
           businessDetails <- businessService.getBusiness
-          name <- applicantDetailsService.getTransactorApplicantName
           intermediarySupply = businessDetails.labourCompliance.flatMap(_.intermediaryArrangement)
-          intermediarySupplyForm = IntermediarySupplyForm(name)
+          intermediarySupplyForm = IntermediarySupplyForm
           formFilled = intermediarySupply.fold(intermediarySupplyForm.form)(intermediarySupplyForm.form.fill)
-        } yield Ok(view(formFilled, name))
+        } yield Ok(view(formFilled))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
-          name <- applicantDetailsService.getTransactorApplicantName
           businessDetails <- businessService.getBusiness
-          intermediarySupplyForm = IntermediarySupplyForm(name)
+          intermediarySupplyForm = IntermediarySupplyForm
           result <- {
             intermediarySupplyForm.form.bindFromRequest().fold(
-              badForm => Future.successful(BadRequest(view(badForm, name))),
+              badForm => Future.successful(BadRequest(view(badForm))),
               data => {
                 val updatedLabourCompliance = businessDetails.labourCompliance
                   .getOrElse(LabourCompliance())

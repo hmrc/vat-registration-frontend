@@ -25,7 +25,7 @@ import services.{BusinessService, SessionProfile, SessionService, VatRegistratio
 import views.html.sicandcompliance.supply_workers
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
                                         val sessionService: SessionService,
@@ -41,24 +41,19 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         for {
           businessDetails <- businessService.getBusiness
-          isTransactor <- vatRegistrationService.isTransactor
           supplyWorkers = businessDetails.labourCompliance.flatMap(_.supplyWorkers)
-          formFilled = supplyWorkers.fold(SupplyWorkersForm.form(isTransactor))(SupplyWorkersForm.form(isTransactor).fill)
-        } yield Ok(view(formFilled, isTransactor))
+          formFilled = supplyWorkers.fold(SupplyWorkersForm.form)(SupplyWorkersForm.form.fill)
+        } yield Ok(view(formFilled))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
-          isTransactor <- vatRegistrationService.isTransactor
           businessDetails <- businessService.getBusiness
           result <- {
-            SupplyWorkersForm.form(isTransactor).bindFromRequest().fold(
-            badForm =>
-              vatRegistrationService.isTransactor.map { _ =>
-                BadRequest(view(badForm, isTransactor))
-              },
+            SupplyWorkersForm.form.bindFromRequest().fold(
+            badForm => Future.successful(BadRequest(view(badForm))),
               data => {
                 val withSupplyWorkers = businessDetails.labourCompliance.getOrElse(LabourCompliance()).copy(supplyWorkers = Some(data))
                 val updatedLabourCompliance =

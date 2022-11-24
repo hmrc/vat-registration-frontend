@@ -870,28 +870,24 @@ pages.confirmsic.bullet1                                  = gwirio bod y codau S
 pages.confirmsic.bullet2                                  = ychwanegu unrhyw godau SIC eraill sy’n berthnasol i weithgaredd y busnes
 pages.confirmsic.p4                                       = Byddwn yn eich tywys drwy’r broses hon.
 
+## awaiting content
 # Compliance - Tell us more about your company page
-pages.compliance.introduction.heading                        = Dywedwch ragor wrthym am eich busnes
-pages.compliance.introduction.para1                          = Rydym yn mynd i ofyn ychydig o gwestiynau i chi am eich gweithgareddau busnes fel y gallwn ddeall beth mae’r busnes yn ei wneud.
+pages.compliance.introduction.heading                        = Tell us more about the business
+pages.compliance.introduction.para1                          = We’re going to ask you a few questions so we can understand what the business does.
 
 # Labour Compliance
 # Does Company Provide Workers
-pages.labourCompliance.supplyWorkers.heading                 = A ydych yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall?
-pages.labourCompliance.supplyWorkers.3pt.heading             = A yw’r busnes yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall?
-validation.labourCompliance.supplyWorkers.missing            = Dewiswch ‘Iawn’ os ydych yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
-validation.labourCompliance.supplyWorkers.3pt.missing        = Dewiswch ‘Iawn’ os yw’r busnes yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
+pages.labourCompliance.supplyWorkers.heading                 = A yw’r busnes yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall?
+validation.labourCompliance.supplyWorkers.missing            = Dewiswch ‘Iawn’ os yw’r busnes yn cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
 
 # Workers
-pages.labourCompliance.workers.heading                       = Faint o weithwyr cyflenwi rydych yn eu cyflenwi?
-pages.labourCompliance.workers.3pt.heading                   = Faint o weithwyr y mae’r busnes yn eu cyflenwi?
-validation.labourCompliance.numberOfWorkers.missing          = Nodwch nifer y gweithwyr rydych yn eu cyflenwi
-validation.labourCompliance.numberOfWorkers.3pt.missing      = Nodwch nifer y gweithwyr y mae’r busnes yn eu cyflenwi
+pages.labourCompliance.workers.heading                       = Faint o weithwyr y mae’r busnes yn eu cyflenwi?
+validation.labourCompliance.numberOfWorkers.missing          = Nodwch nifer y gweithwyr y mae’r busnes yn eu cyflenwi
 
+## awaiting content
 # Intermediary supply
-pages.labourCompliance.intermediarySupply.heading            = A ydych yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr?
-pages.labourCompliance.intermediarySupply.3pt.heading        = A yw {0} yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr?
-validation.labourCompliance.intermediarySupply.missing       = Dewiswch ‘Iawn’ os ydych yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr
-validation.labourCompliance.intermediarySupply.3pt.missing   = Dewiswch ‘Iawn’ os yw {0} yn gyfryngwr sy’n trefnu’r cyflenwad o weithwyr
+pages.labourCompliance.intermediarySupply.heading            = Is the business an intermediary arranging the supply of workers?
+validation.labourCompliance.intermediarySupply.missing       = Select yes if the business is an intermediary arranging the supply of workers
 
 # Apply For Eori
 pages.applyForEori.heading                  = Oes angen rhif EORI arnoch?

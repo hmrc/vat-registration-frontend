@@ -24,13 +24,11 @@ import views.html.sicandcompliance.supply_workers
 class SupplyWorkersViewSpec extends VatRegViewSpec {
 
   val view = app.injector.instanceOf[supply_workers]
-  val transactorDoc = Jsoup.parse(view(SupplyWorkersForm.form(true), true).body)
-  implicit val doc = Jsoup.parse(view(SupplyWorkersForm.form(false), false).body)
+  implicit val doc = Jsoup.parse(view(SupplyWorkersForm.form).body)
 
   object ExpectedContent {
-    val title = "Do you supply workers to provide a service to another business? - Register for VAT - GOV.UK"
-    val heading = "Do you supply workers to provide a service to another business?"
-    val thirdPartyHeading = "Does the business supply workers to provide a service to another business?"
+    val heading = "Does the business supply workers to provide a service to another business?"
+    val title = s"$heading - Register for VAT - GOV.UK"
     val yes = "Yes"
     val no = "No"
     val continue = "Save and continue"
@@ -40,10 +38,7 @@ class SupplyWorkersViewSpec extends VatRegViewSpec {
     "have the correct page title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
     }
-    "have the correct heading when the user is transactor" in {
-      transactorDoc.select(Selectors.h1).text mustBe ExpectedContent.thirdPartyHeading
-    }
-    "have the correct heading when the user is not transactor" in new ViewSetup {
+    "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
     "have yes/no radio options" in new ViewSetup {

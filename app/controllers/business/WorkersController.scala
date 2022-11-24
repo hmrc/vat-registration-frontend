@@ -41,9 +41,8 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         for {
           businessDetails <- businessService.getBusiness
-          isTransactor <- vatRegistrationService.isTransactor
-          formFilled = businessDetails.labourCompliance.flatMap(_.numOfWorkersSupplied).fold(WorkersForm.form(isTransactor))(WorkersForm.form(isTransactor).fill)
-        } yield Ok(view(formFilled, isTransactor))
+          formFilled = businessDetails.labourCompliance.flatMap(_.numOfWorkersSupplied).fold(WorkersForm.form)(WorkersForm.form.fill)
+        } yield Ok(view(formFilled))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -51,10 +50,9 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
       implicit profile =>
         for {
           businessDetails <- businessService.getBusiness
-          isTransactor <- vatRegistrationService.isTransactor
           result <- {
-            WorkersForm.form(isTransactor).bindFromRequest().fold(
-              badForm => Future.successful(BadRequest(view(badForm, isTransactor))),
+            WorkersForm.form.bindFromRequest().fold(
+              badForm => Future.successful(BadRequest(view(badForm))),
               data => {
                 val updatedLabourCompliance = businessDetails.labourCompliance
                   .getOrElse(LabourCompliance())

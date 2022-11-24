@@ -871,27 +871,21 @@ pages.confirmsic.bullet2                                  = add any more SIC cod
 pages.confirmsic.p4                                       = We will guide you through this process.
 
 # Compliance - Tell us more about your company page
-pages.compliance.introduction.heading                        = Tell us more about your business
-pages.compliance.introduction.para1                          = We’re going to ask you a few questions about your business activities so we can understand what the business does.
+pages.compliance.introduction.heading                        = Tell us more about the business
+pages.compliance.introduction.para1                          = We’re going to ask you a few questions so we can understand what the business does.
 
 # Labour Compliance
 # Does Company Provide Workers
-pages.labourCompliance.supplyWorkers.heading                 = Do you supply workers to provide a service to another business?
-pages.labourCompliance.supplyWorkers.3pt.heading             = Does the business supply workers to provide a service to another business?
-validation.labourCompliance.supplyWorkers.missing                             = Select yes if you supply workers to provide a service to another business
-validation.labourCompliance.supplyWorkers.3pt.missing                         = Select yes if the business supplies workers to provide a service to another business
+pages.labourCompliance.supplyWorkers.heading                 = Does the business supply workers to provide a service to another business?
+validation.labourCompliance.supplyWorkers.missing            = Select yes if the business supplies workers to provide a service to another business
 
 # Workers
-pages.labourCompliance.workers.heading                       = How many supply workers do you supply?
-pages.labourCompliance.workers.3pt.heading                   = How many workers does the business supply?
-validation.labourCompliance.numberOfWorkers.missing          = Enter the number of workers you supply
-validation.labourCompliance.numberOfWorkers.3pt.missing      = Enter the number of workers the business supplies
+pages.labourCompliance.workers.heading                       = How many workers does the business supply?
+validation.labourCompliance.numberOfWorkers.missing          = Enter the number of workers the business supplies
 
 # Intermediary supply
-pages.labourCompliance.intermediarySupply.heading            = Are you an intermediary arranging the supply of workers?
-pages.labourCompliance.intermediarySupply.3pt.heading        = Is {0} an intermediary arranging the supply of workers?
-validation.labourCompliance.intermediarySupply.missing       = Select yes if you are an intermediary arranging the supply of workers
-validation.labourCompliance.intermediarySupply.3pt.missing   = Select yes if {0} is an intermediary arranging the supply of workers
+pages.labourCompliance.intermediarySupply.heading            = Is the business an intermediary arranging the supply of workers?
+validation.labourCompliance.intermediarySupply.missing       = Select yes if the business is an intermediary arranging the supply of workers
 
 # Apply For Eori
 pages.applyForEori.heading                  = Do you need an EORI number?
