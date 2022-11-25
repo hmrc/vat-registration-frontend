@@ -34,7 +34,7 @@
 @labelClasses = @{
     if(isPageHeading) "govuk-label--xl"
     else if (isLabelHidden) "govuk-visually-hidden"
-    else if (hint.isDefined) "govuk-!-font-weight-bold"
+    else if (hint.isDefined) classes.getOrElse("govuk-!-font-weight-bold")
     else ""
 }
 
