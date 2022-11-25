@@ -43,7 +43,8 @@
             name = "value",
             label = messages("applicationReference.label"),
             hint = Some(Html(messages("applicationReference.hint"))),
-            isPageHeading = false
+            isPageHeading = false,
+            classes = Some("govuk-!-font-weight-regular")
         )
 
         @button("app.common.continueNoSave", showSaveProgressButton = false)
