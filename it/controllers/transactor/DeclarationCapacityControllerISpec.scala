@@ -1,7 +1,7 @@
 
 package controllers.transactor
 
-import forms.DeclarationCapacityForm.{accountant, declarationCapacity, otherRole}
+import forms.DeclarationCapacityForm.{declarationCapacity, other, otherRole}
 import itutil.ControllerISpec
 import models.{DeclarationCapacityAnswer, OtherDeclarationCapacity, TransactorDetails}
 import org.jsoup.Jsoup
@@ -19,13 +19,12 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
     declarationCapacity = Some(DeclarationCapacityAnswer(OtherDeclarationCapacity, Some("testOtherRole")))
   )
 
-  s"GET $url" should {
+  s"GET $url" must {
     "show the view" in new Setup {
       given()
         .user.isAuthorised()
         .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
-        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -41,8 +40,8 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
     "show the view with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(testDetails)
-        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,38 +56,35 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
     }
   }
 
-  s"POST $url" when {
-    "the TransactorDetails model is incomplete" should {
-      "update S4L and redirect to Transactor Identification" in new Setup {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
-          .registrationApi.getSection[TransactorDetails](None)
-          .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+  s"POST $url" must {
+    "update backend and redirect to Transactor Identification" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
+        .registrationApi.replaceSection[TransactorDetails](testDetails)
+        .s4lContainer[TransactorDetails].clearedByKey
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(Map(declarationCapacity -> accountant)))
+      val res = await(buildClient(url).post(Map(
+        declarationCapacity -> other,
+        otherRole -> "testOtherRole"
+      )))
 
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.grs.routes.TransactorIdController.startJourney.url)
-      }
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.grs.routes.TransactorIdController.startJourney.url)
+    }
 
-      "return BAD_REQUEST if role selected as other and not set" in new Setup {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
-          .registrationApi.getSection[TransactorDetails](None)
-          .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+    "return BAD_REQUEST if role selected as other and not set" in new Setup {
+      given()
+        .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).post(""))
+      val res = await(buildClient(url).post(""))
 
-        res.status mustBe BAD_REQUEST
-      }
+      res.status mustBe BAD_REQUEST
     }
   }
 }

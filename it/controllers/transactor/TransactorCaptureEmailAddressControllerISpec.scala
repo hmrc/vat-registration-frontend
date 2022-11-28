@@ -18,7 +18,6 @@ package controllers.transactor
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
 import models.{AuthorisedEmployee, DeclarationCapacityAnswer, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Json
@@ -32,7 +31,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
   val url: String = controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url
   private val testEmail = "test@test.com"
 
-  val s4lData = TransactorDetails(
+  val testTransactor: TransactorDetails = TransactorDetails(
     Some(testPersonalDetails),
     Some(true),
     Some(testCompanyName),
@@ -43,11 +42,12 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
     Some(DeclarationCapacityAnswer(AuthorisedEmployee))
   )
 
-  s"GET $url" should {
+  s"GET $url" must {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,8 +60,8 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lData)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[TransactorDetails].isEmpty
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -74,17 +74,16 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" when {
-    "TransactorDetails is not complete" should {
-      "Update S4L and redirect to Transactor Capture Email Passcode page" in new Setup {
+    "TransactorDetails is not complete" must {
+      "Update backend and redirect to Transactor Capture Email Passcode page" in new Setup {
         disable(StubEmailVerification)
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
-          .s4lContainer[TransactorDetails].isUpdatedWith(
-          TransactorDetails().copy(email = Some(testEmail))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .s4lContainer[TransactorDetails].clearedByKey
+          .registrationApi.getSection[TransactorDetails](None)
+          .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,17 +94,17 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.transactor.routes.TransactorCaptureEmailPasscodeController.show.url)
       }
-      "Update S4L redirect to Transactor Capture Email Passcode page when the user has already verified" in new Setup {
+      "Update backend and redirect to Transactor Capture Email Passcode page when the user has already verified" in new Setup {
         disable(StubEmailVerification)
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
-          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(email = Some(testEmail)))
-          .s4lContainer[TransactorDetails].isUpdatedWith(
-          TransactorDetails().copy(email = Some(testEmail), emailVerified = Some(true))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .s4lContainer[TransactorDetails].clearedByKey
+          .registrationApi.getSection[TransactorDetails](None)
+          .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
+          .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(email = Some(testEmail))))
+          .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail), emailVerified = Some(true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -116,17 +115,15 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.transactor.routes.TransactorEmailAddressVerifiedController.show.url)
       }
-      "Update S4L redirect to 'Email Confirmation Code Max Attempts Exceeded' page when the user has already verified" in new Setup {
+      "Update backend and redirect to 'Email Confirmation Code Max Attempts Exceeded' page when the user has tried to verify too many times" in new Setup {
         disable(StubEmailVerification)
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(TransactorDetails())
-          .s4lContainer[TransactorDetails].isUpdatedWith(TransactorDetails().copy(email = Some(testEmail)))
-          .s4lContainer[TransactorDetails].isUpdatedWith(
-          TransactorDetails().copy(email = Some(testEmail), emailVerified = Some(true))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .s4lContainer[TransactorDetails].isEmpty
+          .s4lContainer[TransactorDetails].clearedByKey
+          .registrationApi.getSection[TransactorDetails](None)
+          .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -138,15 +135,15 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
       }
     }
-    "TransactorDetails is complete" should {
+    "TransactorDetails is complete" must {
       "Post the block to the backend and redirect to the Transactor Capture Email Passcode page" in new Setup {
         disable(StubEmailVerification)
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].contains(validTransactorDetails.copy(email = None))
+          .s4lContainer[TransactorDetails].isEmpty
           .s4lContainer[TransactorDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails.copy(email = None)))
           .registrationApi.replaceSection[TransactorDetails](validTransactorDetails)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

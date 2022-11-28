@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 
 class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
 
-  "GET /transactor-details/email-address-verified" should {
+  "GET /transactor-details/email-address-verified" must {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
@@ -37,7 +37,7 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
     }
   }
 
-  "POST /transactor-details/email-address-verified" should {
+  "POST /transactor-details/email-address-verified" must {
     "redirect to Task list page" in new Setup {
       disable(StubEmailVerification)
 

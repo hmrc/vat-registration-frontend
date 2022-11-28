@@ -26,6 +26,23 @@ import javax.inject.Inject
 
 class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) extends FeatureSwitching {
 
+  def build(vatScheme: VatScheme)
+           (implicit profile: CurrentProfile,
+            messages: Messages): TaskListSection = {
+
+    val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
+    val isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
+
+    TaskListSection(
+      heading = messages("tasklist.aboutYou.heading"),
+      rows = Seq(
+        Some(transactorPersonalDetailsRow.build(vatScheme)),
+        if (isAgent) None else Some(transactorAddressDetailsRow.build(vatScheme)),
+        Some(transactorContactDetailsRow.build(vatScheme))
+      ).flatten
+    )
+  }
+
   def transactorPersonalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutYou.personalDetails",
     url = _ => {
@@ -38,17 +55,22 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     tagId = "transactorPersonalDetailsRow",
     checks = scheme => {
       if (profile.agentReferenceNumber.isDefined) {
-        Seq(scheme.transactorDetails.exists(_.personalDetails.isDefined))
+        Seq(
+          scheme.transactorDetails.exists(_.personalDetails.isDefined),
+          scheme.transactorDetails.exists(_.declarationCapacity.isDefined)
+        )
       }
       else {
         Seq(
           scheme.transactorDetails.exists(_.personalDetails.isDefined),
-          scheme.transactorDetails.exists(_.isPartOfOrganisation.isDefined),
-          if (scheme.transactorDetails.exists(_.isPartOfOrganisation.contains(true))) {
-            scheme.transactorDetails.exists(_.organisationName.isDefined)
-          } else {
-            scheme.transactorDetails.exists(_.declarationCapacity.isDefined)
-          }
+          scheme.transactorDetails.exists(_.isPartOfOrganisation.exists(answer =>
+            if (answer) {
+              scheme.transactorDetails.exists(_.organisationName.isDefined)
+            } else {
+              true
+            }
+          )),
+          scheme.transactorDetails.exists(_.declarationCapacity.isDefined)
         )
       }
     },
@@ -96,22 +118,5 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
       case None =>
         throw new InternalServerException("[AboutYouTaskList][resolveAddressRowUrl] Failed to initiate address details task list due to missing party type")
     }
-  }
-
-  def build(vatScheme: VatScheme)
-           (implicit profile: CurrentProfile,
-            messages: Messages): TaskListSection = {
-
-    val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
-    val isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
-
-    TaskListSection(
-      heading = messages("tasklist.aboutYou.heading"),
-      rows = Seq(
-        Some(transactorPersonalDetailsRow.build(vatScheme)),
-        if (isAgent) None else Some(transactorAddressDetailsRow.build(vatScheme)),
-        Some(transactorContactDetailsRow.build(vatScheme))
-      ).flatten
-    )
   }
 }

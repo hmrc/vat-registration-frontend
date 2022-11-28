@@ -17,7 +17,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
 
   val testDetails: TransactorDetails = TransactorDetails(isPartOfOrganisation = Some(true))
 
-  s"GET $url" should {
+  s"GET $url" must {
     List(None, Some(testDetails)).foreach { transactorDetails =>
       s"show the view with transactor details ${transactorDetails.fold("not set")(_ => "set")}" in new Setup {
         given()
@@ -35,14 +35,14 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
       }
     }
 
-    s"POST $url" should {
+    s"POST $url" must {
       "redirect to Organisation Name page when yes is selected" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
+          .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[TransactorDetails](None)
-          .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+          .registrationApi.replaceSection[TransactorDetails](TransactorDetails(isPartOfOrganisation = Some(true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -54,13 +54,13 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
         }
       }
 
-      "redirect to Declaration Capacity page when no is selected" in new Setup {
+      "clear organisationName and redirect to Declaration Capacity page when no is selected" in new Setup {
         given()
           .user.isAuthorised()
           .s4lContainer[TransactorDetails].isEmpty
-          .registrationApi.getSection[TransactorDetails](None)
-          .s4lContainer[TransactorDetails].isUpdatedWith(testDetails)
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme)
+          .s4lContainer[TransactorDetails].clearedByKey
+          .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(isPartOfOrganisation = Some(true), organisationName = Some("test"))))
+          .registrationApi.replaceSection[TransactorDetails](TransactorDetails(isPartOfOrganisation = Some(false)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

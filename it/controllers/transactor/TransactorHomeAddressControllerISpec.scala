@@ -25,23 +25,11 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
   val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
 
-  "GET redirectToAlf" should {
-    val s4lData = TransactorDetails(
-      personalDetails = Some(testPersonalDetails),
-      isPartOfOrganisation = Some(true),
-      organisationName = Some(name),
-      telephone = Some(telephone),
-      email = Some(email),
-      address = Some(Address(addrLine1, Some(addrLine2), None, None, None, Some(postcode))),
-      declarationCapacity = Some(DeclarationCapacityAnswer(Director))
-    )
-
+  "GET redirectToAlf" must {
     "redirect to ALF" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lData)
         .alfeJourney.initialisedSuccessfully()
-        .registrationApi.getRegistration(emptyUkCompanyVatScheme)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,37 +41,36 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET Txm ALF callback for Home Address" should {
-    val s4lData = TransactorDetails(
-      personalDetails = Some(testPersonalDetails),
-      isPartOfOrganisation = Some(true),
-      organisationName = Some(name),
-      telephone = Some(telephone),
-      email = Some(email),
-      address = Some(Address(addrLine1, Some(addrLine2), None, None, None, Some(postcode))),
-      declarationCapacity = Some(DeclarationCapacityAnswer(Director))
-    )
-
+  "GET Txm ALF callback for Home Address" must {
     "patch Transactor Details with ALF address in backend" in new Setup {
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
       val addressLine2 = "Holland road"
-      val addressCountry = "GB"
+      val addressCountry = "United Kingdom"
+      val addressCountryCode = "GB"
       val addressPostcode = "BN3 1JU"
 
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].contains(s4lData)
+        .s4lContainer[TransactorDetails].isEmpty
         .s4lContainer[TransactorDetails].clearedByKey
-        .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
-        .registrationApi.replaceSection(
-        TransactorDetails(address = Some(Address(addressLine1, Some(addressLine2), None, None, None, Some(addressPostcode), Some(Country(Some("GB"), Some("United Kingdom"))))))
-      )
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .address(addressId, addressLine1, addressLine2, addressCountryCode, addressPostcode).isFound
+        .registrationApi.getSection[TransactorDetails](None)
+        .registrationApi.replaceSection[TransactorDetails](TransactorDetails(address = Some(Address(
+        addressLine1,
+        Some(addressLine2),
+        None,
+        None,
+        None,
+        Some(addressPostcode),
+        Some(Country(Some(addressCountryCode), Some(addressCountry))),
+        addressValidated = true
+      ))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
+
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)

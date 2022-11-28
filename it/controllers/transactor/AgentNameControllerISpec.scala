@@ -51,30 +51,31 @@ class AgentNameControllerISpec extends ControllerISpec {
   "POST /agent-name" when {
     "the name is valid" when {
       "redirect to the task list" in new Setup {
-          val firstUpdateDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
-            firstName = testFirstName,
-            lastName = testLastName,
-            identifiersMatch = true,
-            arn = Some(testArn)
-          )))
+        val firstUpdateDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
+          firstName = testFirstName,
+          lastName = testLastName,
+          identifiersMatch = true,
+          arn = Some(testArn)
+        )))
 
-          val secondUpdateDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
+        val secondUpdateDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
 
-          given()
-            .user.isAuthorised(arn = Some(testArn))
-            .s4lContainer[TransactorDetails].isEmpty
-            .s4lContainer[TransactorDetails].isUpdatedWith(firstUpdateDetails)
-            .s4lContainer[TransactorDetails].isUpdatedWith(secondUpdateDetails)
-            .registrationApi.getSection[TransactorDetails](None)
-            .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
+        given()
+          .user.isAuthorised(arn = Some(testArn))
+          .s4lContainer[TransactorDetails].isEmpty
+          .s4lContainer[TransactorDetails].clearedByKey
+          .registrationApi.getSection[TransactorDetails](None)
+          .registrationApi.replaceSection[TransactorDetails](firstUpdateDetails)
+          .registrationApi.getSection[TransactorDetails](Some(firstUpdateDetails))
+          .registrationApi.replaceSection[TransactorDetails](secondUpdateDetails)
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
+        val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
 
-          res.status mustBe SEE_OTHER
-          res.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-        }
+        res.status mustBe SEE_OTHER
+        res.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
+      }
     }
     "the name is invalid" must {
       "return BAD_REQUEST" in new Setup {
@@ -82,7 +83,6 @@ class AgentNameControllerISpec extends ControllerISpec {
           .user.isAuthorised(arn = Some(testArn))
           .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
-          .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(transactorDetails = Some(validTransactorDetails)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

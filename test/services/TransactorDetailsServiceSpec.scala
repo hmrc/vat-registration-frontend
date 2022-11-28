@@ -29,12 +29,12 @@ import scala.concurrent.Future
 
 class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures with MockS4lConnector with MockRegistrationApiConnector {
   override val testRegId = "testRegId"
-  override implicit val currentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
+  override implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   val testOrganisationName = "testOrganisationName"
   val testTelephone = "1234567890"
   val testEmail = "test@email.com"
-  val testTransactorDetails = TransactorDetails(
+  val testTransactorDetails: TransactorDetails = TransactorDetails(
     personalDetails = Some(testPersonalDetails),
     isPartOfOrganisation = Some(true),
     organisationName = Some(testOrganisationName),
@@ -50,23 +50,25 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
     mockRegistrationApiConnector
   )
 
-  "Calling getTransactorDetails" should {
-    "return a full TransactorDetails model from s4l" in {
+  "Calling getTransactorDetails" must {
+    "return a full TransactorDetails model" in {
       when(mockS4LService.fetchAndGet[TransactorDetails])
-        .thenReturn(Future.successful(Some(testTransactorDetails)))
+        .thenReturn(Future.successful(None))
+      mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
 
       service.getTransactorDetails returns testTransactorDetails
     }
   }
 
-  "Calling updateTransactorDetails" should {
+  "Calling updateTransactorDetails" must {
     "return a TransactorDetails model if storing personalDetails" when {
       "the TransactorDetails model is incomplete" in {
         val incompleteTransactorDetails = TransactorDetails(personalDetails = Some(testPersonalDetails))
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(testPersonalDetails) returns incompleteTransactorDetails
@@ -74,12 +76,31 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(testPersonalDetails) returns testTransactorDetails
+      }
+
+      "the TransactorDetails model is complete but user changed to an agent cred" in {
+        val agentPersonalDetails = testPersonalDetails.copy(arn = Some("123"))
+        val agentTransactorDetails = testTransactorDetails.copy(
+          personalDetails = Some(agentPersonalDetails),
+          organisationName = None,
+          isPartOfOrganisation = None,
+          address = None
+        )
+        when(mockS4LService.fetchAndGet[TransactorDetails])
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, agentTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
+          .thenReturn(Future.successful(CacheMap("", Map())))
+
+        service.saveTransactorDetails(agentPersonalDetails) returns agentTransactorDetails
       }
     }
 
@@ -89,7 +110,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(PartOfOrganisation(true)) returns incompleteTransactorDetails
@@ -97,7 +119,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -107,7 +130,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete but user stores false" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails.copy(isPartOfOrganisation = Some(false), organisationName = None))
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -122,7 +146,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(OrganisationName(testOrganisationName)) returns incompleteTransactorDetails
@@ -130,7 +155,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -145,7 +171,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(Telephone(testTelephone)) returns incompleteTransactorDetails
@@ -153,7 +180,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -168,7 +196,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(TransactorEmail(testEmail)) returns incompleteTransactorDetails
@@ -176,7 +205,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -191,7 +221,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(testAddress) returns incompleteTransactorDetails
@@ -199,7 +230,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
@@ -214,7 +246,8 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
         when(mockS4LService.fetchAndGet[TransactorDetails])
           .thenReturn(Future.successful(None))
         mockGetSection[TransactorDetails](testRegId, None)
-        when(mockS4LService.save[TransactorDetails](incompleteTransactorDetails))
+        mockReplaceSection[TransactorDetails](testRegId, incompleteTransactorDetails)
+        when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(DeclarationCapacityAnswer(AuthorisedEmployee)) returns incompleteTransactorDetails
@@ -222,24 +255,13 @@ class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtu
 
       "the TransactorDetails model is complete" in {
         when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(testTransactorDetails)))
+          .thenReturn(Future.successful(None))
+        mockGetSection[TransactorDetails](testRegId, Some(testTransactorDetails))
         mockReplaceSection[TransactorDetails](testRegId, testTransactorDetails)
         when(mockS4LService.clearKey[TransactorDetails])
           .thenReturn(Future.successful(CacheMap("", Map())))
 
         service.saveTransactorDetails(DeclarationCapacityAnswer(AuthorisedEmployee)) returns testTransactorDetails
-      }
-
-      "the TransactorDetails model is complete but user changed to an agent cred" in {
-        val agentTransactorDetails = testTransactorDetails.copy(personalDetails = Some(testPersonalDetails.copy(arn = Some("123"))))
-        val updatedTransactorDetails = agentTransactorDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)), organisationName = None, isPartOfOrganisation = None, address = None)
-        when(mockS4LService.fetchAndGet[TransactorDetails])
-          .thenReturn(Future.successful(Some(agentTransactorDetails)))
-        mockReplaceSection[TransactorDetails](testRegId, updatedTransactorDetails)
-        when(mockS4LService.clearKey[TransactorDetails])
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        service.saveTransactorDetails(DeclarationCapacityAnswer(AccountantAgent)) returns updatedTransactorDetails
       }
     }
   }
