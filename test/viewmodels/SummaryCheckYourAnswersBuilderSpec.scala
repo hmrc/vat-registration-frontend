@@ -217,7 +217,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
             content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
           ),
           Section(
-            headingContent = Text("Applicant details"),
+            headingContent = Text("About the business contact"),
             content = HtmlContent(govukSummaryList(testSummaryList(applicantId)))
           ),
           Section(

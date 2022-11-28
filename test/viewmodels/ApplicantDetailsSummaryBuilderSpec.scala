@@ -39,19 +39,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
   }
 
   "SummaryApplicantDetailsBuilder" when {
-    "called by a NETP" must {
+    "called by a NETP and no transactor" must {
       "return the summary list without partner details" in new Setup {
         val vatScheme: VatScheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP))
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP, isTransactor = false))
         )
         val expectedSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -66,11 +62,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -78,11 +74,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address/international")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/previous-address/international")),
           optSummaryListRowString(
@@ -91,6 +87,62 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/email-address")),
           optSummaryListRowString(
             questionId = "Telephone number",
+            optAnswer = Some("1234"),
+            optUrl = Some("/register-for-vat/telephone-number"))
+        ).flatten)
+
+        val result = applicantDetailsSummaryBuilder.build(vatScheme)(messages = messages)
+        result mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
+      }
+    }
+    "called by a NETP when transactor exists" must {
+      "return the summary list without partner details" in new Setup {
+        val vatScheme: VatScheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP, isTransactor = true))
+        )
+        val expectedSummaryList: SummaryList = SummaryList(Seq(
+          optSummaryListRowString(
+            questionId = "Business contact’s full name",
+            optAnswer = Some("testFirstName testLastName"),
+            optUrl = Some("/register-for-vat/start-sti-journey")),
+          optSummaryListRowString(
+            questionId = "Business contact’s date of birth",
+            optAnswer = Some("1 January 2020"),
+            optUrl = Some("/register-for-vat/start-sti-journey")),
+          optSummaryListRowString(
+            questionId = "Business contact’s National Insurance number",
+            optAnswer = Some("AB123456C"),
+            optUrl = Some("/register-for-vat/start-sti-journey")),
+          optSummaryListRowString(
+            questionId = "Business contact’s changed name",
+            optAnswer = Some("Yes"),
+            optUrl = Some("/register-for-vat/changed-name")),
+          optSummaryListRowString(
+            questionId = "Business contact’s previous name",
+            optAnswer = Some("New Name Cosmo"),
+            optUrl = Some("/register-for-vat/what-was-previous-name")),
+          optSummaryListRowString(
+            questionId = "Date business contact’s name changed",
+            optAnswer = Some("12 July 2000"),
+            optUrl = Some("/register-for-vat/when-change")),
+          optSummaryListRow(
+            questionId = "Business contact’s home address",
+            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optUrl = Some("/register-for-vat/home-address/international")),
+          optSummaryListRowString(
+            questionId = "Business contact’s home address for 3 years or more",
+            optAnswer = Some("No"),
+            optUrl = Some("/register-for-vat/current-address")),
+          optSummaryListRow(
+            questionId = "Business contact’s previous home address",
+            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optUrl = Some("/register-for-vat/previous-address/international")),
+          optSummaryListRowString(
+            questionId = "Business contact’s email address",
+            optAnswer = Some("test@t.test"),
+            optUrl = Some("/register-for-vat/email-address")),
+          optSummaryListRowString(
+            questionId = "Business contact’s telephone number",
             optAnswer = Some("1234"),
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
@@ -108,20 +160,16 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedIndividualSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("An actual person"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
+            questionId = "Lead partner’s Unique Taxpayer Reference (UTR)",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -140,11 +188,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -152,11 +200,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -182,20 +230,16 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedNETPSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("An actual person"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
+            questionId = "Lead partner’s Unique Taxpayer Reference (UTR)",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/partner/1/start-sti-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -214,11 +258,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -226,11 +270,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -256,15 +300,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedLtdCompanySummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("A business"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Business type",
+            questionId = "Lead partner business type",
             optAnswer = Some("UK company"),
             optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
-            questionId = "Lead partner’s company Unique Taxpayer Reference",
+            questionId = "Lead partner’s company Unique Taxpayer Reference (UTR)",
             optAnswer = Some("testCtUtr"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
@@ -276,12 +320,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("testCompanyName"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-individual-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-individual-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -300,11 +340,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -312,11 +352,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -342,15 +382,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedScotPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("A business"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Business type",
+            questionId = "Lead partner business type",
             optAnswer = Some("Scottish partnership"),
             optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
+            questionId = "Lead partner’s Unique Taxpayer Reference (UTR)",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -358,12 +398,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("AA11AA"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-individual-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-individual-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -382,11 +418,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -394,11 +430,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -432,15 +468,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedScotLtdPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("A business"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Business type",
+            questionId = "Lead partner business type",
             optAnswer = Some("Scottish limited partnership"),
             optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
+            questionId = "Lead partner’s Unique Taxpayer Reference (UTR)",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -448,7 +484,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Partnership name",
+            questionId = "Lead partner’s partnership name",
             optAnswer = Some("testPartnershipName"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -456,12 +492,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("AA11AA"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-individual-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-individual-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -480,11 +512,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -492,11 +524,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -530,15 +562,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedLtdLiabilityPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("A business"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Business type",
+            questionId = "Lead partner business type",
             optAnswer = Some("Limited liability partnership"),
             optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
+            questionId = "Lead partner’s Unique Taxpayer Reference (UTR)",
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -546,7 +578,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Partnership name",
+            questionId = "Lead partner’s partnership name",
             optAnswer = Some("testPartnershipName"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -554,12 +586,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("AA11AA"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-individual-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-individual-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -578,11 +606,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -590,11 +618,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -620,11 +648,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedCharitableOrgSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("A business"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Business type",
+            questionId = "Lead partner business type",
             optAnswer = Some("Charitable Incorporated Organisation (CIO)"),
             optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
@@ -640,12 +668,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("testChrn"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-individual-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-individual-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -664,11 +688,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -676,11 +700,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
@@ -706,15 +730,15 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedRegSocietySummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Partner type",
+            questionId = "Lead Partner type",
             optAnswer = Some("A business"),
             optUrl = Some("/register-for-vat/lead-partner-entity")),
           optSummaryListRowString(
-            questionId = "Business type",
+            questionId = "Lead partner business type",
             optAnswer = Some("Registered society"),
             optUrl = Some("/register-for-vat/business-type-in-partnership")),
           optSummaryListRowString(
-            questionId = "Lead partner’s Unique Taxpayer Reference",
+            questionId = "Lead partner’s Unique Taxpayer Reference (UTR)",
             optAnswer = Some("testCtUtr"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
@@ -726,12 +750,8 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("testCompanyName"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "First Name",
-            optAnswer = Some("testFirstName"),
-            optUrl = Some("/register-for-vat/start-sti-individual-journey")),
-          optSummaryListRowString(
-            questionId = "Last Name",
-            optAnswer = Some("testLastName"),
+            questionId = "Full Name",
+            optAnswer = Some("testFirstName testLastName"),
             optUrl = Some("/register-for-vat/start-sti-individual-journey")),
           optSummaryListRowString(
             questionId = "Date of birth",
@@ -750,11 +770,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("Yes"),
             optUrl = Some("/register-for-vat/changed-name")),
           optSummaryListRowString(
-            questionId = "Former name",
+            questionId = "Previous name",
             optAnswer = Some("New Name Cosmo"),
             optUrl = Some("/register-for-vat/what-was-previous-name")),
           optSummaryListRowString(
-            questionId = "Date former name changed",
+            questionId = "Date name changed",
             optAnswer = Some("12 July 2000"),
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
@@ -762,11 +782,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
-            questionId = "Lived at current address for more than 3 years",
+            questionId = "Home address for 3 years or more",
             optAnswer = Some("No"),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
-            questionId = "Previous address",
+            questionId = "Previous home address",
             optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
