@@ -17,7 +17,7 @@
 package viewmodels
 
 import models.OtherBusinessInvolvement
-import models.view.SummaryListRowUtils.optSummaryListRowIndexed
+import models.view.SummaryListRowUtils.{optSummaryListRowIndexed, optSummaryListRowBoolean}
 import play.api.i18n.{Lang, MessagesApi}
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
@@ -46,20 +46,38 @@ class OtherBusinessInvolvementSummaryBuilderSpec extends VatRegSpec {
   val testObiSection = List(testObi, testObi)
 
   "The OBJ builder" when {
-    "there are no OBIs" must {
-      "return empty HTML" in {
-        val res = builder.build(emptyVatScheme)
 
-        res mustBe HtmlFormat.empty
+    "there are no OBIs" must {
+      "return only obi involvement answer" in {
+        val res = builder.build(emptyVatScheme.copy(
+          business = Some(validBusiness.copy(otherBusinessInvolvement = Some(false)))
+        ))
+
+        res mustBe HtmlFormat.fill(List(
+          govukSummaryList(SummaryList(
+            rows = List(
+              optSummaryListRowBoolean(s"obi.cya.involvement", Some(false), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url))
+            ).flatten
+          ))
+        ))
       }
     }
+
     "there are OBIs" must {
       "show the user has Other Business Involvements (OBIs)" in {
-        val scheme = emptyVatScheme.copy(otherBusinessInvolvements = Some(testObiSection))
+        val scheme = emptyVatScheme.copy(
+          business = Some(validBusiness.copy(otherBusinessInvolvement = Some(true))),
+          otherBusinessInvolvements = Some(testObiSection)
+        )
 
         val res = builder.build(scheme)
 
         res mustBe HtmlFormat.fill(List(
+          govukSummaryList(SummaryList(
+            rows = List(
+              optSummaryListRowBoolean(s"obi.cya.involvement", Some(true), Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url))
+            ).flatten
+          )),
           h3("First other business involvement"),
           govukSummaryList(SummaryList(
             classes = "govuk-!-margin-bottom-9",

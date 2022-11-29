@@ -17,13 +17,15 @@
 package viewmodels
 
 import featureswitch.core.config.FeatureSwitching
+import models.Business
 import models.api.VatScheme
-import models.view.SummaryListRowUtils.optSummaryListRowIndexed
+import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowIndexed}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.Inject
 
@@ -37,8 +39,15 @@ class OtherBusinessInvolvementSummaryBuilder @Inject()(govukSummaryList: GovukSu
   // scalastyle:off
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val obis = vatScheme.otherBusinessInvolvements.getOrElse(Nil)
+    val business = vatScheme.business.getOrElse(throw
+      new InternalServerException(s"[OtherBusinessInvolvementSummaryBuilder] Couldn't construct CYA due to missing section: 'Business details'")
+    )
 
     HtmlFormat.fill(
+      govukSummaryList(SummaryList(
+        rows = List(
+          otherBusinessInvolvements(business)
+      ).flatten)) +:
       obis
         .zip(1 to obis.size)
         .map {
@@ -90,5 +99,12 @@ class OtherBusinessInvolvementSummaryBuilder @Inject()(govukSummaryList: GovukSu
         }
     )
   }
+
+  private def otherBusinessInvolvements(business: Business)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowBoolean(
+      s"obi.cya.involvement",
+      business.otherBusinessInvolvement,
+      Some(controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url)
+    )
 
 }
