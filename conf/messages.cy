@@ -296,8 +296,8 @@ international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitL
 international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 
 # businessActivities
-addressLookup.businessActivities.lookupPage.title                   = Ble mae prif leoliad y busnes?
-addressLookup.businessActivities.lookupPage.heading                 = Ble mae prif leoliad y busnes?
+addressLookup.businessActivities.lookupPage.title                   = Find the primary place of business
+addressLookup.businessActivities.lookupPage.heading                 = Find the primary place of business
 addressLookup.businessActivities.lookupPage.filterLabel             = Enw neu rif yr eiddo
 addressLookup.businessActivities.lookupPage.submitLabel             = Yn eich blaen
 addressLookup.businessActivities.lookupPage.manualAddressLinkText   = Nid oes gan y cyfeiriad god post yn y DU
@@ -709,41 +709,26 @@ cya.transactor.telephoneNumber                       = Rhif ffôn
 cya.transactor.emailAddress                          = Cyfeiriad e-bost
 
 # CYA About the business
-cya.aboutTheBusiness.partnershipMembers             = Aelodau o’r bartneriaeth
-cya.aboutTheBusiness.homeAddress                    = Cyfeiriad y busnes
+cya.aboutTheBusiness.partnershipMembers             = Additional members of the partnership
+cya.aboutTheBusiness.homeAddress                    = Primary place of business
 cya.aboutTheBusiness.emailBusiness                  = Cyfeiriad e-bost y busnes
-cya.aboutTheBusiness.daytimePhoneBusiness           = Rhif ffôn y busnes yn ystod y dydd
+cya.aboutTheBusiness.daytimePhoneBusiness           = Business telephone number
 cya.aboutTheBusiness.mobileBusiness                 = Rhif ffôn symudol y busnes
-cya.aboutTheBusiness.hasWebsite                     = A oes gan y busnes wefan?
+cya.aboutTheBusiness.hasWebsite                     = Business website
 cya.aboutTheBusiness.website                        = Cyfeiriad gwefan y busnes
 cya.aboutTheBusiness.correspondenceLanguage         = Correspondence language
 cya.aboutTheBusiness.contactPreference              = Dewis o ran cysylltu
-cya.aboutTheBusiness.buySellLandAndProperty         = A yw gweithgareddau’r busnes yn cynnwys prynu, gwerthu neu osod tir neu eiddo?
-cya.aboutTheBusiness.businessDescription            = Beth mae’r busnes yn ei wneud?
+cya.aboutTheBusiness.buySellLandAndProperty         = Buying, selling or letting of land or property
+cya.aboutTheBusiness.businessDescription            = Business activities
 cya.aboutTheBusiness.mainSicCode                    = Prif weithgaredd busnes
-cya.aboutTheBusiness.obi                            = Yn gysylltiedig ag unrhyw fusnes arall?
-cya.aboutTheBusiness.sicCodes                       = Cadarnhewch godau Dosbarthiad Diwydiannol Safonol (SIC) y busnes ar gyfer TAW
+cya.aboutTheBusiness.sicCodes                       = Standard Industry Classification codes
 cya.aboutTheBusiness.supplyWorkers                  = Cyflenwi gweithwyr er mwyn darparu gwasanaeth i fusnes arall
-cya.aboutTheBusiness.numberOfWorkers                = Nifer y gweithwyr a gyflenwyd
-cya.aboutTheBusiness.intermediarySupply             = Cyfryngwr sy’n trefnu’r cyflenwad o weithwyr
+cya.aboutTheBusiness.numberOfWorkers                = Number of workers supplied by business
+cya.aboutTheBusiness.intermediarySupply             = Intermediary arranging supply of workers
 cya.aboutTheBusiness.tradingName                    = Enw masnachu
-cya.aboutTheBusiness.importsOrExports               = Masnachu nwyddau sy’n agored i TAW y tu allan i’r DU
-cya.aboutTheBusiness.applyForEori                   = Gwneud cais am EORI?
-cya.aboutTheBusiness.turnoverEstimate               = Beth rydych yn meddwl fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf?
-cya.aboutTheBusiness.zeroRated                      = Trosiant cyfradd sero ar gyfer y 12 mis nesaf
-cya.aboutTheBusiness.claimRefunds                   = Disgwyl hawlio ad-daliadau TAW yn rheolaidd?
-cya.aboutTheBusiness.vatExemption                   = A yw’r busnes yn dymuno gwneud cais am eithriad rhag TAW?
-cya.aboutTheBusiness.sendGoodsOverseas              = A fydd y busnes yn anfon nwyddau’n uniongyrchol at gwsmeriaid o wledydd tramor?
-cya.aboutTheBusiness.sendGoodsToEu                  = A ydych yn bwriadu anfon nwyddau yn uniongyrchol at gwsmeriaid o’r tu mewn i’r UE?
-cya.aboutTheBusiness.storingGoods                   = Ble’r ydych yn storio’ch nwyddau sydd i’w hanfon?
-cya.aboutTheBusiness.storingGoods.uk                = O fewn y Deyrnas Unedig
-cya.aboutTheBusiness.storingGoods.overseas          = Dramor
-cya.aboutTheBusiness.dispatchFromWarehouse          = A fydd y busnes yn anfon nwyddau o warws cofrestredig y Cynllun Diwydrwydd Dyladwy ar gyfer Busnesau Cyflawni (FHDDS)?
-cya.aboutTheBusiness.warehouseNumber                = Rhif y Warws Cyflawni
-cya.aboutTheBusiness.warehouseName                  = Enw busnes y Warws Cyflawni
-cya.aboutTheBusiness.sellOrMoveNip                  = Gwerthu neu symud nwyddau o Ogledd Iwerddon?
-cya.aboutTheBusiness.receiveGoodsNip                = Derbyn nwyddau yng Ngogledd Iwerddon o’r UE?
-cya.aboutTheBusiness.valueOfGoods                   = Gwerth y nwyddau:
+cya.aboutTheBusiness.shortOrgName                   = Official business name
+cya.aboutTheBusiness.businessName                   = Business name
+cya.aboutTheBusiness.partnershipName                = Partnership name
 
 # Summary Page GRS Details
 cya.grsDetails.companyNumber                         = Rhif cofrestru’r cwmni
@@ -759,23 +744,23 @@ cya.grsDetails.overseasIdentifier                    = Dynodydd treth tramor
 cya.grsDetails.overseasCountry                       = Gwlad dramor
 
 # CYA Registration Details
-cya.registrationDetails.startDate                               = Dyddiad dechrau TAW
-cya.registrationDetails.accountingPeriod                        = Pryd hoffech gyflwyno Ffurflenni TAW?
+cya.registrationDetails.startDate                               = VAT registration start date
+cya.registrationDetails.accountingPeriod                        = VAT Returns
 cya.registrationDetails.accountingPeriod.monthly                = Unwaith y mis
 cya.registrationDetails.accountingPeriod.jan                    = Ionawr, Ebrill, Gorffennaf a Hydref
 cya.registrationDetails.accountingPeriod.feb                    = Chwefror, Mai, Awst a Thachwedd
 cya.registrationDetails.accountingPeriod.mar                    = Mawrth, Mehefin, Medi a Rhagfyr
 cya.registrationDetails.accountingPeriod.annual                 = Hoffwn ymuno â’r Cynllun Cyfrifyddu Blynyddol
 cya.registrationDetails.companyBankAccount                      = Cyfrif banc busnes wedi’i sefydlu
-cya.registrationDetails.companyBankAccount.details              = Manylion banc
+cya.registrationDetails.companyBankAccount.details              = Bank or building society details
 cya.registrationDetails.companyBankAccount.reason               = Y rheswm nad yw’r cyfrif banc wedi’i sefydlu eto
-cya.registrationDetails.joinFrs                                 = A hoffech ymuno â’r Cynllun Cyfradd Unffurf?
-cya.registrationDetails.costsInclusive                          = A fydd y busnes yn gwario mwy na £250 dros y tri mis nesaf ar ‘nwyddau perthnasol’?
-cya.registrationDetails.estimateTotalSales                      = Cyfanswm y gwerthiannau, gan gynnwys TAW, ar gyfer y tri mis nesaf
-cya.registrationDetails.costsLimited                            = A fydd y busnes yn gwario mwy na {0}, gan gynnwys TAW, ar nwyddau perthnasol dros y tri mis nesaf?
+cya.registrationDetails.joinFrs                                 = Join Flat Rate Scheme
+cya.registrationDetails.costsInclusive                          = Relevant goods over £250 in next 3 months
+cya.registrationDetails.estimateTotalSales                      = Estimated total sales, including VAT, in next 3 months
+cya.registrationDetails.costsLimited                            = Relevant goods and VAT over {0} in next 3 months
 cya.registrationDetails.flatRate                                = A hoffech ddefnyddio’r gyfradd unffurf o {0}%?
-cya.registrationDetails.businessSector                          = Y math o fusnes ar gyfer y Cynllun Cyfradd Unffurf
-cya.registrationDetails.frsStartDate                            = Pryd hoffech ymuno â’r Cynllun Cyfradd Unffurf?
+cya.registrationDetails.businessSector                          = Business type for Flat Rate Scheme
+cya.registrationDetails.frsStartDate                            = Flat Rate Scheme start date
 cya.registrationDetails.dateOfRegistration                      = Dyddiad cofrestru
 cya.registrationDetails.lastMonthOfAccountingYear               = Mis olaf eich blwyddyn gyfrifyddu
 cya.registrationDetails.lastMonthOfAccountingYear.FebJanStagger = Ionawr
@@ -790,16 +775,33 @@ cya.registrationDetails.lastMonthOfAccountingYear.OctSepStagger = Medi
 cya.registrationDetails.lastMonthOfAccountingYear.NovOctStagger = Hydref
 cya.registrationDetails.lastMonthOfAccountingYear.DecNovStagger = Tachwedd
 cya.registrationDetails.lastMonthOfAccountingYear.JanDecStagger = Rhagfyr
-cya.registrationDetails.paymentFrequency                        = Pa mor aml yr hoffech wneud taliadau?
+cya.registrationDetails.paymentFrequency                        = Payment frequency
 cya.registrationDetails.paymentFrequency.MonthlyPayment         = Bob mis
 cya.registrationDetails.paymentFrequency.QuarterlyPayment       = Bob chwarter
-cya.registrationDetails.paymentMethod                           = Sut yr hoffech dalu TAW?
+cya.registrationDetails.paymentMethod                           = VAT payment method
 cya.registrationDetails.paymentMethod.BACS                      = BACS neu fancio ar y rhyngrwyd
 cya.registrationDetails.paymentMethod.BankGIRO                  = Trosglwyddiad Banc Giro
 cya.registrationDetails.paymentMethod.CHAPS                     = System Dalu Awtomataidd y Tŷ Clirio (CHAPS)
 cya.registrationDetails.paymentMethod.StandingOrder             = Archeb sefydlog
-cya.registrationDetails.taxRep                                  = Ydych chi am benodi cynrychiolydd treth yn y DU ar gyfer y busnes?
+cya.registrationDetails.taxRep                                  = UK tax representative
 cya.registrationDetails.currentlyTrading                        = Masnachu erbyn y dyddiad cofrestru
+cya.registrationDetails.importsOrExports                        = Masnachu nwyddau sy’n agored i TAW y tu allan i’r DU
+cya.registrationDetails.applyForEori                            = EORI number needed
+cya.registrationDetails.turnoverEstimate                        = VAT-taxable turnover for next 12 months
+cya.registrationDetails.zeroRated                               = Zero-rated taxable goods for next 12 months
+cya.registrationDetails.claimRefunds                            = Expect VAT refunds
+cya.registrationDetails.vatExemption                            = VAT exemption
+cya.registrationDetails.sendGoodsOverseas                       = Goods to overseas customers
+cya.registrationDetails.sendGoodsToEu                           = Goods to EU customers
+cya.registrationDetails.storingGoods                            = Location for dispatch storage goods
+cya.registrationDetails.storingGoods.uk                         = Within the UK
+cya.registrationDetails.storingGoods.overseas                   = Dramor
+cya.registrationDetails.dispatchFromWarehouse                   = Goods from Fulfilment House Due Diligence Scheme registered warehouse
+cya.registrationDetails.warehouseNumber                         = Rhif y Warws Cyflawni
+cya.registrationDetails.warehouseName                           = Enw busnes y Warws Cyflawni
+cya.registrationDetails.sellOrMoveNip                           = Sell or move Northern Irish goods in next 12 months
+cya.registrationDetails.receiveGoodsNip                         = Receive goods in Northern Ireland from EU
+cya.registrationDetails.valueOfGoods                            = Gwerth y nwyddau:
 
 # Summary Headings
 cya.heading.eligibility                              = Rheswm dros gofrestru
@@ -871,7 +873,6 @@ pages.confirmsic.bullet1                                  = gwirio bod y codau S
 pages.confirmsic.bullet2                                  = ychwanegu unrhyw godau SIC eraill sy’n berthnasol i weithgaredd y busnes
 pages.confirmsic.p4                                       = Byddwn yn eich tywys drwy’r broses hon.
 
-## awaiting content
 # Compliance - Tell us more about your company page
 pages.compliance.introduction.heading                        = Tell us more about the business
 pages.compliance.introduction.para1                          = We’re going to ask you a few questions so we can understand what the business does.
@@ -885,7 +886,6 @@ validation.labourCompliance.supplyWorkers.missing            = Dewiswch ‘Iawn�
 pages.labourCompliance.workers.heading                       = Faint o weithwyr y mae’r busnes yn eu cyflenwi?
 validation.labourCompliance.numberOfWorkers.missing          = Nodwch nifer y gweithwyr y mae’r busnes yn eu cyflenwi
 
-## awaiting content
 # Intermediary supply
 pages.labourCompliance.intermediarySupply.heading            = Is the business an intermediary arranging the supply of workers?
 validation.labourCompliance.intermediarySupply.missing       = Select yes if the business is an intermediary arranging the supply of workers
@@ -1650,19 +1650,20 @@ obi.removeOtherBusiness.heading                  = A ydych yn siŵr eich bod am 
 validation.obi.removeOtherBusiness.missing       = Dewiswch ‘Iawn’ os ydych am dynnu {0}
 
 # OTHER BUSINESS CHECK ANSWERS
+obi.cya.involvement                                              = Involvement in other businesses
 obi.cya.title                                                    = Gwirio’ch atebion
 obi.cya.titleWithName                                            = Newid manylion {0}
-obi.cya.businessName                                             = Enw’r busnes
+obi.cya.businessName                                             = Name of other business
 obi.cya.businessName.hiddenText                                  = Enw busnes ar gyfer {0} Cysylltiad busnes arall
-obi.cya.hasVatNumber                                             = Mae gan y busnes arall rif TAW
+obi.cya.hasVatNumber                                             = Other business has VAT number
 obi.cya.hasVatNumber.hiddenText                                  = Mae gan y busnes arall rif TAW ar gyfer {0} Cysylltiad busnes arall
-obi.cya.vatNumber                                                = Rhif TAW
+obi.cya.vatNumber                                                = VAT number for other business
 obi.cya.vatNumber.hiddenText                                     = Rhif TAW ar gyfer {0} Cysylltiad busnes arall
-obi.cya.hasUtr                                                   = Mae gan y busnes arall Gyfeirnod Unigryw y Trethdalwr
+obi.cya.hasUtr                                                   = Other business has Unique Taxpayer Reference
 obi.cya.hasUtr.hiddenText                                        = Mae gan y busnes arall Gyfeirnod Unigryw y Trethdalwr ar gyfer {0} Cysylltiad busnes arall
-obi.cya.utr                                                      = Cyfeirnod Unigryw y Trethdalwr ar gyfer y busnes arall
+obi.cya.utr                                                      = Unique Taxpayer Reference for other business
 obi.cya.utr.hiddenText                                           = Cyfeirnod Unigryw y Trethdalwr ar gyfer y busnes arall ar gyfer {0} Cysylltiad busnes arall
-obi.cya.stillActivelyTrading                                     = Yn dal i fod wrthi’n masnachu
+obi.cya.stillActivelyTrading                                     = Other business still trading
 obi.cya.stillActivelyTrading.hiddenText                          = Yn dal i fod wrthi’n masnachu ar gyfer {0} Cysylltiad busnes arall
 
 # OBI SUMMARY PAGE

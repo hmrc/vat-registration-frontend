@@ -38,12 +38,12 @@ class OtherBusinessCheckAnswersSpec extends VatRegViewSpec with VatRegistrationF
       "Check your answers"
     }
 
-    val businessNameRow = "Business name"
-    val hasVrnRow = "Have a VAT number"
-    val vrnRow = "VAT number"
-    val hasUtrRow = "Have a Unique Taxpayer Reference"
+    val businessNameRow = "Name of other business"
+    val hasVrnRow = "Other business has VAT number"
+    val vrnRow = "VAT number for other business"
+    val hasUtrRow = "Other business has Unique Taxpayer Reference"
     val utrRow = "Unique Taxpayer Reference for other business"
-    val activelyTradingRow = "Still actively trading"
+    val activelyTradingRow = "Other business still trading"
     val change = "Change"
     val submit = "Save and continue"
   }
