@@ -70,11 +70,11 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testCtUtr),
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
@@ -111,7 +111,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
@@ -148,11 +148,11 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testCtUtr),
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
@@ -187,7 +187,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedIndividualSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-sti-journey"))
         ).flatten)
@@ -220,7 +220,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedNetpSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-sti-journey"))
         ).flatten)
@@ -253,15 +253,15 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
 
         val expectedGeneralPartnershipSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/partnership-official-name")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Partnership’s registered postcode for self assessment",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
@@ -296,15 +296,15 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Partnership’s registered postcode for self assessment",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
@@ -334,15 +334,15 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedScottishPartnershipSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/partnership-official-name")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Partnership’s registered postcode for self assessment",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
@@ -377,15 +377,15 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Partnership’s registered postcode for self assessment",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
@@ -420,15 +420,15 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Official business name",
+            questionId = "Confirm company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Partnership’s registered postcode for self assessment",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
@@ -462,11 +462,11 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedUnincorpAssocSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testCtUtr),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey")),
           optSummaryListRowString(
-            questionId = "Unincorporated Association’s postcode",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey"))
         ).flatten)
@@ -498,11 +498,11 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedTrustSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey")),
           optSummaryListRowString(
-            questionId = "Trust’s registered postcode for self assessment",
+            questionId = "Self Assessment postcode",
             optAnswer = Some(testPostcode),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey"))
         ).flatten)
@@ -537,7 +537,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedNonUkNonEstablishedSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Unique Taxpayer Reference number",
+            questionId = "UK Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testCtUtr),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey")),
           optSummaryListRowString(
@@ -545,7 +545,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testOverseasIdentifier),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey")),
           optSummaryListRowString(
-            questionId = "Overseas country",
+            questionId = "Country of overseas tax identifier",
             optAnswer = Some(testOverseasCountryName),
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey"))
         ).flatten)

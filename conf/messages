@@ -747,15 +747,16 @@ cya.aboutTheBusiness.valueOfGoods                   = Value of goods:
 
 # Summary Page GRS Details
 cya.grsDetails.companyNumber                         = Company registration number
-cya.grsDetails.businessName                          = Official business name
-cya.grsDetails.ctutr                                 = Unique Taxpayer Reference number
-cya.grsDetails.chrn                                  = Charity registration number
-cya.grsDetails.sautr                                 = Unique Taxpayer Reference number
-cya.grsDetails.unincorpAssocPostcode                 = Unincorporated Association’s postcode
-cya.grsDetails.partnershipSaPostcode                 = Partnership’s registered postcode for self assessment
-cya.grsDetails.trustSaPostcode                       = Trust’s registered postcode for self assessment
+cya.grsDetails.businessName                          = Confirm company name
+cya.grsDetails.ctutr                                 = Unique Taxpayer Reference number (UTR)
+cya.grsDetails.nonUkCompany.ctutr                    = UK Unique Taxpayer Reference number (UTR)
+cya.grsDetails.chrn                                  = HMRC reference number
+cya.grsDetails.sautr                                 = Unique Taxpayer Reference number (UTR)
+cya.grsDetails.unincorpAssocPostcode                 = Self Assessment postcode
+cya.grsDetails.partnershipSaPostcode                 = Self Assessment postcode
+cya.grsDetails.trustSaPostcode                       = Self Assessment postcode
 cya.grsDetails.overseasIdentifier                    = Overseas tax identifier
-cya.grsDetails.overseasCountry                       = Overseas country
+cya.grsDetails.overseasCountry                       = Country of overseas tax identifier
 
 # CYA Registration Details
 cya.registrationDetails.startDate                               = VAT start date

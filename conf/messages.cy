@@ -748,9 +748,10 @@ cya.aboutTheBusiness.valueOfGoods                   = Gwerth y nwyddau:
 # Summary Page GRS Details
 cya.grsDetails.companyNumber                         = Rhif cofrestru’r cwmni
 cya.grsDetails.businessName                          = Enw swyddogol y busnes
-cya.grsDetails.ctutr                                 = Cyfeirnod Unigryw y Trethdalwr
+cya.grsDetails.ctutr                                 = Cyfeirnod Unigryw y Trethdalwr (UTR)
+cya.grsDetails.nonUkCompany.ctutr                    = UK Cyfeirnod Unigryw y Trethdalwr (UTR)
 cya.grsDetails.chrn                                  = Rhif cofrestru’r elusen
-cya.grsDetails.sautr                                 = Cyfeirnod Unigryw y Trethdalwr
+cya.grsDetails.sautr                                 = Cyfeirnod Unigryw y Trethdalwr (UTR)
 cya.grsDetails.unincorpAssocPostcode                 = Cod post y gymdeithas anghorfforedig
 cya.grsDetails.partnershipSaPostcode                 = Cod post cofrestredig y bartneriaeth ar gyfer Hunanasesiad
 cya.grsDetails.trustSaPostcode                       = Cod post cofrestredig yr ymddiriedolaeth ar gyfer Hunanasesiad

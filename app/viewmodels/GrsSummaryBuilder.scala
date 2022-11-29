@@ -76,7 +76,11 @@ class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummary
     )
 
     val ctutr = optSummaryListRowString(
-      s"$sectionId.ctutr",
+      partyType match {
+        case UkCompany | RegSociety | UnincorpAssoc | Trust => s"$sectionId.ctutr"
+        case NonUkNonEstablished => s"$sectionId.nonUkCompany.ctutr"
+        case _ => s"$sectionId.ctutr"
+      },
       applicantDetails.entity.flatMap {
         case incorpIdEntity: IncorporatedEntity => incorpIdEntity.ctutr
         case minorEntity: MinorEntity => minorEntity.ctutr
