@@ -46,7 +46,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -60,7 +59,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
     "returns an OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -80,8 +78,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
-          .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
 
@@ -99,8 +95,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
-          .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
           .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(email = Some(testEmail))))
@@ -120,8 +114,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
-          .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
 
@@ -141,8 +133,6 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
-          .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails.copy(email = None)))
           .registrationApi.replaceSection[TransactorDetails](validTransactorDetails)
 

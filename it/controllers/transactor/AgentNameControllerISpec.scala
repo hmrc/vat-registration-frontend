@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.transactor
 
@@ -5,7 +20,6 @@ import itutil.ControllerISpec
 import models.{AccountantAgent, DeclarationCapacityAnswer, PersonalDetails, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.test.Helpers._
-
 
 class AgentNameControllerISpec extends ControllerISpec {
 
@@ -21,7 +35,6 @@ class AgentNameControllerISpec extends ControllerISpec {
     "return OK with an empty form" in new Setup {
       given()
         .user.isAuthorised(arn = Some(testArn))
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -35,7 +48,6 @@ class AgentNameControllerISpec extends ControllerISpec {
     "return OK with a filled form" in new Setup {
       given()
         .user.isAuthorised(arn = Some(testArn))
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(personalDetails = Some(testPersonalDetails))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -62,8 +74,6 @@ class AgentNameControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised(arn = Some(testArn))
-          .s4lContainer[TransactorDetails].isEmpty
-          .s4lContainer[TransactorDetails].clearedByKey
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](firstUpdateDetails)
           .registrationApi.getSection[TransactorDetails](Some(firstUpdateDetails))
@@ -81,7 +91,6 @@ class AgentNameControllerISpec extends ControllerISpec {
       "return BAD_REQUEST" in new Setup {
         given()
           .user.isAuthorised(arn = Some(testArn))
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

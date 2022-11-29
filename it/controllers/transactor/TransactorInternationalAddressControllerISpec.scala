@@ -1,3 +1,18 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.transactor
 
@@ -20,7 +35,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       "return OK when the TransactorDetails block is empty" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -35,7 +49,6 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[TransactorDetails].isEmpty
           .registrationApi.getSection[TransactorDetails](Some(trDetails))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -56,10 +69,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     "Store the address and redirect to the next page if a minimal address is provided" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](TransactorDetails(address = Some(testShortForeignAddress)))
-        .s4lContainer[TransactorDetails].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -75,10 +86,8 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
     "Store the address and redirect to the next page if a full address is provided" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[TransactorDetails].isEmpty
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](TransactorDetails(address = Some(testForeignAddress)))
-        .s4lContainer[TransactorDetails].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
