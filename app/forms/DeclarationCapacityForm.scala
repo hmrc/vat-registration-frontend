@@ -16,12 +16,11 @@
 
 package forms
 
-import forms.FormValidation.{maxLenText, nonEmptyValidText}
+import forms.FormValidation._
 import models._
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 import scala.util.matching.Regex
@@ -49,10 +48,11 @@ object DeclarationCapacityForm {
       declarationCapacity -> of(formatter),
       otherRole -> mandatoryIf(
         isEqual(declarationCapacity, other),
-        text.verifying(StopOnFirstFail(
+        text.verifying(stopOnFail(
           nonEmptyValidText(regex)(otherErrorKey),
           maxLenText(maxLength)(otherErrorKey)
         ))
+
       )
     )(DeclarationCapacityAnswer.apply)(DeclarationCapacityAnswer.unapply)
   )

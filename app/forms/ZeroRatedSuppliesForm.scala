@@ -19,7 +19,6 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object ZeroRatedSuppliesForm {
 
@@ -33,11 +32,12 @@ object ZeroRatedSuppliesForm {
     single(
       zeroRatedSuppliesKey ->
         text
-          .verifying(StopOnFirstFail(
+          .verifying(stopOnFail(
             regexPattern(regex),
             matchesRegex(commasNotAllowed, "validation.zeroRatedSupplies.commasNotAllowed"),
             matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed"),
-            mandatoryFullNumericText))
+            mandatoryFullNumericText
+          ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
             _.toString

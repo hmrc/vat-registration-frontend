@@ -19,7 +19,6 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms.{single, text, tuple}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import java.time.LocalDate
 
@@ -39,7 +38,7 @@ object FormerNameDateForm {
         "day" -> text,
         "month" -> text,
         "year" -> text
-      ).verifying(StopOnFirstFail(
+      ).verifying(stopOnFail(
         nonEmptyDate(dateEmptyKey),
         validDate(dateInvalidKey),
         withinRange(

@@ -17,6 +17,7 @@
 package forms
 
 import connectors.ConfigConnector
+import forms.FormValidation.stopOnFail
 import models.api.{Address, Country}
 import play.api.data.Forms.{mapping, of, optional, text}
 import play.api.data.format.Formatter
@@ -24,7 +25,6 @@ import play.api.data.validation.Constraints.{maxLength, pattern}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import javax.inject.{Inject, Singleton}
 import scala.util.matching.Regex
@@ -36,42 +36,30 @@ class InternationalAddressForm @Inject()(configConnector: ConfigConnector) {
   // scalastyle:off
   def form(invalidCountries: Seq[String] = Seq.empty): Form[Address] = Form[Address] (
     mapping(
-      line1Key -> of[String](nonEmptyStringFormat).verifying(
-        StopOnFirstFail(
-          maxLength(maxLineLength, "internationalAddress.error.line1.length"),
-          pattern(lineRegex, line1Key, "internationalAddress.error.line1.invalid")
-        )
-      ),
-      line2Key -> of[String](nonEmptyStringFormat).verifying(
-        StopOnFirstFail(
-          maxLength(maxLineLength, "internationalAddress.error.line2.length"),
-          pattern(lineRegex, line2Key, "internationalAddress.error.line2.invalid")
-        )
-      ),
-      line3Key -> optional(text.verifying(
-        StopOnFirstFail(
-          maxLength(maxLineLength, "internationalAddress.error.line3.length"),
-          pattern(lineRegex, line3Key, "internationalAddress.error.line3.invalid")
-        )
+      line1Key -> of[String](nonEmptyStringFormat).verifying(stopOnFail(
+        maxLength(maxLineLength, "internationalAddress.error.line1.length"),
+        pattern(lineRegex, line1Key, "internationalAddress.error.line1.invalid")
       )),
-      line4Key -> optional(text.verifying(
-        StopOnFirstFail(
-          maxLength(maxLineLength, "internationalAddress.error.line4.length"),
-          pattern(lineRegex, line4Key, "internationalAddress.error.line4.invalid")
-        )
+      line2Key -> of[String](nonEmptyStringFormat).verifying(stopOnFail(
+        maxLength(maxLineLength, "internationalAddress.error.line2.length"),
+        pattern(lineRegex, line2Key, "internationalAddress.error.line2.invalid")
       )),
-      line5Key -> optional(text.verifying(
-        StopOnFirstFail(
-          maxLength(maxLineLength, "internationalAddress.error.line5.length"),
-          pattern(lineRegex, line5Key, "internationalAddress.error.line5.invalid")
-        )
-      )),
-      postcodeKey -> optional(text.verifying(
-        StopOnFirstFail(
-          maxLength(maxPostcodeLength, "internationalAddress.error.postcode.length"),
-          pattern(postcodeRegex, postcodeKey, "internationalAddress.error.postcode.invalid")
-        )
-      )),
+      line3Key -> optional(text.verifying(stopOnFail(
+        maxLength(maxLineLength, "internationalAddress.error.line3.length"),
+        pattern(lineRegex, line3Key, "internationalAddress.error.line3.invalid")
+      ))),
+      line4Key -> optional(text.verifying(stopOnFail(
+        maxLength(maxLineLength, "internationalAddress.error.line4.length"),
+        pattern(lineRegex, line4Key, "internationalAddress.error.line4.invalid")
+      ))),
+      line5Key -> optional(text.verifying(stopOnFail(
+        maxLength(maxLineLength, "internationalAddress.error.line5.length"),
+        pattern(lineRegex, line5Key, "internationalAddress.error.line5.invalid")
+      ))),
+      postcodeKey -> optional(text.verifying(stopOnFail(
+        maxLength(maxPostcodeLength, "internationalAddress.error.postcode.length"),
+        pattern(postcodeRegex, postcodeKey, "internationalAddress.error.postcode.invalid")
+      ))),
       countryKey -> text
         .verifying(validCountry(invalidCountries))
         .transform[Option[Country]](

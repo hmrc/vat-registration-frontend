@@ -19,7 +19,6 @@ package models.external
 
 import cats.Show
 import cats.Show.show
-import org.apache.commons.text.WordUtils
 import play.api.libs.json._
 
 case class Name(first: Option[String],
@@ -53,8 +52,7 @@ object Name {
       name.first,
       name.middle,
       name.last.pure
-    ) flatMap (_ map WordUtils.capitalizeFully)
-
+    ) flatMap (_ map(_.capitalize))
   }
 
   object htmlShow {

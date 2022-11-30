@@ -20,7 +20,6 @@ import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object CaptureTradingNameForm {
   val tradingNameKey = "captureTradingName"
@@ -31,7 +30,7 @@ object CaptureTradingNameForm {
 
   val form = Form(
     single(
-      tradingNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+      tradingNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(stopOnFail(
         nonEmptyValidText(tradingNameRegEx),
         isValidTradingName,
         maxLenText(160)

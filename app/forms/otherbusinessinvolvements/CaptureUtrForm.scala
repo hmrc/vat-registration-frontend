@@ -19,7 +19,6 @@ package forms.otherbusinessinvolvements
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.util.matching.Regex
 
@@ -31,9 +30,8 @@ object CaptureUtrForm {
 
   def apply(): Form[String] = Form(
     single(
-      captureUtrKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
-        nonEmptyValidText(regex)
-      ))
+      captureUtrKey -> text.transform(removeNewlineAndTrim, identity[String])
+        .verifying(nonEmptyValidText(regex))
     )
   )
 

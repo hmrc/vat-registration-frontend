@@ -59,7 +59,6 @@ object SessionCookieBaker extends IntegrationSpecBase {
   }
 
   def getCookieData(cookieData: String): Map[String, String] = {
-
     val decrypted = SymmetricCryptoFactory.aesGcmCrypto(cookieKey).decrypt(Crypted(cookieData)).value
     val result = decrypted.split("&")
       .map(_.split("="))

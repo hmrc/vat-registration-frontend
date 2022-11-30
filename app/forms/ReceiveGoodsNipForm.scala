@@ -19,7 +19,6 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings._
 
 object ReceiveGoodsNipForm extends RequiredBooleanForm {
@@ -36,15 +35,16 @@ object ReceiveGoodsNipForm extends RequiredBooleanForm {
       yesNo -> requiredBoolean,
       inputAmount -> mandatoryIf(
         isEqual(yesNo, "true"),
-        text.verifying(StopOnFirstFail(
+        text.verifying(stopOnFail(
           regexPattern(regex),
           matchesRegex(commasNotAllowed, "validation.northernIrelandReceiveGoods.commasNotAllowed"),
           matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed"),
-          mandatoryFullNumericText))
-          .transform[BigDecimal](string =>
-            BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
-            _.toString
-          )
+          mandatoryFullNumericText
+        ))
+        .transform[BigDecimal](string =>
+          BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
+          _.toString
+        )
       )
     )
   )

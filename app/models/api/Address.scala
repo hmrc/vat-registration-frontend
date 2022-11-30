@@ -16,10 +16,8 @@
 
 package models.api
 
-import org.apache.commons.text.WordUtils
 import play.api.libs.json._
 import play.twirl.api.{Html, HtmlFormat}
-import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
 case class Country(code: Option[String], name: Option[String])
 
@@ -105,7 +103,7 @@ object Address {
       address.postcode.map(Postcode),
       address.country.flatMap(_.name).map(AddressLine)
     ).collect {
-      case Some(AddressLine(line)) => WordUtils.capitalizeFully(line)
+      case Some(AddressLine(line)) => line.split("\\s").map(_.capitalize).mkString(" ")
       case Some(Postcode(postcode)) => postcode.toUpperCase()
     }
   }

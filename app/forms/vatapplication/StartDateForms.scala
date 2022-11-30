@@ -23,7 +23,6 @@ import play.api.data.Forms.{tuple, _}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 import utils.MessageDateFormat
 
@@ -68,7 +67,7 @@ object MandatoryDateForm extends StartDateForm {
           "day" -> text,
           "month" -> text,
           "year" -> text
-        ).verifying(StopOnFirstFail(
+        ).verifying(stopOnFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(incorpDate, calculatedDate, dateRange, dateRange, List(MessageDateFormat.format(incorpDate), MessageDateFormat.format(calculatedDate))),
@@ -89,7 +88,7 @@ object VoluntaryDateForm extends StartDateForm {
       START_DATE_SELECTION -> Forms.of[DateSelection.Value],
       START_DATE -> mandatoryIf(
         isEqual(START_DATE_SELECTION, specific_date),
-        tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
+        tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(dateRangeMin, dateRangeMax, dateRange, dateRange, List(MessageDateFormat.format(dateRangeMin), MessageDateFormat.format(dateRangeMax)))
@@ -111,7 +110,7 @@ object VoluntaryDateFormIncorp extends StartDateForm {
       START_DATE_SELECTION -> Forms.of[DateSelection.Value],
       START_DATE -> mandatoryIf(
         isEqual(START_DATE_SELECTION, specific_date),
-        tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
+        tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(incorpDate, now3MonthsLater, dateRange, dateRange, List(MessageDateFormat.format(incorpDate), MessageDateFormat.format(now3MonthsLater))),

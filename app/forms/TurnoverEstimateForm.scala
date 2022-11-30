@@ -19,7 +19,6 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object TurnoverEstimateForm {
 
@@ -33,11 +32,12 @@ object TurnoverEstimateForm {
     single(
       turnoverEstimateKey ->
         text
-          .verifying(StopOnFirstFail(
+          .verifying(stopOnFail(
             regexPattern(regex),
             matchesRegex(commasNotAllowed, "validation.turnoverEstimate.commasNotAllowed"),
             matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed"),
-            mandatoryFullNumericText))
+            mandatoryFullNumericText
+          ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
             _.toString

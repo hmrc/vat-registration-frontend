@@ -16,23 +16,20 @@
 
 package forms
 
-import forms.FormValidation.{mandatory, matchesRegex}
+import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints.maxLength
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 class ApplicationReferenceForm {
 
   def apply(): Form[String] = Form[String](
       single(
-        ApplicationReferenceForm.fieldName -> text.verifying(
-          StopOnFirstFail(
-            mandatory("applicationReference.error.missing"),
-            maxLength(ApplicationReferenceForm.lengthLimit, "applicationReference.error.length"),
-            matchesRegex(ApplicationReferenceForm.regex, "applicationReference.error.invalid")
-          )
-        )
+        ApplicationReferenceForm.fieldName -> text.verifying(stopOnFail(
+          mandatory("applicationReference.error.missing"),
+          maxLength(ApplicationReferenceForm.lengthLimit, "applicationReference.error.length"),
+          matchesRegex(ApplicationReferenceForm.regex, "applicationReference.error.invalid")
+        ))
       )
   )
 

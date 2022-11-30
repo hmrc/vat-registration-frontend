@@ -22,17 +22,16 @@ object AppDependencies {
 }
 
 private object CompileDependencies {
-  private val hmrcMongoVersion = "0.73.0"
-  private val bootstrapVersion = "7.8.0"
+  private val hmrcMongoVersion = "0.74.0"
+  private val bootstrapVersion = "7.12.0"
   private val timeVersion = "3.25.0"
   private val partialsVersion = "8.3.0-play-28"
   private val cachingClientVersion = "10.0.0-play-28"
   private val formMappingVersion = "1.12.0-play-28"
   private val catsVersion = "1.0.0"
-  private val playUiVersion = "9.11.0-play-28"
   private val playJsonJodaVersion = "2.9.3"
 
-  private val playHmrcFrontendVersion = "3.32.0-play-28"
+  private val playHmrcFrontendVersion = "3.34.0-play-28"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
@@ -43,7 +42,6 @@ private object CompileDependencies {
     "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % formMappingVersion,
     "org.typelevel" %% "cats-core" % catsVersion,
-    "uk.gov.hmrc" %% "play-ui" % playUiVersion,
     "com.typesafe.play" %% "play-json-joda" % playJsonJodaVersion,
     "uk.gov.hmrc" %% "play-frontend-hmrc" % playHmrcFrontendVersion
   )
@@ -58,7 +56,7 @@ private trait TestDependencies {
   val mockitoVersion = "4.8.1"
   val scalaMockVersion = "3.6.0"
   val wireMockVersion = "2.27.2"
-  val hmrcMongoTestVersion = "0.73.0"
+  val hmrcMongoTestVersion = "0.74.0"
 
   val scope: Configuration
   val testDependencies: Seq[ModuleID]

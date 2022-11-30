@@ -16,10 +16,9 @@
 
 package forms
 
-import forms.FormValidation.{maxLenText, regexPattern, removeNewlineAndTrim, textMapping}
+import forms.FormValidation.{maxLenText, regexPattern, removeNewlineAndTrim, stopOnFail, textMapping}
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object BusinessActivityDescriptionForm {
   val DESC_MAX_LENGTH = 250
@@ -28,7 +27,7 @@ object BusinessActivityDescriptionForm {
 
   val form = Form(
     single(
-      INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+      INPUT_DESCRIPTION -> text.transform(removeNewlineAndTrim, identity[String]).verifying(stopOnFail(
         regexPattern(PartPattern)("businessActivity.description"),
         maxLenText(DESC_MAX_LENGTH)("businessActivity.description")
       ))

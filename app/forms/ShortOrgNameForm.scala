@@ -19,7 +19,6 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.util.matching.Regex
 
@@ -30,7 +29,7 @@ object ShortOrgNameForm {
 
   def apply(): Form[String] = Form(
     single(
-      shortOrgNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+      shortOrgNameKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(stopOnFail(
         nonEmptyValidText(regex),
         maxLenText(160)
       ))

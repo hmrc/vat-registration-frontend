@@ -47,7 +47,7 @@ class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
       }
   }
 
-  def iclGetResult(fetchResultsUrl: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
+  def iclGetResult(fetchResultsUrl: String)(implicit hc: HeaderCarrier): Future[JsValue] =
     http.get(url"${IClFEinternal + fetchResultsUrl}")
       .execute[JsValue]
       .recover {
@@ -55,5 +55,5 @@ class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
           logger.error(s"[ICLConnector] [ICLGetResult] Threw an exception while getting ICL journey results with message: ${ex.getMessage}")
           throw ex
       }
-  }
+
 }

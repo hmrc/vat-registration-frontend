@@ -16,11 +16,10 @@
 
 package forms
 
-import forms.FormValidation.{mandatory, maxLenText, nonEmptyValidText}
+import forms.FormValidation._
 import models.external.Name
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object FormerNameCaptureForm {
   val maxLength = 35
@@ -30,20 +29,16 @@ object FormerNameCaptureForm {
 
   def form: Form[Name] = Form[Name](
     mapping(
-      "formerFirstName" -> text.verifying(
-        StopOnFirstFail(
-          mandatory(firstNameMissing),
-          nonEmptyValidText(regex)("formerNameCapture.first"),
-          maxLenText(maxLength)("formerNameCapture.first")
-        )
-      ),
-      "formerLastName" -> text.verifying(
-        StopOnFirstFail(
-          mandatory(lastNameMissing),
-          nonEmptyValidText(regex)("formerNameCapture.last"),
-          maxLenText(maxLength)("formerNameCapture.last")
-        )
-      )
+      "formerFirstName" -> text.verifying(stopOnFail(
+        mandatory(firstNameMissing),
+        nonEmptyValidText(regex)("formerNameCapture.first"),
+        maxLenText(maxLength)("formerNameCapture.first")
+      )),
+      "formerLastName" -> text.verifying(stopOnFail(
+        mandatory(lastNameMissing),
+        nonEmptyValidText(regex)("formerNameCapture.last"),
+        maxLenText(maxLength)("formerNameCapture.last")
+      ))
     )((first, last) => Name(Some(first), None, last, None))(name => Name.unapply(name).map {
       case (Some(first), _, last, _) => (first, last)
       case (None, _, last, _) => ("", last)
