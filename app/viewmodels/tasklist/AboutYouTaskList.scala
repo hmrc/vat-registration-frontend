@@ -51,7 +51,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
     },
     tagId = "applicantPersonalDetailsRow",
     checks = scheme => {
-      Seq(scheme.applicantDetails.exists(_.hasFormerName.isDefined))
+      Seq(scheme.applicantDetails.exists(_.changeOfName.hasFormerName.isDefined))
         .++ {
           if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
             Nil
@@ -65,10 +65,10 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
           }
         }
         .++ {
-          if (scheme.applicantDetails.exists(_.hasFormerName.contains(true))) {
+          if (scheme.applicantDetails.exists(_.changeOfName.hasFormerName.contains(true))) {
             Seq(
-              scheme.applicantDetails.exists(_.formerName.isDefined),
-              scheme.applicantDetails.exists(_.formerNameDate.isDefined)
+              scheme.applicantDetails.exists(_.changeOfName.name.isDefined),
+              scheme.applicantDetails.exists(_.changeOfName.change.isDefined)
             )
           } else {
             Nil
@@ -112,14 +112,14 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
       tagId = "contactDetailsRow",
       checks = scheme => {
         Seq(
-          scheme.applicantDetails.exists(_.emailAddress.isDefined),
-          scheme.applicantDetails.exists(_.telephoneNumber.isDefined)
+          scheme.applicantDetails.exists(_.contact.email.isDefined),
+          scheme.applicantDetails.exists(_.contact.tel.isDefined)
         )
       }.++ {
         if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) {
           Nil
         } else {
-          Seq(scheme.applicantDetails.exists(_.emailVerified.exists(_.emailVerified)))
+          Seq(scheme.applicantDetails.exists(_.contact.emailVerified.contains(true)))
         }
       },
       prerequisites = _ => Seq(addressDetailsRow)
@@ -148,11 +148,11 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
 
   private def addressDetailsChecks(scheme: VatScheme) = {
     Seq(
-      Some(scheme.applicantDetails.exists(_.homeAddress.isDefined)),
-      if (scheme.applicantDetails.flatMap(_.previousAddress).exists(_.yesNo)) {
+      Some(scheme.applicantDetails.exists(_.currentAddress.isDefined)),
+      if (scheme.applicantDetails.exists(_.noPreviousAddress.contains(true))) {
         None
       } else {
-        Some(scheme.applicantDetails.exists(_.previousAddress.exists(_.address.isDefined)))
+        Some(scheme.applicantDetails.exists(_.previousAddress.isDefined))
       }
     ).flatten
   }

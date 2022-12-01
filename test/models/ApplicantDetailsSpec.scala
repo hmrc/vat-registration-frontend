@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package models.view
+package models
 
 import models.api.{Address, NETP, UkCompany}
-import models.external.{EmailAddress, EmailVerified, Name}
-import models.{ApplicantDetails, Director, OwnerProprietor, TelephoneNumber}
+import models.external.Name
 import play.api.libs.json.{JsSuccess, Json}
 import testHelpers.VatRegSpec
 
@@ -74,6 +73,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    },
            |    "change": "2000-07-12"
            |  },
+           |  "noPreviousAddress": false,
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
@@ -88,14 +88,19 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val applicantDetails = ApplicantDetails(
         entity = Some(testLimitedCompany),
         personalDetails = Some(testPersonalDetails),
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = Some(TelephoneNumber("1234")),
-        hasFormerName = Some(true),
-        formerName = Some(formerName),
-        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
+        currentAddress = Some(currentAddress),
+        contact = DigitalContactOptional(
+          email = Some("test@t.test"),
+          emailVerified = Some(true),
+          tel = Some("1234")
+        ),
+        changeOfName = FormerName(
+          hasFormerName = Some(true),
+          name = Some(formerName),
+          change = Some(LocalDate.of(2000, 7, 12))
+        ),
+        noPreviousAddress = Some(false),
+        previousAddress = Some(previousAddress)
       )
 
       ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
@@ -146,6 +151,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    },
            |    "change": "2000-07-12"
            |  },
+           |  "noPreviousAddress": false,
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
@@ -160,14 +166,19 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val applicantDetails = ApplicantDetails(
         entity = Some(testNetpSoleTrader),
         personalDetails = Some(testPersonalDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = true)),
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = Some(TelephoneNumber("1234")),
-        hasFormerName = Some(true),
-        formerName = Some(formerName),
-        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress))),
+        currentAddress = Some(currentAddress),
+        contact = DigitalContactOptional(
+          email = Some("test@t.test"),
+          emailVerified = Some(true),
+          tel = Some("1234")
+        ),
+        changeOfName = FormerName(
+          hasFormerName = Some(true),
+          name = Some(formerName),
+          change = Some(LocalDate.of(2000, 7, 12))
+        ),
+        noPreviousAddress = Some(false),
+        previousAddress = Some(previousAddress),
         roleInTheBusiness = Some(Director)
       )
 
@@ -200,17 +211,22 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "changeOfName": {
            |    "hasFormerName": false
-           |  }
+           |  },
+           |  "noPreviousAddress": true
            |}
          """.stripMargin)
 
       val applicantDetails = ApplicantDetails(
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = Some(TelephoneNumber("1234")),
-        hasFormerName = Some(false),
-        previousAddress = Some(PreviousAddressView(yesNo = true, None))
+        currentAddress = Some(currentAddress),
+        contact = DigitalContactOptional(
+          email = Some("test@t.test"),
+          emailVerified = Some(true),
+          tel = Some("1234")
+        ),
+        changeOfName = FormerName(
+          hasFormerName = Some(false)
+        ),
+        noPreviousAddress = Some(true)
       )
 
       ApplicantDetails.reads(UkCompany).reads(json) mustBe JsSuccess(applicantDetails)
@@ -220,7 +236,10 @@ class ApplicantDetailsSpec extends VatRegSpec {
   "Calling apiWrites" should {
     "return a correct partial JsValue with data" in {
       val data = ApplicantDetails()
-      val validJson = Json.obj()
+      val validJson = Json.obj(
+        "contact" -> Json.obj(),
+        "changeOfName" -> Json.obj()
+      )
 
       Json.toJson(data)(ApplicantDetails.writes) mustBe validJson
     }
@@ -229,14 +248,19 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val data = ApplicantDetails(
         entity = Some(testLimitedCompany),
         personalDetails = Some(testPersonalDetails),
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = Some(TelephoneNumber("1234")),
-        hasFormerName = Some(true),
-        formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
-        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress)))
+        currentAddress = Some(currentAddress),
+        contact = DigitalContactOptional(
+          email = Some("test@t.test"),
+          emailVerified = Some(true),
+          tel = Some("1234")
+        ),
+        changeOfName = FormerName(
+          hasFormerName = Some(true),
+          name = Some(Name(Some("New"), Some("Name"), "Cosmo")),
+          change = Some(LocalDate.of(2000, 7, 12))
+        ),
+        noPreviousAddress = Some(false),
+        previousAddress = Some(previousAddress)
       )
 
       val validJson = Json.parse(
@@ -271,6 +295,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |      "first": "New"
            |    }
            |  },
+           |  "noPreviousAddress": false,
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
@@ -297,14 +322,19 @@ class ApplicantDetailsSpec extends VatRegSpec {
       val data = ApplicantDetails(
         entity = Some(testNetpSoleTrader),
         personalDetails = Some(testPersonalDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = false)),
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = Some(TelephoneNumber("1234")),
-        hasFormerName = Some(true),
-        formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
-        formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-        previousAddress = Some(PreviousAddressView(yesNo = false, Some(previousAddress))),
+        currentAddress = Some(currentAddress),
+        contact = DigitalContactOptional(
+          email = Some("test@t.test"),
+          emailVerified = Some(true),
+          tel = Some("1234")
+        ),
+        changeOfName = FormerName(
+          hasFormerName = Some(true),
+          name = Some(Name(Some("New"), Some("Name"), "Cosmo")),
+          change = Some(LocalDate.of(2000, 7, 12))
+        ),
+        noPreviousAddress = Some(false),
+        previousAddress = Some(previousAddress),
         roleInTheBusiness = Some(OwnerProprietor)
       )
 
@@ -352,6 +382,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |    },
            |    "change": "2000-07-12"
            |  },
+           |  "noPreviousAddress": false,
            |  "previousAddress": {
            |    "line1": "TestLine11",
            |    "line2": "TestLine22",
@@ -366,12 +397,16 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
     "return a correct full JsValue with minimum data" in {
       val data = ApplicantDetails(
-        homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        telephoneNumber = Some(TelephoneNumber("1234")),
-        hasFormerName = Some(false),
-        previousAddress = Some(PreviousAddressView(yesNo = true, None))
+        currentAddress = Some(currentAddress),
+        contact = DigitalContactOptional(
+          email = Some("test@t.test"),
+          emailVerified = Some(true),
+          tel = Some("1234")
+        ),
+        changeOfName = FormerName(
+          hasFormerName = Some(false)
+        ),
+        noPreviousAddress = Some(true)
       )
 
       val validJson = Json.parse(
@@ -390,7 +425,8 @@ class ApplicantDetailsSpec extends VatRegSpec {
            |  },
            |  "changeOfName": {
            |    "hasFormerName": false
-           |  }
+           |  },
+           |  "noPreviousAddress": true
            |}""".stripMargin)
 
       Json.toJson(data)(ApplicantDetails.writes) mustBe validJson

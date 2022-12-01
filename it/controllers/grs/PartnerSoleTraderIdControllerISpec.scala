@@ -129,55 +129,13 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
   }
 
   s"GET ${callbackUrl()}" must {
-    "redirect to the FormerName page if the user is a Sole Trader" in new Setup {
+    "redirect to the Task List when the partner is a Sole Trader" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None, None, None, None)), idx = Some(1))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None), idx = Some(1))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
-
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-      }
-    }
-    "redirect to the FormerName page if the user is a NETP" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[ApplicantDetails](None)
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None, None, None, None)), idx = Some(1))
-        .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None), idx = Some(1))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
-
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(callbackUrl()).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-      }
-    }
-
-    "redirect to the FormerName page when the model in S4l is full and the user is a Sole Trader" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
-        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership), personalDetails = None)))
         .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection(validFullApplicantDetails.copy(entity = Some(testPartnership)))
         .registrationApi.replaceSection(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None), idx = Some(1))
@@ -193,12 +151,13 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
       }
     }
-    "redirect to the FormerName page when the model in S4l is full and the user is a NETP" in new Setup {
+    "redirect to Task List when the partner is a NETP" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(entity = Some(testPartnership)))(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership), personalDetails = None)))
         .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))
         .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None), idx = Some(1))

@@ -18,7 +18,6 @@ package views.applicant
 
 import fixtures.VatRegistrationFixture
 import forms.PreviousAddressForm
-import models.view.PreviousAddressView
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -31,7 +30,7 @@ class PreviousAddressViewSpec extends VatRegViewSpec with VatRegistrationFixture
   val previousAddressPage: previous_address = app.injector.instanceOf[previous_address]
 
   val name = "testFirstName"
-  lazy val form: Form[PreviousAddressView] = PreviousAddressForm.form()
+  lazy val form: Form[Boolean] = PreviousAddressForm.form()
   lazy val nonTransactorView: Html = previousAddressPage(form, None, testAddress)
   implicit val nonTransactorDoc: Document = Jsoup.parse(nonTransactorView.body)
   lazy val transactorView: Html = previousAddressPage(form, Some(name), testAddress)
@@ -52,9 +51,7 @@ class PreviousAddressViewSpec extends VatRegViewSpec with VatRegistrationFixture
     }
 
     "display the page with form pre populated" in {
-      val validPreviousAddress = PreviousAddressView(yesNo = true, None)
-
-      lazy val view = previousAddressPage(form.fill(validPreviousAddress), None, testAddress)
+      lazy val view = previousAddressPage(form.fill(true), None, testAddress)
       lazy val document = Jsoup.parse(view.body)
 
       document.getElementsByAttributeValue("name", "value").size mustBe 2

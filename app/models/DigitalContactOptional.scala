@@ -16,11 +16,12 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
-case class TelephoneNumber(telephone: String)
+case class DigitalContactOptional(email: Option[String] = None,
+                                  tel: Option[String] = None,
+                                  emailVerified: Option[Boolean] = None)
 
-object TelephoneNumber {
-  implicit val emailVerified: S4LKey[TelephoneNumber] = S4LKey("telephoneNumber")
-  implicit val format: OFormat[TelephoneNumber] = Json.format[TelephoneNumber]
+object DigitalContactOptional {
+  implicit val format: Format[DigitalContactOptional] = Json.format[DigitalContactOptional]
 }

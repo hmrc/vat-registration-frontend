@@ -18,9 +18,8 @@ package controllers.partners
 
 import forms.PartnerTelephoneForm
 import itutil.ControllerISpec
+import models.Entity
 import models.api.{EligibilitySubmissionData, Individual, UkCompany}
-import models.external.{EmailAddress, EmailVerified}
-import models.{ApplicantDetails, Director, Entity}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
@@ -31,6 +30,7 @@ import scala.concurrent.Future
 class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
 
   def url(index: Int): String = routes.PartnerTelephoneNumberController.show(index).url
+
   private val testTelephone = "12345678"
 
   s"GET ${url(2)}" must {
@@ -93,16 +93,8 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
 
   s"POST ${url(2)}" must {
     "update the backend and redirect to partner email address page" in new Setup {
-      val s4lData = ApplicantDetails(
-        entity = Some(testSoleTrader),
-        personalDetails = Some(testPersonalDetails),
-        emailAddress = Some(EmailAddress("test@t.test")),
-        emailVerified = Some(EmailVerified(true)),
-        roleInTheBusiness = Some(Director)
-      )
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
         .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))

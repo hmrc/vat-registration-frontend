@@ -22,8 +22,8 @@ import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
 import models.api.{NETP, NonUkNonEstablished}
-import models.view.PreviousAddressView
 import play.api.mvc.{Action, AnyContent}
+import services.ApplicantDetailsService.{NoPreviousAddress, PreviousAddress}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.previous_address
@@ -51,9 +51,9 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
           applicantDetails <- applicantDetailsService.getApplicantDetails
           optName <- if (isTransactor) applicantDetailsService.getTransactorApplicantName else Future.successful(None)
           errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
-          filledForm = applicantDetails.previousAddress.fold(PreviousAddressForm.form(errorCode))(PreviousAddressForm.form(errorCode).fill)
+          filledForm = applicantDetails.noPreviousAddress.fold(PreviousAddressForm.form(errorCode))(PreviousAddressForm.form(errorCode).fill)
         } yield {
-          applicantDetails.homeAddress.flatMap(_.address).fold(
+          applicantDetails.currentAddress.fold(
             Redirect(routes.HomeAddressController.redirectToAlf)
           )(address =>
             Ok(previousAddressPage(filledForm, optName, address))
@@ -73,23 +73,23 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
             result <- form.bindFromRequest.fold(
               badForm =>
                 applicantDetailsService.getApplicantDetails.map { applicant =>
-                  applicant.homeAddress.flatMap(_.address).fold(
+                  applicant.currentAddress.fold(
                     Redirect(routes.HomeAddressController.redirectToAlf)
                   )(address =>
-                    Ok(previousAddressPage(form, optName, address))
+                    BadRequest(previousAddressPage(badForm, optName, address))
                   )
                 },
               data =>
-                if (data.yesNo) {
-                  applicantDetailsService.saveApplicantDetails(data) map { _ =>
-                    Redirect(controllers.routes.TaskListController.show)
-                  }
-                } else {
-                  vatRegistrationService.partyType.flatMap {
-                    case NETP | NonUkNonEstablished =>
-                      Future.successful(Redirect(routes.InternationalPreviousAddressController.show))
-                    case _ =>
-                      Future.successful(Redirect(routes.PreviousAddressController.previousAddress))
+                applicantDetailsService.saveApplicantDetails(NoPreviousAddress(data)).flatMap { _ =>
+                  if (data) {
+                    Future.successful(Redirect(controllers.routes.TaskListController.show))
+                  } else {
+                    vatRegistrationService.partyType.map {
+                      case NETP | NonUkNonEstablished =>
+                        Redirect(routes.InternationalPreviousAddressController.show)
+                      case _ =>
+                        Redirect(routes.PreviousAddressController.previousAddress)
+                    }
                   }
                 }
             )
@@ -102,7 +102,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           address <- addressLookupService.getAddressById(id)
-          _ <- applicantDetailsService.saveApplicantDetails(PreviousAddressView(yesNo = false, Some(address)))
+          _ <- applicantDetailsService.saveApplicantDetails(PreviousAddress(address))
         } yield Redirect(controllers.routes.TaskListController.show)
   }
 

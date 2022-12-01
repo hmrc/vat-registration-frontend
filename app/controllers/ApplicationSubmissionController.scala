@@ -56,7 +56,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
           optEmail <- if (isTransactor) {
             transactorDetailsService.getTransactorDetails.map(_.email)
           } else {
-            applicantDetailsService.getApplicantDetails.map(_.emailAddress.map(_.email))
+            applicantDetailsService.getApplicantDetails.map(_.contact.email)
           }
           email = optEmail.getOrElse(throw new InternalServerException("[ApplicationSubmissionController] missing user email"))
         } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor))

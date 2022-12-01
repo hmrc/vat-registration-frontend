@@ -36,6 +36,7 @@ class AddressFormResultsHandler @Inject()(view: CaptureInternationalAddress)
   private val postcodeRequiredErrorKey = "internationalAddress.error.postcode.empty"
   private val postcodeRequiredCountries = List("United Kingdom", "Isle of Man", "Guernsey", "Jersey")
 
+  //scalastyle:off
   def handle(
               countries: Seq[Country],
               headingMessageKey: String,

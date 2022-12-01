@@ -16,7 +16,6 @@
 
 package forms
 
-import models.DateModel
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isNotBlank
 import play.api.data.format.Formatter
@@ -98,8 +97,6 @@ object FormValidation {
         case _ => Invalid("validation.numeric")
       }
   }
-
-  private def unconstrained[T] = Constraint[T] { (t: T) => Valid }
 
   def inRange[T](minValue: T, maxValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T]
   = inRangeWithArgs[T](minValue, maxValue)(Seq())(ordering, e)
@@ -274,19 +271,5 @@ object FormValidation {
       val date = tupleToDate(input)
       if (date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
   }
-
-  object Dates {
-    def nonEmptyDateModel(constraint: => Constraint[DateModel] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
-      Constraint { dm =>
-        mandatoryText.apply(Seq(dm.day, dm.month, dm.day).mkString.trim) match {
-          case Valid => constraint(dm)
-          case err@_ => err
-        }
-      }
-
-    def validDateModel(dateConstraint: => Constraint[LocalDate] = unconstrained)(implicit e: ErrorCode): Constraint[DateModel] =
-      Constraint(dm => dm.toLocalDate.fold[ValidationResult](Invalid(s"validation.$e.invalid"))(dateConstraint(_)))
-  }
-
 
 }

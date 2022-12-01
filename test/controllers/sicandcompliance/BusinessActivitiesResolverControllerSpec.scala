@@ -16,7 +16,7 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
+import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.api.SicCode.SIC_CODES_KEY
 import models.api.{SicCode, UkCompany}

@@ -74,7 +74,6 @@ class PartnershipIdController @Inject()(val authConnector: AuthConnector,
         for {
           partnershipDetails <- partnershipIdService.getDetails(journeyId)
           _ <- applicantDetailsService.saveApplicantDetails(partnershipDetails)
-          _ <- applicantDetailsService.saveApplicantDetails(Partner)
         } yield Redirect(controllers.routes.TaskListController.show)
 
   }

@@ -19,9 +19,8 @@ package viewmodels.tasklist
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import models.api._
-import models.external.{EmailAddress, Name}
-import models.view.{FormerNameDateView, PreviousAddressView}
-import models.{ApplicantDetails, CurrentProfile, Entity}
+import models.external.Name
+import models._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
@@ -54,7 +53,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testNetpSoleTrader),
-            hasFormerName = Some(false)
+            changeOfName = FormerName(
+              hasFormerName = Some(false)
+            )
           ))
         )
 
@@ -71,7 +72,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testNetpSoleTrader),
-            hasFormerName = Some(true)
+            changeOfName = FormerName(
+              hasFormerName = Some(true)
+            )
           ))
         )
 
@@ -88,9 +91,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testNetpSoleTrader),
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            )
           ))
         )
 
@@ -123,7 +128,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testSoleTrader),
-            hasFormerName = Some(false)))
+            changeOfName = FormerName(
+              hasFormerName = Some(false)
+            )))
         )
 
         val res = section.personalDetailsRow.build(scheme)
@@ -139,7 +146,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testSoleTrader),
-            hasFormerName = Some(true)
+            changeOfName = FormerName(
+              hasFormerName = Some(true)
+            )
           ))
         )
 
@@ -156,9 +165,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testSoleTrader),
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            )
           ))
         )
 
@@ -180,9 +191,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails),
               roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate))
+              changeOfName = FormerName(
+                hasFormerName = Some(true),
+                name = Some(Name(first = Some(testFirstName), last = testLastName)),
+                change = Some(testDate)
+              )
             )),
             entities = Some(List(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)))
           )
@@ -222,9 +235,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails),
               roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate))
+              changeOfName = FormerName(
+                hasFormerName = Some(true),
+                name = Some(Name(first = Some(testFirstName), last = testLastName)),
+                change = Some(testDate)
+              )
             )),
             entities = Some(List(Entity(Some(testSoleTrader), UkCompany, Some(true), None, None, None, None)))
           )
@@ -243,7 +258,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             applicantDetails = Some(ApplicantDetails(
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails),
-              hasFormerName = Some(false),
+              changeOfName = FormerName(
+                hasFormerName = Some(false)
+              ),
               roleInTheBusiness = testRole
             )),
             entities = Some(List(Entity(Some(testSoleTrader), UkCompany, Some(true), None, None, None, None)))
@@ -267,9 +284,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
             roleInTheBusiness = testRole,
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            )
           ))
         )
         val res = section.personalDetailsRow.build(scheme)
@@ -321,9 +340,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
             roleInTheBusiness = testRole,
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            )
           ))
         )
         val res = section.personalDetailsRow.build(scheme)
@@ -342,9 +363,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
             roleInTheBusiness = testRole,
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            )
           ))
         )
         val res = section.personalDetailsRow.build(scheme)
@@ -361,7 +384,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
             roleInTheBusiness = testRole,
-            hasFormerName = Some(false)
+            changeOfName = FormerName(
+              hasFormerName = Some(false)
+            )
           ))
         )
 
@@ -512,9 +537,11 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails),
               roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate))
+              changeOfName = FormerName(
+                hasFormerName = Some(true),
+                name = Some(Name(first = Some(testFirstName), last = testLastName)),
+                change = Some(testDate)
+              )
             ))
           )
 
@@ -541,10 +568,12 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails),
               roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate)),
-              homeAddress = completeApplicantDetails.homeAddress
+              changeOfName = FormerName(
+                hasFormerName = Some(true),
+                name = Some(Name(first = Some(testFirstName), last = testLastName)),
+                change = Some(testDate)
+              ),
+              currentAddress = completeApplicantDetails.currentAddress
             ))
           )
 
@@ -571,11 +600,14 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
               entity = Some(testSoleTrader),
               personalDetails = Some(testPersonalDetails),
               roleInTheBusiness = testRole,
-              hasFormerName = Some(true),
-              formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-              formerNameDate = Some(FormerNameDateView(testDate)),
-              homeAddress = completeApplicantDetails.homeAddress,
-              previousAddress = Some(PreviousAddressView(true, None))
+              changeOfName = FormerName(
+                hasFormerName = Some(true),
+                name = Some(Name(first = Some(testFirstName), last = testLastName)),
+                change = Some(testDate)
+              ),
+              currentAddress = completeApplicantDetails.currentAddress,
+              noPreviousAddress = Some(true),
+              previousAddress = None
             ))
           )
 
@@ -613,11 +645,14 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
             roleInTheBusiness = testRole,
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate)),
-            homeAddress = completeApplicantDetails.homeAddress,
-            previousAddress = Some(PreviousAddressView(true, None))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            ),
+            currentAddress = completeApplicantDetails.currentAddress,
+            noPreviousAddress = Some(true),
+            previousAddress = None
           ))
         )
 
@@ -635,12 +670,17 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             entity = Some(testSoleTrader),
             personalDetails = Some(testPersonalDetails),
             roleInTheBusiness = testRole,
-            hasFormerName = Some(true),
-            formerName = Some(Name(first = Some(testFirstName), last = testLastName)),
-            formerNameDate = Some(FormerNameDateView(testDate)),
-            homeAddress = completeApplicantDetails.homeAddress,
-            previousAddress = Some(PreviousAddressView(true, None)),
-            emailAddress = Some(EmailAddress("email"))
+            changeOfName = FormerName(
+              hasFormerName = Some(true),
+              name = Some(Name(first = Some(testFirstName), last = testLastName)),
+              change = Some(testDate)
+            ),
+            currentAddress = completeApplicantDetails.currentAddress,
+            noPreviousAddress = Some(true),
+            previousAddress = None,
+            contact = DigitalContactOptional(
+              email = Some("email")
+            )
           ))
         )
 

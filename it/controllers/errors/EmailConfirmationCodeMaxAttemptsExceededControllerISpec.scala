@@ -18,7 +18,7 @@ package controllers.errors
 
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
-import models.{ApplicantDetails, TransactorDetails}
+import models.{ApplicantDetails, DigitalContactOptional, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.test.Helpers._
@@ -39,7 +39,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
       val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 
       res.status mustBe OK
-      Jsoup.parse(res.body).getElementsByTag("p").text() contains validFullApplicantDetails.emailAddress.get
+      Jsoup.parse(res.body).getElementsByTag("p").text() contains validFullApplicantDetails.contact.email.get
     }
 
     "return an OK with a view that contains transactor email in the message when in transactor flow" in new Setup {
@@ -61,7 +61,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
     "return INTERNAL_SERVER_ERROR when email is not present" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       val transactorDetailsWithoutEmail = validTransactorDetails.copy(email = None)
-      val applicantDetailsWithoutEmail = validFullApplicantDetails.copy(emailAddress = None)
+      val applicantDetailsWithoutEmail = validFullApplicantDetails.copy(contact = DigitalContactOptional())
       given()
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(transactorDetailsWithoutEmail))

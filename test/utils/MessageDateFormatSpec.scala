@@ -16,7 +16,6 @@
 
 package utils
 
-import com.sun.xml.internal.ws.api.WebServiceFeatureFactory
 import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite

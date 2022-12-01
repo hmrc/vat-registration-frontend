@@ -33,9 +33,9 @@ class FormerNameCaptureController @Inject()(val authConnector: AuthConnector,
                                             val sessionService: SessionService,
                                             val applicantDetailsService: ApplicantDetailsService,
                                             formerNameCapturePage: FormerNameCapture
-                                    )(implicit appConfig: FrontendAppConfig,
-                                      val executionContext: ExecutionContext,
-                                      baseControllerComponents: BaseControllerComponents)
+                                           )(implicit appConfig: FrontendAppConfig,
+                                             val executionContext: ExecutionContext,
+                                             baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -43,7 +43,7 @@ class FormerNameCaptureController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.formerName.fold(FormerNameCaptureForm.form)(FormerNameCaptureForm.form.fill)
+          filledForm = applicant.changeOfName.name.fold(FormerNameCaptureForm.form)(FormerNameCaptureForm.form.fill)
           name <- applicantDetailsService.getTransactorApplicantName
         } yield Ok(formerNameCapturePage(filledForm, name))
   }

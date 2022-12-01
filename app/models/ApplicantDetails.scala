@@ -17,23 +17,19 @@
 package models
 
 import models.api.{Address, PartyType}
-import models.external.{BusinessEntity, EmailAddress, EmailVerified, Name}
-import models.view.{FormerNameDateView, HomeAddressView, PreviousAddressView}
+import models.external.{BusinessEntity, Name}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 import java.time.LocalDate
 
-case class ApplicantDetails(entity: Option[BusinessEntity] = None,
-                            personalDetails: Option[PersonalDetails] = None,
-                            homeAddress: Option[HomeAddressView] = None,
-                            emailAddress: Option[EmailAddress] = None,
-                            emailVerified: Option[EmailVerified] = None,
-                            telephoneNumber: Option[TelephoneNumber] = None,
-                            hasFormerName: Option[Boolean] = None,
-                            formerName: Option[Name] = None,
-                            formerNameDate: Option[FormerNameDateView] = None,
-                            previousAddress: Option[PreviousAddressView] = None,
+case class ApplicantDetails(personalDetails: Option[PersonalDetails] = None,
+                            entity: Option[BusinessEntity] = None,
+                            currentAddress: Option[Address] = None,
+                            noPreviousAddress: Option[Boolean] = None,
+                            previousAddress: Option[Address] = None,
+                            contact: DigitalContactOptional = DigitalContactOptional(),
+                            changeOfName: FormerName = FormerName(),
                             roleInTheBusiness: Option[RoleInTheBusiness] = None)
 
 object ApplicantDetails {
@@ -41,41 +37,51 @@ object ApplicantDetails {
   implicit val apiKey: ApiKey[ApplicantDetails] = ApiKey("applicant")
 
   def reads(partyType: PartyType): Reads[ApplicantDetails] = (
-    (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
-      (__ \ "personalDetails").readNullable[PersonalDetails](PersonalDetails.apiFormat).orElse(Reads.pure(None)) and
-      (__ \ "currentAddress").readNullable[Address].fmap(_.map(addr => HomeAddressView(addr.id, Some(addr)))) and
-      (__ \ "contact" \ "email").readNullable[String].fmap(_.map(EmailAddress(_))) and
-      (__ \ "contact" \ "emailVerified").readNullable[Boolean].fmap(_.map(EmailVerified(_))) and
-      (__ \ "contact" \ "tel").readNullable[String].fmap(_.map(TelephoneNumber(_))) and
-      (__ \ "changeOfName" \ "hasFormerName").readNullable[Boolean] and
-      (__ \ "changeOfName" \ "name").readNullable[Name] and
-      (__ \ "changeOfName" \ "change").readNullable[LocalDate]
-        .fmap(cond => cond.map(FormerNameDateView(_))) and
-      (__ \ "previousAddress").readNullable[Address].fmap(address => Some(PreviousAddressView(address.isEmpty, address))) and
+    (__ \ "personalDetails").readNullable[PersonalDetails] and
+      (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
+      (__ \ "currentAddress").readNullable[Address] and
+      (__ \ "noPreviousAddress").readNullable[Boolean] and
+      (__ \ "previousAddress").readNullable[Address] and
+      (__ \ "contact").readWithDefault[DigitalContactOptional](DigitalContactOptional()) and
+      (__ \ "changeOfName").readWithDefault[FormerName](FormerName()) and
       (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
     ) (ApplicantDetails.apply _)
 
-  val writes: Writes[ApplicantDetails] = (
-    (__ \ "entity").writeNullable[BusinessEntity](BusinessEntity.writes) and
-      (__ \ "personalDetails").writeNullable[PersonalDetails](PersonalDetails.apiFormat) and
-      (__ \ "currentAddress").writeNullable[Address].contramap[Option[HomeAddressView]](_.flatMap(_.address)) and
-      (__ \ "contact" \ "email").writeNullable[String].contramap[Option[EmailAddress]](_.map(_.email)) and
-      (__ \ "contact" \ "emailVerified").writeNullable[Boolean].contramap[Option[EmailVerified]](_.map(_.emailVerified)) and
-      (__ \ "contact" \ "tel").writeNullable[String].contramap[Option[TelephoneNumber]](_.map(_.telephone)) and
-      (__ \ "changeOfName" \ "hasFormerName").writeNullable[Boolean] and
-      (__ \ "changeOfName" \ "name").writeNullable[Name] and
-      (__ \ "changeOfName" \ "change").writeNullable[LocalDate].contramap[Option[FormerNameDateView]](_.map(_.date)) and
-      (__ \ "previousAddress").writeNullable[Address].contramap[Option[PreviousAddressView]](_.flatMap(_.address)) and
+  implicit val writes: Writes[ApplicantDetails] = (
+    (__ \ "personalDetails").writeNullable[PersonalDetails] and
+      (__ \ "entity").writeNullable[BusinessEntity] and
+      (__ \ "currentAddress").writeNullable[Address] and
+      (__ \ "noPreviousAddress").writeNullable[Boolean] and
+      (__ \ "previousAddress").writeNullable[Address] and
+      (__ \ "contact").write[DigitalContactOptional] and
+      (__ \ "changeOfName").write[FormerName] and
       (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]
     ) (unlift(ApplicantDetails.unapply))
 
   def apiFormat(partyType: PartyType): Format[ApplicantDetails] = Format(reads(partyType), writes)
 
   def s4LReads(partyType: PartyType): Reads[ApplicantDetails] = {
-    implicit val businessEntityReads: Reads[BusinessEntity] = BusinessEntity.reads(partyType)
-    Json.reads[ApplicantDetails]
-  }
+    implicit val s4lContactReads: Reads[DigitalContactOptional] = (
+      (__ \ "emailAddress" \ "email").readNullable[String] and
+        (__ \ "telephoneNumber" \ "telephone").readNullable[String] and
+        (__ \ "emailVerified" \ "emailVerified").readNullable[Boolean]
+      ) (DigitalContactOptional.apply _)
+    implicit val s4lFormerNameReads: Reads[FormerName] = (
+      (__ \ "hasFormerName").readNullable[Boolean] and
+        (__ \ "formerName").readNullable[Name] and
+        (__ \ "formerNameDate" \ "date").readNullable[LocalDate]
+      ) (FormerName.apply _)
 
-  implicit val s4LWrites: Writes[ApplicantDetails] = Json.writes[ApplicantDetails]
+    (
+      (__ \ "personalDetails").readNullable[PersonalDetails] and
+        (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
+        (__ \ "homeAddress" \ "address").readNullable[Address] and
+        (__ \ "previousAddress" \ "yesNo").readNullable[Boolean] and
+        (__ \ "previousAddress" \ "address").readNullable[Address] and
+        (__).readWithDefault[DigitalContactOptional](DigitalContactOptional()) and
+        (__).readWithDefault[FormerName](FormerName()) and
+        (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
+      ) (ApplicantDetails.apply _)
+  }
 
 }

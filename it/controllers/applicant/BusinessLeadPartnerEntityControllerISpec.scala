@@ -17,7 +17,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
 
   val url: String = controllers.applicant.routes.BusinessLeadPartnerEntityController.showPartnerEntityType.url
 
-  s"GET $url" should {
+  s"GET $url" must {
     "display the page" in new Setup {
       given()
         .user.isAuthorised()
@@ -55,7 +55,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
   s"POST $url" when {
 
     List(UkCompany, RegSociety, CharitableOrg).foreach { partyType =>
-      s"the user selects $partyType" should {
+      s"the user selects $partyType" must {
         "store the partyType in backend and begin an IncorpId journey" in new Setup {
           given()
             .user.isAuthorised()
@@ -73,7 +73,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
     }
 
     List(ScotLtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
-      s"the user selects $partyType" should {
+      s"the user selects $partyType" must {
         "store the partyType in backend and begin an PartnershipId journey" in new Setup {
           given()
             .user.isAuthorised()
@@ -90,7 +90,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
-    s"the user selects $ScotPartnership" should {
+    s"the user selects $ScotPartnership" must {
       "store the partyType in backend and go to ScottishPartnershipName page" in new Setup {
         given()
           .user.isAuthorised()
@@ -106,7 +106,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
-    "the user submits an invalid lead partner" should {
+    "the user submits an invalid lead partner" must {
       "throw an exception" in new Setup {
         given()
           .user.isAuthorised()

@@ -20,8 +20,8 @@ import common.enums.AddressLookupJourneyIdentifier.{applicantAddress, homeAddres
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
-import models.view.HomeAddressView
 import play.api.mvc.{Action, AnyContent}
+import services.ApplicantDetailsService.CurrentAddress
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 
@@ -42,8 +42,8 @@ class HomeAddressController @Inject()(val authConnector: AuthConnector,
   def redirectToAlf: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.isTransactor.flatMap{ isTransactor =>
-          val journeyId = if(isTransactor) {
+        vatRegistrationService.isTransactor.flatMap { isTransactor =>
+          val journeyId = if (isTransactor) {
             applicantAddress
           } else {
             homeAddress
@@ -57,7 +57,7 @@ class HomeAddressController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           address <- addressLookupService.getAddressById(id)
-          _ <- applicantDetailsService.saveApplicantDetails(HomeAddressView(address.id, Some(address.normalise())))
+          _ <- applicantDetailsService.saveApplicantDetails(CurrentAddress(address.normalise()))
         } yield Redirect(applicantRoutes.PreviousAddressController.show)
   }
 

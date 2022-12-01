@@ -100,37 +100,37 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
 
     val changedName = optSummaryListRowBoolean(
       if (isTransactor) s"$sectionId.transactor.formerName" else s"$sectionId.self.formerName",
-      applicantDetails.hasFormerName,
+      applicantDetails.changeOfName.hasFormerName,
       Some(applicantRoutes.FormerNameController.show.url)
     )
 
     val formerName = optSummaryListRowString(
       if (isTransactor) s"$sectionId.transactor.formerNameCapture" else s"$sectionId.self.formerNameCapture",
-      applicantDetails.formerName.map(_.asLabel),
+      applicantDetails.changeOfName.name.map(_.asLabel),
       Some(applicantRoutes.FormerNameCaptureController.show.url)
     )
 
     val formerNameDate = optSummaryListRowString(
       if (isTransactor) s"$sectionId.transactor.formerNameDate" else s"$sectionId.self.formerNameDate",
-      applicantDetails.formerNameDate.map(_.date).map(MessageDateFormat.format),
+      applicantDetails.changeOfName.change.map(MessageDateFormat.format),
       Some(applicantRoutes.FormerNameDateController.show.url)
     )
 
     val email = optSummaryListRowString(
       if (isTransactor) s"$sectionId.transactor.email" else s"$sectionId.self.email",
-      applicantDetails.emailAddress.map(_.email),
+      applicantDetails.contact.email,
       Some(applicantRoutes.CaptureEmailAddressController.show.url)
     )
 
     val telephone = optSummaryListRowString(
       if (isTransactor) s"$sectionId.transactor.telephone" else s"$sectionId.self.telephone",
-      applicantDetails.telephoneNumber.map(_.telephone),
+      applicantDetails.contact.tel,
       Some(applicantRoutes.CaptureTelephoneNumberController.show.url)
     )
 
     val homeAddress = optSummaryListRowSeq(
       if (isTransactor) s"$sectionId.transactor.homeAddress" else s"$sectionId.self.homeAddress",
-      applicantDetails.homeAddress.flatMap(_.address).map(Address.normalisedSeq),
+      applicantDetails.currentAddress.map(Address.normalisedSeq),
       partyType match {
         case NETP | NonUkNonEstablished =>
           Some(applicantRoutes.InternationalHomeAddressController.show.url)
@@ -141,13 +141,13 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
 
     val moreThanThreeYears = optSummaryListRowBoolean(
       if (isTransactor) s"$sectionId.transactor.moreThanThreeYears" else s"$sectionId.self.moreThanThreeYears",
-      applicantDetails.previousAddress.map(_.yesNo),
+      applicantDetails.noPreviousAddress,
       Some(applicantRoutes.PreviousAddressController.show.url)
     )
 
     val previousAddress = optSummaryListRowSeq(
       if (isTransactor) s"$sectionId.transactor.previousAddress" else s"$sectionId.self.previousAddress",
-      applicantDetails.previousAddress.flatMap(_.address).map(Address.normalisedSeq),
+      applicantDetails.previousAddress.map(Address.normalisedSeq),
       partyType match {
         case NETP | NonUkNonEstablished =>
           Some(applicantRoutes.InternationalPreviousAddressController.show.url)

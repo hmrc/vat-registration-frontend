@@ -6,7 +6,6 @@ import itutil.ControllerISpec
 import models._
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
-import models.view.PreviousAddressView
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.json.Format
@@ -261,9 +260,12 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getSection[ApplicantDetails](
           Some(validFullApplicantDetails.copy(
             entity = Some(testPartnership), personalDetails = None,
-            homeAddress = None,
-            previousAddress = Some(PreviousAddressView(false, None)),
-            emailAddress = None, emailVerified = None, telephoneNumber = None
+            currentAddress = None,
+            noPreviousAddress = Some(false),
+            previousAddress = None,
+            contact = DigitalContactOptional(
+              email = None, emailVerified = None, tel = None
+            )
           ))
         )
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))

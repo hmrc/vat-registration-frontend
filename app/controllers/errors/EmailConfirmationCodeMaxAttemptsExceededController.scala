@@ -46,7 +46,7 @@ class EmailConfirmationCodeMaxAttemptsExceededController @Inject()(view: maxConf
           email <- if (isTransactor) {
             transactorDetailsService.getTransactorDetails.map(_.email)
           } else {
-            applicantDetailsService.getApplicantDetails.map(_.emailAddress.map(_.email))
+            applicantDetailsService.getApplicantDetails.map(_.contact.email)
           }
         } yield Ok(view(
           email = email.getOrElse(throw new InternalServerException("[EmailConfirmationCodeMaxAttemptsExceeded] email address is not found")),

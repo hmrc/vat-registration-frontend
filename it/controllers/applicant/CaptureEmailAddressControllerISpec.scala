@@ -18,9 +18,8 @@ package controllers.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.ApplicantDetails
 import models.api.{EligibilitySubmissionData, UkCompany}
-import models.external.{EmailAddress, EmailVerified}
+import models.{ApplicantDetails, DigitalContactOptional}
 import org.jsoup.Jsoup
 import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
@@ -33,14 +32,16 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
   val url: String = controllers.applicant.routes.CaptureEmailAddressController.show.url
   private val testEmail = "test@test.com"
 
-  val s4lData: ApplicantDetails = ApplicantDetails(
+  val testApplicant: ApplicantDetails = validFullApplicantDetails.copy(
     entity = Some(testIncorpDetails),
     personalDetails = Some(testPersonalDetails),
-    emailAddress = Some(EmailAddress(testEmail)),
-    emailVerified = Some(EmailVerified(true))
+    contact = DigitalContactOptional(
+      Some(testEmail),
+      emailVerified = Some(true)
+    )
   )
 
-  s"GET $url" should {
+  s"GET $url" must {
     "show the view correctly" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
@@ -58,9 +59,11 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     }
 
     "returns an OK with pre-populated data" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -73,141 +76,120 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
     }
   }
 
-  s"POST $url" when {
-    "ApplicantDetails is not complete" should {
-      "Update S4L and redirect to Capture Email Passcode page" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(
-          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+  s"POST $url" must {
+    "Update model and redirect to Capture Email Passcode page" in new Setup {
+      disable(StubEmailVerification)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](None)
+        .registrationApi.replaceSection[ApplicantDetails](
+        ApplicantDetails(contact = DigitalContactOptional(Some(testEmail)))
+      )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        stubPost("/email-verification/request-passcode", CREATED, Json.obj("email" -> testEmail, "serviceName" -> "VAT Registration").toString)
+      stubPost("/email-verification/request-passcode", CREATED, Json.obj("email" -> testEmail, "serviceName" -> "VAT Registration").toString)
 
-        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+      val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
 
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.applicant.routes.CaptureEmailPasscodeController.show.url)
-      }
-
-      "Update S4L redirect to Capture Email Passcode page when the user has already verified" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
-          .s4lContainer[ApplicantDetails].isUpdatedWith(
-          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
-
-        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.applicant.routes.EmailAddressVerifiedController.show.url)
-      }
-
-      "Update S4L redirect to 'Email confirmation code max attempt exceeded' page when the user has already verified" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
-          .s4lContainer[ApplicantDetails].isUpdatedWith(
-          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
-
-        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
-      }
-
-      "Update S4L redirect to Capture Telephone Number page when the user is a transactor" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail))))
-          .s4lContainer[ApplicantDetails].isUpdatedWith(
-          ApplicantDetails().copy(emailAddress = Some(EmailAddress(testEmail)), emailVerified = Some(EmailVerified(true)))
-        )
-          .registrationApi.getSection[EligibilitySubmissionData](Some(
-          testEligibilitySubmissionData.copy(
-            isTransactor = true
-          )
-        ))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
-
-        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.applicant.routes.CaptureTelephoneNumberController.show.url)
-      }
-    }
-    "ApplicantDetails is complete" should {
-      "Post the block to the backend and redirect to the capture email postcode page" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails.copy(emailAddress = None))(ApplicantDetails.s4LWrites)
-          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(emailAddress = Some(EmailAddress(testEmail))))
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        stubPost("/email-verification/request-passcode", CREATED, Json.obj("email" -> testEmail, "serviceName" -> "VAT Registration").toString)
-
-        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.applicant.routes.CaptureEmailPasscodeController.show.url)
-
-      }
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.applicant.routes.CaptureEmailPasscodeController.show.url)
     }
 
-    "ApplicantDetails with invalid email" should {
-      List("", "e" * 133, "test-email").foreach { email =>
-        s"return BAD_REQUEST for invalid email: '$email'" in new Setup {
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+    "Update model and redirect to Email Address Verified page when the user has already verified" in new Setup {
+      disable(StubEmailVerification)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](None)
+        .registrationApi.replaceSection[ApplicantDetails](
+        ApplicantDetails(contact = DigitalContactOptional(Some(testEmail)))
+      )
+        .registrationApi.getSection[ApplicantDetails](Some(ApplicantDetails(contact = DigitalContactOptional(Some(testEmail)))))
+        .registrationApi.replaceSection[ApplicantDetails](
+        ApplicantDetails(contact = DigitalContactOptional(Some(testEmail), emailVerified = Some(true)))
+      )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-          disable(StubEmailVerification)
-          given()
-            .user.isAuthorised()
-            .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(emailAddress = Some(EmailAddress(testEmail))))
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-          val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> email)))
-          res.status mustBe BAD_REQUEST
-        }
+      stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.applicant.routes.EmailAddressVerifiedController.show.url)
+    }
+
+    "Update model and redirect to 'Email confirmation code max attempt exceeded' page when the user has already verified" in new Setup {
+      disable(StubEmailVerification)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](None)
+        .registrationApi.replaceSection[ApplicantDetails](
+        ApplicantDetails(contact = DigitalContactOptional(Some(testEmail)))
+      )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
+    }
+
+    "Update model and redirect to Capture Telephone Number page when the user is a transactor" in new Setup {
+      disable(StubEmailVerification)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](None)
+        .registrationApi.replaceSection[ApplicantDetails](
+        ApplicantDetails(contact = DigitalContactOptional(Some(testEmail)))
+      )
+        .registrationApi.getSection[ApplicantDetails](Some(ApplicantDetails(contact = DigitalContactOptional(Some(testEmail)))))
+        .registrationApi.replaceSection[ApplicantDetails](
+        ApplicantDetails(contact = DigitalContactOptional(Some(testEmail), emailVerified = Some(false)))
+      )
+        .registrationApi.getSection[EligibilitySubmissionData](Some(
+        testEligibilitySubmissionData.copy(
+          isTransactor = true
+        )
+      ))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> Seq(testEmail))))
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.applicant.routes.CaptureTelephoneNumberController.show.url)
+    }
+    List("", "e" * 133, "test-email").foreach { email =>
+      s"return BAD_REQUEST for invalid email: '$email'" in new Setup {
+        disable(StubEmailVerification)
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> email)))
+        res.status mustBe BAD_REQUEST
       }
     }
   }

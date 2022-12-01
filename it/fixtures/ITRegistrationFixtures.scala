@@ -22,7 +22,6 @@ import models.api.SicCode.SIC_CODES_KEY
 import models.api._
 import models.api.vatapplication._
 import models.external._
-import models.view._
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 
 import java.time.LocalDate
@@ -259,19 +258,6 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId),
     identifiersMatch = false
-  )
-
-  val completeApplicantDetails = ApplicantDetails(
-    entity = Some(testIncorpDetails),
-    personalDetails = Some(testPersonalDetails),
-    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber("1234")),
-    hasFormerName = Some(true),
-    formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
-    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(true, Some(validPrevAddress)))
   )
 
   lazy val validTransactorDetails: TransactorDetails = TransactorDetails(

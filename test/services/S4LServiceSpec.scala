@@ -18,7 +18,7 @@ package services
 
 import models.api.UkCompany
 import models._
-import play.api.libs.json.{Reads, Writes}
+import play.api.libs.json.Reads
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -33,7 +33,6 @@ class S4LServiceSpec extends VatRegSpec {
       mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
       mockS4LSaveForm[ApplicantDetails](cacheMap)
-      implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
       service.save(emptyApplicantDetails) returns cacheMap
     }
 

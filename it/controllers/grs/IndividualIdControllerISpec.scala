@@ -4,7 +4,7 @@ package controllers.grs
 import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.ApplicantDetails
+import models.{ApplicantDetails, PersonalDetails}
 import models.api._
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
@@ -73,28 +73,9 @@ class IndividualIdControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[ApplicantDetails](None)
         .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-individual-callback?journeyId=$testJourneyId").get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(LOCATION) must contain(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
-      }
-    }
-
-    "redirect to the RoleInTheBusiness page when the model in S4l" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given()
-        .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(personalDetails = None)))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -117,7 +98,8 @@ class IndividualIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[ApplicantDetails](None)
           .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(personalDetails = Some(testPersonalDetails)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
 
         stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)

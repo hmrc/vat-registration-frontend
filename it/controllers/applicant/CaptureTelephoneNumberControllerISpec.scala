@@ -18,9 +18,8 @@ package controllers.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished, UkCompany}
-import models.external.{EmailAddress, EmailVerified}
-import models.{ApplicantDetails, Director, TelephoneNumber}
+import models.api.{EligibilitySubmissionData, UkCompany}
+import models.{ApplicantDetails, DigitalContactOptional}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -31,19 +30,11 @@ import scala.concurrent.Future
 class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
   private val testPhoneNumber = "12345 123456"
+  private val testTrimmedPhoneNumber = "12345123456"
 
   val url: String = controllers.applicant.routes.CaptureTelephoneNumberController.show.url
 
-  val s4lData: ApplicantDetails = ApplicantDetails(
-    entity = Some(testIncorpDetails),
-    personalDetails = Some(testPersonalDetails),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber(testPhoneNumber)),
-    roleInTheBusiness = Some(Director)
-  )
-
-  s"GET $url" should {
+  s"GET $url" must {
     "show the view correctly" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
@@ -61,9 +52,11 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
     }
 
     "returns an OK with prepopulated data" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = DigitalContactOptional(tel = Some(testPhoneNumber)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -78,31 +71,18 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" when {
-    "the ApplicantDetails model is incomplete" should {
-      "update S4L and redirect to Task List" in new Setup {
-        disable(StubEmailVerification)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
-      }
-    }
-
-    "update S4L and redirect to Task List for a NETP" in new Setup {
+    "post to the backend and redirect to Task List" in new Setup {
       disable(StubEmailVerification)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = DigitalContactOptional())))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
+        contact = DigitalContactOptional(tel = Some(testTrimmedPhoneNumber))
+      ))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -111,61 +91,21 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
     }
-
-    "update S4L and redirect to Task List for a Non UK Company" in new Setup {
+    "return form with errors for an invalid phone number" in new Setup {
       disable(StubEmailVerification)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-        .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails().copy(telephoneNumber = Some(TelephoneNumber(testPhoneNumber))))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq())))
 
-      res.status mustBe SEE_OTHER
-      res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
-    }
-
-    "the ApplicantDetails model is complete" should {
-      "post to the backend and redirect to Task List" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
-          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
-          telephoneNumber = Some(TelephoneNumber(testPhoneNumber.replace(" ", "")))
-        ))
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
-      }
-
-      "post to the backend and redirect to Task List for a NETP" in new Setup {
-        disable(StubEmailVerification)
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
-          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
-
-        res.status mustBe SEE_OTHER
-        res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
-      }
+      res.status mustBe BAD_REQUEST
     }
   }
 

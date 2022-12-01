@@ -3,10 +3,8 @@ package controllers.applicant
 
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
+import models._
 import models.api._
-import models.external.{EmailAddress, EmailVerified, Name}
-import models.view.{FormerNameDateView, HomeAddressView, PreviousAddressView}
-import models.{ApplicantDetails, Director, TelephoneNumber, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
@@ -30,27 +28,13 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
   val pageUrl: String = routes.PreviousAddressController.show.url
 
-  val applicantDetails = ApplicantDetails(
-    entity = Some(testIncorpDetails),
-    personalDetails = Some(testPersonalDetails),
-    homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber("1234")),
-    hasFormerName = Some(true),
-    formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
-    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = None,
-    roleInTheBusiness = Some(Director)
-  )
-
   s"GET $pageUrl" must {
     "redirect user back to the Current Address route if address missing" in new Setup {
       implicit val format = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails.copy(homeAddress = None)), testRegId, None)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(currentAddress = None)), testRegId, None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -65,8 +49,8 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       implicit val format = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(applicantDetails)(ApplicantDetails.s4LWrites)
-        .registrationApi.getSection[ApplicantDetails](None, testRegId)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
 
@@ -84,7 +68,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = false, Some(address))))), testRegId, None)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(previousAddress = Some(address), noPreviousAddress = Some(false))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -103,7 +87,9 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails), testRegId, None)
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testNetpSoleTrader)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -120,13 +106,14 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(applicantDetails), testRegId, None)
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testMinorEntity))))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testMinorEntity)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res = await(buildClient(pageUrl)
-        .post(Map("value" -> Seq("false"))))
+      val res = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
@@ -136,36 +123,42 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(applicantDetails)(ApplicantDetails.s4LWrites)
-        .registrationApi.replaceSection(applicantDetails.copy(previousAddress = Some(PreviousAddressView(yesNo = true, None))))
+        .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(previousAddress = None, noPreviousAddress = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response = buildClient(applicantRoutes.PreviousAddressController.submit.url).post(Map("value" -> Seq("true")))
+      val response = buildClient(pageUrl).post(Map("value" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
+
+    "return page with form errors for an invalid answer" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(previousAddress = None, noPreviousAddress = Some(true)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(pageUrl).post(Map("value" -> ""))
+
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
   }
 
   "GET Txm ALF callback for Previous Address" must {
-    val s4lData = ApplicantDetails(
-      entity = Some(testIncorpDetails),
-      personalDetails = Some(testPersonalDetails),
-      homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-      emailAddress = Some(EmailAddress("test@t.test")),
-      emailVerified = Some(EmailVerified(true)),
-      telephoneNumber = Some(TelephoneNumber("1234")),
-      hasFormerName = Some(false),
-      formerName = None,
-      formerNameDate = None,
-      previousAddress = None,
-      roleInTheBusiness = Some(Director)
-    )
-
     "patch Applicant Details with ALF address in backend" in new Setup {
       val addressId = "addressId"
       val addressLine1 = "16 Coniston court"
@@ -173,22 +166,23 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       val addressCountry = "GB"
       val addressPostcode = "BN3 1JU"
 
-      val testApplicantDetails: ApplicantDetails = s4lData.copy(previousAddress = Some(PreviousAddressView(
-        yesNo = true,
-        Some(Address(
+      val testApplicantDetails: ApplicantDetails = validFullApplicantDetails.copy(
+        previousAddress = Some(Address(
           addressLine1,
           Some(addressLine2),
           postcode = Some(addressPostcode),
           country = Some(Country(Some(addressCountry), Some("United Kingdom"))),
           addressValidated = true
-        ))
-      )))
+        )),
+        noPreviousAddress = Some(false)
+      )
 
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .registrationApi.replaceSection[ApplicantDetails](testApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

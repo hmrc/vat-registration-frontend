@@ -45,7 +45,7 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.hasFormerName.fold(FormerNameForm.form)(FormerNameForm.form.fill)
+          filledForm = applicant.changeOfName.hasFormerName.fold(FormerNameForm.form)(FormerNameForm.form.fill)
           name <- applicantDetailsService.getTransactorApplicantName
         } yield Ok(formerNamePage(filledForm, name))
   }
@@ -67,7 +67,7 @@ class FormerNameController @Inject()(val authConnector: AuthConnector,
                 Future.successful(Redirect(controllers.routes.TaskListController.show))
               }
             }
-          )
+        )
   }
 
 }

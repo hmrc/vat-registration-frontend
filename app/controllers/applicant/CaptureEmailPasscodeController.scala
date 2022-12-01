@@ -24,6 +24,7 @@ import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
+import services.ApplicantDetailsService.EmailVerified
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -72,17 +73,14 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
       implicit profile =>
         EmailPasscodeForm.form.bindFromRequest().fold(
           formWithErrors =>
-            getEmailAddress map { email =>
+            getEmailAddress.map { email =>
               BadRequest(view(email, formWithErrors, isTransactor = false, isNewPasscode = isNewPasscode))
             },
           emailPasscode =>
-            getEmailAddress flatMap { email =>
+            getEmailAddress.flatMap { email =>
               emailVerificationService.verifyEmailVerificationPasscode(email, emailPasscode) flatMap {
                 case EmailAlreadyVerified | EmailVerifiedSuccessfully =>
-                  for {
-                    _ <- applicantDetailsService.saveApplicantDetails(EmailAddress(email))
-                    _ <- applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true))
-                  } yield {
+                  applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)).map { _ =>
                     Redirect(routes.EmailAddressVerifiedController.show)
                   }
                 case PasscodeMismatch =>
@@ -105,8 +103,8 @@ class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
 
   private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[String] =
     applicantDetailsService.getApplicantDetails.map {
-      _.emailAddress match {
-        case Some(EmailAddress(email)) => email
+      _.contact.email match {
+        case Some(email) => email
         case None => throw new InternalServerException("Failed to retrieve email address")
       }
     }
