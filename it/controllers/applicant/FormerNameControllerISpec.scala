@@ -36,7 +36,6 @@ class FormerNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -52,7 +51,6 @@ class FormerNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -71,8 +69,6 @@ class FormerNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(changeOfName = FormerName())))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(changeOfName = FormerName(Some(true), None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -89,8 +85,6 @@ class FormerNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(changeOfName = FormerName(Some(false), None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

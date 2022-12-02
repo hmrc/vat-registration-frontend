@@ -133,8 +133,6 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership), personalDetails = None)))
         .registrationApi.getSection(Some(Entity(None, Individual, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection(validFullApplicantDetails.copy(entity = Some(testPartnership)))
@@ -155,8 +153,6 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership), personalDetails = None)))
         .registrationApi.getSection(Some(Entity(None, NETP, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(testPartnership)))

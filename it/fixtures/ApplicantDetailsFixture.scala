@@ -45,7 +45,7 @@ trait ApplicantDetailsFixture {
     currentAddress = Some(validCurrentAddress),
     noPreviousAddress = Some(false),
     previousAddress = Some(validPrevAddress),
-    contact = DigitalContactOptional(
+    contact = Contact(
       email = Some("test@t.test"),
       tel = Some(testApplicantPhone),
       emailVerified = Some(true)

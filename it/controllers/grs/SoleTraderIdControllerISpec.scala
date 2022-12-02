@@ -82,8 +82,6 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(personalDetails = None, entity = None)))
           .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = None))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = None)))

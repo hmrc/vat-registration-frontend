@@ -28,12 +28,11 @@ case class ApplicantDetails(personalDetails: Option[PersonalDetails] = None,
                             currentAddress: Option[Address] = None,
                             noPreviousAddress: Option[Boolean] = None,
                             previousAddress: Option[Address] = None,
-                            contact: DigitalContactOptional = DigitalContactOptional(),
+                            contact: Contact = Contact(),
                             changeOfName: FormerName = FormerName(),
                             roleInTheBusiness: Option[RoleInTheBusiness] = None)
 
 object ApplicantDetails {
-  implicit val s4lKey: S4LKey[ApplicantDetails] = S4LKey("ApplicantDetails")
   implicit val apiKey: ApiKey[ApplicantDetails] = ApiKey("applicant")
 
   def reads(partyType: PartyType): Reads[ApplicantDetails] = (
@@ -42,7 +41,7 @@ object ApplicantDetails {
       (__ \ "currentAddress").readNullable[Address] and
       (__ \ "noPreviousAddress").readNullable[Boolean] and
       (__ \ "previousAddress").readNullable[Address] and
-      (__ \ "contact").readWithDefault[DigitalContactOptional](DigitalContactOptional()) and
+      (__ \ "contact").readWithDefault[Contact](Contact()) and
       (__ \ "changeOfName").readWithDefault[FormerName](FormerName()) and
       (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
     ) (ApplicantDetails.apply _)
@@ -53,35 +52,11 @@ object ApplicantDetails {
       (__ \ "currentAddress").writeNullable[Address] and
       (__ \ "noPreviousAddress").writeNullable[Boolean] and
       (__ \ "previousAddress").writeNullable[Address] and
-      (__ \ "contact").write[DigitalContactOptional] and
+      (__ \ "contact").write[Contact] and
       (__ \ "changeOfName").write[FormerName] and
       (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]
     ) (unlift(ApplicantDetails.unapply))
 
   def apiFormat(partyType: PartyType): Format[ApplicantDetails] = Format(reads(partyType), writes)
-
-  def s4LReads(partyType: PartyType): Reads[ApplicantDetails] = {
-    implicit val s4lContactReads: Reads[DigitalContactOptional] = (
-      (__ \ "emailAddress" \ "email").readNullable[String] and
-        (__ \ "telephoneNumber" \ "telephone").readNullable[String] and
-        (__ \ "emailVerified" \ "emailVerified").readNullable[Boolean]
-      ) (DigitalContactOptional.apply _)
-    implicit val s4lFormerNameReads: Reads[FormerName] = (
-      (__ \ "hasFormerName").readNullable[Boolean] and
-        (__ \ "formerName").readNullable[Name] and
-        (__ \ "formerNameDate" \ "date").readNullable[LocalDate]
-      ) (FormerName.apply _)
-
-    (
-      (__ \ "personalDetails").readNullable[PersonalDetails] and
-        (__ \ "entity").readNullable[BusinessEntity](BusinessEntity.reads(partyType)) and
-        (__ \ "homeAddress" \ "address").readNullable[Address] and
-        (__ \ "previousAddress" \ "yesNo").readNullable[Boolean] and
-        (__ \ "previousAddress" \ "address").readNullable[Address] and
-        (__).readWithDefault[DigitalContactOptional](DigitalContactOptional()) and
-        (__).readWithDefault[FormerName](FormerName()) and
-        (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
-      ) (ApplicantDetails.apply _)
-  }
 
 }

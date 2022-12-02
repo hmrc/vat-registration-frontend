@@ -38,7 +38,6 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -57,7 +56,6 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

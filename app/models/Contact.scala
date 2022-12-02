@@ -18,10 +18,10 @@ package models
 
 import play.api.libs.json._
 
-case class DigitalContactOptional(email: Option[String] = None,
-                                  tel: Option[String] = None,
-                                  emailVerified: Option[Boolean] = None)
+case class Contact(email: Option[String] = None,
+                   tel: Option[String] = None,
+                   emailVerified: Option[Boolean] = None)
 
-object DigitalContactOptional {
-  implicit val format: Format[DigitalContactOptional] = Json.format[DigitalContactOptional]
+object Contact {
+  implicit val format: Format[Contact] = Json.format[Contact]
 }

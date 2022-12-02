@@ -15,10 +15,11 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
 
   "GET /vat-start-date" must {
     "Return OK when the user is authenticated" in {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(startDate = testApplicantIncorpDate))
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/vat-start-date").get()
@@ -45,11 +46,9 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
     "Redirect to the next page when all data is valid" in {
       val today = LocalDate.now().plusDays(1)
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].isUpdatedWith(VatApplication(startDate = Some(today)))
-        .s4lContainer[ApplicantDetails].isUpdatedWith(validFullApplicantDetails)
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

@@ -678,7 +678,7 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
             currentAddress = completeApplicantDetails.currentAddress,
             noPreviousAddress = Some(true),
             previousAddress = None,
-            contact = DigitalContactOptional(
+            contact = Contact(
               email = Some("email")
             )
           ))

@@ -21,7 +21,6 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -40,7 +39,6 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .audit.writesAudit()
         .audit.writesAuditMerged()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(scottishPartnershipName), None, None, None)), idx = Some(1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -59,7 +57,6 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
         .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(1))

@@ -35,7 +35,6 @@ class BusinessNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -51,7 +50,6 @@ class BusinessNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(companyName = None)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -71,8 +69,6 @@ class BusinessNameControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(entity))))
           .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(entityWithBusinessName)))
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

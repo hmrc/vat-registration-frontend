@@ -19,7 +19,7 @@ package controllers.applicant
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
-import models.{ApplicantDetails, DigitalContactOptional}
+import models.{ApplicantDetails, Contact}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -39,7 +39,6 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -55,8 +54,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = DigitalContactOptional(tel = Some(testPhoneNumber)))))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = Contact(tel = Some(testPhoneNumber)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -76,11 +74,9 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = Contact())))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
-        contact = DigitalContactOptional(tel = Some(testTrimmedPhoneNumber))
+        contact = Contact(tel = Some(testTrimmedPhoneNumber))
       ))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -96,9 +92,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = Contact())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

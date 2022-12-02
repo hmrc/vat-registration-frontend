@@ -67,7 +67,7 @@ trait ApplicantDetailsFixtures {
     entity = Some(testLimitedCompany),
     personalDetails = Some(testPersonalDetails),
     currentAddress = Some(validCurrentAddress),
-    contact = DigitalContactOptional(
+    contact = Contact(
       email = Some("test@t.test"),
       emailVerified = Some(true),
       tel = Some("1234")
@@ -119,7 +119,7 @@ trait ApplicantDetailsFixtures {
     entity = Some(testSoleTrader),
     personalDetails = Some(testPersonalDetails),
     currentAddress = Some(validCurrentAddress),
-    contact = DigitalContactOptional(
+    contact = Contact(
       email = Some("test@t.test"),
       emailVerified = Some(true),
       tel = Some("1234")

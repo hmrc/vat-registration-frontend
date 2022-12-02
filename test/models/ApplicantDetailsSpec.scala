@@ -89,7 +89,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         entity = Some(testLimitedCompany),
         personalDetails = Some(testPersonalDetails),
         currentAddress = Some(currentAddress),
-        contact = DigitalContactOptional(
+        contact = Contact(
           email = Some("test@t.test"),
           emailVerified = Some(true),
           tel = Some("1234")
@@ -167,7 +167,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         entity = Some(testNetpSoleTrader),
         personalDetails = Some(testPersonalDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = true)),
         currentAddress = Some(currentAddress),
-        contact = DigitalContactOptional(
+        contact = Contact(
           email = Some("test@t.test"),
           emailVerified = Some(true),
           tel = Some("1234")
@@ -218,7 +218,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
 
       val applicantDetails = ApplicantDetails(
         currentAddress = Some(currentAddress),
-        contact = DigitalContactOptional(
+        contact = Contact(
           email = Some("test@t.test"),
           emailVerified = Some(true),
           tel = Some("1234")
@@ -249,7 +249,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         entity = Some(testLimitedCompany),
         personalDetails = Some(testPersonalDetails),
         currentAddress = Some(currentAddress),
-        contact = DigitalContactOptional(
+        contact = Contact(
           email = Some("test@t.test"),
           emailVerified = Some(true),
           tel = Some("1234")
@@ -323,7 +323,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
         entity = Some(testNetpSoleTrader),
         personalDetails = Some(testPersonalDetails.copy(nino = None, trn = Some(testTrn), identifiersMatch = false)),
         currentAddress = Some(currentAddress),
-        contact = DigitalContactOptional(
+        contact = Contact(
           email = Some("test@t.test"),
           emailVerified = Some(true),
           tel = Some("1234")
@@ -398,7 +398,7 @@ class ApplicantDetailsSpec extends VatRegSpec {
     "return a correct full JsValue with minimum data" in {
       val data = ApplicantDetails(
         currentAddress = Some(currentAddress),
-        contact = DigitalContactOptional(
+        contact = Contact(
           email = Some("test@t.test"),
           emailVerified = Some(true),
           tel = Some("1234")
