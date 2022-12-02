@@ -19,8 +19,9 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.EmailAddressForm
-import models.external._
+import models.external.{AlreadyVerifiedEmailAddress, MaxEmailsExceeded, RequestEmailPasscodeSuccessful}
 import play.api.mvc.{Action, AnyContent}
+import services.ApplicantDetailsService.{EmailAddress, EmailVerified}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.capture_email_address
@@ -43,7 +44,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.emailAddress.fold(EmailAddressForm.form)(ea => EmailAddressForm.form.fill(ea.email))
+          filledForm = applicant.contact.email.fold(EmailAddressForm.form)(EmailAddressForm.form.fill)
           name <- applicantDetailsService.getTransactorApplicantName
         } yield Ok(view(routes.CaptureEmailAddressController.submit, filledForm, name))
   }

@@ -16,42 +16,54 @@
 
 package forms
 
-import forms.FormValidation.Dates.{nonEmptyDateModel, validDateModel}
-import forms.FormValidation.{ErrorCode, inRange, missingBooleanFieldMapping}
-import models.DateModel
-import models.view._
+import forms.FormValidation._
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.{single, text, tuple}
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import java.time.LocalDate
 
 object FormerNameDateForm {
-  implicit val errorCode: ErrorCode = "formerNameDate"
-
-  implicit object LocalDateOrdering extends Ordering[LocalDate] {
-    override def compare(x: LocalDate, y: LocalDate): Int = x.compareTo(y)
-  }
+  val radioKey: String = "formerNameDate"
 
   val maxDate: LocalDate = LocalDate.now().plusDays(1)
 
-  def form(dob: LocalDate): Form[FormerNameDateView] = Form(
-    mapping(
-      "formerNameDate" -> mapping(
+  protected val dateEmptyKey = "validation.formerNameDate.missing"
+  protected val dateInvalidKey = "validation.formerNameDate.invalid"
+  protected val dateRangeBelow = "validation.formerNameDate.range.below"
+  protected val dateRangeAbove = "validation.formerNameDate.range.above"
+
+  def form(dateOfBirth: LocalDate): Form[LocalDate] = Form(
+    single(
+      radioKey -> tuple(
         "day" -> text,
         "month" -> text,
         "year" -> text
-      )(DateModel.apply)(DateModel.unapply).verifying(nonEmptyDateModel(validDateModel(inRange(dob, maxDate))))
-    )(FormerNameDateView.bind)(FormerNameDateView.unbind)
+      ).verifying(StopOnFirstFail(
+        nonEmptyDate(dateEmptyKey),
+        validDate(dateInvalidKey),
+        withinRange(
+          minDate = dateOfBirth,
+          maxDate = maxDate,
+          beforeMinErr = dateRangeBelow,
+          afterMaxErr = dateRangeAbove,
+          args = Nil
+        )
+      )).transform[LocalDate](
+        date => LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt),
+        date => (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
+      )
+    )
   )
 }
 
 object PreviousAddressForm {
-  val RADIO_YES_NO: String = "value"
+  val radioKey: String = "value"
 
-  def form(errorCode: ErrorCode = "previousAddressQuestion"): Form[PreviousAddressView] =
+  def form(errorCode: ErrorCode = "previousAddressQuestion"): Form[Boolean] =
     Form(
-      mapping(
-        RADIO_YES_NO -> missingBooleanFieldMapping()(errorCode)
-      )(PreviousAddressView.apply(_))(view => Option(view.yesNo))
+      single(
+        radioKey -> missingBooleanFieldMapping()(errorCode)
+      )
     )
 }

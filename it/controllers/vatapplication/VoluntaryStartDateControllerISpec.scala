@@ -18,7 +18,7 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(startDate = testApplicantIncorpDate))
-        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       val res = buildClient("/vat-start-date").get()

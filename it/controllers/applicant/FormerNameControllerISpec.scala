@@ -1,49 +1,43 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package controllers.applicant
 
 import itutil.ControllerISpec
 import models.api._
-import models.external.{EmailAddress, EmailVerified, Name}
-import models.view._
-import models.{ApplicantDetails, Director, TelephoneNumber}
+import models.{ApplicantDetails, FormerName}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class FormerNameControllerISpec extends ControllerISpec {
-
-  val email = "test@t.test"
-  val addrLine1 = "8 Case Dodo"
-  val addrLine2 = "seashore next to the pebble beach"
-  val postcode = "TE1 1ST"
-
-  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
-
-  val s4lData = ApplicantDetails(
-    entity = Some(testIncorpDetails),
-    personalDetails = Some(testPersonalDetails),
-    homeAddress = Some(HomeAddressView(currentAddress.id, Some(currentAddress))),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber("1234")),
-    hasFormerName = Some(true),
-    formerName = Some(Name(Some(testFirstName),last = testLastName)),
-    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(true, None)),
-    roleInTheBusiness = Some(Director)
-  )
 
   val url: String = controllers.applicant.routes.FormerNameController.show.url
 
   s"GET $url" must {
     "returns an OK" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -55,9 +49,11 @@ class FormerNameControllerISpec extends ControllerISpec {
     }
 
     "returns an OK with prepopulated data" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -71,13 +67,32 @@ class FormerNameControllerISpec extends ControllerISpec {
   }
 
   "POST Former Name page" when {
-    "redirect to the task list" in new Setup {
+    "redirect to the capture former name if answered Yes" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
-        .registrationApi.replaceSection[ApplicantDetails](s4lData.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None))
+        .s4lContainer[ApplicantDetails].isEmpty
         .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(changeOfName = FormerName())))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(changeOfName = FormerName(Some(true), None, None)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/changed-name").post(Map("value" -> Seq("true")))
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.FormerNameCaptureController.show.url)
+      }
+    }
+    "redirect to the task list if answered No" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(changeOfName = FormerName(Some(false), None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -89,12 +104,8 @@ class FormerNameControllerISpec extends ControllerISpec {
       }
     }
     "return BAD_REQUEST when the post data is invalid" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lData)(ApplicantDetails.s4LWrites)
-        .registrationApi.replaceSection[ApplicantDetails](s4lData.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None))
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

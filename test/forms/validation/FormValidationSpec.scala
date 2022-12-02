@@ -18,7 +18,6 @@ package forms.validation
 
 import forms.FormValidation
 import forms.FormValidation.ErrorCode
-import models.DateModel
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{Inside, Inspectors}
@@ -218,47 +217,6 @@ class FormValidationSpec extends AnyWordSpec with Inside with Inspectors with Ma
     }
 
   }
-
-  "Date validation" must {
-
-    "accept valid date" in {
-      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel()("date")
-
-      forAll(Seq(
-        DateModel("1", "1", "1970"),
-        DateModel("31", "12", "2100"),
-        DateModel("29", "2", "2016"),
-        DateModel("21", "3", "2017")
-      ))(constraint(_) shouldBe Valid)
-    }
-
-    "reject invalid date" in {
-      val constraint: Constraint[DateModel] = FormValidation.Dates.validDateModel()("date")
-
-      forAll(Seq(
-        DateModel("1", "1", "0"),
-        DateModel("foo", "bar", ""),
-        DateModel("29", "2", "2017"),
-        DateModel("32", "3", "2017")
-      ))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.date.invalid"
-      })
-    }
-
-    "reject empty date" in {
-      val constraint: Constraint[DateModel] = FormValidation.Dates.nonEmptyDateModel()("date")
-
-      forAll(Seq(
-        DateModel("  ", " ", ""),
-        DateModel("   ", "   ", "   "),
-        DateModel("", "", "")
-      ))(in => inside(constraint(in)) {
-        case Invalid(err :: _) => err.message shouldBe "validation.date.missing"
-      })
-    }
-
-  }
-
 
   "Range validation" must {
 

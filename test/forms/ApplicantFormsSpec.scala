@@ -17,8 +17,6 @@
 package forms
 
 import helpers.FormInspectors._
-import models.api.Address
-import models.view._
 import testHelpers.VatRegSpec
 
 import java.time.LocalDate
@@ -27,7 +25,7 @@ class ApplicantFormsSpec extends VatRegSpec {
 
   "FormerNameDateForm" should {
     val testForm = FormerNameDateForm.form(LocalDate.of(2000, 1, 1))
-    val testData = FormerNameDateView(LocalDate.of(2000, 1, 1))
+    val testData = LocalDate.of(2000, 1, 1)
 
     "bind successfully with data" in {
       val data = Map(
@@ -89,9 +87,8 @@ class ApplicantFormsSpec extends VatRegSpec {
   }
 
   "PreviousAddressForm" should {
-    val address = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
     val testForm = PreviousAddressForm.form()
-    val testData = PreviousAddressView(yesNo = false, Some(address))
+    val testData = false
 
     "bind successfully with data" in {
       val data = Map(
@@ -103,7 +100,7 @@ class ApplicantFormsSpec extends VatRegSpec {
         success => success
       )
 
-      result mustBe PreviousAddressView(yesNo = true, None)
+      result mustBe true
     }
 
     "have the correct error if no data is provided" in {

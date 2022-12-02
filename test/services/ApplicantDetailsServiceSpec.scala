@@ -20,12 +20,11 @@ import common.enums.VatRegStatus
 import connectors.mocks.MockRegistrationApiConnector
 import fixtures.ApplicantDetailsFixtures
 import models.api.{Address, Individual, UkCompany}
-import models.external.{EmailAddress, EmailVerified, Name}
-import models.view._
-import models.{ApplicantDetails, CurrentProfile, OwnerProprietor, TelephoneNumber}
+import models.external.Name
+import models._
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
-import services.ApplicantDetailsService.HasFormerName
+import services.ApplicantDetailsService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -40,9 +39,11 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   override implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
 
   val validFullApplicantDetailsNoFormerName: ApplicantDetails = completeApplicantDetails.copy(
-    hasFormerName = Some(false),
-    formerName = None,
-    formerNameDate = None
+    changeOfName = FormerName(
+      hasFormerName = Some(false),
+      name = None,
+      change = None
+    )
   )
 
   class Setup(s4lData: Option[ApplicantDetails] = None, backendData: Option[ApplicantDetails] = None) {
@@ -56,21 +57,6 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       .thenReturn(Future.successful(s4lData))
 
     mockGetSection[ApplicantDetails](testRegId, backendData)
-
-    when(mockS4LService.save(any())(any(), any(), any(), any()))
-      .thenReturn(Future.successful(CacheMap("", Map())))
-  }
-
-  class SetupForS4LSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
-    val service: ApplicantDetailsService = new ApplicantDetailsService(
-      mockRegistrationApiConnector,
-      vatRegistrationServiceMock,
-      mockS4LService
-    ) {
-      override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
-        Future.successful(applicantDetails)
-      }
-    }
 
     when(mockS4LService.save(any())(any(), any(), any(), any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
@@ -138,179 +124,92 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
 
   "Calling updateApplicantDetails" should {
     "return a ApplicantDetails" when {
-      "updating current address" that {
-        val currentAddress = Address(line1 = "Line1", line2 = Some("Line2"), postcode = Some("PO BOX"), addressValidated = true)
-        val applicantHomeAddress = HomeAddressView(currentAddress.id, Some(currentAddress))
+      "updating current address" in new SetupForBackendSave(completeApplicantDetails) {
+        val applicantHomeAddress: Address = Address(line1 = "Line1", line2 = Some("Line2"), postcode = Some("PO BOX"), addressValidated = true)
 
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(homeAddress = Some(applicantHomeAddress))
+        val expected: ApplicantDetails = completeApplicantDetails.copy(currentAddress = Some(applicantHomeAddress))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-          service.saveApplicantDetails(applicantHomeAddress) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(homeAddress = Some(applicantHomeAddress))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(applicantHomeAddress) returns expected
-        }
+        service.saveApplicantDetails(CurrentAddress(applicantHomeAddress)) returns expected
       }
 
-      "updating business entity details for limited company" should {
-        "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(entity = Some(testLimitedCompany))
+      "updating business entity details for limited company" in new SetupForBackendSave(completeApplicantDetails.copy(entity = None)) {
+        val expected: ApplicantDetails = completeApplicantDetails
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-          service.saveApplicantDetails(testLimitedCompany) returns expected
-        }
-        "store successfully in the backend if applicant details is complete" in new SetupForBackendSave(completeApplicantDetails.copy(entity = None)) {
-          val expected: ApplicantDetails = completeApplicantDetails
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(testLimitedCompany) returns expected
-        }
+        service.saveApplicantDetails(testLimitedCompany) returns expected
       }
 
-      "updating business entity details for sole trader" should {
-        "store successfully in S4L if applicant details isn't complete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(entity = Some(testSoleTrader))
+      "updating business entity details for sole trader" in new SetupForBackendSave(soleTraderApplicantDetails.copy(entity = None)) {
+        val expected: ApplicantDetails = soleTraderApplicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(Individual))
 
-          service.saveApplicantDetails(testSoleTrader) returns expected
-        }
-
-        "update role to OwnerProprietor and store successfully in the backend if applicant details is complete" in new SetupForBackendSave(soleTraderApplicantDetails.copy(entity = None)) {
-          val expected: ApplicantDetails = soleTraderApplicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(Individual))
-
-          service.saveApplicantDetails(testSoleTrader) returns expected
-        }
+        service.saveApplicantDetails(testSoleTrader) returns expected
       }
 
-      "updating applicant contact email" that {
-        val applicantEmailAddress = EmailAddress("tt@dd.uk")
+      "updating applicant contact email" in new SetupForBackendSave(completeApplicantDetails.copy(contact = DigitalContactOptional())) {
+        val applicantEmailAddress = "tt@dd.uk"
+        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = DigitalContactOptional(Some(applicantEmailAddress)))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
-
-          service.saveApplicantDetails(applicantEmailAddress) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(emailAddress = None)) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(emailAddress = Some(applicantEmailAddress))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(applicantEmailAddress) returns expected
-        }
+        service.saveApplicantDetails(EmailAddress(applicantEmailAddress)) returns expected
       }
 
-      "updating applicant contact email verified" that {
-        val applicantEmailVerified = EmailVerified(true)
+      "updating applicant contact email verified" in new SetupForBackendSave(completeApplicantDetails.copy(contact = DigitalContactOptional())) {
+        val applicantEmailVerified = true
+        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = DigitalContactOptional(emailVerified = Some(applicantEmailVerified)))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
-
-          service.saveApplicantDetails(applicantEmailVerified) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(emailVerified = None)) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(emailVerified = Some(applicantEmailVerified))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(applicantEmailVerified) returns expected
-        }
+        service.saveApplicantDetails(EmailVerified(applicantEmailVerified)) returns expected
       }
 
-      "updating applicant contact telephone number" that {
-        val applicantTelephoneNumber = TelephoneNumber("1234")
+      "updating applicant contact telephone number" in new SetupForBackendSave(completeApplicantDetails.copy(contact = DigitalContactOptional())) {
+        val applicantTelephoneNumber = "1234"
+        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = DigitalContactOptional(tel = Some(applicantTelephoneNumber)))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
-
-          service.saveApplicantDetails(applicantTelephoneNumber) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails.copy(telephoneNumber = None)) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(telephoneNumber = Some(applicantTelephoneNumber))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(applicantTelephoneNumber) returns expected
-        }
+        service.saveApplicantDetails(TelephoneNumber(applicantTelephoneNumber)) returns expected
       }
 
-      "updating applicant has former name" that {
-        "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(hasFormerName = Some(false))
+      "updating applicant has former name" in new SetupForBackendSave(completeApplicantDetails) {
+        val expected: ApplicantDetails = completeApplicantDetails.copy(changeOfName = FormerName(hasFormerName = Some(false)))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-          service.saveApplicantDetails(HasFormerName(false)) returns expected
-        }
-
-        "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(hasFormerName = Some(false), formerName = None, formerNameDate = None)
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(HasFormerName(false)) returns expected
-        }
+        service.saveApplicantDetails(HasFormerName(false)) returns expected
       }
 
-      "updating applicant former name" that {
+      "updating applicant former name" in new SetupForBackendSave(completeApplicantDetails) {
         val formerName = Name(Some(testFirstName), last = testLastName)
+        val expected: ApplicantDetails = completeApplicantDetails.copy(changeOfName = completeApplicantDetails.changeOfName.copy(name = Some(formerName)))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-        "makes the block incomplete and save to S4L, model was previously incomplete" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(formerName = Some(formerName))
-
-          service.saveApplicantDetails(formerName) returns expected
-        }
-
-        "makes the block complete with no former name and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(formerName = Some(formerName))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(formerName) returns expected
-        }
+        service.saveApplicantDetails(formerName) returns expected
       }
 
-      "updating applicant former name date change" that {
-        val formerNameDate = FormerNameDateView(LocalDate.of(2002, 5, 15))
+      "updating applicant former name date change" in new SetupForBackendSave(completeApplicantDetails) {
+        val formerNameDate = LocalDate.of(2002, 5, 15)
+        val expected: ApplicantDetails = completeApplicantDetails.copy(changeOfName = completeApplicantDetails.changeOfName.copy(change = Some(formerNameDate)))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(formerNameDate = Some(formerNameDate))
-
-          service.saveApplicantDetails(formerNameDate) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(formerNameDate = Some(formerNameDate))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(formerNameDate) returns expected
-        }
+        service.saveApplicantDetails(formerNameDate) returns expected
       }
 
-      "updating applicant previous address" that {
-        val addr = Address(line1 = "PrevLine1", line2 = Some("PrevLine2"), postcode = Some("PO PRE"), addressValidated = true)
-        val previousAddress = PreviousAddressView(yesNo = true, Some(addr))
+      "updating applicant previous address" in new SetupForBackendSave(completeApplicantDetails) {
+        val previousAddress = Address(line1 = "PrevLine1", line2 = Some("PrevLine2"), postcode = Some("PO PRE"), addressValidated = true)
+        val expected: ApplicantDetails = completeApplicantDetails.copy(previousAddress = Some(previousAddress))
+        mockReplaceSection[ApplicantDetails](testRegId, expected)
+        mockPartyType(Future.successful(UkCompany))
 
-        "makes the block incomplete and save to S4L" in new SetupForS4LSave(emptyApplicantDetails) {
-          val expected: ApplicantDetails = emptyApplicantDetails.copy(previousAddress = Some(previousAddress))
-
-          service.saveApplicantDetails(previousAddress) returns expected
-        }
-
-        "makes the block complete and save to backend" in new SetupForBackendSave(completeApplicantDetails) {
-          val expected: ApplicantDetails = completeApplicantDetails.copy(previousAddress = Some(previousAddress))
-          mockReplaceSection[ApplicantDetails](testRegId, expected)
-          mockPartyType(Future.successful(UkCompany))
-
-          service.saveApplicantDetails(previousAddress) returns expected
-        }
+        service.saveApplicantDetails(PreviousAddress(previousAddress)) returns expected
       }
     }
   }

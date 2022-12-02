@@ -19,9 +19,9 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.TelephoneNumberForm
-import models.TelephoneNumber
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
+import services.ApplicantDetailsService.TelephoneNumber
+import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.capture_telephone_number
 
@@ -32,8 +32,7 @@ import scala.concurrent.ExecutionContext
 class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
                                                  val authConnector: AuthConnector,
                                                  val sessionService: SessionService,
-                                                 applicantDetailsService: ApplicantDetailsService,
-                                                 vatRegistrationService: VatRegistrationService
+                                                 applicantDetailsService: ApplicantDetailsService
                                                 )(implicit appConfig: FrontendAppConfig,
                                                   val executionContext: ExecutionContext,
                                                   baseControllerComponents: BaseControllerComponents)
@@ -44,7 +43,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.telephoneNumber.fold(TelephoneNumberForm.form)(tn => TelephoneNumberForm.form.fill(tn.telephone))
+          filledForm = applicant.contact.tel.fold(TelephoneNumberForm.form)(TelephoneNumberForm.form.fill)
           name <- applicantDetailsService.getTransactorApplicantName
         } yield Ok(view(routes.CaptureTelephoneNumberController.submit, filledForm, name))
   }

@@ -16,11 +16,10 @@
 
 package fixtures
 
+import models._
 import models.api.Address
 import models.external._
 import models.external.soletraderid.OverseasIdentifierDetails
-import models.view._
-import models.{ApplicantDetails, Director, PersonalDetails, TelephoneNumber}
 
 import java.time.LocalDate
 
@@ -45,19 +44,7 @@ trait ApplicantDetailsFixtures {
   val testCtUtr = "testCtUtr"
   val testIncorpDate = LocalDate.of(2020, 2, 3)
 
-  val emptyApplicantDetails = ApplicantDetails(
-    personalDetails = None,
-    homeAddress = None,
-    emailAddress = None,
-    emailVerified = None,
-    telephoneNumber = None,
-    hasFormerName = None,
-    formerName = None,
-    formerNameDate = None,
-    previousAddress = None,
-    roleInTheBusiness = None,
-    entity = None
-  )
+  val emptyApplicantDetails = ApplicantDetails()
 
   val testBpSafeId = "testBpId"
 
@@ -79,15 +66,20 @@ trait ApplicantDetailsFixtures {
   val completeApplicantDetails = ApplicantDetails(
     entity = Some(testLimitedCompany),
     personalDetails = Some(testPersonalDetails),
-    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber("1234")),
-    roleInTheBusiness = testRole,
-    hasFormerName = Some(true),
-    formerName = Some(Name(Some("New"),Some("Name"),"Cosmo")),
-    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress)))
+    currentAddress = Some(validCurrentAddress),
+    contact = DigitalContactOptional(
+      email = Some("test@t.test"),
+      emailVerified = Some(true),
+      tel = Some("1234")
+    ),
+    changeOfName = FormerName(
+      hasFormerName = Some(true),
+      name = Some(Name(Some("New"), Some("Name"), "Cosmo")),
+      change = Some(LocalDate.of(2000, 7, 12))
+    ),
+    noPreviousAddress = Some(false),
+    previousAddress = Some(validPrevAddress),
+    roleInTheBusiness = testRole
   )
 
   val testSautr = "1234567890"
@@ -126,15 +118,17 @@ trait ApplicantDetailsFixtures {
   val soleTraderApplicantDetails: ApplicantDetails = ApplicantDetails(
     entity = Some(testSoleTrader),
     personalDetails = Some(testPersonalDetails),
-    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber("1234")),
-    roleInTheBusiness = None,
-    hasFormerName = Some(false),
-    formerName = None,
-    formerNameDate = None,
-    previousAddress = Some(PreviousAddressView(yesNo = false, Some(validPrevAddress)))
+    currentAddress = Some(validCurrentAddress),
+    contact = DigitalContactOptional(
+      email = Some("test@t.test"),
+      emailVerified = Some(true),
+      tel = Some("1234")
+    ),
+    changeOfName = FormerName(
+      hasFormerName = Some(false)
+    ),
+    noPreviousAddress = Some(false),
+    previousAddress = Some(validPrevAddress)
   )
 
   val testGeneralPartnership: PartnershipIdEntity = PartnershipIdEntity(

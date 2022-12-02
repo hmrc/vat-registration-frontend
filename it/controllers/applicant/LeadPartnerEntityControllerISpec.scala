@@ -17,11 +17,12 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
   val url: String = controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url
 
-  s"GET $url" should {
+  s"GET $url" must {
     "display the page" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Entity](None, idx = Some(1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,14 +51,32 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 1
       }
     }
+
+    "display the page with pre-pop for a business" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None)), idx = Some(1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+
+        Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 1
+      }
+    }
   }
 
   s"POST $url" when {
-    s"the user selects a individual person party type" should {
+    s"the user selects a individual person party type" must {
       "store the partyType in backend and begin a STI journey" in new Setup {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[Entity](None, idx = Some(1))
           .registrationApi.replaceSection(Entity(None, Individual, Some(true), None, None, None, None), idx = Some(1))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -69,7 +88,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
-    s"the user selects a business party type" should {
+    s"the user selects a business party type" must {
       "not store the partyType in backend and begin a business party type selection" in new Setup {
         given()
           .user.isAuthorised()
@@ -84,10 +103,25 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
-    "the user submits an invalid lead partner" should {
+    "the user submits an invalid form" must {
+      "return the page with errors" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "")))
+
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
+    "the user submits an invalid lead partner" must {
       "throw an exception" in new Setup {
         given()
           .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

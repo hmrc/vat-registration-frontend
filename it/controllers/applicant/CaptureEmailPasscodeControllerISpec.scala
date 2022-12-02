@@ -18,10 +18,9 @@ package controllers.applicant
 
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
-import models.ApplicantDetails
-import models.api.EligibilitySubmissionData
-import models.external.{EmailAddress, EmailVerified}
-import play.api.libs.json.Json
+import models.api.{EligibilitySubmissionData, UkCompany}
+import models.{ApplicantDetails, DigitalContactOptional}
+import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
@@ -31,13 +30,15 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
   private val testEmail = "test@test.com"
   private val testPasscode = "123456"
 
-  val s4lContents = ApplicantDetails(emailAddress = Some(EmailAddress(testEmail)))
+  val testApplicant: ApplicantDetails = validFullApplicantDetails.copy(contact = DigitalContactOptional(email = Some(testEmail)))
 
-  "GET /email-address-verification" should {
+  "GET /email-address-verification" must {
     "show the view correctly" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -48,9 +49,12 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
     }
 
     "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lContents.copy(emailAddress = None))(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -59,11 +63,13 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
     }
   }
 
-  "GET /email-address-verification-retry" should {
+  "GET /email-address-verification-retry" must {
     "show the view after requesting a passcode successfully" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -76,10 +82,13 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
     }
 
     "redirect to email verified after requesting a passcode and getting an email verified response" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
-        .s4lContainer[ApplicantDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(EmailVerified(true))))
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
+        .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = DigitalContactOptional(Some(testEmail), None, Some(true))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -93,9 +102,12 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
     }
 
     "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].contains(s4lContents.copy(emailAddress = None))(ApplicantDetails.s4LWrites)
+        .s4lContainer[ApplicantDetails].isEmpty
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -105,14 +117,16 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
   }
 
   "POST /email-address-verification" when {
-    "the feature switch is enabled" should {
+    "the feature switch is enabled" must {
       "verify the entered passcode against the stub and redirect to Email Verified page" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(s4lContents.copy(emailVerified = Some(EmailVerified(true))))
+          .s4lContainer[ApplicantDetails].isEmpty
+          .s4lContainer[ApplicantDetails].clearedByKey
+          .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = DigitalContactOptional(Some(testEmail)))))
+          .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = DigitalContactOptional(Some(testEmail), None, Some(true))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -127,10 +141,11 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       "return BAD_REQUEST for an incorrect passcode" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+          .s4lContainer[ApplicantDetails].isEmpty
+          .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -144,10 +159,11 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       "redirect to passcode not found error page if the passcode can't be found" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+          .s4lContainer[ApplicantDetails].isEmpty
+          .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -164,10 +180,11 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       "redirect to error page for exceeding the maximum number of passcode attempts" in new Setup {
         disable(StubEmailVerification)
-
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+          .s4lContainer[ApplicantDetails].isEmpty
+          .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -180,17 +197,18 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
       }
 
-      List("", "e" * 7).foreach { password =>
-        s"return BAD_REQUEST for invalid password: '$password'" in new Setup {
+      List("", "e" * 7).foreach { passcode =>
+        s"return BAD_REQUEST for invalid passcode: '$passcode'" in new Setup {
           disable(StubEmailVerification)
-
+          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
           given()
             .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(s4lContents)(ApplicantDetails.s4LWrites)
+            .s4lContainer[ApplicantDetails].isEmpty
+            .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
-          val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> password)))
+          val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> passcode)))
           res.status mustBe BAD_REQUEST
         }
       }

@@ -26,6 +26,7 @@ import models.api._
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.http.InternalServerException
 import views.html.applicant.PartnerEntityType
 
 import javax.inject.Inject
@@ -72,7 +73,8 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
                 entityService.upsertEntity[PartyType](profile.registrationId, leadEntityIndex, Individual).map { _ =>
                   Redirect(grsRoutes.PartnerSoleTraderIdController.startJourney(leadEntityIndex))
                 }
-              case _ => Future.successful(Redirect(applicantRoutes.BusinessLeadPartnerEntityController.showPartnerEntityType))
+              case BusinessEntity => Future.successful(Redirect(applicantRoutes.BusinessLeadPartnerEntityController.showPartnerEntityType))
+              case _ => throw new InternalServerException("Submitted invalid party type")
             }
           )
         } yield result

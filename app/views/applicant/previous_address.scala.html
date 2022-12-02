@@ -19,7 +19,6 @@
 @import forms.PreviousAddressForm
 @import models.api.Address
 @import models.api.Address.toHtml
-@import models.view.PreviousAddressView
 @import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.Request
@@ -36,7 +35,7 @@
         p: p
 )
 
-@(previousAddressQuestionForm: Form[PreviousAddressView], name: Option[String], address: Address)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(previousAddressQuestionForm: Form[Boolean], name: Option[String], address: Address)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @defining(name.fold(messages("pages.previousAddressQuestion.yourHeading"))(name => messages("pages.previousAddressQuestion.namedHeading", name))) { heading =>
     @layout(pageTitle = Some(title(previousAddressQuestionForm, heading))) {
@@ -44,9 +43,9 @@
         @errorSummary(previousAddressQuestionForm.errors)
 
         @h1(heading)
-        
+
         <div class="govuk-body" id="address">
-            @toHtml(address)
+        @toHtml(address)
         </div>
 
         @formWithCSRF(action = applicantRoutes.PreviousAddressController.submit) {
@@ -56,7 +55,7 @@
                 isPageHeading = false,
                 inline = true,
                 classes = "govuk-visually-hidden",
-                fieldName = PreviousAddressForm.RADIO_YES_NO
+                fieldName = PreviousAddressForm.radioKey
             )
 
             @button("app.common.continue", showSaveProgressButton = true)

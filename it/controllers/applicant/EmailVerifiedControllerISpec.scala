@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 
 class EmailVerifiedControllerISpec extends ControllerISpec {
 
-  "GET /email-address-verified" should {
+  "GET /email-address-verified" must {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
@@ -37,7 +37,7 @@ class EmailVerifiedControllerISpec extends ControllerISpec {
     }
   }
 
-  "POST /email-address-verification" should {
+  "POST /email-address-verification" must {
       "redirect to CaptureTelephoneNumber page" in new Setup {
         disable(StubEmailVerification)
 

@@ -4,7 +4,6 @@ package fixtures
 import models._
 import models.api.Address
 import models.external._
-import models.view._
 
 import java.time.LocalDate
 
@@ -14,13 +13,15 @@ trait ApplicantDetailsFixture {
 
   val testRole: RoleInTheBusiness = Director
   val applicantNino = "ZZ987654A"
-  val applicantDetailsPreIv = ApplicantDetails(None, None, None, None, None, None)
   val validCurrentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
   val validPrevAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
   val applicantEmail = "test@test"
   val testApplicantPhone = "1234"
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
+  val testFormerFirstName = "New"
+  val testFormerMiddleName = "Name"
+  val testFormerLastName = "Cosmo"
   val testApplicantNino = "AB123456C"
   val testTrn = "0001234567"
   val testApplicantDob = LocalDate.of(2020, 1, 1)
@@ -39,15 +40,20 @@ trait ApplicantDetailsFixture {
   val testPartnership: PartnershipIdEntity = PartnershipIdEntity(None, None, None, None, None, RegisteredStatus, Some(BvPass), None, identifiersMatch = true)
   val validFullApplicantDetails = ApplicantDetails(
     personalDetails = Some(testPersonalDetails),
-    homeAddress = Some(HomeAddressView(validCurrentAddress.id, Some(validCurrentAddress))),
-    emailAddress = Some(EmailAddress("test@t.test")),
-    emailVerified = Some(EmailVerified(true)),
-    telephoneNumber = Some(TelephoneNumber(testApplicantPhone)),
-    hasFormerName = Some(true),
-    formerName = Some(Name(Some("New"), Some("Name"), "Cosmo")),
-    formerNameDate = Some(FormerNameDateView(LocalDate.of(2000, 7, 12))),
-    previousAddress = Some(PreviousAddressView(false, Some(validPrevAddress))),
     entity = Some(testApplicantIncorpDetails),
+    currentAddress = Some(validCurrentAddress),
+    noPreviousAddress = Some(false),
+    previousAddress = Some(validPrevAddress),
+    contact = DigitalContactOptional(
+      email = Some("test@t.test"),
+      tel = Some(testApplicantPhone),
+      emailVerified = Some(true)
+    ),
+    changeOfName = FormerName(
+      hasFormerName = Some(true),
+      name = Some(Name(Some(testFormerFirstName), Some(testFormerMiddleName), testFormerLastName)),
+      change = Some(LocalDate.of(2000, 7, 12))
+    ),
     roleInTheBusiness = Some(testRole)
   )
 }

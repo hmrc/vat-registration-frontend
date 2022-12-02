@@ -105,8 +105,8 @@ class PartnerSoleTraderIdController @Inject()(val sessionService: SessionService
         implicit profile =>
           validateIndexSubmit(index, routes.PartnerSoleTraderIdController.startJourney, minIndex = 1) {
             for {
-              (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-              _ <- if (index == leadEntityIndex) applicantDetailsService.saveApplicantDetails(transactorDetails) else Future.successful(())
+              (personalDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+              _ <- if (index == leadEntityIndex) applicantDetailsService.saveApplicantDetails(personalDetails) else Future.successful(())
               _ <- entityService.upsertEntity[BusinessEntity](profile.registrationId, index, soleTrader)
             } yield {
               if (index == leadEntityIndex) {

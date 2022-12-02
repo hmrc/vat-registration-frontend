@@ -20,7 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.FormerNameDateForm
 import play.api.mvc.{Action, AnyContent}
-import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
+import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.former_name_date
 
@@ -43,8 +43,8 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           dob = applicant.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
-          formerName = applicant.formerName.getOrElse(throw new IllegalStateException("Missing applicant former name"))
-          filledForm = applicant.formerNameDate.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
+          formerName = applicant.changeOfName.name.getOrElse(throw new IllegalStateException("Missing applicant former name"))
+          filledForm = applicant.changeOfName.change.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
           name <- applicantDetailsService.getTransactorApplicantName
         } yield Ok(formerNameDatePage(filledForm, formerName.asLabel, name))
   }
@@ -57,9 +57,8 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
             val dob = applicantDetails.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
             FormerNameDateForm.form(dob).bindFromRequest().fold(
               badForm => for {
-                applicant <- applicantDetailsService.getApplicantDetails
-                formerName = applicant.formerName.getOrElse(throw new IllegalStateException("Missing applicant former name"))
                 name <- applicantDetailsService.getTransactorApplicantName
+                formerName = applicantDetails.changeOfName.name.getOrElse(throw new IllegalStateException("Missing applicant former name"))
               } yield BadRequest(formerNameDatePage(badForm, formerName.asLabel, name)),
               data => {
                 applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>

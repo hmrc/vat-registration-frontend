@@ -17,7 +17,6 @@
 package views.applicant
 
 import forms.FormerNameDateForm
-import models.view.FormerNameDateView
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
@@ -32,7 +31,7 @@ class FormerNameDateViewSpec extends VatRegViewSpec {
   lazy val view: former_name_date = app.injector.instanceOf[former_name_date]
   val testApplicantDob: LocalDate = LocalDate.of(2020, 1, 1)
   val testName = "testName"
-  lazy val form: Form[FormerNameDateView] = FormerNameDateForm.form(testApplicantDob)
+  lazy val form: Form[LocalDate] = FormerNameDateForm.form(testApplicantDob)
   implicit val doc: Document = Jsoup.parse(view(form, testName, None).body)
   val transactorDoc: Document = Jsoup.parse(view(form, testName, Some(name)).body)
 

@@ -17,8 +17,8 @@
 package controllers.business
 
 import itutil.ControllerISpec
-import models.ApplicantDetails
 import models.api.{EligibilitySubmissionData, Partnership, Trust}
+import models.{ApplicantDetails, Partner}
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 class PartnershipNameControllerISpec extends ControllerISpec {
   val partnershipName = "testPartnershipName"
 
-  "show Partnership Name page" should {
+  "show Partnership Name page" must {
     List(Some(testCompanyName), None).foreach { companyName =>
       s"return OK for company name '$companyName'" in new Setup {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
@@ -37,8 +37,8 @@ class PartnershipNameControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[ApplicantDetails].isEmpty
           .registrationApi.getSection[ApplicantDetails](
-            Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = companyName))))
-          )
+          Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = companyName))))
+        )
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -51,20 +51,21 @@ class PartnershipNameControllerISpec extends ControllerISpec {
     }
   }
 
-  "submit Partnership Name page" should {
+  "submit Partnership Name page" must {
     "return SEE_OTHER" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
+      val testApplicant = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership))))
+        .s4lContainer[ApplicantDetails].isEmpty
+        .s4lContainer[ApplicantDetails].clearedByKey
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.replaceSection[ApplicantDetails](
-        validFullApplicantDetails.copy(
+        testApplicant.copy(
           entity = Some(testPartnership.copy(
             companyName = Some(partnershipName)
           ))
         ))
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

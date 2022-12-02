@@ -22,8 +22,8 @@ import connectors.ConfigConnector
 import controllers.BaseController
 import forms.InternationalAddressForm
 import models.api.Country
-import models.view.HomeAddressView
 import play.api.mvc.{Action, AnyContent}
+import services.ApplicantDetailsService.CurrentAddress
 import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.CaptureInternationalAddress
@@ -51,16 +51,16 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
       for {
         applicantDetails <- applicantDetailsService.getApplicantDetails
         name <- applicantDetailsService.getTransactorApplicantName
-        headingMessageKey = if(name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
-        filledForm = applicantDetails.homeAddress.flatMap(_.address).fold(formProvider.form())(formProvider.form().fill)
+        headingMessageKey = if (name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
+        filledForm = applicantDetails.currentAddress.fold(formProvider.form())(formProvider.form().fill)
       } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey, name))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      for{
+      for {
         name <- applicantDetailsService.getTransactorApplicantName
-        headingMessageKey = if(name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
+        headingMessageKey = if (name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
         result <- {
           addressFormResultsHandler.handle(
             countries,
@@ -68,7 +68,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
             formProvider.form().bindFromRequest,
             submitAction,
             internationalAddress =>
-              applicantDetailsService.saveApplicantDetails(HomeAddressView(internationalAddress.id, Some(internationalAddress))) map { _ =>
+              applicantDetailsService.saveApplicantDetails(CurrentAddress(internationalAddress)) map { _ =>
                 Redirect(routes.PreviousAddressController.show)
               },
             name

@@ -88,8 +88,8 @@ class SoleTraderIdController @Inject()(val sessionService: SessionService,
     isAuthenticatedWithProfile { implicit request =>
       implicit profile =>
         for {
-          (transactorDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-          _ <- applicantDetailsService.saveApplicantDetails(transactorDetails)
+          (personalDetails, soleTrader) <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+          _ <- applicantDetailsService.saveApplicantDetails(personalDetails)
           _ <- applicantDetailsService.saveApplicantDetails(soleTrader)
         } yield Redirect(controllers.routes.TaskListController.show)
 

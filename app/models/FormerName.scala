@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package models.external
+package models
 
-import play.api.libs.json.{Json, OFormat}
+import models.external.Name
+import play.api.libs.json._
 
-case class EmailAddress(email: String)
+import java.time.LocalDate
 
-object EmailAddress {
-  implicit val format: OFormat[EmailAddress] = Json.format[EmailAddress]
-}
+case class FormerName(hasFormerName: Option[Boolean] = None,
+                      name: Option[Name] = None,
+                      change: Option[LocalDate] = None)
 
-case class EmailVerified(emailVerified: Boolean)
-
-object EmailVerified {
-  implicit val format: OFormat[EmailVerified] = Json.format[EmailVerified]
+object FormerName {
+  implicit val format: OFormat[FormerName] = Json.format[FormerName]
 }

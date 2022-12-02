@@ -103,59 +103,19 @@ class PartnershipIdControllerISpec extends ControllerISpec {
   }
 
   "GET /partnership-id-callback" must {
-    "redirect to the Task List" when {
-      "the partnership is a General Partnership" when {
-        "S4L model is not full" in new Setup {
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
-            .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(roleInTheBusiness = Some(Partner)))
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
-            .registrationApi.getSection[ApplicantDetails](None)
-
-          stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
-
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-          }
-        }
-
-        "the model in S4l is full" in new Setup {
-          implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-          given()
-            .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].contains(partnershipApplicantDetails)(ApplicantDetails.s4LWrites)
-            .s4lContainer[ApplicantDetails].clearedByKey
-            .registrationApi.replaceSection[ApplicantDetails](partnershipApplicantDetails)
-            .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
-
-          stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res: Future[WSResponse] = buildClient(s"/register-for-vat/partnership-id-callback?journeyId=$testJourneyId").get()
-
-          whenReady(res) { result =>
-            result.status mustBe SEE_OTHER
-            result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-          }
-        }
-      }
-
-      "redirect to the individual identification for Limited Liability Partnership" in new Setup {
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(LtdLiabilityPartnership)
+    "redirect to the Task List" must {
+      "redirect to task list" in new Setup {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
         given()
           .user.isAuthorised()
+          .s4lContainer[ApplicantDetails].isEmpty
+          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].contains(ApplicantDetails())
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(entity = Some(testPartnership)))
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails(roleInTheBusiness = Some(Partner)))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = LtdLiabilityPartnership)))
+          .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(
+          entity = Some(testPartnership),
+          roleInTheBusiness = Some(Partner)
+        ))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
         stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)

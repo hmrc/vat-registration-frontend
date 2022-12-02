@@ -19,10 +19,10 @@ package services
 import config.Logging
 import connectors.RegistrationApiConnector
 import models._
-import models.external._
-import models.view._
-import play.api.libs.json.{Format, Reads, Writes}
-import services.ApplicantDetailsService.HasFormerName
+import models.api.Address
+import models.external.{BusinessEntity, Name, PartnershipIdEntity, SoleTraderIdEntity}
+import play.api.libs.json.{Format, Reads}
+import services.ApplicantDetailsService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import java.time.LocalDate
@@ -39,7 +39,7 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
     vatRegistrationService.partyType.flatMap { partyType =>
       implicit val reads: Reads[ApplicantDetails] = ApplicantDetails.s4LReads(partyType)
       s4LService.fetchAndGet[ApplicantDetails].flatMap {
-        case None | Some(ApplicantDetails(None, None, None, None, None, None, None, None, None, None, None)) =>
+        case None | Some(ApplicantDetails(None, None, None, None, None, DigitalContactOptional(None, None, None), FormerName(None, None, None), None)) =>
           implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
           registrationApiConnector.getSection[ApplicantDetails](cp.registrationId).flatMap {
             case Some(applicantDetails) => Future.successful(applicantDetails)
@@ -62,74 +62,93 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
 
   def getTransactorApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
     for {
-      applicant <- getApplicantDetails
-      personalDetails = applicant.personalDetails
       isTransactor <- vatRegistrationService.isTransactor
-    } yield if (isTransactor) personalDetails.map(_.firstName) else None
-
-  private def isModelComplete(applicantDetails: ApplicantDetails): Completion[ApplicantDetails] = {
-    applicantDetails match {
-      case ApplicantDetails(None, None, None, None, None, None, None, _, None, None, None) =>
-        Incomplete(applicantDetails)
-      case ApplicantDetails(Some(SoleTraderIdEntity(_, _, _, _, _, _, _, _, _, _, _)), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _, _, Some(_), _) =>
-        Complete(applicantDetails.copy(roleInTheBusiness = Some(OwnerProprietor)))
-      case ApplicantDetails(Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), Some(_), _, _, Some(_), Some(_)) =>
-        Complete(applicantDetails)
-      case _ =>
-        Incomplete(applicantDetails)
-    }
-  }
+      optName <- if (isTransactor) getApplicantDetails.map(_.personalDetails.map(_.firstName)) else Future.successful(None)
+    } yield optName
 
   def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
-    getApplicantDetails.flatMap { applicantDetails =>
-      isModelComplete(updateModel(data, applicantDetails)).fold(
-        incomplete => {
-          implicit val writes: Writes[ApplicantDetails] = ApplicantDetails.s4LWrites
-          s4LService.save[ApplicantDetails](incomplete).map(_ => incomplete)
-        },
-        complete => for {
-          partyType <- vatRegistrationService.partyType
-          _ <- {
-            implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
-            registrationApiConnector.replaceSection[ApplicantDetails](cp.registrationId, complete)
-          }
-          _ <- s4LService.clearKey[ApplicantDetails]
-        } yield complete
-      )
-    }
+    for {
+      applicant <- getApplicantDetails
+      updatedApplicant = updateModel(data, applicant)
+      partyType <- vatRegistrationService.partyType
+      result <- {
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
+        registrationApiConnector.replaceSection[ApplicantDetails](cp.registrationId, updatedApplicant)
+      }
+      _ <- s4LService.clearKey[ApplicantDetails]
+    } yield result
   }
 
   //scalastyle:off
   private def updateModel[T](data: T, before: ApplicantDetails): ApplicantDetails = {
     data match {
+      case businessEntity: SoleTraderIdEntity =>
+        before.copy(
+          entity = Some(businessEntity),
+          roleInTheBusiness = Some(OwnerProprietor)
+        )
+      case businessEntity: PartnershipIdEntity =>
+        before.copy(
+          entity = Some(businessEntity),
+          roleInTheBusiness = Some(Partner)
+        )
       case businessEntity: BusinessEntity =>
         before.copy(entity = Some(businessEntity))
       case personalDetails: PersonalDetails =>
         before.copy(personalDetails = Some(personalDetails))
-      case currAddr: HomeAddressView =>
-        before.copy(homeAddress = Some(currAddr))
-      case emailAddress: EmailAddress =>
-        before.copy(emailAddress = Some(emailAddress))
-      case emailVerified: EmailVerified =>
-        before.copy(emailVerified = Some(emailVerified))
-      case telephoneNumber: TelephoneNumber =>
-        before.copy(telephoneNumber = Some(telephoneNumber))
-      case fName: Name =>
-        before.copy(formerName = Some(fName))
-      case fNameDate: FormerNameDateView =>
-        before.copy(formerNameDate = Some(fNameDate))
-      case prevAddr: PreviousAddressView =>
-        before.copy(previousAddress = Some(prevAddr))
+      case CurrentAddress(answer) =>
+        before.copy(currentAddress = Some(answer))
+      case NoPreviousAddress(answer) =>
+        if (answer) {
+          before.copy(
+            noPreviousAddress = Some(answer),
+            previousAddress = None
+          )
+        } else {
+          before.copy(noPreviousAddress = Some(answer))
+        }
+      case PreviousAddress(answer) =>
+        before.copy(previousAddress = Some(answer))
+      case EmailAddress(answer) =>
+        before.copy(contact = before.contact.copy(email = Some(answer)))
+      case EmailVerified(answer) =>
+        before.copy(contact = before.contact.copy(emailVerified = Some(answer)))
+      case TelephoneNumber(answer) =>
+        before.copy(contact = before.contact.copy(tel = Some(answer)))
+      case HasFormerName(hasFormerName) =>
+        if (hasFormerName) {
+          before.copy(changeOfName = before.changeOfName.copy(hasFormerName = Some(hasFormerName)))
+        } else {
+          before.copy(changeOfName = before.changeOfName.copy(
+            hasFormerName = Some(hasFormerName),
+            name = None,
+            change = None
+          ))
+        }
+      case formerName: Name =>
+        before.copy(changeOfName = before.changeOfName.copy(name = Some(formerName)))
+      case formerNameDate: LocalDate =>
+        before.copy(changeOfName = before.changeOfName.copy(change = Some(formerNameDate)))
       case roleInTheBusiness: RoleInTheBusiness =>
         before.copy(roleInTheBusiness = Some(roleInTheBusiness))
-      case HasFormerName(hasFormerName) if !hasFormerName =>
-        before.copy(hasFormerName = Some(hasFormerName), formerName = None, formerNameDate = None)
-      case HasFormerName(hasFormerName) =>
-        before.copy(hasFormerName = Some(hasFormerName))
+      case _ =>
+        throw new InternalServerException("[ApplicantDetailsService] Attempting to store unsupported data")
     }
   }
 }
 
 object ApplicantDetailsService {
+  case class CurrentAddress(currentAddress: Address)
+
+  case class NoPreviousAddress(noPreviousAddress: Boolean)
+
+  case class PreviousAddress(previousAddress: Address)
+
+  case class EmailAddress(email: String)
+
+  case class EmailVerified(emailVerified: Boolean)
+
+  case class TelephoneNumber(telephone: String)
+
   case class HasFormerName(hasFormerName: Boolean)
 }

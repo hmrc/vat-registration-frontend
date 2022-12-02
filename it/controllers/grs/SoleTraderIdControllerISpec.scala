@@ -3,9 +3,9 @@ package controllers.grs
 
 import config.FrontendAppConfig
 import itutil.ControllerISpec
-import models.ApplicantDetails
 import models.api._
 import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass}
+import models.{ApplicantDetails, OwnerProprietor}
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -82,28 +82,15 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isUpdatedWith(ApplicantDetails())
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
-
-        stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-callback?journeyId=$testJourneyId").get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
-        }
-      }
-
-      "S4l is full and the user is a Sole Trader" in new Setup {
-        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
-        given()
-          .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].contains(validFullApplicantDetails)(ApplicantDetails.s4LWrites)
+          .s4lContainer[ApplicantDetails].isEmpty
           .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(personalDetails = None, entity = None)))
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = None))
+          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = None)))
+          .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(
+          entity = Some(testSoleTrader),
+          roleInTheBusiness = Some(OwnerProprietor)
+        ))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
         stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
