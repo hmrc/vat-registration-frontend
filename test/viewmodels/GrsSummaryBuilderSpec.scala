@@ -70,7 +70,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
@@ -111,7 +111,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
@@ -148,7 +148,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-incorp-id-journey")),
           optSummaryListRowString(
@@ -253,7 +253,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
 
         val expectedGeneralPartnershipSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/partnership-official-name")),
           optSummaryListRowString(
@@ -296,7 +296,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -334,7 +334,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val expectedScottishPartnershipSummaryList = SummaryList(Seq(
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/partnership-official-name")),
           optSummaryListRowString(
@@ -377,7 +377,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -420,7 +420,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some(testCrn),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Confirm company name",
+            questionId = "Company name",
             optAnswer = Some(testCompanyName),
             optUrl = Some("/register-for-vat/start-partnership-id-journey")),
           optSummaryListRowString(
