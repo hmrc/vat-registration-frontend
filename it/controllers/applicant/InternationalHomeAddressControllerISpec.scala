@@ -24,7 +24,6 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
-        .s4lContainer[ApplicantDetails].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -40,7 +39,6 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       )
       given
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
@@ -63,8 +61,6 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(currentAddress = Some(testShortForeignAddress)))
 
@@ -84,8 +80,6 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(currentAddress = Some(testForeignAddress)))
 

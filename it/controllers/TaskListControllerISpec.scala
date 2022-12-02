@@ -8,7 +8,6 @@ import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.libs.json.Format
 import play.api.test.Helpers._
 
 import java.time.LocalDate
@@ -113,13 +112,9 @@ class TaskListControllerISpec extends ControllerISpec {
           entities = Some(List(Entity(Some(testSoleTrader), Partnership, isLeadPartner = Some(true), None, None, None, None)))
         )
 
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -146,14 +141,9 @@ class TaskListControllerISpec extends ControllerISpec {
           entities = Some(List(Entity(Some(testSoleTrader), Individual, isLeadPartner = Some(true), None, None, None, None)))
         )
 
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](None)
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -175,17 +165,13 @@ class TaskListControllerISpec extends ControllerISpec {
       "show the transactor section when all data is present" in new Setup {
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
+          applicantDetails = Some(validFullApplicantDetails),
+          transactorDetails = Some(validTransactorDetails)
         )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -212,17 +198,13 @@ class TaskListControllerISpec extends ControllerISpec {
       "show the transactor section without address tasklist when in agent flow" in new Setup {
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
+          applicantDetails = Some(validFullApplicantDetails),
+          transactorDetails = Some(validTransactorDetails)
         )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
 
         given
           .user.isAuthorised(arn = Some(testArn))
           .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -248,26 +230,20 @@ class TaskListControllerISpec extends ControllerISpec {
       "show the lead partner section when the user is a partnership" in new Setup {
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
-          applicantDetails = Some(validFullApplicantDetails)
-        )
-
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-
-        given
-          .user.isAuthorised()
-          .registrationApi.getRegistration(scheme)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
-          .registrationApi.getSection[ApplicantDetails](
-          Some(validFullApplicantDetails.copy(
+          applicantDetails = Some(validFullApplicantDetails.copy(
             entity = Some(testPartnership), personalDetails = None,
             currentAddress = None,
             noPreviousAddress = Some(false),
             previousAddress = None,
-            contact = DigitalContactOptional(
+            contact = Contact(
               email = None, emailVerified = None, tel = None
             )
           ))
         )
+
+        given
+          .user.isAuthorised()
+          .registrationApi.getRegistration(scheme)
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -290,19 +266,15 @@ class TaskListControllerISpec extends ControllerISpec {
       "show business activities section with correct states when pre-requisites are not complete" in new Setup {
         enable(OBI_FS)
 
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
+          applicantDetails = Some(validFullApplicantDetails),
+          transactorDetails = Some(validTransactorDetails)
         )
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -324,21 +296,17 @@ class TaskListControllerISpec extends ControllerISpec {
       "show business activities section with business details section complete" in new Setup {
         enable(OBI_FS)
 
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         val scheme = fullVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
           business = Some(businessDetails.copy(
             hasWebsite = Some(true), businessActivities = None, mainBusinessActivity = None, businessDescription = None
-          ))
+          )),
+          transactorDetails = Some(validTransactorDetails)
         )
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -359,21 +327,17 @@ class TaskListControllerISpec extends ControllerISpec {
       "show business activities section with business details and activities section complete" in new Setup {
         enable(OBI_FS)
 
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         val scheme = fullVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
           business = Some(businessDetails.copy(
             hasWebsite = Some(true), hasLandAndProperty = Some(false)
-          ))
+          )),
+          transactorDetails = Some(validTransactorDetails)
         )
         given
           .user.isAuthorised()
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -392,11 +356,10 @@ class TaskListControllerISpec extends ControllerISpec {
       }
 
       "show vat registration section with correct states when pre-requisites are not met" in new Setup {
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         val scheme = emptyUkCompanyVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
-          applicantDetails = Some(validFullApplicantDetails)
+          applicantDetails = Some(validFullApplicantDetails),
+          transactorDetails = Some(validTransactorDetails)
         )
 
         given
@@ -404,9 +367,6 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
           .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -426,15 +386,14 @@ class TaskListControllerISpec extends ControllerISpec {
       }
 
       "show vat registration section when pre-requisites met but no registration tasks started" in new Setup {
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         val scheme = fullVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
           business = Some(businessDetails.copy(
             hasWebsite = Some(true), hasLandAndProperty = Some(false), otherBusinessInvolvement = Some(false)
           )),
           vatApplication = None,
-          bankAccount = None
+          bankAccount = None,
+          transactorDetails = Some(validTransactorDetails)
         )
 
         given
@@ -442,9 +401,6 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
           .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
@@ -464,8 +420,6 @@ class TaskListControllerISpec extends ControllerISpec {
       }
 
       "show vat registration section when pre-requisites and all tasks completed" in new Setup {
-        implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-
         val scheme = fullVatScheme.copy(
           eligibilitySubmissionData = Some(testEligibilitySubmissionData),
           business = Some(businessDetails.copy(
@@ -483,7 +437,8 @@ class TaskListControllerISpec extends ControllerISpec {
             startDate = Some(LocalDate.of(2017, 10, 10)),
             hasTaxRepresentative = Some(false)
           )),
-          bankAccount = Some(bankAccount.copy(isProvided = false, None, Some(BeingSetupOrNameChange)))
+          bankAccount = Some(bankAccount.copy(isProvided = false, None, Some(BeingSetupOrNameChange))),
+          transactorDetails = Some(validTransactorDetails)
         )
 
         given
@@ -491,9 +446,6 @@ class TaskListControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(scheme)
           .registrationApi.getSection[Business](scheme.business)
           .registrationApi.getSection[VatApplication](scheme.vatApplication)
-          .registrationApi.getSection[EligibilitySubmissionData](scheme.eligibilitySubmissionData)
-          .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-          .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
           .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
           .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 

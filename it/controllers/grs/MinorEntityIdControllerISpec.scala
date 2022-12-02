@@ -213,8 +213,6 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Trust)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[ApplicantDetails](Some(trustApplicantDetails.copy(entity = None)))
           .registrationApi.replaceSection[ApplicantDetails](trustApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
@@ -234,8 +232,6 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UnincorpAssoc)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[ApplicantDetails](Some(unincorpAssocApplicantDetails.copy(entity = None)))
           .registrationApi.replaceSection[ApplicantDetails](unincorpAssocApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
@@ -255,8 +251,6 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[ApplicantDetails](Some(nonUkCompanyApplicantDetails.copy(entity = None)))
           .registrationApi.replaceSection[ApplicantDetails](nonUkCompanyApplicantDetails)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))

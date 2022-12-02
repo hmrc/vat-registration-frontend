@@ -19,9 +19,9 @@ package services
 import common.enums.VatRegStatus
 import connectors.mocks.MockRegistrationApiConnector
 import fixtures.ApplicantDetailsFixtures
+import models._
 import models.api.{Address, Individual, UkCompany}
 import models.external.Name
-import models._
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.when
 import services.ApplicantDetailsService._
@@ -46,27 +46,19 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     )
   )
 
-  class Setup(s4lData: Option[ApplicantDetails] = None, backendData: Option[ApplicantDetails] = None) {
+  class Setup(backendData: Option[ApplicantDetails] = None) {
     val service = new ApplicantDetailsService(
       mockRegistrationApiConnector,
-      vatRegistrationServiceMock,
-      mockS4LService
+      vatRegistrationServiceMock
     )
 
-    when(mockS4LService.fetchAndGet[ApplicantDetails](any(), any(), any(), any()))
-      .thenReturn(Future.successful(s4lData))
-
     mockGetSection[ApplicantDetails](testRegId, backendData)
-
-    when(mockS4LService.save(any())(any(), any(), any(), any()))
-      .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   class SetupForBackendSave(applicantDetails: ApplicantDetails = emptyApplicantDetails) {
     val service: ApplicantDetailsService = new ApplicantDetailsService(
       mockRegistrationApiConnector,
-      vatRegistrationServiceMock,
-      mockS4LService
+      vatRegistrationServiceMock
     ) {
       override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
         Future.successful(applicantDetails)
@@ -78,45 +70,28 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
   }
 
   "Calling getApplicantDetails" should {
-    "return a full ApplicantDetails view model from backend" in new Setup(None, Some(completeApplicantDetails)) {
-      mockPartyType(Future.successful(UkCompany))
-      service.getApplicantDetails returns completeApplicantDetails
-    }
-
-    "return a full ApplicantDetails view model from s4l" in new Setup(Some(completeApplicantDetails), None) {
+    "return a full ApplicantDetails view model from backend" in new Setup(Some(completeApplicantDetails)) {
       mockPartyType(Future.successful(UkCompany))
       service.getApplicantDetails returns completeApplicantDetails
     }
   }
 
   "Calling getTransactorApplicantName" should {
-    "return firstName from the backend" in new Setup(None, Some(completeApplicantDetails)) {
-      mockIsTransactor(Future.successful(true))
-      service.getTransactorApplicantName returns Some(testFirstName)
-    }
-    "return firstName from s4l" in new Setup(Some(completeApplicantDetails), None) {
+    "return firstName from the backend" in new Setup(Some(completeApplicantDetails)) {
       mockIsTransactor(Future.successful(true))
       service.getTransactorApplicantName returns Some(testFirstName)
     }
   }
 
   "Calling getCompanyName" should {
-    "return company name from the backend" in new Setup(None, Some(completeApplicantDetails)) {
-      mockPartyType(Future.successful(UkCompany))
-      service.getCompanyName returns Some(testCompanyName)
-    }
-    "return company name from s4l" in new Setup(Some(completeApplicantDetails), None) {
+    "return company name from the backend" in new Setup(Some(completeApplicantDetails)) {
       mockPartyType(Future.successful(UkCompany))
       service.getCompanyName returns Some(testCompanyName)
     }
   }
 
   "Calling getDateOfIncorporation" should {
-    "return date of incorp from the backend" in new Setup(None, Some(completeApplicantDetails)) {
-      mockPartyType(Future.successful(UkCompany))
-      service.getDateOfIncorporation returns Some(testIncorpDate)
-    }
-    "return date of incorp from s4l" in new Setup(Some(completeApplicantDetails), None) {
+    "return date of incorp from the backend" in new Setup(Some(completeApplicantDetails)) {
       mockPartyType(Future.successful(UkCompany))
       service.getDateOfIncorporation returns Some(testIncorpDate)
     }
@@ -150,27 +125,27 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         service.saveApplicantDetails(testSoleTrader) returns expected
       }
 
-      "updating applicant contact email" in new SetupForBackendSave(completeApplicantDetails.copy(contact = DigitalContactOptional())) {
+      "updating applicant contact email" in new SetupForBackendSave(completeApplicantDetails.copy(contact = Contact())) {
         val applicantEmailAddress = "tt@dd.uk"
-        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = DigitalContactOptional(Some(applicantEmailAddress)))
+        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = Contact(Some(applicantEmailAddress)))
         mockReplaceSection[ApplicantDetails](testRegId, expected)
         mockPartyType(Future.successful(UkCompany))
 
         service.saveApplicantDetails(EmailAddress(applicantEmailAddress)) returns expected
       }
 
-      "updating applicant contact email verified" in new SetupForBackendSave(completeApplicantDetails.copy(contact = DigitalContactOptional())) {
+      "updating applicant contact email verified" in new SetupForBackendSave(completeApplicantDetails.copy(contact = Contact())) {
         val applicantEmailVerified = true
-        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = DigitalContactOptional(emailVerified = Some(applicantEmailVerified)))
+        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = Contact(emailVerified = Some(applicantEmailVerified)))
         mockReplaceSection[ApplicantDetails](testRegId, expected)
         mockPartyType(Future.successful(UkCompany))
 
         service.saveApplicantDetails(EmailVerified(applicantEmailVerified)) returns expected
       }
 
-      "updating applicant contact telephone number" in new SetupForBackendSave(completeApplicantDetails.copy(contact = DigitalContactOptional())) {
+      "updating applicant contact telephone number" in new SetupForBackendSave(completeApplicantDetails.copy(contact = Contact())) {
         val applicantTelephoneNumber = "1234"
-        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = DigitalContactOptional(tel = Some(applicantTelephoneNumber)))
+        val expected: ApplicantDetails = completeApplicantDetails.copy(contact = Contact(tel = Some(applicantTelephoneNumber)))
         mockReplaceSection[ApplicantDetails](testRegId, expected)
         mockPartyType(Future.successful(UkCompany))
 

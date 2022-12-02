@@ -62,8 +62,6 @@ class HomeAddressControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .address(addressId, addressLine1, addressLine2, addressCountry, addressPostcode).isFound
         .registrationApi.replaceSection[ApplicantDetails](testApplicantDetails)

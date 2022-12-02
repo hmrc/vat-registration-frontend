@@ -16,9 +16,7 @@
 
 package services
 
-import models.api.UkCompany
 import models._
-import play.api.libs.json.Reads
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -32,15 +30,16 @@ class S4LServiceSpec extends VatRegSpec {
     "save a form with the correct key" in new Setup {
       mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
-      mockS4LSaveForm[ApplicantDetails](cacheMap)
-      service.save(emptyApplicantDetails) returns cacheMap
+      implicit val key = OtherBusinessInvolvement.s4lKey(1)
+      mockS4LSaveForm[OtherBusinessInvolvement](cacheMap)
+      service.save(OtherBusinessInvolvement()) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
-      mockS4LFetchAndGet(S4LKey[ApplicantDetails].key, Some(emptyApplicantDetails))
-      implicit val reads: Reads[ApplicantDetails]= ApplicantDetails.s4LReads(UkCompany)
-      service.fetchAndGet[ApplicantDetails] returns Some(emptyApplicantDetails)
+      implicit val key = OtherBusinessInvolvement.s4lKey(1)
+      mockS4LFetchAndGet[OtherBusinessInvolvement](key.key, Some(otherBusinessInvolvementWithVrn))
+      service.fetchAndGet[OtherBusinessInvolvement] returns Some(otherBusinessInvolvementWithVrn)
     }
 
     "clear down S4L data" in new Setup {

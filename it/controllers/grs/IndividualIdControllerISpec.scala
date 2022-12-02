@@ -73,8 +73,6 @@ class IndividualIdControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(personalDetails = None)))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -97,8 +95,6 @@ class IndividualIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[ApplicantDetails](None)
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(personalDetails = Some(testPersonalDetails)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
 

@@ -38,8 +38,6 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    vatRegistrationTaskList: VatRegistrationTaskList,
                                    attachmentsTaskList: AttachmentsTaskList,
                                    summaryTaskList: SummaryTaskList,
-                                   applicantDetailsService: ApplicantDetailsService,
-                                   transactorDetailsService: TransactorDetailsService,
                                    businessService: BusinessService,
                                    vatApplicationService: VatApplicationService,
                                    view: TaskList)
@@ -51,14 +49,10 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
   def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      applicantDetails <- applicantDetailsService.getApplicantDetails
-      transactorDetails <- transactorDetailsService.getTransactorDetails
       business <- businessService.getBusiness
       vatApplication <- vatApplicationService.getVatApplication
       attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
       scheme = vatScheme.copy(
-        applicantDetails = Some(applicantDetails),
-        transactorDetails = Some(transactorDetails),
         business = Some(business),
         vatApplication = Some(vatApplication)
       ) // Grabbing the data from two sources is temporary, until we've removed S4L

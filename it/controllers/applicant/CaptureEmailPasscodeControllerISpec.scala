@@ -19,7 +19,7 @@ package controllers.applicant
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
-import models.{ApplicantDetails, DigitalContactOptional}
+import models.{ApplicantDetails, Contact}
 import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -30,14 +30,13 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
   private val testEmail = "test@test.com"
   private val testPasscode = "123456"
 
-  val testApplicant: ApplicantDetails = validFullApplicantDetails.copy(contact = DigitalContactOptional(email = Some(testEmail)))
+  val testApplicant: ApplicantDetails = validFullApplicantDetails.copy(contact = Contact(email = Some(testEmail)))
 
   "GET /email-address-verification" must {
     "show the view correctly" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -52,8 +51,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = Contact())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -68,7 +66,6 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -85,10 +82,8 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
-        .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = DigitalContactOptional(Some(testEmail), None, Some(true))))
+        .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = Contact(Some(testEmail), None, Some(true))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -105,8 +100,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = DigitalContactOptional())))
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = Contact())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -123,10 +117,8 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
-          .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = DigitalContactOptional(Some(testEmail)))))
-          .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = DigitalContactOptional(Some(testEmail), None, Some(true))))
+          .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = Contact(Some(testEmail)))))
+          .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = Contact(Some(testEmail), None, Some(true))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -144,7 +136,6 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
           .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -162,7 +153,6 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
           .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -183,7 +173,6 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
           .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -203,7 +192,6 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
           given()
             .user.isAuthorised()
-            .s4lContainer[ApplicantDetails].isEmpty
             .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

@@ -23,7 +23,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -38,7 +37,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[ApplicantDetails].isEmpty
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -59,8 +57,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(previousAddress = Some(testShortForeignAddress)))
@@ -81,8 +77,6 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(previousAddress = Some(testForeignAddress)))

@@ -35,7 +35,6 @@ class PartnershipNameControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
           .registrationApi.getSection[ApplicantDetails](
           Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = companyName))))
         )
@@ -57,8 +56,6 @@ class PartnershipNameControllerISpec extends ControllerISpec {
       val testApplicant = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.replaceSection[ApplicantDetails](
         testApplicant.copy(

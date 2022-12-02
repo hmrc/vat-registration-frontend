@@ -108,8 +108,6 @@ class PartnershipIdControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
         given()
           .user.isAuthorised()
-          .s4lContainer[ApplicantDetails].isEmpty
-          .s4lContainer[ApplicantDetails].clearedByKey
           .registrationApi.getSection[ApplicantDetails](None)
           .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(
           entity = Some(testPartnership),

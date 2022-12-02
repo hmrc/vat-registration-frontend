@@ -18,7 +18,7 @@ package controllers.errors
 
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
-import models.{ApplicantDetails, DigitalContactOptional, TransactorDetails}
+import models.{ApplicantDetails, Contact, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
 import play.api.test.Helpers._
@@ -61,7 +61,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
     "return INTERNAL_SERVER_ERROR when email is not present" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       val transactorDetailsWithoutEmail = validTransactorDetails.copy(email = None)
-      val applicantDetailsWithoutEmail = validFullApplicantDetails.copy(contact = DigitalContactOptional())
+      val applicantDetailsWithoutEmail = validFullApplicantDetails.copy(contact = Contact())
       given()
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(transactorDetailsWithoutEmail))

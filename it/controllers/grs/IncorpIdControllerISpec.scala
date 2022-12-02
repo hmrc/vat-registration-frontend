@@ -99,8 +99,6 @@ class IncorpIdControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[ApplicantDetails].isEmpty
-        .s4lContainer[ApplicantDetails].clearedByKey
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(entity = Some(testIncorpDetails)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
