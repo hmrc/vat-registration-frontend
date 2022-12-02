@@ -16,13 +16,12 @@
 
 package forms
 
-import forms.FormValidation.{nonEmptyDate, validDate, withinRange}
+import forms.FormValidation.{nonEmptyDate, stopOnFail, validDate, withinRange}
 import forms.vatapplication.StartDateForm
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
 import services.TimeService
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import utils.MessageDateFormat
 
 import java.time.LocalDate
@@ -35,7 +34,7 @@ class VoluntaryStartDateNoChoiceForm @Inject()(timeService: TimeService) extends
 
   def apply()(implicit messages: Messages): Form[LocalDate] = Form(
     single(
-      START_DATE -> tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
+      START_DATE -> tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(

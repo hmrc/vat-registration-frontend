@@ -71,7 +71,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address/international")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -79,7 +79,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/previous-address/international")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -127,7 +127,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Business contact’s home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address/international")),
           optSummaryListRowString(
             questionId = "Business contact’s home address for 3 years or more",
@@ -135,7 +135,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Business contact’s previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/previous-address/international")),
           optSummaryListRowString(
             questionId = "Business contact’s email address",
@@ -197,7 +197,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -205,7 +205,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -267,7 +267,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -275,7 +275,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -349,7 +349,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -357,7 +357,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -427,7 +427,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -435,7 +435,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -521,7 +521,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -529,7 +529,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -615,7 +615,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -623,7 +623,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -697,7 +697,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -705,7 +705,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",
@@ -779,7 +779,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/when-change")),
           optSummaryListRow(
             questionId = "Home address",
-            optAnswer = Some(HtmlContent("Testline1<br>Testline2<br>TE 1ST")),
+            optAnswer = Some(HtmlContent("Test Line1<br>Test Line2<br>TE 1ST")),
             optUrl = Some("/register-for-vat/home-address")),
           optSummaryListRowString(
             questionId = "Home address for 3 years or more",
@@ -787,7 +787,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRow(
             questionId = "Previous home address",
-            optAnswer = Some(HtmlContent("Testline11<br>Testline22<br>TE1 1ST")),
+            optAnswer = Some(HtmlContent("Test Line11<br>Test Line22<br>TE1 1ST")),
             optUrl = Some("/register-for-vat/current-address")),
           optSummaryListRowString(
             questionId = "Email address",

@@ -272,4 +272,11 @@ object FormValidation {
       if (date.isAfter(LocalDate.now().minusYears(4).minusDays(1))) Valid else Invalid(errKey)
   }
 
+  def stopOnFail[T](constraints: Constraint[T]*): Constraint[T] = Constraint { field: T =>
+    constraints.toList.dropWhile(constraint => constraint(field) == Valid) match {
+      case Nil => Valid
+      case constraint :: _ => constraint(field)
+    }
+  }
+
 }

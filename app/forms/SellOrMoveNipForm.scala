@@ -19,7 +19,6 @@ package forms
 import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 object SellOrMoveNipForm extends RequiredBooleanForm {
@@ -36,15 +35,16 @@ object SellOrMoveNipForm extends RequiredBooleanForm {
       yesNo -> requiredBoolean,
       inputAmount -> mandatoryIf(
         isEqual(yesNo, "true"),
-        text.verifying(StopOnFirstFail(
+        text.verifying(stopOnFail(
           regexPattern(regex),
           matchesRegex(commasNotAllowed, "validation.sellOrMoveNip.commasNotAllowed"),
           matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed"),
-          mandatoryFullNumericText))
-          .transform[BigDecimal](s =>
-            BigDecimal(s).setScale(2, BigDecimal.RoundingMode.HALF_UP),
-            _.toString
-          )
+          mandatoryFullNumericText
+        ))
+        .transform[BigDecimal](s =>
+          BigDecimal(s).setScale(2, BigDecimal.RoundingMode.HALF_UP),
+          _.toString
+        )
       )
     )
   )

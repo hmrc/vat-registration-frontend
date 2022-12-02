@@ -20,7 +20,6 @@ import forms.FormValidation._
 import forms.constraints.VrnConstraints.isValidChecksum
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.util.matching.Regex
 
@@ -32,7 +31,7 @@ object CaptureVrnForm {
 
   def apply(): Form[String] = Form(
     single(
-      captureVrnKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(StopOnFirstFail(
+      captureVrnKey -> text.transform(removeNewlineAndTrim, identity[String]).verifying(stopOnFail(
         nonEmptyValidText(regex),
         isValidChecksum(s"validation.$errorCode.invalid")
       ))

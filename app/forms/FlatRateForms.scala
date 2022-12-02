@@ -21,7 +21,6 @@ import models.FRSDateChoice
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError, Forms}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
 import java.time.LocalDate
@@ -80,7 +79,7 @@ object FRSStartDateForm {
       frsStartDateRadio -> Forms.of[FRSDateChoice.Value],
       frsStartDateInput -> mandatoryIf(
         isEqual(frsStartDateRadio, FRSDateChoice.DifferentDate),
-        tuple("day" -> text, "month" -> text, "year" -> text).verifying(StopOnFirstFail(
+        tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(minDate, maxDate, dateBeforeVatStartDate, dateAfterMaxKey, List(frsStartDateInput))
@@ -101,14 +100,15 @@ object EstimateTotalSalesForm {
   val moreThanTwoDecimalsNotAllowed = """^[0-9]*\.?[0-9]{1,2}$""".r
 
   val form = Form(single("totalSalesEstimate" -> text
-    .verifying(StopOnFirstFail(
+    .verifying(stopOnFail(
       regexPattern(regex),
       matchesRegex(commasNotAllowed, "validation.estimateTotalSales.commasNotAllowed"),
       matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed"),
       mandatoryFullNumericText))
+    )
     .transform[BigDecimal](BigDecimal(_).setScale(2, BigDecimal.RoundingMode.HALF_UP), _.toString)
     .verifying(inRange[BigDecimal](1, BigDecimal("99999999999")))
-  ))
+  )
 }
 
 object ChooseBusinessTypeForm {

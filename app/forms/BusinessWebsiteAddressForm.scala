@@ -16,11 +16,10 @@
 
 package forms
 
-import forms.FormValidation.{ErrorCode, maxLenText, nonEmptyValidText}
+import forms.FormValidation._
 import forms.constraints.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
 import play.api.data.Forms.{single, text}
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 import scala.util.matching.Regex
 
@@ -34,11 +33,11 @@ object BusinessWebsiteAddressForm {
   val form: Form[String] =
     Form(
       single(
-        businessWebsiteAddressKey -> text.verifying(
-          StopOnFirstFail(
-            nonEmptyValidText(regex) andThen
+        businessWebsiteAddressKey -> text.verifying(stopOnFail(
+          nonEmptyValidText(regex) andThen
             maxLenText(maxLength)
-        )))
+        ))
+      )
     )
 
 }

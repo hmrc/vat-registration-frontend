@@ -20,7 +20,6 @@ import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints.maxLength
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 class AgentNameForm {
 
@@ -30,14 +29,14 @@ class AgentNameForm {
     mapping(
       firstNameField -> {
         implicit val code: ErrorCode = messageKey(firstNameField)
-        text.verifying(StopOnFirstFail(
+        text.verifying(stopOnFail(
           maxLength(maxNameLength, "validation.agentName.firstName.maxLen"),
           nonEmptyValidText(nameRegex)
         ))
       },
       lastNameField -> {
         implicit val code: ErrorCode = messageKey(lastNameField)
-        text.verifying(StopOnFirstFail(
+        text.verifying(stopOnFail(
           maxLength(maxNameLength, "validation.agentName.lastName.maxLen"),
           nonEmptyValidText(nameRegex)
         ))

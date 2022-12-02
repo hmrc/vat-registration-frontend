@@ -20,7 +20,6 @@ import forms.FormValidation._
 import models.BankAccountDetails
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.hmrc.play.mappers.StopOnFirstFail
 
 object HasCompanyBankAccountForm extends RequiredBooleanForm {
 
@@ -54,15 +53,15 @@ object EnterBankAccountDetailsForm {
 
   val form = Form[BankAccountDetails] (
     mapping(
-      ACCOUNT_NAME -> text.verifying(StopOnFirstFail(
+      ACCOUNT_NAME -> text.verifying(stopOnFail(
         mandatory(accountNameEmptyKey),
         matchesRegex(accountNameRegex, accountNameInvalidKey)
       )),
-      ACCOUNT_NUMBER -> text.verifying(StopOnFirstFail(
+      ACCOUNT_NUMBER -> text.verifying(stopOnFail(
         mandatory(accountNumberEmptyKey),
         matchesRegex(accountNumberRegex, accountNumberInvalidKey)
       )),
-      SORT_CODE -> text.verifying(StopOnFirstFail(
+      SORT_CODE -> text.verifying(stopOnFail(
         mandatory(sortCodeEmptyKey),
         matchesRegex(sortCodeRegex, sortCodeInvalidKey)
       ))
