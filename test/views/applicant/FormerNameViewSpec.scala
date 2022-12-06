@@ -32,7 +32,7 @@ class FormerNameViewSpec extends VatRegViewSpec {
   val heading = "Have you ever changed your name?"
   val namedHeading = "Has testFirstName ever changed their name?"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val para = "This could be if they got married or changed your name by deed poll."
+  val para = "This could be if they got married or changed their name by deed poll."
   val yes = "Yes"
   val no = "No"
   val continue = "Save and continue"

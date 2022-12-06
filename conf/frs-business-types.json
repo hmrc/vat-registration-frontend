@@ -152,9 +152,9 @@
     },
     {
       "groupLabel": "Wholesale of waste and scrap",
-      "groupLabelCy": "Wholesale of waste and scrap",
+      "groupLabelCy": "Masnach gyfanwerthu gwastraff a sgrap",
       "categories": [
-        {"id": "055", "businessType": "Dealing in waste and scrap", "businessTypeCy": "Dealing in waste and scrap", "currentFRSPercent": 10.5}
+        {"id": "055", "businessType": "Dealing in waste and scrap", "businessTypeCy": "Delio mewn gwastraff a sgrap", "currentFRSPercent": 10.5}
       ]
     }
   ]
