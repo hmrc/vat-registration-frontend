@@ -394,7 +394,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("1234567890"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Lead partner’s registered postcode",
+            questionId = "Lead partner’s Corporation Tax postcode",
             optAnswer = Some("AA11AA"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -488,7 +488,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("testPartnershipName"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Lead partner’s registered postcode for self assessment",
+            questionId = "Lead partner’s Self Assessment postcode",
             optAnswer = Some("AA11AA"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -582,7 +582,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("testPartnershipName"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
-            questionId = "Lead partner’s registered postcode for self assessment",
+            questionId = "Lead partner’s Self Assessment postcode",
             optAnswer = Some("AA11AA"),
             optUrl = Some("/register-for-vat/partner/1/start-partnership-id-journey")),
           optSummaryListRowString(
@@ -664,7 +664,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optAnswer = Some("testCompanyName"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(
-            questionId = "Charity’s HMRC reference number",
+            questionId = "Lead partner’s HMRC reference number",
             optAnswer = Some("testChrn"),
             optUrl = Some("/register-for-vat/partner/1/start-incorp-id-journey")),
           optSummaryListRowString(

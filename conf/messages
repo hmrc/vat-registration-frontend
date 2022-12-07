@@ -680,9 +680,9 @@ cya.applicantDetails.leadPartner.companyRegistrationNumber          = Lead partn
 cya.applicantDetails.leadPartner.companyName                        = Lead partner’s company name
 cya.applicantDetails.leadPartner.partnershipName                    = Lead partner’s partnership name
 cya.applicantDetails.leadPartner.companyNumber                      = Lead partner’s company number
-cya.applicantDetails.leadPartner.registeredPostcode                 = Lead partner’s registered postcode
-cya.applicantDetails.leadPartner.postcodeForSelfAssessment          = Lead partner’s registered postcode for self assessment
-cya.applicantDetails.leadPartner.charityHMRCReferenceNumber         = Charity’s HMRC reference number
+cya.applicantDetails.leadPartner.registeredPostcode                 = Lead partner’s Corporation Tax postcode
+cya.applicantDetails.leadPartner.postcodeForSelfAssessment          = Lead partner’s Self Assessment postcode
+cya.applicantDetails.leadPartner.charityHMRCReferenceNumber         = Lead partner’s HMRC reference number
 cya.applicantDetails.self.fullName                                  = Full Name
 cya.applicantDetails.transactor.fullName                            = Business contact’s full name
 cya.applicantDetails.self.dob                                       = Date of birth
@@ -743,7 +743,7 @@ cya.aboutTheBusiness.partnershipName                = Partnership name
 
 # Summary Page GRS Details
 cya.grsDetails.companyNumber                         = Company registration number
-cya.grsDetails.businessName                          = Confirm company name
+cya.grsDetails.businessName                          = Company name
 cya.grsDetails.ctutr                                 = Unique Taxpayer Reference number (UTR)
 cya.grsDetails.nonUkCompany.ctutr                    = UK Unique Taxpayer Reference number (UTR)
 cya.grsDetails.chrn                                  = HMRC reference number
