@@ -16,14 +16,13 @@
 
 package views.bankdetails
 
-import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
 import forms.NoUKBankAccountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.bankdetails.NoUkBankAccount
 
-class NoUKBankAccountViewSpec extends VatRegViewSpec with FeatureSwitching {
+class NoUKBankAccountViewSpec extends VatRegViewSpec {
 
   val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
   implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
@@ -43,77 +42,38 @@ class NoUKBankAccountViewSpec extends VatRegViewSpec with FeatureSwitching {
     val continueLater: String = "Save and come back later"
   }
 
-  "No UK Bank Account Page" when {
-    "the NewNoBankReasons FS is disabled" should {
-      disable(NewNoBankReasons)
-      val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
-      implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
-
-      "have the correct title" in new ViewSetup() {
-        doc.title mustBe ExpectedContent.title
-      }
-
-      "have the correct heading" in new ViewSetup() {
-        doc.heading mustBe Some(ExpectedContent.heading)
-      }
-
-      "have the correct button1" in new ViewSetup() {
-        doc.radio("beingSetup") mustBe Some(ExpectedContent.button1)
-      }
-
-      "have the correct button2" in new ViewSetup() {
-        doc.radio("overseasAccount") mustBe Some(ExpectedContent.button2)
-      }
-
-      "have the correct button3" in new ViewSetup() {
-        doc.radio("nameChange") mustBe Some(ExpectedContent.button3)
-      }
-
-      "have the correct continue button" in new ViewSetup() {
-        doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
-      }
-
-      "have a save and continue button when the FS is enabled" in {
-        doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
-      }
+  "No UK Bank Account Page" should {
+    "have the correct title" in new ViewSetup() {
+      doc.title mustBe ExpectedContent.title
     }
-    "the NewNoBankReasons FS is enabled" should {
-      enable(NewNoBankReasons)
-      val view: NoUkBankAccount = app.injector.instanceOf[NoUkBankAccount]
-      implicit val doc: Document = Jsoup.parse(view(NoUKBankAccountForm.form).body)
-      disable(NewNoBankReasons)
 
-      "have the correct title" in new ViewSetup() {
-        doc.title mustBe ExpectedContent.title
-      }
+    "have the correct heading" in new ViewSetup() {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
 
-      "have the correct heading" in new ViewSetup() {
-        doc.heading mustBe Some(ExpectedContent.heading)
-      }
+    "have the correct button1" in new ViewSetup() {
+      doc.radio("beingSetup") mustBe Some(ExpectedContent.newButton1)
+    }
 
-      "have the correct button1" in new ViewSetup() {
-        doc.radio("beingSetup") mustBe Some(ExpectedContent.newButton1)
-      }
+    "have the correct button2" in new ViewSetup() {
+      doc.radio("overseasAccount") mustBe Some(ExpectedContent.button2)
+    }
 
-      "have the correct button2" in new ViewSetup() {
-        doc.radio("overseasAccount") mustBe Some(ExpectedContent.button2)
-      }
+    "have the correct button3" in new ViewSetup() {
+      doc.radio("accountNotInBusinessName") mustBe Some(ExpectedContent.newButton3)
+    }
 
-      "have the correct button3" in new ViewSetup() {
-        doc.radio("accountNotInBusinessName") mustBe Some(ExpectedContent.newButton3)
-      }
+    "have the correct button4" in new ViewSetup() {
+      doc.radio("dontWantToProvide") mustBe Some(ExpectedContent.newButton4)
+    }
 
-      "have the correct button4" in new ViewSetup() {
-        doc.radio("dontWantToProvide") mustBe Some(ExpectedContent.newButton4)
-      }
+    "have the correct continue button" in new ViewSetup() {
+      doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
+    }
 
-      "have the correct continue button" in new ViewSetup() {
-        doc.select(Selectors.button).get(0).text mustBe ExpectedContent.continue
-      }
-
-      "have a save and continue button when the FS is enabled" in {
-        doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
-      }
+    "have a save and continue button" in {
+      doc.select(Selectors.saveProgressButton).text mustBe ExpectedContent.continueLater
     }
   }
+
 }

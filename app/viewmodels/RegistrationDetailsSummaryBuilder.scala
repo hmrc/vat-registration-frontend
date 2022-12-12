@@ -19,7 +19,6 @@ package viewmodels
 import config.FrontendAppConfig
 import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
-import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
 import models._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.api.vatapplication._
@@ -39,7 +38,7 @@ import javax.inject.{Inject, Singleton}
 class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnector,
                                                   flatRateService: FlatRateService,
                                                   govukSummaryList: GovukSummaryList)
-                                                 (implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
+                                                 (implicit appConfig: FrontendAppConfig) {
 
   val sectionId = "cya.registrationDetails"
 
@@ -330,8 +329,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val noUKBankAccount = optSummaryListRowString(
       s"$sectionId.companyBankAccount.reason",
       bankAccount.flatMap(_.reason).map {
-        case BeingSetupOrNameChange if isEnabled(NewNoBankReasons) => "pages.noUKBankAccount.beingSetupOrNameChange"
-        case BeingSetupOrNameChange => "pages.noUKBankAccount.beingSetup"
+        case BeingSetupOrNameChange => "pages.noUKBankAccount.beingSetupOrNameChange"
         case OverseasAccount => "pages.noUKBankAccount.overseasAccount"
         case NameChange => "pages.noUKBankAccount.nameChange"
         case AccountNotInBusinessName => "pages.noUKBankAccount.accountNotInBusinessName"
