@@ -25,7 +25,7 @@ import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
 class ReceiveGoodsNipControllerISpec extends ControllerISpec {
-  val testAmount: BigDecimal = 1234.123
+  val testAmount: BigDecimal = 123456
   lazy val url: String = controllers.vatapplication.routes.ReceiveGoodsNipController.show.url
   val testNIPCompliance: NIPTurnover = NIPTurnover(None, Some(ConditionalValue(true, Some(testAmount))))
 
@@ -62,8 +62,9 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -78,8 +79,9 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -94,8 +96,9 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -110,8 +113,9 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

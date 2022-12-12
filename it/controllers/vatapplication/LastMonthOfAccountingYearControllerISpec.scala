@@ -75,28 +75,13 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "return a redirect to next page and update S4L" in new Setup {
+    "return a redirect to next page and update the model" in new Setup {
+      val vatApplication: VatApplication = fullVatApplication.copy(returnsFrequency = Some(Annual))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(staggerStart = Some(FebJanStagger)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> januaryKey))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.PaymentFrequencyController.show.url)
-      }
-    }
-
-    "return a redirect to next page and update backend with full model" in new Setup {
-      given()
-        .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testFullVatApplication)
+        .s4lContainer[VatApplication].contains(vatApplication)
+        .registrationApi.replaceSection[VatApplication](vatApplication.copy(staggerStart = Some(FebJanStagger)))
         .s4lContainer[VatApplication].clearedByKey
-        .registrationApi.replaceSection(testFullVatApplication)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

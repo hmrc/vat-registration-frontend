@@ -62,7 +62,6 @@ class SupplyWorkersController @Inject()(val authConnector: AuthClientConnector,
                   } else {
                     withSupplyWorkers.copy(numOfWorkersSupplied = None)
                   }
-
                 businessService.updateBusiness(updatedLabourCompliance).map { _ =>
                   if (data) {
                     controllers.business.routes.WorkersController.show

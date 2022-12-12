@@ -48,7 +48,9 @@ class PpobAddressController @Inject()(val authConnector: AuthClientConnector,
     implicit request =>
       implicit profile =>
         for {
-          address <- addressLookupService.getAddressById(id)
+          address <- {
+            addressLookupService.getAddressById(id)
+          }
           _ <- businessService.updateBusiness[Address](address)
         } yield Redirect(controllers.business.routes.BusinessEmailController.show)
   }

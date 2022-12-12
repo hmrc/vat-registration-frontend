@@ -51,8 +51,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
-          .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+          .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,8 +69,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
-          .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -85,8 +87,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
-          .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
+          .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -102,8 +105,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
-          .s4lContainer[VatApplication].isUpdatedWith(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
+          .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -121,8 +125,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testSmallTurnoverApplication)
-          .s4lContainer[VatApplication].isUpdatedWith(testSmallTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.replaceSection[VatApplication](testSmallTurnoverApplication.copy(claimVatRefunds = Some(true)))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -138,8 +143,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(testSmallTurnoverApplication)
-          .s4lContainer[VatApplication].isUpdatedWith(testSmallTurnoverApplication.copy(claimVatRefunds = Some(true), appliedForExemption = None))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.replaceSection[VatApplication](testSmallTurnoverApplication.copy(claimVatRefunds = Some(false), appliedForExemption = None))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

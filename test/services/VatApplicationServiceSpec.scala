@@ -116,66 +116,37 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
 
   "saveVatApplication" must {
     "return a VatApplication" when {
-      "updating with tradeVatGoodsOutsideUK" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(tradeVatGoodsOutsideUk = Some(true))
+      "updating with tradeVatGoodsOutsideUK" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(tradeVatGoodsOutsideUk = Some(true))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(TradeVatGoodsOutsideUk(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(tradeVatGoodsOutsideUk = Some(true))
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(TradeVatGoodsOutsideUk(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend removing eori answer if false" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(tradeVatGoodsOutsideUk = Some(false), eoriRequested = None)
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(TradeVatGoodsOutsideUk(false))) mustBe expected
-        }
+        await(Service.saveVatApplication(TradeVatGoodsOutsideUk(true))) mustBe expected
       }
-      "updating with eoriRequested" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(eoriRequested = Some(true))
+      "updating with eoriRequested" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(eoriRequested = Some(true))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(EoriRequested(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(eoriRequested = Some(true))
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(EoriRequested(true))) mustBe expected
-        }
+        await(Service.saveVatApplication(EoriRequested(true))) mustBe expected
       }
-      "updating with turnoverEstimate" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
+      "updating with turnoverEstimate" in new Setup() {
           val expected: VatApplication = emptyVatApplication.copy(turnoverEstimate = Some(testTurnover))
 
           mockS4LGet(Some(emptyVatApplication))
           mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+          mockReplaceSection(testRegId, expected)
+          mockS4LClear
 
           await(Service.saveVatApplication(Turnover(testTurnover))) mustBe expected
         }
-        "makes the block incomplete and saves to S4L while removing AAS, FRS and Exemption if it exceeds thresholds" in new Setup() {
+        "updating with turnoverEstimate while removing AAS, FRS and Exemption if it exceeds thresholds" in new Setup() {
           val largeTurnover = 1350001
           val expected: VatApplication = testAASVatApplication.copy(
             turnoverEstimate = Some(largeTurnover),
@@ -186,470 +157,277 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
 
           mockS4LGet(Some(testAASVatApplication))
           mockDeleteSection[FlatRateScheme](testRegId)
-          mockS4LSave(expected)
-
+          mockReplaceSection(testRegId, expected)
+          mockS4LClear
 
           await(Service.saveVatApplication(Turnover(largeTurnover))) mustBe expected
         }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(turnoverEstimate = Some(testTurnover))
 
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
+      "updating with zeroRatedSupplies" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(zeroRatedSupplies = Some(testZeroRatedSupplies))
 
-          await(Service.saveVatApplication(Turnover(testTurnover))) mustBe expected
-        }
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
+
+        await(Service.saveVatApplication(ZeroRated(testZeroRatedSupplies))) mustBe expected
       }
-      "updating with zeroRatedSupplies" that {
+      "updating with zeroRatedSupplies while removing exemption answer if zeroRatedSupplies is too small" in new Setup() {
         val testVatApplication = validVatApplication.copy(appliedForExemption = Some(true))
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(zeroRatedSupplies = Some(testZeroRatedSupplies))
+        val expected: VatApplication = testVatApplication.copy(
+          zeroRatedSupplies = Some(testTurnover / 2),
+          appliedForExemption = None
+        )
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(testVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(ZeroRated(testZeroRatedSupplies))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testVatApplication.copy(zeroRatedSupplies = Some(testZeroRatedSupplies))
-
-          mockS4LGet(Some(testVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(ZeroRated(testZeroRatedSupplies))) mustBe expected
-        }
-        "makes the block complete and saves to backend removing exemption answer if zeroRatedSupplies is too small" in new Setup() {
-          val expected: VatApplication = testVatApplication.copy(
-            zeroRatedSupplies = Some(testTurnover / 2),
-            appliedForExemption = None
-          )
-
-          mockS4LGet(Some(testVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(ZeroRated(testTurnover / 2))) mustBe expected
-        }
+        await(Service.saveVatApplication(ZeroRated(testTurnover / 2))) mustBe expected
       }
-      "updating with claimVatRefunds" that {
+      "updating with claimVatRefunds" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(claimVatRefunds = Some(true))
+
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
+
+        await(Service.saveVatApplication(ClaimVatRefunds(true))) mustBe expected
+      }
+      "updating with claimVatRefunds while removing exemption answer if claimVatRefunds is false" in new Setup() {
         val testVatApplication = validVatApplication.copy(appliedForExemption = Some(true))
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(claimVatRefunds = Some(true))
+        val expected: VatApplication = testVatApplication.copy(
+          claimVatRefunds = Some(false),
+          appliedForExemption = None
+        )
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(testVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(ClaimVatRefunds(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testVatApplication.copy(claimVatRefunds = Some(true))
-
-          mockS4LGet(Some(testVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(ClaimVatRefunds(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend removing exemption answer if claimVatRefunds is false" in new Setup() {
-          val expected: VatApplication = testVatApplication.copy(
-            claimVatRefunds = Some(false),
-            appliedForExemption = None
-          )
-
-          mockS4LGet(Some(testVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(ClaimVatRefunds(false))) mustBe expected
-        }
+        await(Service.saveVatApplication(ClaimVatRefunds(false))) mustBe expected
       }
-      "updating with appliedForExemption" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(appliedForExemption = Some(true))
+      "updating with appliedForExemption" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(appliedForExemption = Some(true))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(AppliedForExemption(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(appliedForExemption = Some(true))
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(AppliedForExemption(true))) mustBe expected
-        }
+        await(Service.saveVatApplication(AppliedForExemption(true))) mustBe expected
       }
-      "updating with startDate" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(startDate = Some(testDate))
+      "updating with startDate" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(startDate = Some(testDate))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(testDate)) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(startDate = Some(testDate))
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(testDate)) mustBe expected
-        }
+        await(Service.saveVatApplication(testDate)) mustBe expected
       }
-      "updating with returnsFrequency" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(returnsFrequency = Some(Quarterly), staggerStart = None)
+      "updating with returnsFrequency" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(returnsFrequency = Some(Quarterly), staggerStart = None)
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(Quarterly)) mustBe expected
-        }
-
-        "makes the block complete and saves to backend while hardcoding Monthly stagger" in new Setup() {
-          val expected: VatApplication = testAASVatApplication.copy(
-            returnsFrequency = Some(Monthly),
-            staggerStart = Some(MonthlyStagger),
-            annualAccountingDetails = None
-          )
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(Monthly)) mustBe expected
-        }
+        await(Service.saveVatApplication(Quarterly)) mustBe expected
       }
-      "updating with staggerStart" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(staggerStart = Some(JanDecStagger))
+      "updating with returnsFrequency while hardcoding Monthly stagger" in new Setup() {
+        val expected: VatApplication = testAASVatApplication.copy(
+          returnsFrequency = Some(Monthly),
+          staggerStart = Some(MonthlyStagger),
+          annualAccountingDetails = None
+        )
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(validVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(JanDecStagger)) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testAASVatApplication.copy(staggerStart = Some(JanDecStagger))
-
-          mockS4LGet(Some(testAASVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(JanDecStagger)) mustBe expected
-        }
-        "makes the block complete and saves to backend updating returnsFrequency if stagger is quarterly" in new Setup() {
-          val expected: VatApplication = testAASVatApplication.copy(
-            staggerStart = Some(FebruaryStagger),
-            returnsFrequency = Some(Quarterly),
-            annualAccountingDetails = None
-          )
-
-          mockS4LGet(Some(testAASVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(FebruaryStagger)) mustBe expected
-        }
+        await(Service.saveVatApplication(Monthly)) mustBe expected
       }
-      "updating with hasTaxRepresentative" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(hasTaxRepresentative = Some(true))
+      "updating with staggerStart" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(staggerStart = Some(JanDecStagger))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(HasTaxRepresentative(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = validVatApplication.copy(hasTaxRepresentative = Some(true))
-
-          mockS4LGet(Some(validVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(HasTaxRepresentative(true))) mustBe expected
-        }
+        await(Service.saveVatApplication(JanDecStagger)) mustBe expected
       }
-      "updating with NIP answer goodsToEu" that {
+      "updating with staggerStart and returnsFrequency if stagger is quarterly" in new Setup() {
+        val expected: VatApplication = testAASVatApplication.copy(
+          staggerStart = Some(FebruaryStagger),
+          returnsFrequency = Some(Quarterly),
+          annualAccountingDetails = None
+        )
+
+        mockS4LGet(Some(testAASVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
+
+        await(Service.saveVatApplication(FebruaryStagger)) mustBe expected
+      }
+      "updating with hasTaxRepresentative" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(hasTaxRepresentative = Some(true))
+
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
+
+        await(Service.saveVatApplication(HasTaxRepresentative(true))) mustBe expected
+      }
+      "updating with NIP answer goodsToEu" in new Setup() {
         val testConditionalTurnover = ConditionalValue(answer = true, Some(testTurnover))
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(Some(testConditionalTurnover))))
+        val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(Some(testConditionalTurnover))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(TurnoverToEu(testConditionalTurnover))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val testVatApplication: VatApplication = validVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(None, Some(testConditionalTurnover))))
-          val expected: VatApplication = testVatApplication.copy(
-            northernIrelandProtocol = testVatApplication.northernIrelandProtocol.map(_.copy(goodsToEU = Some(testConditionalTurnover)))
-          )
-
-          mockS4LGet(Some(testVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(TurnoverToEu(testConditionalTurnover))) mustBe expected
-        }
+        await(Service.saveVatApplication(TurnoverToEu(testConditionalTurnover))) mustBe expected
       }
-      "updating with NIP answer goodsFromEu" that {
+      "updating with NIP answer goodsFromEu" in new Setup() {
         val testConditionalTurnover = ConditionalValue(answer = true, Some(testTurnover))
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(goodsFromEU = Some(testConditionalTurnover))))
+        val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(goodsFromEU = Some(testConditionalTurnover))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(TurnoverFromEu(testConditionalTurnover))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val testVatApplication: VatApplication = validVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(Some(testConditionalTurnover), None)))
-          val expected: VatApplication = testVatApplication.copy(
-            northernIrelandProtocol = testVatApplication.northernIrelandProtocol.map(_.copy(goodsFromEU = Some(testConditionalTurnover)))
-          )
-
-          mockS4LGet(Some(testVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(TurnoverFromEu(testConditionalTurnover))) mustBe expected
-        }
+        await(Service.saveVatApplication(TurnoverFromEu(testConditionalTurnover))) mustBe expected
       }
-      "updating with Overseas answer goodsToOverseas" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(goodsToOverseas = Some(true))))
+      "updating with Overseas answer goodsToOverseas" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(goodsToOverseas = Some(true))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(GoodsToOverseas(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(GoodsToOverseas(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend removing goodsToEu if false" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false), goodsToEu = None))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(GoodsToOverseas(false))) mustBe expected
-        }
+        await(Service.saveVatApplication(GoodsToOverseas(true))) mustBe expected
       }
-      "updating with Overseas answer goodsToEu" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(goodsToEu = Some(true))))
+      "updating with Overseas answer goodsToOverseas while removing goodsToEu if false" in new Setup() {
+        val expected: VatApplication = testOverseasVatApplication.copy(
+          overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false), goodsToEu = None))
+        )
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(testOverseasVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(GoodsToEu(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true)))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(GoodsToEu(true))) mustBe expected
-        }
+        await(Service.saveVatApplication(GoodsToOverseas(false))) mustBe expected
       }
-      "updating with Overseas answer storingGoodsForDispatch" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(storingGoodsForDispatch = Some(StoringWithinUk))))
+      "updating with Overseas answer goodsToEu" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(goodsToEu = Some(true))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(StoringWithinUk)) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(StoringWithinUk)) mustBe expected
-        }
-        "makes the block complete and saves to backend removing warehouse info if storing overseas" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(
-              storingGoodsForDispatch = Some(StoringOverseas),
-              usingWarehouse = None,
-              fulfilmentWarehouseNumber = None,
-              fulfilmentWarehouseName = None
-            ))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(StoringOverseas)) mustBe expected
-        }
+        await(Service.saveVatApplication(GoodsToEu(true))) mustBe expected
       }
-      "updating with Overseas answer usingWarehouse" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(usingWarehouse = Some(true))))
+      "updating with Overseas answer storingGoodsForDispatch" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(storingGoodsForDispatch = Some(StoringWithinUk))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(UsingWarehouse(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(UsingWarehouse(true))) mustBe expected
-        }
-        "makes the block complete and saves to backend removing warehouseName and warehouseNumber if false" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(
-              usingWarehouse = Some(false),
-              fulfilmentWarehouseNumber = None,
-              fulfilmentWarehouseName = None
-            ))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(UsingWarehouse(false))) mustBe expected
-        }
+        await(Service.saveVatApplication(StoringWithinUk)) mustBe expected
       }
-      "updating with Overseas answer warehouseNumber" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
+      "updating with Overseas answer storingGoodsForDispatch while removing warehouse info if storing overseas" in new Setup() {
+        val expected: VatApplication = testOverseasVatApplication.copy(
+          overseasCompliance = Some(testOverseasCompliance.copy(
+            storingGoodsForDispatch = Some(StoringOverseas),
+            usingWarehouse = None,
+            fulfilmentWarehouseNumber = None,
+            fulfilmentWarehouseName = None
+          ))
+        )
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(testOverseasVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(WarehouseNumber(testWarehouseNumber))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(WarehouseNumber(testWarehouseNumber))) mustBe expected
-        }
+        await(Service.saveVatApplication(StoringOverseas)) mustBe expected
       }
-      "updating with Overseas answer warehouseName" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(fulfilmentWarehouseName = Some(testWarehouseName))))
+      "updating with Overseas answer usingWarehouse" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(usingWarehouse = Some(true))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(WarehouseName(testWarehouseName))) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testOverseasVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
-          )
-
-          mockS4LGet(Some(testOverseasVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(WarehouseName(testWarehouseName))) mustBe expected
-        }
+        await(Service.saveVatApplication(UsingWarehouse(true))) mustBe expected
       }
-      "updating with AAS answer paymentFrequency" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment))))
+      "updating with Overseas answer usingWarehouse while removing warehouseName and warehouseNumber if false" in new Setup() {
+        val expected: VatApplication = testOverseasVatApplication.copy(
+          overseasCompliance = Some(testOverseasCompliance.copy(
+            usingWarehouse = Some(false),
+            fulfilmentWarehouseNumber = None,
+            fulfilmentWarehouseName = None
+          ))
+        )
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(testOverseasVatApplication))
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(MonthlyPayment)) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testAASVatApplication.copy(
-            annualAccountingDetails = Some(testAASDetails.copy(paymentFrequency = Some(QuarterlyPayment)))
-          )
-
-          mockS4LGet(Some(testAASVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
-
-          await(Service.saveVatApplication(QuarterlyPayment)) mustBe expected
-        }
+        await(Service.saveVatApplication(UsingWarehouse(false))) mustBe expected
       }
-      "updating with AAS answer paymentMethod" that {
-        "makes the block incomplete and saves to S4L" in new Setup() {
-          val expected: VatApplication = emptyVatApplication.copy(annualAccountingDetails = Some(AASDetails(paymentMethod = Some(CHAPS))))
+      "updating with Overseas answer warehouseNumber" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
 
-          mockS4LGet(Some(emptyVatApplication))
-          mockGetSection[VatApplication](testRegId, None)
-          mockS4LSave(expected)
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(CHAPS)) mustBe expected
-        }
-        "makes the block complete and saves to backend" in new Setup() {
-          val expected: VatApplication = testAASVatApplication.copy(
-            annualAccountingDetails = Some(testAASDetails.copy(paymentMethod = Some(CHAPS)))
-          )
+        await(Service.saveVatApplication(WarehouseNumber(testWarehouseNumber))) mustBe expected
+      }
+      "updating with Overseas answer warehouseName" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(fulfilmentWarehouseName = Some(testWarehouseName))))
 
-          mockS4LGet(Some(testAASVatApplication))
-          mockReplaceSection(testRegId, expected)
-          mockS4LClear
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
 
-          await(Service.saveVatApplication(CHAPS)) mustBe expected
-        }
+        await(Service.saveVatApplication(WarehouseName(testWarehouseName))) mustBe expected
+      }
+      "updating with AAS answer paymentFrequency" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment))))
+
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
+
+        await(Service.saveVatApplication(MonthlyPayment)) mustBe expected
+      }
+      "updating with AAS answer paymentMethod" in new Setup() {
+        val expected: VatApplication = emptyVatApplication.copy(annualAccountingDetails = Some(AASDetails(paymentMethod = Some(CHAPS))))
+
+        mockS4LGet(Some(emptyVatApplication))
+        mockGetSection[VatApplication](testRegId, None)
+        mockReplaceSection(testRegId, expected)
+        mockS4LClear
+
+        await(Service.saveVatApplication(CHAPS)) mustBe expected
       }
     }
   }
@@ -723,8 +501,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
 
       mockS4LGet(Some(emptyVatApplication))
       mockGetSection[VatApplication](testRegId, None)
-      when(mockS4LService.save(any)(any, any, any, any))
-        .thenReturn(Future.successful(mockCacheMap))
+      mockReplaceSection(testRegId, expected)
+      mockS4LClear
 
       await(Service.saveVoluntaryStartDate(
         DateSelection.company_registration_date, None, testIncorpDate
@@ -737,8 +515,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
 
       mockS4LGet(Some(emptyVatApplication))
       mockGetSection[VatApplication](testRegId, None)
-      when(mockS4LService.save(any)(any, any, any, any))
-        .thenReturn(Future.successful(mockCacheMap))
+      mockReplaceSection[VatApplication](testRegId, expected)
+      mockS4LClear
 
       await(Service.saveVoluntaryStartDate(
         DateSelection.specific_date, Some(specificStartDate), testIncorpDate

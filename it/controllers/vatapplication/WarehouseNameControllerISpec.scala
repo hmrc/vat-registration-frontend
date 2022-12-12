@@ -84,9 +84,10 @@ class WarehouseNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseName)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance =
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       ))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

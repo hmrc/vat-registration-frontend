@@ -66,8 +66,9 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(hasLandAndProperty = Some(true)))
         .registrationApi.getSection[Business](None)
+        .registrationApi.replaceSection[Business](Business(hasLandAndProperty = Some(true)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

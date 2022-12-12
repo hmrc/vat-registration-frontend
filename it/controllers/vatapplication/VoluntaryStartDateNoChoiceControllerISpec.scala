@@ -83,6 +83,8 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
             .s4lContainer[VatApplication].contains(fullVatApplication)
             .s4lContainer[VatApplication].clearedByKey
             .registrationApi.replaceSection(fullVatApplication.copy(startDate = Some(testDate)))
+            .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(startDate = Some(testDate)))
+            .s4lContainer[VatApplication].cleared
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -102,7 +104,8 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
           given
             .user.isAuthorised()
             .s4lContainer[VatApplication].contains(s4lVatApplication)
-            .s4lContainer[VatApplication].isUpdatedWith(s4lVatApplication.copy(startDate = Some(testDate)))
+            .registrationApi.replaceSection[VatApplication](s4lVatApplication.copy(startDate = Some(testDate)))
+            .s4lContainer[VatApplication].clearedByKey
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 

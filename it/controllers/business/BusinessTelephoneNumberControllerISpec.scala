@@ -45,8 +45,9 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
     "return SEE_OTHER" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(Business())
-        .s4lContainer[Business].isUpdatedWith(Business(telephoneNumber = Some("123456789")))
+        .s4lContainer[Business].isEmpty
+        .registrationApi.replaceSection[Business](Business(telephoneNumber = Some("123456789")))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

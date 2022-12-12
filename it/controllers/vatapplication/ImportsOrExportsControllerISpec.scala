@@ -79,7 +79,8 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](None)
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(tradeVatGoodsOutsideUk = Some(true)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,7 +97,8 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](None)
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(tradeVatGoodsOutsideUk = Some(false)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -103,9 +103,10 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
     given()
       .user.isAuthorised()
       .s4lContainer[Business].contains(fullModel)
-      .s4lContainer[Business].isUpdatedWith(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2))))
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1, sicCode2))
+      .registrationApi.replaceSection[Business](fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None))
+      .s4lContainer[Business].clearedByKey
 
     insertIntoDb(sessionId, iclSicCodeMapping)
 
@@ -122,7 +123,8 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
     given()
       .user.isAuthorised()
       .s4lContainer[Business].contains(fullModel)
-      .s4lContainer[Business].isUpdatedWith(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2))))
+      .registrationApi.replaceSection[Business](fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None))
+      .s4lContainer[Business].clearedByKey
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1, sicCode2))
 
@@ -140,7 +142,8 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
     given()
       .user.isAuthorised()
       .s4lContainer[Business].contains(modelWithoutCompliance)
-      .s4lContainer[Business].isUpdatedWith(modelWithoutCompliance.copy(businessActivities = Some(List(sicCode1)), mainBusinessActivity = Some(sicCode1)))
+      .registrationApi.replaceSection[Business](modelWithoutCompliance.copy(businessActivities = Some(List(sicCode1)), mainBusinessActivity = Some(sicCode1)))
+      .s4lContainer[Business].clearedByKey
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1))
 

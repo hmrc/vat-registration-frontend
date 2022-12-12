@@ -59,10 +59,9 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.getSection[Business](None)
-          .s4lContainer[Business].isUpdatedWith(
-          businessDetails.copy(website = Some(businessWebsiteAddress))
-        )
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
+          .s4lContainer[Business].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

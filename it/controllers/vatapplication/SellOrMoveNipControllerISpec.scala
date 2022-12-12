@@ -10,7 +10,7 @@ import play.api.test.Helpers._
 
 
 class SellOrMoveNipControllerISpec extends ControllerISpec {
-  val testAmount: BigDecimal = 1234.123
+  val testAmount: BigDecimal = 123456
   lazy val url = controllers.vatapplication.routes.SellOrMoveNipController.show.url
   val testNIPCompliance: NIPTurnover = NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), None)
 
@@ -46,8 +46,9 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
-          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))), Some(ConditionalValue(true, Some(testAmount)))))))
           .registrationApi.getRegistration(emptyVatSchemeNetp)
+          .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount)))))))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

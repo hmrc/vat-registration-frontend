@@ -16,7 +16,8 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
           .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(0)))
-          .s4lContainer[VatApplication].isUpdatedWith(VatApplication(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0)))
+          .registrationApi.replaceSection[VatApplication](VatApplication(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0)))
+          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

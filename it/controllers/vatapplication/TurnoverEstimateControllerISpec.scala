@@ -66,8 +66,9 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
     "redirect to Zero Rated Supplies resolver if the form has no errors" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication())
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(turnoverEstimate = Some(10000.54)))
+        .s4lContainer[VatApplication].isEmpty
+        .registrationApi.replaceSection[VatApplication](VatApplication(turnoverEstimate = Some(10000.53)))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -76,10 +76,12 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "return a redirect to next page and update S4L" in new Setup {
+      val vatApplication: VatApplication = fullVatApplication.copy(returnsFrequency = Some(Annual))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
+        .s4lContainer[VatApplication].contains(vatApplication)
+        .registrationApi.replaceSection[VatApplication](vatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -97,6 +99,8 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
         .s4lContainer[VatApplication].contains(testFullVatApplication)
         .s4lContainer[VatApplication].clearedByKey
         .registrationApi.replaceSection(testFullVatApplication)
+        .registrationApi.replaceSection[VatApplication](testFullVatApplication)
+        .s4lContainer[VatApplication].cleared
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

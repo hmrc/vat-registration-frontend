@@ -40,17 +40,13 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
     }
   }
 
-  def updateBusiness[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
-    getBusiness.flatMap { business =>
-      isModelComplete(updateBusinessModel[T](data, business)).fold(
-        incomplete => s4lService.save[Business](incomplete).map(_ => incomplete),
-        complete => for {
-          _ <- registrationApiConnector.replaceSection[Business](cp.registrationId, complete)
-          _ <- s4lService.clearKey[Business]
-        } yield complete
-      )
-    }
-  }
+  def updateBusiness[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] =
+    for {
+      business <- getBusiness
+      updatedBusiness = updateBusinessModel(data, business)
+      _ <- registrationApiConnector.replaceSection[Business](cp.registrationId, updatedBusiness)
+      _ <- s4lService.clearKey[Business]
+    } yield updatedBusiness
 
   def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
     getBusiness flatMap { sac =>
@@ -99,12 +95,6 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
     }
   }
   // scalastyle:on
-
-  private def isModelComplete: Business => Completion[Business] = {
-    case business@Business(_, _, _, Some(_), Some(_), Some(_), Some(_), _, Some(_), _, _, Some(_), Some(_), Some(sicCodes), None, _) if !needComplianceQuestions(sicCodes) => Complete(business)
-    case business@Business(_, _, _, Some(_), Some(_), Some(_), Some(_), _, Some(_), _, _, Some(_), Some(_), Some(_), Some(labourCompliance), _) if isLabourComplianceModelComplete(labourCompliance) => Complete(business)
-    case business@_ => Incomplete(business)
-  }
 
   def isLabourComplianceModelComplete(labourCompliance: LabourCompliance): Boolean = {
     labourCompliance match {

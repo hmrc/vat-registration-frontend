@@ -70,10 +70,11 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.deleteSection[OtherBusinessInvolvement]()
+        .registrationApi.replaceSection[Business](Business(otherBusinessInvolvement = Some(false)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -90,8 +91,9 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection[Business](Business(otherBusinessInvolvement = Some(true)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -107,9 +109,9 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

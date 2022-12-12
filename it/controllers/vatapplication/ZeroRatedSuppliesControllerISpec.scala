@@ -74,10 +74,12 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to Sell Or Move Northern Ireland Protocol page if turnoverEstimates exists and form has no errors" in new Setup {
+      val vatApplication: VatApplication = fullVatApplication.copy(turnoverEstimate = Some(testTurnover))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(testTurnover)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(turnoverEstimate = Some(testTurnover), zeroRatedSupplies = Some(10000.54)))
+        .s4lContainer[VatApplication].contains(vatApplication)
+        .registrationApi.replaceSection[VatApplication](vatApplication.copy(zeroRatedSupplies = Some(10000.53), appliedForExemption = None))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
