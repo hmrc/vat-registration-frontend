@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
+import models.api.{EligibilitySubmissionData, NETP}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -32,6 +33,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -40,12 +42,34 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
+        Jsoup.parse(result.body).select("main p:nth-of-type(1)").first().text() mustBe
+          "The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:"
       }
     }
+
+    "return OK for overseas page when trading details aren't stored" in new Setup {
+      given
+        .user.isAuthorised()
+        .s4lContainer[VatApplication].isEmpty
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.getSection[VatApplication](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
+
+      whenReady(res) { result =>
+        result.status mustBe OK
+        Jsoup.parse(result.body).select("main p:nth-of-type(1)").first().text() mustBe
+          "If your business is not based in the country you’re moving goods to or from, you should get an EORI number if you’re:"
+      }
+    }
+
     "return OK when trading details are stored in S4L" in new Setup {
       given
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(eoriRequested = Some(false)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,6 +84,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(VatApplication(eoriRequested = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -92,7 +117,10 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no radio option selected" in new Setup {
-      given.user.isAuthorised()
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").post("")

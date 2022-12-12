@@ -19,19 +19,24 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ApplyForEoriForm
-import play.api.mvc.{Action, AnyContent}
+import models.CurrentProfile
+import models.api.{NETP, NonUkNonEstablished, PartyType}
+import play.api.data.Form
+import play.api.mvc.{Action, AnyContent, Request}
 import services.VatApplicationService.EoriRequested
-import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.vatapplication.{apply_for_eori => ApplyForEoriView}
+import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
+import views.html.vatapplication.{OverseasApplyForEori, apply_for_eori => ApplyForEoriView}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class ApplyForEoriController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
+                                       vatRegistrationService: VatRegistrationService,
                                        vatApplicationService: VatApplicationService,
-                                       applyForEoriView: ApplyForEoriView)
+                                       applyForEoriView: ApplyForEoriView,
+                                       overseasApplyForEoriView: OverseasApplyForEori)
                                       (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents)
@@ -40,11 +45,14 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatApplicationService.getVatApplication map {
-          _.eoriRequested match {
-            case Some(eoriRequested) => Ok(applyForEoriView(ApplyForEoriForm.form.fill(eoriRequested)))
-            case None => Ok(applyForEoriView(ApplyForEoriForm.form))
-          }
+        vatRegistrationService.partyType flatMap {
+          partyType =>
+            vatApplicationService.getVatApplication map {
+              _.eoriRequested match {
+                case Some(eoriRequested) => Ok(getView(partyType, ApplyForEoriForm.form.fill(eoriRequested)))
+                case None => Ok(getView(partyType, ApplyForEoriForm.form))
+              }
+            }
         }
   }
 
@@ -52,10 +60,22 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
     implicit request =>
       implicit profile =>
         ApplyForEoriForm.form.bindFromRequest.fold(
-          errors => Future.successful(BadRequest(applyForEoriView(errors))),
-          success => vatApplicationService.saveVatApplication(EoriRequested(success)) map { _ =>
-            Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
-          }
+          errors =>
+            vatRegistrationService.partyType map {
+              partyType => BadRequest(getView(partyType, errors))
+            },
+          success =>
+            vatApplicationService.saveVatApplication(EoriRequested(success)) map { _ =>
+              Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+            }
         )
+  }
+
+  private def getView(partyType: PartyType, form: Form[Boolean])
+                       (implicit request: Request[_], profile: CurrentProfile) = {
+    partyType match {
+      case NETP | NonUkNonEstablished => overseasApplyForEoriView(form)
+      case _ => applyForEoriView(form)
+    }
   }
 }

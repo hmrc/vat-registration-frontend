@@ -30,12 +30,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
 
   def goodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
-    url = scheme => {
-      scheme.partyType match {
-        case Some(NETP) | Some(NonUkNonEstablished) => controllers.vatapplication.routes.TurnoverEstimateController.show.url
-        case _ => controllers.vatapplication.routes.ImportsOrExportsController.show.url
-      }
-    },
+    url = _ => controllers.vatapplication.routes.ImportsOrExportsController.show.url,
     tagId = "goodsAndServicesRow",
     checks = scheme => {
       checkImportsAndExports(scheme).++ {
@@ -47,8 +42,9 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
           scheme.vatApplication.exists(_.claimVatRefunds.isDefined)
         )
       }.++ {
-        scheme.eligibilitySubmissionData.map(_.partyType) match {
-          case Some(NETP) | Some(NonUkNonEstablished) => scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
+        scheme.partyType match {
+          case Some(NETP) | Some(NonUkNonEstablished) =>
+            scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
           case _ => Nil
         }
       }
@@ -138,6 +134,18 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       ).flatten
     )
 
+  private def checkImportsAndExports(vatScheme: VatScheme) = {
+    {
+      Seq(vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.isDefined))
+    }.++ {
+      if (vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.contains(true))) {
+        Seq(vatScheme.vatApplication.exists(_.eoriRequested.isDefined))
+      } else {
+        Nil
+      }
+    }
+  }
+
   private def resolveBankDetailsRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
     if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow)
   }
@@ -160,21 +168,6 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         None
       case None =>
         throw new InternalServerException("[VatRegistrationTaskList]Failed to get registration reason while building vat registration row tasklist row")
-    }
-  }
-
-  private def checkImportsAndExports(vatScheme: VatScheme) = {
-    vatScheme.partyType match {
-      case Some(NETP) | Some(NonUkNonEstablished) => Nil
-      case _ => {
-        Seq(vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.isDefined))
-      }.++ {
-        if (vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.contains(true))) {
-          Seq(vatScheme.vatApplication.exists(_.eoriRequested.isDefined))
-        } else {
-          Nil
-        }
-      }
     }
   }
 

@@ -287,6 +287,13 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val businessDescriptionMaxLength = servicesConfig.getInt("constants.businessDescriptionMaxLength")
 
   lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
+  lazy val overseasEoriBullet1Url = "https://www.gov.uk/check-customs-declaration/"
+  lazy val overseasEoriBullet2Url = "https://www.gov.uk/guidance/making-an-entry-summary-declaration"
+  lazy val overseasEoriBullet3Url = "https://www.gov.uk/guidance/find-out-when-to-make-an-exit-summary-declaration"
+  lazy val overseasEoriBullet4Url = "https://www.gov.uk/guidance/how-to-put-goods-into-a-temporary-storage-facility"
+  lazy val overseasEoriBullet5Url = "https://www.gov.uk/guidance/apply-to-import-goods-temporarily-to-the-uk-or-eu"
+  lazy val overseasEoriBullet8Url = "https://www.gov.uk/guidance/common-transit-convention-countries"
+  lazy val overseasNoEoriUrl = "https://www.gov.uk/guidance/appoint-someone-to-deal-with-customs-on-your-behalf"
 
   def individualKickoutUrl(continueUrl: String): String = s"https://www.tax.service.gov.uk/government-gateway-registration-frontend?accountType=organisation&continue=$continueUrl&origin=unknown"
 

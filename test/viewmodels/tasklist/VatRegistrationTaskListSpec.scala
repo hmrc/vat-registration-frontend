@@ -50,7 +50,7 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     }
 
     "prerequisite is complete but goods and services flow hasn't started" must {
-      "return TLNotStarted with correct url depending on party type" in {
+      "return TLNotStarted with correct imports exports for both UK and non-UK party types" in {
         def verifyNotStartedFlow(partyType: PartyType, expectedUrl: String) = {
           val schema = validVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = partyType)),
@@ -72,46 +72,13 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
           sectionRow.url mustBe expectedUrl
         }
 
-        verifyNotStartedFlow(NETP, controllers.vatapplication.routes.TurnoverEstimateController.show.url)
+        verifyNotStartedFlow(NETP, controllers.vatapplication.routes.ImportsOrExportsController.show.url)
         verifyNotStartedFlow(UkCompany, controllers.vatapplication.routes.ImportsOrExportsController.show.url)
       }
     }
 
     "prerequisite is complete and goods and services captured with core details" must {
-      "return TLCompleted with no imports/exports for NETP/NonUkNonEstablished" in {
-
-        def verifyCompletion(partyType: PartyType) = {
-          val scheme = validVatScheme.copy(
-            eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = partyType)),
-            business = Some(validBusiness.copy(
-              hasLandAndProperty = Some(false),
-              otherBusinessInvolvement = Some(false),
-              businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
-            )),
-            vatApplication = Some(validVatApplication.copy(
-              tradeVatGoodsOutsideUk = None,
-              eoriRequested = None,
-              overseasCompliance = Some(OverseasCompliance(
-                goodsToOverseas = Some(false),
-                storingGoodsForDispatch = Some(StoringOverseas)
-              )),
-              northernIrelandProtocol = Some(NIPTurnover(
-                goodsToEU = Some(ConditionalValue(answer = false, None)),
-                goodsFromEU = Some(ConditionalValue(answer = false, None)),
-              ))
-            ))
-          )
-
-          val sectionRow = section.goodsAndServicesRow.build(scheme)
-          sectionRow.status mustBe TLCompleted
-          sectionRow.url mustBe controllers.vatapplication.routes.TurnoverEstimateController.show.url
-        }
-
-        verifyCompletion(NETP)
-        verifyCompletion(NonUkNonEstablished)
-      }
-
-      "return TLCompleted with imports/exports for non NETP" in {
+      "return TLCompleted" in {
         val scheme = validVatScheme.copy(
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),

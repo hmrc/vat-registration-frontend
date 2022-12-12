@@ -1,0 +1,113 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        errorSummary: errorSummary,
+        p: p,
+        form: FormWithCSRF,
+        yesNoRadio: yesNoRadio,
+        button: button,
+        link: link,
+        h1: h1,
+        bulletsHtml: bulletsHtml,
+        govukInsetText: GovukInsetText
+)
+
+@(applyForEoriForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@noEORIoption = {
+    @p{
+        @messages("pages.applyForEori.overseas.p2.start")
+        @link(appConfig.overseasNoEoriUrl, "pages.applyForEori.overseas.p2.linkText")
+        @messages("pages.applyForEori.overseas.p2.end")
+    }
+    @p{ @messages("pages.applyForEori.overseas.p3") }
+}
+
+@bullet1Block = {
+    @messages("pages.applyForEori.overseas.bullet1.start")
+    @link(appConfig.overseasEoriBullet1Url, "pages.applyForEori.overseas.bullet1.linkText")
+}
+
+@bullet2Block = {
+    @messages("pages.applyForEori.overseas.bullet2.start")
+    @link(appConfig.overseasEoriBullet2Url, "pages.applyForEori.overseas.bullet2.linkText")
+}
+
+@bullet3Block = {
+    @messages("pages.applyForEori.overseas.bullet3.start")
+    @link(appConfig.overseasEoriBullet3Url, "pages.applyForEori.overseas.bullet3.linkText")
+}
+
+@bullet4Block = {
+    @messages("pages.applyForEori.overseas.bullet4.start")
+    @link(appConfig.overseasEoriBullet4Url, "pages.applyForEori.overseas.bullet4.linkText")
+}
+
+@bullet5Block = {
+    @messages("pages.applyForEori.overseas.bullet5.start")
+    @link(appConfig.overseasEoriBullet5Url, "pages.applyForEori.overseas.bullet5.linkText")
+}
+
+@bullet8Block = {
+    @messages("pages.applyForEori.overseas.bullet8.start")
+    @link(appConfig.overseasEoriBullet8Url, "pages.applyForEori.overseas.bullet8.linkText")
+    @messages("pages.applyForEori.overseas.bullet8.end")
+}
+
+@layout(pageTitle = Some(title(applyForEoriForm, messages("pages.applyForEori.heading"))), backLink = true) {
+
+    @errorSummary(applyForEoriForm.errors)
+
+    @h1(messages("pages.applyForEori.heading"))
+    @p{ @messages("pages.applyForEori.overseas.p1") }
+    @bulletsHtml(List(
+        bullet1Block,
+        bullet2Block,
+        bullet3Block,
+        bullet4Block,
+        bullet5Block,
+        Html(messages("pages.applyForEori.overseas.bullet6")),
+        Html(messages("pages.applyForEori.overseas.bullet7")),
+        bullet8Block
+    ): _ *)
+    @govukInsetText(InsetText(content = HtmlContent(noEORIoption)))
+
+    @p{
+        @link(
+            link = appConfig.findOutAboutEoriUrl,
+            messageKey = "pages.applyForEori.linkText",
+            isExternal = true
+        )
+    }
+
+    @form(action = controllers.vatapplication.routes.ApplyForEoriController.submit) {
+        @yesNoRadio(
+            form = applyForEoriForm,
+            headingKey = messages("pages.applyForEori.heading"),
+            isPageHeading = false,
+            inline = true,
+            classes = "govuk-visually-hidden"
+        )
+
+        @button(messages("app.common.continue"))
+    }
+}

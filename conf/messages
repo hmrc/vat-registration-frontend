@@ -914,6 +914,28 @@ pages.applyForEori.p2.bullet2               = is based in the Channel Islands an
 pages.applyForEori.linkText                 = Find out more about EORI numbers
 validation.applyForEori.missing             = Select yes if you need an EORI number
 
+# Overseas Apply For Eori
+pages.applyForEori.overseas.p1                  = If your business is not based in the country you’re moving goods to or from, you should get an EORI number if you’re:
+pages.applyForEori.overseas.bullet1.start       = making a customs declaration -
+pages.applyForEori.overseas.bullet1.linkText    = check if you’re eligible to make a customs declaration
+pages.applyForEori.overseas.bullet2.start       = making an
+pages.applyForEori.overseas.bullet2.linkText    = entry summary declaration
+pages.applyForEori.overseas.bullet3.start       = making an
+pages.applyForEori.overseas.bullet3.linkText    = exit summary declaration
+pages.applyForEori.overseas.bullet4.start       = making a
+pages.applyForEori.overseas.bullet4.linkText    = temporary storage declaration
+pages.applyForEori.overseas.bullet5.start       = making a
+pages.applyForEori.overseas.bullet5.linkText    = customs declaration for temporary admission or re-export declaration where you have a guarantee
+pages.applyForEori.overseas.bullet6             = acting as a carrier for transporting goods by sea, inland waterway or air
+pages.applyForEori.overseas.bullet7             = acting as a carrier connected to the customs system and you want to get notifications regarding the lodging or amendment of entry summary declarations
+pages.applyForEori.overseas.bullet8.start       = established in a
+pages.applyForEori.overseas.bullet8.linkText    = common transit country
+pages.applyForEori.overseas.bullet8.end         = where the declaration is lodged instead of an entry summary declaration or is used as a pre-departure declaration
+pages.applyForEori.overseas.p2.start            = If you’re not eligible to apply for an EORI number yourself, you’ll need to
+pages.applyForEori.overseas.p2.linkText         = appoint someone to deal with customs on your behalf.
+pages.applyForEori.overseas.p2.end              = The person you appoint will need to get the EORI number instead of you.
+pages.applyForEori.overseas.p3                  = If you’re based in the Channel Islands and you move goods to or from the UK, you do not need an EORI number. You’ll need an EORI number if you use HMRC’s customs systems like Customs Handling of Import and Export Freight (CHIEF).
+
 # Applicant Home Address Page
 pages.applicantHomeAddress.title                           = What is the applicant’s home address?
 pages.applicantHomeAddress.heading                         = What is your home address?
