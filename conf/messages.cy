@@ -914,26 +914,27 @@ pages.applyForEori.linkText                 = Rhagor o wybodaeth am rifau EORI
 validation.applyForEori.missing             = Dewiswch ‘Iawn’ os oes angen rhif EORI arnoch
 
 # Overseas Apply For Eori
-pages.applyForEori.overseas.p1                  = If your business is not based in the country you’re moving goods to or from, you should get an EORI number if you’re:
-pages.applyForEori.overseas.bullet1.start       = making a customs declaration -
-pages.applyForEori.overseas.bullet1.linkText    = check if you’re eligible to make a customs declaration
-pages.applyForEori.overseas.bullet2.start       = making an
-pages.applyForEori.overseas.bullet2.linkText    = entry summary declaration
-pages.applyForEori.overseas.bullet3.start       = making an
-pages.applyForEori.overseas.bullet3.linkText    = exit summary declaration
-pages.applyForEori.overseas.bullet4.start       = making a
-pages.applyForEori.overseas.bullet4.linkText    = temporary storage declaration
-pages.applyForEori.overseas.bullet5.start       = making a
-pages.applyForEori.overseas.bullet5.linkText    = customs declaration for temporary admission or re-export declaration where you have a guarantee
-pages.applyForEori.overseas.bullet6             = acting as a carrier for transporting goods by sea, inland waterway or air
-pages.applyForEori.overseas.bullet7             = acting as a carrier connected to the customs system and you want to get notifications regarding the lodging or amendment of entry summary declarations
-pages.applyForEori.overseas.bullet8.start       = established in a
-pages.applyForEori.overseas.bullet8.linkText    = common transit country
-pages.applyForEori.overseas.bullet8.end         = where the declaration is lodged instead of an entry summary declaration or is used as a pre-departure declaration
-pages.applyForEori.overseas.p2.start            = If you’re not eligible to apply for an EORI number yourself, you’ll need to
-pages.applyForEori.overseas.p2.linkText         = appoint someone to deal with customs on your behalf.
-pages.applyForEori.overseas.p2.end              = The person you appoint will need to get the EORI number instead of you.
-pages.applyForEori.overseas.p3                  = If you’re based in the Channel Islands and you move goods to or from the UK, you do not need an EORI number. You’ll need an EORI number if you use HMRC’s customs systems like Customs Handling of Import and Export Freight (CHIEF).
+pages.applyForEori.overseas.p1                  = Os nad yw’ch busnes wedi’i leoli yn y wlad yr ydych yn symud nwyddau iddi neu ohoni Dylech gael rhif EORI o hyd os ydych:
+pages.applyForEori.overseas.bullet1.start       = yn gwneud datganiad tollau -
+pages.applyForEori.overseas.bullet1.linkText    = gwiriwch a ydych yn gymwys i wneud datganiad tollau
+pages.applyForEori.overseas.bullet2.start       = yn gwneud
+pages.applyForEori.overseas.bullet2.linkText    = datganiad cryno wrth gyrraedd
+pages.applyForEori.overseas.bullet3.start       = yn gwneud
+pages.applyForEori.overseas.bullet3.linkText    = datganiad cryno wrth ymadael
+pages.applyForEori.overseas.bullet4.start       = yn gwneud
+pages.applyForEori.overseas.bullet4.linkText    = datganiad storio dros dro
+pages.applyForEori.overseas.bullet5.start       = yn gwneud
+pages.applyForEori.overseas.bullet5.linkText    = datganiad tollau ar gyfer mynediad dros dro
+pages.applyForEori.overseas.bullet5.end         = neu ddatganiad ail-allforio lle mae gennych warant
+pages.applyForEori.overseas.bullet6             = yn gweithredu fel cludwr ar gyfer cludo nwyddau ar y môr, ar ddyfrffordd fewndirol neu drwy’r awyr
+pages.applyForEori.overseas.bullet7             = yn gweithredu fel cludwr sy’n gysylltiedig â’r system dollau ac yn dymuno cael hysbysiadau am gyflwyno neu ddiwygio datganiadau cryno wrth gyrraedd
+pages.applyForEori.overseas.bullet8.start       = wedi’ch sefydlu mewn
+pages.applyForEori.overseas.bullet8.linkText    = gwlad cludo cyffredin
+pages.applyForEori.overseas.bullet8.end         = lle caiff y datganiad ei gyflwyno yn lle datganiad cryno wrth gyrraedd neu lle caiff ei ddefnyddio fel datganiad cyn gadael
+pages.applyForEori.overseas.p2.start            = Os nad ydych yn gymwys i wneud cais am rif EORI eich hun, bydd angen i chi
+pages.applyForEori.overseas.p2.linkText         = benodi rhywun i ddelio â’r tollau ar eich rhan.
+pages.applyForEori.overseas.p2.end              = Bydd yn rhaid i’r person yr ydych yn ei benodi gael y rhif EORI yn eich lle chi.
+pages.applyForEori.overseas.p3                  = Os ydych wedi’ch lleoli yn Ynysoedd y Sianel a’ch bod yn symud nwyddau i’r DU neu oddi yno, nid oes angen rhif EORI arnoch. Bydd angen rhif EORI arnoch os ydych yn defnyddio systemau tollau CThEM, megis System y Tollau ar gyfer Trin Nwyddau a Gaiff eu Mewnforio a’u Hallforio (CHIEF).
 
 # Applicant Home Address Page
 pages.applicantHomeAddress.title                           = Beth yw cyfeiriad cartref yr ymgeisydd?
