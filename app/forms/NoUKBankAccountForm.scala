@@ -16,13 +16,12 @@
 
 package forms
 
-import featureswitch.core.config.{FeatureSwitching, NewNoBankReasons}
 import models._
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
 
-object NoUKBankAccountForm extends FeatureSwitching {
+object NoUKBankAccountForm {
 
   val noUKBankAccount: String = "value"
 
@@ -35,27 +34,6 @@ object NoUKBankAccountForm extends FeatureSwitching {
   val noUKBankAccountError: String = "pages.noUKBankAccount.error"
 
   private def formatter: Formatter[NoUKBankAccount] = new Formatter[NoUKBankAccount] {
-    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], NoUKBankAccount] = {
-      data.get(key) match {
-        case Some(`beingSetup`) => Right(BeingSetupOrNameChange)
-        case Some(`overseasAccount`) => Right(OverseasAccount)
-        case Some(`nameChange`) => Right(NameChange)
-        case _ => Left(Seq(FormError(key, noUKBankAccountError)))
-      }
-    }
-
-    override def unbind(key: String, value: NoUKBankAccount): Map[String, String] = {
-      val stringValue = value match {
-        case BeingSetupOrNameChange => beingSetup
-        case OverseasAccount => overseasAccount
-        case NameChange => nameChange
-        case _ => ""
-      }
-      Map(key -> stringValue)
-    }
-  }
-
-  private def newFormatter: Formatter[NoUKBankAccount] = new Formatter[NoUKBankAccount] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], NoUKBankAccount] = {
       data.get(key) match {
         case Some(`beingSetup`) => Right(BeingSetupOrNameChange)
@@ -82,11 +60,7 @@ object NoUKBankAccountForm extends FeatureSwitching {
   def form: Form[NoUKBankAccount] = Form(
     single(
       noUKBankAccount -> of(
-        if (isEnabled(NewNoBankReasons)) {
-          newFormatter
-        } else {
           formatter
-        }
       )
     )
   )
