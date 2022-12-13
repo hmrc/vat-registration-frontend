@@ -141,27 +141,6 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
   }
 
   s"POST ${pageUrl(idx1)}" must {
-    "return a redirect to next page after storing in S4L" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
-      given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
-        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
-        .s4lContainer[OtherBusinessInvolvement].isUpdatedWith(OtherBusinessInvolvement(Some("true")))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(OtherBusinessActivelyTradingForm.yesNo -> Seq("true")))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(idx1).url)
-      }
-    }
-
     "return a redirect to next page after storing in BE" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
@@ -169,7 +148,8 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .s4lContainer[OtherBusinessInvolvement].clearedByKey
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(stillTrading = Some(false)), idx = Some(idx1))
 
@@ -189,7 +169,9 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post("")
 
-      whenReady(response) { _.status mustBe BAD_REQUEST }
+      whenReady(response) {
+        _.status mustBe BAD_REQUEST
+      }
     }
   }
 }

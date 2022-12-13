@@ -21,7 +21,7 @@ import controllers.BaseController
 import forms.otherbusinessinvolvements.ObiSummaryForm
 import models.OtherBusinessInvolvement
 import play.api.mvc.{Action, AnyContent}
-import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService, VatRegistrationService}
+import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
 import viewmodels.ObiSummaryRow
@@ -34,7 +34,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ObiSummaryController @Inject()(val authConnector: AuthConnector,
                                      val sessionService: SessionService,
                                      otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
-                                     vatRegistrationService: VatRegistrationService,
                                      view: ObiSummary)
                                     (implicit appConfig: FrontendAppConfig,
                                      val executionContext: ExecutionContext,
@@ -44,11 +43,18 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        otherBusinessInvolvementsService.getOtherBusinessInvolvements.map {
+        otherBusinessInvolvementsService.getOtherBusinessInvolvements.flatMap {
           case Nil =>
-            Redirect(routes.OtherBusinessInvolvementController.show)
+            Future.successful(Redirect(routes.OtherBusinessInvolvementController.show))
           case otherBusinessInvolvements =>
-            Ok(view(ObiSummaryForm(), buildRows(otherBusinessInvolvements), otherBusinessInvolvements.size))
+            val clearedObiList = otherBusinessInvolvements.filter(_.isModelComplete)
+            val page = Ok(view(ObiSummaryForm(), buildRows(clearedObiList), clearedObiList.size))
+
+            if (clearedObiList != otherBusinessInvolvements) {
+              otherBusinessInvolvementsService.upsertObiList(clearedObiList).map(_ => page)
+            } else {
+              Future.successful(page)
+            }
         }
   }
 
@@ -75,8 +81,9 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
         )
   }
 
-  def continue: Action[AnyContent] = isAuthenticatedWithProfile { _ =>_ =>
-    Future.successful(Redirect(controllers.routes.TaskListController.show))
+  def continue: Action[AnyContent] = isAuthenticatedWithProfile { _ =>
+    _ =>
+      Future.successful(Redirect(controllers.routes.TaskListController.show))
   }
 
   private def buildRows(otherBusinessInvolvements: List[OtherBusinessInvolvement]): List[ObiSummaryRow] =
