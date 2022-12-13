@@ -44,7 +44,7 @@
 
         @obiSummaryTable(obiList)
 
-        @if(numObis < 10) {
+        @if(numObis < appConfig.maxObiLimit) {
             @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.submit) {
                 @yesNoRadio(
                     form = obiSummaryForm,
@@ -59,7 +59,7 @@
             }
         } else {
             @formWithCSRF(action = controllers.otherbusinessinvolvements.routes.ObiSummaryController.continue) {
-                @p(content = Html(messages("obi.summary.max.limit.reached", numObis)), classes = "govuk-body govuk-!-font-weight-bold")
+                @p(content = Html(messages("obi.summary.max.limit.reached", appConfig.maxObiLimit)), classes = "govuk-body govuk-!-font-weight-bold")
                 @button("app.common.continue", showSaveProgressButton = true)
             }
         }

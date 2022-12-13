@@ -616,7 +616,6 @@ pages.accounting.period.radio.march                         = March, June, Septe
 validation.accounting.period.missing                        = Select the period the business will submit its VAT returns
 
 ##Vat Correspondence Page
-pages.vatCorrespondence.title                          = What language should we send VAT correspondence in?
 pages.vatCorrespondence.heading                        = What language should we send VAT correspondence in?
 pages.vatCorrespondence.english                        = English
 pages.vatCorrespondence.welsh                          = Welsh
@@ -967,7 +966,7 @@ pages.roleInTheBusiness.error.message                    = Select the role withi
 # Former Name
 pages.formerName.yourHeading                             = Have you ever changed your name?
 pages.formerName.namedHeading                            = Has {0} ever changed their name?
-pages.formerName.married                                 = This could be if they got married or changed your name by deed poll.
+pages.formerName.married                                 = This could be if they got married or changed their name by deed poll.
 validation.formerName.choice.missing                     = Select yes if there’s been a name change
 
 # Former Name Capture
@@ -1792,7 +1791,7 @@ validation.businessWebsiteAddress.maxlen             = The business website addr
 taxRep.heading                                       = Do you want to appoint a UK tax representative for the business?
 taxRep.para1                                          = You can appoint a tax representative to deal with VAT matters on behalf of the business.
 taxRep.para2                                         = They will be the point of contact for VAT and they can be made responsible for any of the business’s VAT debts.
-validation.taxRep.error                              = Select yes if you would like to appoint a UK Tax Representative for the business
+validation.taxRep.error                              = Select yes if you want to appoint a UK tax representative for the business
 
 # SUPPLY 1614A PAGE
 supply1614A.heading                                     = Do you need to upload a VAT1614A form?
@@ -1829,7 +1828,7 @@ eligibility.businessEntity.registered-society                       = Registered
 eligibility.businessEntity.unincorporated-association               = Unincorporated Association
 eligibility.businessEntity.division                                 = Division
 eligibility.businessEntityOverseas.netp                             = Non-established taxable person (NETP)
-eligibility.businessEntityOverseas.overseas                         = Non UK Company
+eligibility.businessEntityOverseas.overseas                         = Non-UK Company
 eligibility.registrationReason.sellingGoods.radio                   = It’s selling goods or services and needs or wants to charge VAT to customers
 eligibility.registrationReason.takingOver.radio                     = It’s taking over a VAT registered business as a Transfer of a Going Concern
 eligibility.registrationReason.changingEntity.radio                 = You’re changing the legal entity of the business (for example, from sole trader to limited company)
