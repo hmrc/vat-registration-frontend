@@ -926,6 +926,7 @@ pages.applyForEori.overseas.bullet4.start       = making a
 pages.applyForEori.overseas.bullet4.linkText    = temporary storage declaration
 pages.applyForEori.overseas.bullet5.start       = making a
 pages.applyForEori.overseas.bullet5.linkText    = customs declaration for temporary admission or re-export declaration where you have a guarantee
+pages.applyForEori.overseas.bullet5.end         =
 pages.applyForEori.overseas.bullet6             = acting as a carrier for transporting goods by sea, inland waterway or air
 pages.applyForEori.overseas.bullet7             = acting as a carrier connected to the customs system and you want to get notifications regarding the lodging or amendment of entry summary declarations
 pages.applyForEori.overseas.bullet8.start       = established in a
