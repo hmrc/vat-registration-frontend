@@ -18,7 +18,7 @@ package services
 
 import config.Logging
 import connectors.RegistrationApiConnector
-import models.{CurrentProfile, OtherBusinessInvolvement, S4LKey}
+import models.{CurrentProfile, OtherBusinessInvolvement}
 import services.OtherBusinessInvolvementsService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -30,31 +30,20 @@ class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
                                                  registrationApiConnector: RegistrationApiConnector
                                                 )(implicit ec: ExecutionContext) extends Logging {
 
-  def getOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Option[OtherBusinessInvolvement]] = {
-    implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(index)
+  def getOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Option[OtherBusinessInvolvement]] =
+    registrationApiConnector.getSection[OtherBusinessInvolvement](profile.registrationId, Some(index))
 
-    s4LService.fetchAndGet[OtherBusinessInvolvement].flatMap {
-      case None | Some(OtherBusinessInvolvement(None, None, None, None, None, None)) =>
-        registrationApiConnector.getSection[OtherBusinessInvolvement](profile.registrationId, Some(index))
-      case otherBusinessInvolvement => Future.successful(otherBusinessInvolvement)
-    }
-  }
-
-  def getOtherBusinessInvolvements(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[List[OtherBusinessInvolvement]] = {
+  def getOtherBusinessInvolvements(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[List[OtherBusinessInvolvement]] =
     registrationApiConnector.getListSection[OtherBusinessInvolvement](profile.registrationId)
-  }
 
   def getHighestValidIndex(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Int] =
     getOtherBusinessInvolvements.map(_.length + 1)
 
   def updateOtherBusinessInvolvement[T](index: Int, data: T)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[OtherBusinessInvolvement] = {
-    implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(index)
-
     for {
       otherBusinessInvolvement <- getOtherBusinessInvolvement(index)
       updatedOtherBusinessInvolvement = updateModel(otherBusinessInvolvement.getOrElse(OtherBusinessInvolvement()), data)
       result <- registrationApiConnector.replaceSection(profile.registrationId, updatedOtherBusinessInvolvement, Some(index))
-      _ <- s4LService.clearKey[OtherBusinessInvolvement]
     } yield result
   }
 

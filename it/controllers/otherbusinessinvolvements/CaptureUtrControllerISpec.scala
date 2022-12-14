@@ -18,8 +18,8 @@ package controllers.otherbusinessinvolvements
 
 import forms.otherbusinessinvolvements.CaptureUtrForm
 import itutil.ControllerISpec
+import models.OtherBusinessInvolvement
 import models.api.EligibilitySubmissionData
-import models.{OtherBusinessInvolvement, S4LKey}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -45,13 +45,11 @@ class CaptureUtrControllerISpec extends ControllerISpec {
 
   s"GET ${pageUrl(idx1)}" must {
     "return OK" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
@@ -65,13 +63,11 @@ class CaptureUtrControllerISpec extends ControllerISpec {
     }
 
     "return OK with prepop" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -85,30 +81,28 @@ class CaptureUtrControllerISpec extends ControllerISpec {
     }
 
     "return OK when data is incomplete" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(utr = None)), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
-      whenReady(response) { _.status mustBe OK }
+      whenReady(response) {
+        _.status mustBe OK
+      }
     }
 
     "redirect to minIdx page if given index is less than configured minIdx" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
@@ -125,13 +119,11 @@ class CaptureUtrControllerISpec extends ControllerISpec {
 
   s"GET ${pageUrl(idx2)}" must {
     "return OK if it is a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
@@ -145,13 +137,11 @@ class CaptureUtrControllerISpec extends ControllerISpec {
     }
 
     "return a redirect to a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
@@ -168,7 +158,6 @@ class CaptureUtrControllerISpec extends ControllerISpec {
 
   s"POST ${pageUrl(idx1)}" must {
     "return a redirect to next page after storing in BE" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       val testNewUtr = "0987654321"
       given()
         .audit.writesAudit()
@@ -176,8 +165,6 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
-        .s4lContainer[OtherBusinessInvolvement].clearedByKey
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(utr = Some(testNewUtr)), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -191,7 +178,6 @@ class CaptureUtrControllerISpec extends ControllerISpec {
     }
 
     "return a BAD_REQUEST if invalid data is submitted" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       val invalidUtr = "invalidUtr"
 
       given()
@@ -199,7 +185,6 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

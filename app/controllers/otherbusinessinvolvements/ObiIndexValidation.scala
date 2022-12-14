@@ -16,6 +16,7 @@
 
 package controllers.otherbusinessinvolvements
 
+import config.FrontendAppConfig
 import models.OtherBusinessInvolvement
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
@@ -24,9 +25,9 @@ import scala.concurrent.Future
 
 trait ObiIndexValidation {
 
-  def validateIndex(index: Int, call: Int => Call)(function: Future[Result]): Future[Result] =
-    if (index > OtherBusinessInvolvement.maxIndex) {
-      Future.successful(Redirect(call(OtherBusinessInvolvement.maxIndex)))
+  def validateIndex(index: Int, call: Int => Call)(function: Future[Result])(implicit appConfig: FrontendAppConfig): Future[Result] =
+    if (index > appConfig.maxObiLimit) {
+      Future.successful(Redirect(call(appConfig.maxObiLimit)))
     } else if (index < OtherBusinessInvolvement.minIndex) {
       Future.successful(Redirect(call(OtherBusinessInvolvement.minIndex)))
     } else {
