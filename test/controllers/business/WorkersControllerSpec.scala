@@ -16,7 +16,6 @@
 
 package controllers.business
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import featureswitch.core.models.FeatureSwitch
 import fixtures.VatRegistrationFixture
 import models.api.{NonUkNonEstablished, UkCompany}
@@ -29,7 +28,7 @@ import views.html.sicandcompliance.workers
 import scala.concurrent.Future
 
 class WorkersControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with BusinessServiceMock with MockVatRegistrationService with FeatureSwitching {
+  with VatRegistrationFixture with BusinessServiceMock with MockVatRegistrationService {
 
   trait Setup {
     val view = app.injector.instanceOf[workers]
@@ -47,7 +46,6 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
     val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.WorkersController.show)
 
     def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
-      featureSwitchFn(OtherBusinessInvolvement)
       submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       ))(_ redirectsTo resolvedLocation.url)

@@ -16,7 +16,6 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
@@ -26,7 +25,7 @@ import uk.gov.hmrc.http.InternalServerException
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) extends FeatureSwitching {
+class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) {
 
   def goodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
@@ -50,11 +49,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       }
     },
     prerequisites = _ =>
-      if (isEnabled(OtherBusinessInvolvement)) {
         Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
-      } else {
-        Seq(aboutTheBusinessTaskList.businessActivitiesRow)
-      }
   )
 
   def bankAccountDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(

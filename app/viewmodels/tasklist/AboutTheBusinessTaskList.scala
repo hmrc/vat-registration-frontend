@@ -18,7 +18,7 @@ package viewmodels.tasklist
 
 import config.FrontendAppConfig
 import controllers.partners.PartnerIndexValidation.minPartnerIndex
-import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, WelshLanguage, OtherBusinessInvolvement => OBI_FS}
+import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, WelshLanguage}
 import models.api._
 import models.external.{MinorEntity, PartnershipIdEntity}
 import models.{Business, CurrentProfile}
@@ -39,7 +39,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         buildPartnersDetailRow(vatScheme).map(_.build(vatScheme)),
         Some(businessDetailsRow.build(vatScheme)),
         Some(businessActivitiesRow.build(vatScheme)),
-        if (isEnabled(OBI_FS)) Some(otherBusinessInvolvementsRow.build(vatScheme)) else None
+        Some(otherBusinessInvolvementsRow.build(vatScheme))
       ).flatten
     )
 

@@ -16,7 +16,6 @@
 
 package controllers.business
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import fixtures.VatRegistrationFixture
 import models.api.UkCompany
 import play.api.mvc.AnyContentAsEmpty
@@ -28,7 +27,7 @@ import views.html.sicandcompliance.intermediary_supply
 import scala.concurrent.Future
 
 class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with FutureAwaits with FutureAssertions with DefaultAwaitTimeout
-  with VatRegistrationFixture with BusinessServiceMock with MockApplicantDetailsService with MockVatRegistrationService with FeatureSwitching {
+  with VatRegistrationFixture with BusinessServiceMock with MockApplicantDetailsService with MockVatRegistrationService {
 
   trait Setup {
     val view: intermediary_supply = app.injector.instanceOf[intermediary_supply]
@@ -83,7 +82,6 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     }
 
     "redirect to Imports or Exports or OBI with Yes selected for UkCompany" in new Setup {
-      enable(OtherBusinessInvolvement)
       mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)

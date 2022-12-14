@@ -16,7 +16,7 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement, StubIcl}
+import featureswitch.core.config.{FeatureSwitching, StubIcl}
 import fixtures.VatRegistrationFixture
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -45,15 +45,6 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
-  }
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    enable(OtherBusinessInvolvement)
-  }
-  override def afterEach(): Unit = {
-    super.afterEach()
-    disable(OtherBusinessInvolvement)
   }
 
   "showHaltPage should return a 200" in new Setup {
