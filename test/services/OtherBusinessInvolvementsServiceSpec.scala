@@ -18,7 +18,7 @@ package services
 
 import connectors.mocks.MockRegistrationApiConnector
 import models.OtherBusinessInvolvement
-import org.mockito.ArgumentMatchers.{any, eq => matches}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import services.OtherBusinessInvolvementsService._
 import testHelpers.VatRegSpec
@@ -88,142 +88,76 @@ class OtherBusinessInvolvementsServiceSpec extends VatRegSpec with MockRegistrat
   }
 
   "updateOtherBusinessInvolvement" must {
-    "return OtherBusinessInvolvement if storing otherBusinessName" when {
-      "the model is incomplete" in {
-        val incompleteModel = OtherBusinessInvolvement(businessName = Some(testBusinessName))
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(None))
-        mockGetSection[OtherBusinessInvolvement](testRegId, None)
-        when(mockS4LService.save[OtherBusinessInvolvement](matches(incompleteModel))(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
+    "return OtherBusinessInvolvement if storing otherBusinessName" in {
+      val incompleteModel = OtherBusinessInvolvement(businessName = Some(testBusinessName))
+      when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      mockGetSection[OtherBusinessInvolvement](testRegId, None)
+      mockReplaceSection[OtherBusinessInvolvement](testRegId, incompleteModel)
+      when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
-        await(TestService.updateOtherBusinessInvolvement(idx, BusinessNameAnswer(testBusinessName))) mustBe incompleteModel
-      }
-
-      "the model is complete" in {
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(fullOtherBusinessInvolvement)))
-        mockReplaceSection[OtherBusinessInvolvement](testRegId, fullOtherBusinessInvolvement)
-        when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        await(TestService.updateOtherBusinessInvolvement(idx, BusinessNameAnswer(testBusinessName)))
-      }
+      await(TestService.updateOtherBusinessInvolvement(idx, BusinessNameAnswer(testBusinessName))) mustBe incompleteModel
     }
 
-    "return OtherBusinessInvolvement if storing hasVrn" when {
-      "the model is incomplete" in {
-        val incompleteModel = OtherBusinessInvolvement(hasVrn = Some(true))
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(None))
-        mockGetSection[OtherBusinessInvolvement](testRegId, None)
-        when(mockS4LService.save[OtherBusinessInvolvement](matches(incompleteModel))(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
+    "return OtherBusinessInvolvement if storing hasVrn" in {
+      val incompleteModel = OtherBusinessInvolvement(hasVrn = Some(true))
+      when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      mockGetSection[OtherBusinessInvolvement](testRegId, None)
+      mockReplaceSection[OtherBusinessInvolvement](testRegId, incompleteModel)
+      when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
-        await(TestService.updateOtherBusinessInvolvement(idx, HasVrnAnswer(true))) mustBe incompleteModel
-      }
-
-      "the model is complete" in {
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(fullOtherBusinessInvolvement)))
-        mockReplaceSection[OtherBusinessInvolvement](testRegId, fullOtherBusinessInvolvement)
-        when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        await(TestService.updateOtherBusinessInvolvement(idx, HasVrnAnswer(true))) mustBe fullOtherBusinessInvolvement
-      }
+      await(TestService.updateOtherBusinessInvolvement(idx, HasVrnAnswer(true))) mustBe incompleteModel
     }
 
-    "return OtherBusinessInvolvement if storing vrn" when {
-      "the model is incomplete" in {
-        val incompleteModel = OtherBusinessInvolvement(vrn = Some(testVrn))
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(None))
-        mockGetSection[OtherBusinessInvolvement](testRegId, None)
-        when(mockS4LService.save[OtherBusinessInvolvement](matches(incompleteModel))(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
+    "return OtherBusinessInvolvement if storing vrn" in {
+      val incompleteModel = OtherBusinessInvolvement(vrn = Some(testVrn))
+      when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      mockGetSection[OtherBusinessInvolvement](testRegId, None)
+      mockReplaceSection[OtherBusinessInvolvement](testRegId, incompleteModel)
+      when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
-        await(TestService.updateOtherBusinessInvolvement(idx, VrnAnswer(testVrn))) mustBe incompleteModel
-      }
-
-      "the model is complete" in {
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(fullOtherBusinessInvolvement)))
-        mockReplaceSection[OtherBusinessInvolvement](testRegId, fullOtherBusinessInvolvement)
-        when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        await(TestService.updateOtherBusinessInvolvement(idx, VrnAnswer(testVrn))) mustBe fullOtherBusinessInvolvement
-      }
+      await(TestService.updateOtherBusinessInvolvement(idx, VrnAnswer(testVrn))) mustBe incompleteModel
     }
 
-    "return OtherBusinessInvolvement if storing hasUtr" when {
-      "the model is incomplete" in {
-        val incompleteModel = OtherBusinessInvolvement(hasUtr = Some(true))
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(None))
-        mockGetSection[OtherBusinessInvolvement](testRegId, None)
-        when(mockS4LService.save[OtherBusinessInvolvement](matches(incompleteModel))(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
+    "return OtherBusinessInvolvement if storing hasUtr" in {
+      val incompleteModel = OtherBusinessInvolvement(hasUtr = Some(true))
+      when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      mockGetSection[OtherBusinessInvolvement](testRegId, None)
+      mockReplaceSection[OtherBusinessInvolvement](testRegId, incompleteModel)
+      when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
-        await(TestService.updateOtherBusinessInvolvement(idx, HasUtrAnswer(true))) mustBe incompleteModel
-      }
-
-      "the model is complete" in {
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(fullOtherBusinessInvolvementWithUtr)))
-        mockReplaceSection[OtherBusinessInvolvement](testRegId, fullOtherBusinessInvolvementWithUtr)
-        when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        await(TestService.updateOtherBusinessInvolvement(idx, HasUtrAnswer(true))) mustBe fullOtherBusinessInvolvementWithUtr
-      }
+      await(TestService.updateOtherBusinessInvolvement(idx, HasUtrAnswer(true))) mustBe incompleteModel
     }
 
-    "return OtherBusinessInvolvement if storing utr" when {
-      "the model is incomplete" in {
-        val incompleteModel = OtherBusinessInvolvement(utr = Some(testUtr))
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(None))
-        mockGetSection[OtherBusinessInvolvement](testRegId, None)
-        when(mockS4LService.save[OtherBusinessInvolvement](matches(incompleteModel))(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
+    "return OtherBusinessInvolvement if storing utr" in {
+      val incompleteModel = OtherBusinessInvolvement(utr = Some(testUtr))
+      when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      mockGetSection[OtherBusinessInvolvement](testRegId, None)
+      mockReplaceSection[OtherBusinessInvolvement](testRegId, incompleteModel)
+      when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
-        await(TestService.updateOtherBusinessInvolvement(idx, UtrAnswer(testUtr))) mustBe incompleteModel
-      }
-
-      "the model is complete" in {
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(fullOtherBusinessInvolvementWithUtr)))
-        mockReplaceSection[OtherBusinessInvolvement](testRegId, fullOtherBusinessInvolvementWithUtr)
-        when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        await(TestService.updateOtherBusinessInvolvement(idx, UtrAnswer(testUtr))) mustBe fullOtherBusinessInvolvementWithUtr
-      }
+      await(TestService.updateOtherBusinessInvolvement(idx, UtrAnswer(testUtr))) mustBe incompleteModel
     }
 
-    "return OtherBusinessInvolvement if storing stillTrading" when {
-      "the model is incomplete" in {
-        val incompleteModel = OtherBusinessInvolvement(stillTrading = Some(true))
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(None))
-        mockGetSection[OtherBusinessInvolvement](testRegId, None)
-        when(mockS4LService.save[OtherBusinessInvolvement](matches(incompleteModel))(any(), any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
+    "return OtherBusinessInvolvement if storing stillTrading" in {
+      val incompleteModel = OtherBusinessInvolvement(stillTrading = Some(true))
+      when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
+        .thenReturn(Future.successful(None))
+      mockGetSection[OtherBusinessInvolvement](testRegId, None)
+      mockReplaceSection[OtherBusinessInvolvement](testRegId, incompleteModel)
+      when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
 
-        await(TestService.updateOtherBusinessInvolvement(idx, StillTradingAnswer(true))) mustBe incompleteModel
-      }
-
-      "the model is complete" in {
-        when(mockS4LService.fetchAndGet[OtherBusinessInvolvement](any(), any(), any(), any()))
-          .thenReturn(Future.successful(Some(fullOtherBusinessInvolvement)))
-        mockReplaceSection[OtherBusinessInvolvement](testRegId, fullOtherBusinessInvolvement)
-        when(mockS4LService.clearKey[OtherBusinessInvolvement](any(), any(), any()))
-          .thenReturn(Future.successful(CacheMap("", Map())))
-
-        await(TestService.updateOtherBusinessInvolvement(idx, StillTradingAnswer(true))) mustBe fullOtherBusinessInvolvement
-      }
+      await(TestService.updateOtherBusinessInvolvement(idx, StillTradingAnswer(true))) mustBe incompleteModel
     }
   }
 

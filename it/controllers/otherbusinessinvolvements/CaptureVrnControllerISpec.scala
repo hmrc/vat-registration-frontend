@@ -157,27 +157,6 @@ class CaptureVrnControllerISpec extends ControllerISpec {
   }
 
   s"POST ${pageUrl(idx1)}" must {
-    "return a redirect to next page after storing in S4L" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
-      given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
-        .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
-        .s4lContainer[OtherBusinessInvolvement].isUpdatedWith(OtherBusinessInvolvement(Some(testVrn)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureVrnForm.captureVrnKey -> Seq(testVrn)))
-
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessActivelyTradingController.show(idx1).url)
-      }
-    }
-
     "return a redirect to next page after storing in BE" in new Setup {
       implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       val testNewVrn = "987654353"
@@ -186,7 +165,8 @@ class CaptureVrnControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
+        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .s4lContainer[OtherBusinessInvolvement].clearedByKey
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(vrn = Some(testNewVrn)), idx = Some(idx1))
 

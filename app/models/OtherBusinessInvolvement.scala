@@ -23,12 +23,21 @@ case class OtherBusinessInvolvement(businessName: Option[String] = None,
                                     vrn: Option[String] = None,
                                     hasUtr: Option[Boolean] = None,
                                     utr: Option[String] = None,
-                                    stillTrading: Option[Boolean] = None)
+                                    stillTrading: Option[Boolean] = None) {
+  def isModelComplete: Boolean =
+    this match {
+      case OtherBusinessInvolvement(Some(_), Some(true), Some(_), None, None, Some(_)) => true
+      case OtherBusinessInvolvement(Some(_), Some(false), None, Some(true), Some(_), Some(_)) => true
+      case OtherBusinessInvolvement(Some(_), Some(false), None, Some(false), None, Some(_)) => true
+      case _ => false
+    }
+}
 
 object OtherBusinessInvolvement {
   implicit val format: OFormat[OtherBusinessInvolvement] = Json.format[OtherBusinessInvolvement]
 
   implicit val apiKey: ApiKey[OtherBusinessInvolvement] = ApiKey("other-business-involvements")
+
   def s4lKey(index: Int): S4LKey[OtherBusinessInvolvement] = S4LKey(s"other-business-involvements-$index")
 
   val minIndex = 1

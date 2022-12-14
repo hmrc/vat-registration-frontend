@@ -53,16 +53,13 @@ class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
     for {
       otherBusinessInvolvement <- getOtherBusinessInvolvement(index)
       updatedOtherBusinessInvolvement = updateModel(otherBusinessInvolvement.getOrElse(OtherBusinessInvolvement()), data)
-      isComplete = isModelComplete(updatedOtherBusinessInvolvement)
-      model <- isComplete.fold(
-        incompleteData => s4LService.save[OtherBusinessInvolvement](incompleteData).map(_ => incompleteData),
-        completeData => for {
-          _ <- s4LService.clearKey[OtherBusinessInvolvement]
-          result <- registrationApiConnector.replaceSection(profile.registrationId, completeData, Some(index))
-        } yield result
-      )
-    } yield model
+      result <- registrationApiConnector.replaceSection(profile.registrationId, updatedOtherBusinessInvolvement, Some(index))
+      _ <- s4LService.clearKey[OtherBusinessInvolvement]
+    } yield result
   }
+
+  def upsertObiList(data: List[OtherBusinessInvolvement])(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[List[OtherBusinessInvolvement]] =
+    registrationApiConnector.replaceListSection(profile.registrationId, data)
 
   def deleteOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Boolean] = {
     registrationApiConnector.deleteSection[OtherBusinessInvolvement](regId = profile.registrationId, idx = Some(index))
@@ -84,17 +81,6 @@ class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
       case StillTradingAnswer(answer) => otherBusinessInvolvement.copy(stillTrading = Some(answer))
     }
 
-  private[services] def isModelComplete(otherBusinessInvolvement: OtherBusinessInvolvement): Completion[OtherBusinessInvolvement] =
-    otherBusinessInvolvement match {
-      case OtherBusinessInvolvement(Some(businessName), Some(true), Some(vrn), _, _, Some(activelyTrading)) =>
-        Complete(otherBusinessInvolvement.copy(hasUtr = None, utr = None))
-      case OtherBusinessInvolvement(Some(businessName), Some(false), _, Some(true), Some(utr), Some(activelyTrading)) =>
-        Complete(otherBusinessInvolvement.copy(vrn = None))
-      case OtherBusinessInvolvement(Some(businessName), Some(false), _, Some(false), _, Some(activelyTrading)) =>
-        Complete(otherBusinessInvolvement.copy(vrn = None, utr = None))
-      case _ =>
-        Incomplete(otherBusinessInvolvement)
-    }
 }
 
 object OtherBusinessInvolvementsService {
