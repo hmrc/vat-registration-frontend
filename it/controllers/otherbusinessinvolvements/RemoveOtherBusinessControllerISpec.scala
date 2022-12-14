@@ -17,8 +17,8 @@
 package controllers.otherbusinessinvolvements
 
 import itutil.ControllerISpec
+import models.OtherBusinessInvolvement
 import models.api.EligibilitySubmissionData
-import models.{OtherBusinessInvolvement, S4LKey}
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -30,17 +30,14 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
   val idx2: Int = 2
 
   def pageGetUrl(index: Int): String = routes.RemoveOtherBusinessController.show(index).url
+
   def pagePostUrl(index: Int): String = routes.RemoveOtherBusinessController.submit("testOtherBusinessName", index).url
 
   s"GET ${pageGetUrl(idx1)}" must {
     "return OK" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -53,13 +50,9 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
     }
 
     "redirect to minIdx page if given index is less than minIdx" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -73,13 +66,9 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
     }
 
     "return an error when Other Business Name is missing" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(businessName = None)), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -94,13 +83,9 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
 
   s"GET ${pageGetUrl(idx2)}" must {
     "return OK if it is a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx2))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -116,8 +101,6 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
   s"POST ${pagePostUrl(idx1)}" must {
     "return a redirect to summary page after deleting the Other Business if deleted was not the last one" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.deleteSection[OtherBusinessInvolvement](optIdx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
@@ -134,8 +117,6 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
 
     "return a redirect to Other Business Involvement page after deleting the Other Business if the deleted was the last one" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.deleteSection[OtherBusinessInvolvement](optIdx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List.empty))
@@ -152,8 +133,6 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
 
     "return a redirect to summary page when user chooses 'No'" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -168,8 +147,6 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if none of the option is selected" in new Setup {
       given()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

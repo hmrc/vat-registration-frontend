@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class OtherBusinessInvolvementController @Inject()(val sessionService: SessionService,
                                                    val authConnector: AuthClientConnector,
                                                    businessService: BusinessService,
+                                                   otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
                                                    vatRegistrationService: VatRegistrationService,
                                                    view: OtherBusinessInvolvement)
                                                   (implicit appConfig: FrontendAppConfig,
@@ -64,7 +65,9 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
             if (success) {
               Future.successful(Redirect(controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)))
             } else {
-              Future.successful(Redirect(controllers.routes.TaskListController.show))
+              otherBusinessInvolvementsService.deleteOtherBusinessInvolvements.map { _ =>
+                Redirect(controllers.routes.TaskListController.show)
+              }
             }
           }
         )}

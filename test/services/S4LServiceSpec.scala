@@ -30,16 +30,14 @@ class S4LServiceSpec extends VatRegSpec {
     "save a form with the correct key" in new Setup {
       mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
       private val cacheMap = CacheMap("s-date", Map.empty)
-      implicit val key = OtherBusinessInvolvement.s4lKey(1)
-      mockS4LSaveForm[OtherBusinessInvolvement](cacheMap)
-      service.save(OtherBusinessInvolvement()) returns cacheMap
+      mockS4LSaveForm[Business](cacheMap)
+      service.save(Business()) returns cacheMap
     }
 
     "fetch a form with the correct key" in new Setup {
       mockSessionFetchAndGet[String]("RegistrationId", Some(testRegId))
-      implicit val key = OtherBusinessInvolvement.s4lKey(1)
-      mockS4LFetchAndGet[OtherBusinessInvolvement](key.key, Some(otherBusinessInvolvementWithVrn))
-      service.fetchAndGet[OtherBusinessInvolvement] returns Some(otherBusinessInvolvementWithVrn)
+      mockS4LFetchAndGet[Business](Business.s4lKey.key, Some(validBusiness))
+      service.fetchAndGet[Business] returns Some(validBusiness)
     }
 
     "clear down S4L data" in new Setup {

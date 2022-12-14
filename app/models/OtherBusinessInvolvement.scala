@@ -35,11 +35,7 @@ case class OtherBusinessInvolvement(businessName: Option[String] = None,
 
 object OtherBusinessInvolvement {
   implicit val format: OFormat[OtherBusinessInvolvement] = Json.format[OtherBusinessInvolvement]
-
   implicit val apiKey: ApiKey[OtherBusinessInvolvement] = ApiKey("other-business-involvements")
 
-  def s4lKey(index: Int): S4LKey[OtherBusinessInvolvement] = S4LKey(s"other-business-involvements-$index")
-
   val minIndex = 1
-  val maxIndex = 10
 }

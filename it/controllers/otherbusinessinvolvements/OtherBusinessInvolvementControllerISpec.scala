@@ -17,7 +17,7 @@
 package controllers.otherbusinessinvolvements
 
 import itutil.ControllerISpec
-import models.Business
+import models.{Business, OtherBusinessInvolvement}
 import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -66,13 +66,14 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "redirect to the task list page if the answer is no" in new Setup {
+    "redirect to the task list page after deleting old OBI answers if the answer is no" in new Setup {
       given
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .s4lContainer[Business].isUpdatedWith(Business(otherBusinessInvolvement = Some(true)))
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.deleteSection[OtherBusinessInvolvement]()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

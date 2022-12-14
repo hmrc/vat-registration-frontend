@@ -18,8 +18,8 @@ package controllers.otherbusinessinvolvements
 
 import forms.otherbusinessinvolvements.HaveVatNumberForm
 import itutil.ControllerISpec
+import models.OtherBusinessInvolvement
 import models.api.EligibilitySubmissionData
-import models.{OtherBusinessInvolvement, S4LKey}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -35,13 +35,11 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
   s"GET ${pageUrl(idx1)}" must {
     "return OK" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
@@ -55,13 +53,11 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
     }
 
     "redirect to minIdx page if given index is less than minIdx" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
@@ -76,30 +72,28 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
     }
 
     "return OK if data is incomplete" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(hasVrn = None)), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
-      whenReady(response) { _.status mustBe OK }
+      whenReady(response) {
+        _.status mustBe OK
+      }
     }
 
     "return OK with prepop" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -115,13 +109,11 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
   s"GET ${pageUrl(idx2)}" must {
     "return OK if it is a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
@@ -135,13 +127,11 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
     }
 
     "return a redirect to a valid index" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx2)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
@@ -158,15 +148,12 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
 
   s"POST ${pageUrl(idx1)}" must {
     "redirect to the Capture VRN page if the user answers 'Yes' after storing in BE" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
-        .s4lContainer[OtherBusinessInvolvement].isEmpty
-        .s4lContainer[OtherBusinessInvolvement].clearedByKey
         .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -180,14 +167,12 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
     }
 
     "redirect to the Still Actively Trading page if the user answers 'No' after storing in BE" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
-        .s4lContainer[OtherBusinessInvolvement].clearedByKey
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(hasVrn = Some(false), vrn = None), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -201,14 +186,12 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if none of the option is selected" in new Setup {
-      implicit val s4lKey: S4LKey[OtherBusinessInvolvement] = OtherBusinessInvolvement.s4lKey(idx1)
       given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[OtherBusinessInvolvement].contains(fullOtherBusinessInvolvement)
-        .s4lContainer[OtherBusinessInvolvement].clearedByKey
+        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
