@@ -62,7 +62,8 @@ class TaxRepControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .s4lContainer[VatApplication].isEmpty
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(true)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,7 +78,8 @@ class TaxRepControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .s4lContainer[VatApplication].isEmpty
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(hasTaxRepresentative = Some(false)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(false)))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

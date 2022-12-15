@@ -321,6 +321,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val mainBusinessActivity = SicCode(sicCodeId, sicCodeDesc, sicCodeDescCy)
 
+  val labourCompliance = LabourCompliance(
+    supplyWorkers = Some(true),
+    numOfWorkersSupplied = Some(200),
+    intermediaryArrangement = Some(true),
+  )
+
   val fullModel = Business(
     email = Some("test@foo.com"),
     telephoneNumber = Some("987654"),
@@ -332,11 +338,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     businessDescription = Some(businessActivityDescription),
     mainBusinessActivity = Some(mainBusinessActivity),
     businessActivities = Some(List(mainBusinessActivity)),
-    labourCompliance = Some(LabourCompliance(
-      supplyWorkers = Some(true),
-      numOfWorkersSupplied = Some(200),
-      intermediaryArrangement = Some(true),
-    ))
+    labourCompliance = Some(labourCompliance)
   )
 
   val modelWithoutCompliance = Business(

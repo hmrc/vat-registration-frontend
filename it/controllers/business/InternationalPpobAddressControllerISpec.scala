@@ -77,13 +77,14 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
         .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testShortForeignAddress)))
+        .registrationApi.replaceSection[Business](Business(ppobAddress = Some(testShortForeignAddress)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(url).post(Map(
-        "line1" -> "testLine1",
-        "line2" -> "testLine2",
+        "line1" -> "line1",
+        "line2" -> "line2",
         "country" -> "Norway"
       )))
 
@@ -91,20 +92,22 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.BusinessEmailController.show.url)
     }
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
+      val fullAddress = testForeignAddress.copy(line3 = Some("line3"), line4 = Some("line4"), line5 = Some("line5"), postcode = Some("AB12 3YZ"), addressValidated = false)
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
         .s4lContainer[Business].contains(Business())
-        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testForeignAddress)))
+        .registrationApi.replaceSection[Business](Business(ppobAddress = Some(fullAddress)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(url).post(Map(
-        "line1" -> "testLine1",
-        "line2" -> "testLine2",
-        "line3" -> "testLine3",
-        "line4" -> "testLine4",
-        "line5" -> "testLine5",
+        "line1" -> "line1",
+        "line2" -> "line2",
+        "line3" -> "line3",
+        "line4" -> "line4",
+        "line5" -> "line5",
         "postcode" -> "AB12 3YZ",
         "country" -> "Norway"
       )))
@@ -117,7 +120,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
         .s4lContainer[Business].contains(Business())
-        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testForeignAddress)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -137,7 +139,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
         .s4lContainer[Business].contains(Business())
-        .s4lContainer[Business].isUpdatedWith(Business(ppobAddress = Some(testForeignAddress)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

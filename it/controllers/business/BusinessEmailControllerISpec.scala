@@ -49,41 +49,23 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     }
   }
 
-  s"POST $url" when {
-    "BusinessContact is not complete" should {
-      "Update S4L and redirect to the next page" in new Setup {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(email = None))
-          .registrationApi.getSection[Business](None)
-          .s4lContainer[Business].isUpdatedWith(businessDetails.copy(email = Some(businessEmail)))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+  s"POST $url" should {
+    "update BusinessContact and redirect to the next page" in new Setup {
+      given()
+        .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
+        .s4lContainer[Business].contains(businessDetails.copy(email = None))
+        .registrationApi.getSection[Business](None)
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection[Business](businessDetails.copy(email = Some(businessEmail)))
+        .s4lContainer[Business].clearedByKey
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
+      val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
 
-        response.status mustBe SEE_OTHER
-        response.header("LOCATION") mustBe Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
-      }
-    }
-
-    "BusinessContact is complete" should {
-      "Post the block to the backend and redirect to the next page" in new Setup {
-        given()
-          .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(email = None))
-          .registrationApi.replaceSection[Business](businessDetails.copy(email = Some(businessEmail)))
-          .s4lContainer[Business].clearedByKey
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
-
-        response.status mustBe SEE_OTHER
-        response.header("LOCATION") mustBe Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
-      }
+      response.status mustBe SEE_OTHER
+      response.header("LOCATION") mustBe Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)
     }
 
     "Return BAD_REQUEST if invalid email provided" in new Setup {

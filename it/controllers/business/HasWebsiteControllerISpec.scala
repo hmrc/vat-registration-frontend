@@ -56,7 +56,8 @@ class HasWebsiteControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isUpdatedWith(Business(hasWebsite = Some(true)))
+        .registrationApi.replaceSection[Business](Business(hasWebsite = Some(true)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -71,7 +72,8 @@ class HasWebsiteControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isUpdatedWith(Business(hasWebsite = Some(false)))
+        .registrationApi.replaceSection[Business](Business(hasWebsite = Some(false)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -87,7 +89,8 @@ class HasWebsiteControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isUpdatedWith(Business(hasWebsite = Some(false)))
+        .registrationApi.replaceSection[Business](Business(hasWebsite = Some(false)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

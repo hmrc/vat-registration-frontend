@@ -98,8 +98,10 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
+        .registrationApi.replaceSection[VatApplication](VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
+        .s4lContainer[VatApplication].clearedByKey
+
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))

@@ -66,7 +66,8 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(welshLanguage = Some(true)))
+        .registrationApi.replaceSection[Business](Business(welshLanguage = Some(true)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -81,12 +81,14 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to the fulfilment warehouse name page when the answer is a valid number" in new Setup {
+      val valApplication = VatApplication(overseasCompliance =
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
+      )
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
-      ))
+        .registrationApi.replaceSection[VatApplication](valApplication)
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

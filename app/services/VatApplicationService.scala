@@ -48,30 +48,13 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     }
   }
 
-  def saveVatApplication[T](data: T)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
-    getVatApplication.flatMap { vatApplication =>
-      isModelComplete(updateModel(data, vatApplication)).fold(
-        incomplete => s4lService.save[VatApplication](incomplete).map(_ => incomplete),
-        complete => for {
-          _ <- registrationApiConnector.replaceSection[VatApplication](profile.registrationId, complete)
-          _ <- s4lService.clearKey[VatApplication]
-        } yield complete
-      )
-    }
-  }
-
-  def isModelComplete(vatApplication: VatApplication): Completion[VatApplication] = vatApplication match {
-    case VatApplication(_, _, _, _, Some(NIPTurnover(goodsToEU, None)), _, _, _, _, _, _, _, _, _) =>
-      Incomplete(vatApplication)
-    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(_), _, _, _, Some(Quarterly), Some(stagger: QuarterlyStagger), None, _, _) =>
-      Complete(vatApplication)
-    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(true), _, _, _, Some(Monthly), Some(MonthlyStagger), None, _, _) =>
-      Complete(vatApplication)
-    case VatApplication(_, _, Some(turnover), Some(zeroRated), _, Some(_), _, _, _, Some(Annual), Some(stagger: AnnualStagger), Some(AASDetails(Some(paymentMethod), Some(paymentFrequency))), _, _) =>
-      Complete(vatApplication)
-    case _ =>
-      Incomplete(vatApplication)
-  }
+  def saveVatApplication[T](data: T)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] =
+    for {
+      vatApplication <- getVatApplication
+      updatedVatApplication = updateModel(data, vatApplication)
+      _ <- registrationApiConnector.replaceSection[VatApplication](profile.registrationId, updatedVatApplication)
+      _ <- s4lService.clearKey[VatApplication]
+    } yield updatedVatApplication
 
   //scalastyle:off
   private def updateModel[T](data: T, before: VatApplication)(implicit hc: HeaderCarrier, profile: CurrentProfile): VatApplication = {

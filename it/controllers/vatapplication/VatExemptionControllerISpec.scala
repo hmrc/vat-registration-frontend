@@ -83,8 +83,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testVatApplication)
-        .s4lContainer[VatApplication].isUpdatedWith(testVatApplication.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+        .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -98,8 +99,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testVatApplication)
-        .s4lContainer[VatApplication].isUpdatedWith(testVatApplication.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -113,8 +115,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testVatApplication)
-        .s4lContainer[VatApplication].isUpdatedWith(testVatApplication.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
+        .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -128,8 +131,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .s4lContainer[VatApplication].contains(testVatApplication)
-        .s4lContainer[VatApplication].isUpdatedWith(testVatApplication.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
+        .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map("value" -> "true"))
 

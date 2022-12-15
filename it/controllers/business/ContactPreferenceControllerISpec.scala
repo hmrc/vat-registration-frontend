@@ -66,7 +66,8 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].isUpdatedWith(Business(contactPreference = Some(Letter)))
+        .registrationApi.replaceSection[Business](Business(contactPreference = Some(Letter)))
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

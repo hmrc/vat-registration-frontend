@@ -104,7 +104,8 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
-        .s4lContainer[VatApplication].isUpdatedWith(VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
+        .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
+        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

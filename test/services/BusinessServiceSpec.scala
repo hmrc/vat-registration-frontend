@@ -20,6 +20,7 @@ import _root_.models.api.Address
 import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import models._
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentMatchers => matchers}
 import play.api.libs.json.Json
@@ -103,7 +104,7 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
   }
 
   "updateBusiness" should {
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update ppobAddress" in {
+    "update ppobAddress" in {
       val business = Business(ppobAddress = None, contactPreference = None)
 
       when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
@@ -113,12 +114,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
         .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(ppobAddress = Some(testAddress)))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(ppobAddress = Some(testAddress))))
       result.ppobAddress mustBe Some(testAddress)
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update welshLanguage" in {
+    "update welshLanguage" in {
       val business = Business(welshLanguage = None)
 
       val updatedWelshLanguage = Some(true)
@@ -128,14 +131,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(welshLanguage = updatedWelshLanguage))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(welshLanguage = updatedWelshLanguage)))
       result.welshLanguage mustBe updatedWelshLanguage
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update contactPreference" in {
+    "update contactPreference" in {
       val business = Business(ppobAddress = None, contactPreference = None)
 
       val updatedContactPreference = Some(Email)
@@ -145,14 +148,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(contactPreference = updatedContactPreference))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(contactPreference = updatedContactPreference)))
       result.contactPreference mustBe updatedContactPreference
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update email" in {
+    "update email" in {
       val business = Business(
         ppobAddress = None,
         email = None,
@@ -169,14 +172,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(email = updatedEmail))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(email = updatedEmail)))
       result.email mustBe updatedEmail
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update telephoneNumber" in {
+    "update telephoneNumber" in {
       val business = Business(
         ppobAddress = None,
         email = None,
@@ -193,14 +196,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(telephoneNumber = updatedTelephoneNumber))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(telephoneNumber = updatedTelephoneNumber)))
       result.telephoneNumber mustBe updatedTelephoneNumber
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update hasWebsite" in {
+    "update hasWebsite" in {
       val business = Business(
         ppobAddress = None,
         email = None,
@@ -217,14 +220,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(hasWebsite = updatedHasWebsiteAnswer))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(hasWebsite = updatedHasWebsiteAnswer)))
       result.hasWebsite mustBe updatedHasWebsiteAnswer
     }
 
-    "determine that the model is incomplete and save in S4L - nothing pre-populated, update website" in {
+    "update website" in {
       val business = Business(
         ppobAddress = None,
         email = None,
@@ -241,201 +244,14 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockReplaceSection(testRegId, business.copy(website = updatedWebsiteAnswer))
+      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(website = updatedWebsiteAnswer)))
       result.website mustBe updatedWebsiteAnswer
     }
 
-
-    "determine that the model is incomplete and save in S4L - ppobAddress pre-populated, update contactPreference" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        contactPreference = None
-      )
-
-      val updatedContactPreference = Some(Email)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](business.copy(contactPreference = updatedContactPreference)))
-      result.contactPreference mustBe updatedContactPreference
-    }
-
-    "determine that the model is incomplete and save in S4L - companyContactDetails pre-populated, update ppobAddress" in {
-      val business = Business(
-        ppobAddress = None,
-        email = Some("test@test.com"),
-        contactPreference = None
-      )
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](business.copy(ppobAddress = Some(testAddress))))
-      result.ppobAddress mustBe Some(testAddress)
-    }
-
-    "determine that the model is incomplete and save in S4L - companyContactDetails pre-populated, update contactPreference" in {
-      val business = Business(
-        ppobAddress = None,
-        email = Some("test@test.com"),
-        contactPreference = None
-      )
-
-      val updatedContactPreference = Some(Email)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](business.copy(contactPreference = updatedContactPreference)))
-      result.contactPreference mustBe updatedContactPreference
-    }
-
-    "determine that the model is incomplete and save in S4L - contactPreference pre-populated, update ppobAddress" in {
-      val business = Business(
-        ppobAddress = None,
-        contactPreference = Some(Letter)
-      )
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](business.copy(ppobAddress = Some(testAddress))))
-      result.ppobAddress mustBe Some(testAddress)
-    }
-
-    "determine that the model is complete and save in the backend - update business email" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        email = Some("test@test.com"),
-        telephoneNumber = Some("123456789"),
-        hasWebsite = Some(true),
-        website = Some("test.com"),
-        contactPreference = Some(Email),
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val email = Some("test1@test.com")
-      val updatedBusinessDetails = business.copy(email = email)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.email mustBe email
-    }
-
-    "determine that the model is complete and save in the backend - update business telephoneNumber" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        email = Some("test@test.com"),
-        telephoneNumber = None,
-        hasWebsite = Some(true),
-        website = Some("test.com"),
-        contactPreference = Some(Email),
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val telephoneNumber = Some("123456789")
-      val updatedBusinessDetails = business.copy(telephoneNumber = telephoneNumber)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.telephoneNumber mustBe telephoneNumber
-    }
-
-    "determine that the model is complete and save in the backend - update business hasWebsite" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        email = Some("test@test.com"),
-        telephoneNumber = Some("123456789"),
-        hasWebsite = None,
-        website = Some("test.com"),
-        contactPreference = Some(Email),
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val hasWebsite = Some(true)
-      val updatedBusinessDetails = business.copy(hasWebsite = hasWebsite)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.hasWebsite mustBe hasWebsite
-    }
-
-    "determine that the model is complete and save in the backend - update business website" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        email = Some("test@test.com"),
-        telephoneNumber = Some("123456789"),
-        hasWebsite = Some(true),
-        website = None,
-        contactPreference = Some(Email),
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val website = Some("test.com")
-      val updatedBusinessDetails = business.copy(website = website)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.website mustBe website
-    }
-
-    "determine that the model is complete and save in the backend - reset website to null when user selects no for hasWebsite" in {
+    "reset website to null when user selects no for hasWebsite" in {
       val business = Business(
         ppobAddress = Some(testAddress),
         email = Some("test@test.com"),
@@ -464,94 +280,7 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
       result.website mustBe None
     }
 
-    "determine that the model is complete and save in the backend - update ppobAddress" in {
-      val business = Business(
-        ppobAddress = None,
-        email = Some("test@test.com"),
-        telephoneNumber = Some("123456789"),
-        hasWebsite = Some(true),
-        website = Some("test.com"),
-        contactPreference = Some(Email),
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val updatedBusinessDetails = business.copy(ppobAddress = Some(testAddress))
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.ppobAddress mustBe Some(testAddress)
-    }
-
-    "determine that the model is complete and save in the backend - update welshLanguage" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        email = Some("test@test.com"),
-        telephoneNumber = Some("123456789"),
-        hasWebsite = Some(true),
-        website = Some("test.com"),
-        welshLanguage = None,
-        contactPreference = Some(Email),
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val welshLanguage = Some(true)
-      val updatedBusinessDetails = business.copy(welshLanguage = welshLanguage)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.welshLanguage mustBe welshLanguage
-    }
-
-    "determine that the model is complete and save in the backend - update contactPreference" in {
-      val business = Business(
-        ppobAddress = Some(testAddress),
-        email = Some("test@test.com"),
-        telephoneNumber = Some("123456789"),
-        hasWebsite = Some(true),
-        website = Some("test.com"),
-        contactPreference = None,
-        businessDescription = Some("test desc"),
-        mainBusinessActivity = Some(sicCode),
-        businessActivities = Some(List(sicCode)),
-        labourCompliance = Some(complianceWithLabour)
-      )
-
-      val contactPreference = Some(Letter)
-      val updatedBusinessDetails = business.copy(contactPreference = contactPreference)
-
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
-      mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
-
-      val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
-      result.contactPreference mustBe contactPreference
-    }
-
-    "determine that the model is complete and save in the backend when compliance questions are not needed" in {
+    "update the model when compliance questions are not needed" in {
       val business = Business(
         ppobAddress = Some(testAddress),
         email = Some("test@test.com"),

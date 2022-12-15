@@ -13,6 +13,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
     "return OK on Show AND users answer is pre-popped on page" in new Setup {
       given()
         .user.isAuthorised()
+        .s4lContainer[Business].isEmpty
         .s4lContainer[Business].contains(fullModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -34,13 +35,14 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
     }
     "redirect on submit to populate S4l not vat as model is incomplete" in new Setup {
       val incompleteModel = fullModel.copy(businessDescription = None)
-      val toBeUpdatedModel = incompleteModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
+      val toBeUpdatedModel = incompleteModel.copy(labourCompliance = Some(labourCompliance.copy(intermediaryArrangement = None)))
 
       given()
         .user.isAuthorised()
         .s4lContainer[Business].contains(incompleteModel)
-        .s4lContainer[Business].isUpdatedWith(toBeUpdatedModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection[Business](toBeUpdatedModel)
+        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
