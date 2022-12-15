@@ -17,7 +17,7 @@
 package services
 
 import connectors.{AttachmentsConnector, RegistrationApiConnector}
-import models.api.{Attached, AttachmentMethod, AttachmentType, Attachments}
+import models.api.{AttachmentMethod, AttachmentType, Attachments}
 import services.AttachmentsService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -36,11 +36,7 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
       val presentAttachmentDetails = attachmentDetails.getOrElse(Attachments())
       val updatedAttachmentDetails = data match {
         case answer: AttachmentMethod =>
-          if (answer.equals(Attached)) {
-            presentAttachmentDetails.copy(method = Some(answer))
-          } else {
-            presentAttachmentDetails.copy(method = Some(answer), supplyVat1614h = None, supplyVat1614a = None, supplySupportingDocuments = None)
-          }
+          presentAttachmentDetails.copy(method = Some(answer), supplyVat1614h = None, supplyVat1614a = None, supplySupportingDocuments = None)
         case Supply1614AAnswer(answer) =>
           if (answer) {
             presentAttachmentDetails.copy(supplyVat1614a = Some(answer), supplyVat1614h = None)
