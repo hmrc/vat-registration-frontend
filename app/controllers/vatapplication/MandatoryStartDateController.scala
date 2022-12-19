@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MessageDateFormat
-import views.html.vatapplication.mandatory_start_date_incorp_view
+import views.html.vatapplication.{MandatoryStartDateIncorpView, MandatoryStartDateNoChoiceView}
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -33,8 +33,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class MandatoryStartDateController @Inject()(val sessionService: SessionService,
                                              val authConnector: AuthClientConnector,
-                                             val vatApplicationService: VatApplicationService,
-                                             mandatoryStartDateIncorpPage: mandatory_start_date_incorp_view
+                                             vatApplicationService: VatApplicationService,
+                                             mandatoryStartDateIncorpView: MandatoryStartDateIncorpView,
+                                             mandatoryStartDateNoChoiceView: MandatoryStartDateNoChoiceView
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -42,14 +43,18 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatApplicationService.calculateEarliestStartDate().flatMap(incorpDate =>
-          vatApplicationService.retrieveMandatoryDates map { dateModel =>
-            val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
-            Ok(mandatoryStartDateIncorpPage(
-              dateModel.selected.fold(form) { selection => form.fill((selection, dateModel.startDate)) },
-              MessageDateFormat.format(dateModel.calculatedDate)
-            ))
-          })
+        vatApplicationService.calculateEarliestStartDate().flatMap { incorpDate =>
+          vatApplicationService.retrieveMandatoryDates.map {
+            case dateModel if dateModel.calculatedDate.isBefore(LocalDate.now().minusYears(4)) =>
+              Ok(mandatoryStartDateNoChoiceView(MessageDateFormat.format(dateModel.calculatedDate)))
+            case dateModel =>
+              val form = MandatoryDateForm.form(incorpDate, dateModel.calculatedDate)
+              Ok(mandatoryStartDateIncorpView(
+                dateModel.selected.fold(form) { selection => form.fill((selection, dateModel.startDate)) },
+                MessageDateFormat.format(dateModel.calculatedDate)
+              ))
+          }
+        }
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -59,7 +64,7 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
           vatApplicationService.retrieveCalculatedStartDate.flatMap { calcDate =>
             MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
               errors => {
-                Future.successful(BadRequest(mandatoryStartDateIncorpPage(errors, MessageDateFormat.format(calcDate))))
+                Future.successful(BadRequest(mandatoryStartDateIncorpView(errors, MessageDateFormat.format(calcDate))))
               },
               {
                 case (DateSelection.specific_date, Some(startDate)) => handleMandatoryStartDate(startDate)
@@ -68,6 +73,16 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
             )
           }
         )
+  }
+
+  val continue: Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        vatApplicationService.retrieveCalculatedStartDate.flatMap { calculatedDate =>
+          vatApplicationService.saveVatApplication(calculatedDate).map { _ =>
+            Redirect(controllers.routes.TaskListController.show.url)
+          }
+        }
   }
 
   private def handleMandatoryStartDate(startDate: LocalDate)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile) = {

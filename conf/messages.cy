@@ -538,10 +538,10 @@ validation.captureTradingName.missing           = Nodwch enw masnachu
 pages.summary.voluntaryReason.sells                           = Mae’r cwmni eisoes yn gwerthu nwyddau neu wasanaethau
 pages.summary.voluntaryReason.intendsToSell                   = Mae’r cwmni’n bwriadu gwerthu nwyddau neu wasanaethau yn y dyfodol
 
-# Mandatory Start Date Confirmation page
-pages.start.date.confirmation.heading                        = Dyddiad dechrau TAW y cwmni
-pages.start.date.confirmation.para1                          = Dyma pryd y mae angen i’r cwmni ddechrau rhoi cyfrif am TAW.
-pages.start.date.confirmation.para2                          = Bydd dyddiad dechrau TAW y cwmni yr un peth â’r dyddiad y gwnaeth Tŷ’r Cwmnïau sefydlu’r cwmni. Ni ellir cofrestru’r cwmni ar gyfer TAW cyn i hyn ddigwydd.
+# Mandatory Start Date No Choice page
+pages.start.date.no.choice.heading                              = VAT registration start date
+pages.start.date.no.choice.para1                                = The business’s expected VAT registration start date is {0}.
+pages.start.date.no.choice.para2                                = This could change but we will confirm the date by letter.
 
 # Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = Pryd hoffech i’ch dyddiad cofrestru TAW ddechrau?

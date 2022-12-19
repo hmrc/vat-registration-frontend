@@ -31,6 +31,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, Summ
 import uk.gov.hmrc.http.InternalServerException
 import utils.MessageDateFormat
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
@@ -247,7 +248,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     optSummaryListRowString(
       s"$sectionId.startDate",
       vatApplication.startDate match {
-        case Some(date) => Some(MessageDateFormat.format(date))
+        case Some(date) if date.isAfter(LocalDate.now().minusYears(4).minusDays(1)) => Some(MessageDateFormat.format(date))
         case _ => None
       },
       Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)

@@ -123,7 +123,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
       def dateInput(n: Int): Option[DateField] =
         doc.select(s"main .govuk-fieldset").asScala.toList.lift(n - 1).map { elem =>
           DateField(
-            legend = elem.select(".govuk-fieldset__legend").text(),
+            legend = elem.select(".govuk-fieldset__legend").asScala.toList.head.text(),
             hint = elem.select(".govuk-hint").asScala.toList.headOption.map(_.text)
           )
         }

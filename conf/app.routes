@@ -45,6 +45,7 @@ POST        /vat-start-date                                           controller
 ## MANDATORY START DATE PAGE
 GET         /mandatory-vat-start-date                                 controllers.vatapplication.MandatoryStartDateController.show
 POST        /mandatory-vat-start-date                                 controllers.vatapplication.MandatoryStartDateController.submit
+POST        /mandatory-vat-start-date-continue                        controllers.vatapplication.MandatoryStartDateController.continue
 
 ## VOLUNTART START DATE (no date choice) PAGE
 GET         /voluntary-vat-start-date                                 controllers.vatapplication.VoluntaryStartDateNoChoiceController.show

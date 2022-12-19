@@ -30,6 +30,10 @@ import services.FlatRateService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import utils.MessageDateFormat
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
@@ -82,6 +86,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     val dispatchFromWarehouse = "Goods from Fulfilment House Due Diligence Scheme registered warehouse"
     val warehouseNumber = "Fulfilment Warehouse number"
     val warehouseName = "Fulfilment Warehouse business name"
+    val formattedDate: String = LocalDate.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
   }
 
   "Generate Registration Details Builder" when {
@@ -95,11 +100,13 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           claimVatRefunds = Some(true),
           returnsFrequency = Some(Annual),
           annualAccountingDetails = Some(validAasDetails),
-          startDate = Some(frsDate),
+          startDate = Some(LocalDate.now()),
           currentlyTrading = Some(true)
         )),
         bankAccount = Some(validUkBankAccount),
-        flatRateScheme = Some(validFlatRate)
+        flatRateScheme = Some(validFlatRate.copy(
+          frsStart = Some(LocalDate.now())
+        ))
       )
 
       val expectedSummaryList: SummaryList = SummaryList(List(
@@ -109,7 +116,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowBoolean(TestContent.claimRefunds, Some(true), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
         optSummaryListRowBoolean(questionId = TestContent.bankAccount, optAnswer = Some(true), optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
         optSummaryListRowSeq(questionId = TestContent.bankAccountDetails, optAnswers = Some(Seq("testName", "12-34-56", "12345678")), optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
-        optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+        optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
         optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
         optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("I would like to join the Annual Accounting Scheme"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)),
         optSummaryListRowString(questionId = TestContent.paymentFrequency, optAnswer = Some("Quarterly"), optUrl = Some(controllers.vatapplication.routes.PaymentFrequencyController.show.url)),
@@ -136,7 +143,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         vatApplication = Some(validVatApplication.copy(
           zeroRatedSupplies = None,
           claimVatRefunds = Some(true),
-          returnsFrequency = Some(Monthly)
+          returnsFrequency = Some(Monthly),
+          startDate = Some(LocalDate.now())
         )),
         bankAccount = None
       )
@@ -144,7 +152,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
       val expectedSummaryList: SummaryList = SummaryList(List(
         optSummaryListRowString(questionId = TestContent.turnoverEstimate, optAnswer = Some("£100.00"), optUrl = Some(controllers.vatapplication.routes.TurnoverEstimateController.show.url)),
         optSummaryListRowBoolean(questionId = TestContent.claimRefunds, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.ClaimRefundsController.show.url)),
-        optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+        optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
         optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
       ).flatten)
 
@@ -159,7 +167,11 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           businessActivities = Some(List(sicCode))
         )),
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
-        vatApplication = Some(validVatApplication.copy(currentlyTrading = Some(true), turnoverEstimate = Some(0))),
+        vatApplication = Some(validVatApplication.copy(
+          currentlyTrading = Some(true),
+          turnoverEstimate = Some(0),
+          startDate = Some(LocalDate.now())
+        )),
         bankAccount = Some(validUkBankAccount),
       )
 
@@ -171,7 +183,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowBoolean(TestContent.claimRefunds, Some(false), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
           optSummaryListRowBoolean(questionId = TestContent.bankAccount, optAnswer = Some(true), optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
           optSummaryListRowSeq(questionId = TestContent.bankAccountDetails, optAnswers = Some(Seq("testName", "12-34-56", "12345678")), optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
-          optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+          optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
           optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
           optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
         ).flatten
@@ -190,7 +202,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             goodsToEU = Some(ConditionalValue(false, None)),
             goodsFromEU = Some(ConditionalValue(false, None)))
           ),
-          currentlyTrading = Some(true)
+          currentlyTrading = Some(true),
+          startDate = Some(LocalDate.now())
         ))
       )
 
@@ -203,7 +216,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowSeq(TestContent.sellOrMoveNip, Some(Seq("No")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
           optSummaryListRowSeq(TestContent.receiveGoodsNip, Some(Seq("No")), Some(vatApplicationRoutes.ReceiveGoodsNipController.show.url)),
           optSummaryListRowBoolean(TestContent.claimRefunds, Some(false), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
-          optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+          optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
           optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
           optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
         ).flatten
@@ -222,7 +235,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
             goodsFromEU = Some(ConditionalValue(false, None)))
           ),
-          currentlyTrading = Some(true)
+          currentlyTrading = Some(true),
+          startDate = Some(LocalDate.now())
         ))
       )
 
@@ -235,7 +249,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           optSummaryListRowSeq(TestContent.sellOrMoveNip, Some(Seq("Yes", "Value of goods: £1.00")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
           optSummaryListRowSeq(TestContent.receiveGoodsNip, Some(Seq("No")), Some(vatApplicationRoutes.ReceiveGoodsNipController.show.url)),
           optSummaryListRowBoolean(TestContent.claimRefunds, Some(false), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
-          optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+          optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
           optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
           optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
         ).flatten
@@ -265,7 +279,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
               usingWarehouse = Some(true),
               fulfilmentWarehouseNumber = Some(testWarehouseNumber),
               fulfilmentWarehouseName = Some(testWarehouseName)
-            ))
+            )),
+            startDate = Some(LocalDate.now())
           ))
         )
 
@@ -282,7 +297,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowBoolean(TestContent.dispatchFromWarehouse, Some(true), Some(vatApplicationRoutes.DispatchFromWarehouseController.show.url)),
             optSummaryListRowString(TestContent.warehouseNumber, Some(testWarehouseNumber), Some(vatApplicationRoutes.WarehouseNumberController.show.url)),
             optSummaryListRowString(TestContent.warehouseName, Some(testWarehouseName), Some(vatApplicationRoutes.WarehouseNameController.show.url)),
-            optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+            optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
             optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
             optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
           ).flatten
@@ -308,7 +323,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
               goodsToEu = Some(true),
               storingGoodsForDispatch = Some(StoringWithinUk),
               usingWarehouse = Some(false)
-            ))
+            )),
+            startDate = Some(LocalDate.now())
           ))
         )
 
@@ -325,7 +341,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowBoolean(TestContent.sendGoodsToEu, Some(true), Some(vatApplicationRoutes.SendEUGoodsController.show.url)),
             optSummaryListRowString(TestContent.storingGoods, Some("Within the UK"), Some(vatApplicationRoutes.StoringGoodsController.show.url)),
             optSummaryListRowBoolean(TestContent.dispatchFromWarehouse, Some(false), Some(vatApplicationRoutes.DispatchFromWarehouseController.show.url)),
-            optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+            optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
             optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
           ).flatten
         ))))
@@ -346,7 +362,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             overseasCompliance = Some(OverseasCompliance(
               goodsToOverseas = Some(true),
               goodsToEu = Some(false)
-            ))
+            )),
+            startDate = Some(LocalDate.now())
           ))
         )
 
@@ -358,7 +375,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(TestContent.zeroRated, Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
             optSummaryListRowBoolean(TestContent.claimRefunds, Some(false), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
             optSummaryListRowBoolean(TestContent.sendGoodsOverseas, Some(true), Some(vatApplicationRoutes.SendGoodsOverseasController.show.url)),
-            optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some("10 October 2017"), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+            optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
             optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("Once a month"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url))
           ).flatten
         ))))
