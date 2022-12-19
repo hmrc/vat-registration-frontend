@@ -538,10 +538,10 @@ validation.captureTradingName.missing           = Enter a trading name
 pages.summary.voluntaryReason.sells                           = The company is already selling goods or services
 pages.summary.voluntaryReason.intendsToSell                   = The company intends to sell good or services in the future
 
-# Mandatory Start Date Confirmation page
-pages.start.date.confirmation.heading                        = The company’s VAT start date
-pages.start.date.confirmation.para1                          = This is when the company needs to start accounting for VAT.
-pages.start.date.confirmation.para2                          = The company’s VAT start date will be the same as the date Companies House set it up. The company can’t be registered for VAT before this happens.
+# Mandatory Start Date No Choice page
+pages.start.date.no.choice.heading                              = VAT registration start date
+pages.start.date.no.choice.para1                                = The business’s expected VAT registration start date is {0}.
+pages.start.date.no.choice.para2                                = This could change but we will confirm the date by letter.
 
 # Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = When would you like your VAT registration date to start?

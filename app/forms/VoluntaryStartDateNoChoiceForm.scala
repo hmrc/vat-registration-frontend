@@ -29,12 +29,12 @@ import javax.inject.Inject
 
 class VoluntaryStartDateNoChoiceForm @Inject()(timeService: TimeService) extends StartDateForm {
 
-  lazy val date4YearsAgo = timeService.today.minusYears(4)
-  lazy val now3MonthsLater = timeService.today.plusMonths(3)
-
-  def apply()(implicit messages: Messages): Form[LocalDate] = Form(
-    single(
-      START_DATE -> tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
+  def apply()(implicit messages: Messages): Form[LocalDate] = {
+    val date4YearsAgo = timeService.today.minusYears(4)
+    val now3MonthsLater = timeService.today.plusMonths(3)
+    Form(
+      single(
+        START_DATE -> tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
           nonEmptyDate(dateEmptyKey),
           validDate(dateInvalidKey),
           withinRange(
@@ -50,5 +50,5 @@ class VoluntaryStartDateNoChoiceForm @Inject()(timeService: TimeService) extends
         )
       )
     )
-
+  }
 }

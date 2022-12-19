@@ -34,9 +34,9 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
                                              val vatApplicationService: VatApplicationService,
                                              val timeService: TimeService,
                                              voluntaryStartDateIncorpPage: start_date_incorp_view
-                                 )(implicit appConfig: FrontendAppConfig,
-                                   val executionContext: ExecutionContext,
-                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                            )(implicit appConfig: FrontendAppConfig,
+                                              val executionContext: ExecutionContext,
+                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>

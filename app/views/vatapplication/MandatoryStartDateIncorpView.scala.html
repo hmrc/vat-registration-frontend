@@ -28,12 +28,12 @@
 @this(
         layout: layout,
         h1: h1,
-        p: components.p,
+        p: p,
         button: button,
         formWithCSRF: FormWithCSRF,
         errorSummary: errorSummary,
         inputRadio: inputRadio,
-        inputDate: components.inputDate
+        inputDate: inputDate
 )
 
 @(mandatoryDateForm: Form[(DateSelection.Value, Option[LocalDate])], calculatedDate: String)( implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
