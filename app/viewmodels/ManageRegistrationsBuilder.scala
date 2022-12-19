@@ -46,9 +46,9 @@ class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSw
     case VatRegStatus.draft if registration.requiresAttachments =>
       govukTag(Tag(Text(messages("manageRegistrations.attachmentsRequired")), classes = YELLOW))
     case VatRegStatus.draft | VatRegStatus.contact =>
-      govukTag(Tag(Text(VatRegStatus.draft.toString), classes = GREY))
+      govukTag(Tag(Text(messages("manageRegistrations.draft")), classes = GREY))
     case VatRegStatus.submitted =>
-      govukTag(Tag(Text(registration.status.toString), classes = GREEN))
+      govukTag(Tag(Text(messages("manageRegistrations.submitted")), classes = GREEN))
   }
 
   def link(registration: VatSchemeHeader): String =

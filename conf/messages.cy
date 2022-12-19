@@ -1611,7 +1611,9 @@ manageRegistrations.table.reference                      = Cyfeirnod
 manageRegistrations.table.dateCreated                    = Dyddiad a grëwyd
 manageRegistrations.table.status                         = Statws
 manageRegistrations.noReference                          = Dim cyfeirnod
+manageRegistrations.draft                                = Drafft
 manageRegistrations.attachmentsRequired                  = Angen atodiadau
+manageRegistrations.submitted                            = Cyflwynwyd
 manageRegistrations.panel                                = Bydd cofrestriadau sydd ar y gweill dim ond ar gael i’w cwblhau 7 diwrnod o’r diwrnod y gwnaethoch gadw’r cais ddiwethaf.
 manageRegistrations.startNew                             = Creu cais newydd
 

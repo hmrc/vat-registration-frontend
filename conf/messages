@@ -1610,7 +1610,9 @@ manageRegistrations.table.reference                      = Reference
 manageRegistrations.table.dateCreated                    = Date created
 manageRegistrations.table.status                         = Status
 manageRegistrations.noReference                          = No reference
+manageRegistrations.draft                                = Draft
 manageRegistrations.attachmentsRequired                  = Attachments required
+manageRegistrations.submitted                            = Submitted
 manageRegistrations.panel                                = In progress registrations will only be available for completion 7 days from the day you last saved the application.
 manageRegistrations.startNew                             = Create a new application
 
