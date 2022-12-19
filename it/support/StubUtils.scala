@@ -16,14 +16,12 @@
 
 package support
 
-import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
-import itutil.IntegrationSpecBase
 import models.api._
 import models.external.upscan.UpscanDetails
-import models.{ApiKey, S4LKey}
+import models.ApiKey
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -51,8 +49,6 @@ trait StubUtils {
 
     def bankAccountReputation = BankAccountReputationServiceStub()
 
-    def s4lContainer[T: S4LKey]: S4lContainer[T] = new S4lContainer[T]()
-
     def audit = AuditStub()
 
     def registrationApi = RegistrationApiStub()
@@ -66,127 +62,6 @@ trait StubUtils {
     new PreconditionBuilder()
       .audit.writesAudit()
       .audit.writesAuditMerged()
-  }
-
-  object S4LStub extends IntegrationSpecBase {
-
-    import uk.gov.hmrc.crypto._
-    import uk.gov.hmrc.crypto.json.JsonEncryptor
-
-    implicit lazy val jsonCrypto = new ApplicationCrypto(app.configuration.underlying).JsonCrypto
-    implicit lazy val encryptionFormat = new JsonEncryptor[JsValue]()
-
-    def stubS4LGetNoAux(key: String, data: String): MappingBuilder = {
-      val s4lData = Json.parse(data).as[JsValue]
-      val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
-
-      val json =
-        s"""
-           |{
-           |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
-           |  "data": {
-           |    "$key": $encData
-           |  },
-           |  "id": "1",
-           |  "modifiedDetails": {
-           |    "createdAt": { "$$date": 1502097615710 },
-           |    "lastUpdated": { "$$date": 1502189409725 }
-           |  }
-           |}
-            """.stripMargin
-
-      get(urlPathMatching("/save4later/vat-registration-frontend/1"))
-        .willReturn(ok(
-          json
-        ))
-    }
-
-    def stubS4LPut(key: String, data: String): MappingBuilder = {
-      val s4lData = Json.parse(data).as[JsValue]
-      val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
-
-      put(urlPathMatching(s"/save4later/vat-registration-frontend/1/data/$key"))
-        .willReturn(ok(
-          s"""
-             |{ "atomicId": { "$$oid": "598ac0b64e0000d800170620" },
-             |    "data": { "$key": $encData },
-             |    "id": "1",
-             |    "modifiedDetails": {
-             |      "createdAt": { "$$date": 1502265526026 },
-             |      "lastUpdated": { "$$date": 1502265526026 }}}
-          """.stripMargin
-        ))
-    }
-
-
-    def stubS4LGet[T](t: T)(implicit key: S4LKey[T], fmt: Writes[T]): MappingBuilder = {
-      val s4lData = Json.toJson(t)
-      val encData = encryptionFormat.writes(Protected(s4lData)).as[JsString]
-
-      get(urlPathMatching("/save4later/vat-registration-frontend/1"))
-        .willReturn(ok(
-          s"""
-             |{
-             |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
-             |  "data": {
-             |    "${key.key}": $encData
-             |  },
-             |  "id": "1",
-             |  "modifiedDetails": {
-             |    "createdAt": { "$$date": 1502097615710 },
-             |    "lastUpdated": { "$$date": 1502189409725 }
-             |  }
-             |}
-            """.stripMargin
-        ))
-    }
-
-    def stubS4LGetNothing(): MappingBuilder =
-      get(urlPathMatching("/save4later/vat-registration-frontend/1"))
-        .willReturn(ok(
-          s"""
-             |{
-             |  "atomicId": { "$$oid": "598830cf5e00005e00b3401e" },
-             |  "data": {},
-             |  "id": "1",
-             |  "modifiedDetails": {
-             |    "createdAt": { "$$date": 1502097615710 },
-             |    "lastUpdated": { "$$date": 1502189409725 }
-             |  }
-             |}
-          """.stripMargin
-        ))
-
-    def stubS4LClear(): MappingBuilder =
-      delete(urlPathMatching("/save4later/vat-registration-frontend/1")).willReturn(ok(""))
-  }
-
-  class S4lContainer[T]()(implicit builder: PreconditionBuilder, s4LKey: S4LKey[T]) {
-
-    def contains(t: T)(implicit fmt: Writes[T]): PreconditionBuilder = {
-      stubFor(S4LStub.stubS4LGet[T](t))
-      builder
-    }
-
-    def isUpdatedWith(t: T)(implicit key: S4LKey[T], fmt: Writes[T]): PreconditionBuilder = {
-      stubFor(S4LStub.stubS4LPut(key.key, fmt.writes(t).toString()))
-      builder
-    }
-
-    def isEmpty: PreconditionBuilder = {
-      stubFor(S4LStub.stubS4LGetNothing())
-      builder
-    }
-
-    def cleared: PreconditionBuilder = {
-      stubFor(S4LStub.stubS4LClear())
-      builder
-    }
-
-    def clearedByKey(implicit key: S4LKey[T]): PreconditionBuilder = {
-      stubFor(S4LStub.stubS4LPut(key.key, Json.obj().toString()))
-      builder
-    }
   }
 
   case class VatRegistrationStub()(implicit builder: PreconditionBuilder) {

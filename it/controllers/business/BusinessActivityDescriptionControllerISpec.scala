@@ -12,7 +12,6 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
     "return OK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -28,9 +27,8 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
     "redirect to ICL on submit" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.replaceSection[Business](businessDetails.copy(businessDescription = Some("foo")))
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(businessDetails.copy(businessDescription = Some("foo"))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

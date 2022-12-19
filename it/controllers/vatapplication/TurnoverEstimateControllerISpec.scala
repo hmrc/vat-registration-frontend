@@ -33,7 +33,6 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
     "return an OK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -47,7 +46,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
     "return an OK if there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(testTurnover)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(turnoverEstimate = Some(testTurnover))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -66,9 +65,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
     "redirect to Zero Rated Supplies resolver if the form has no errors" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.replaceSection[VatApplication](VatApplication(turnoverEstimate = Some(10000.53)))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -85,7 +82,6 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
     "update the page with errors if the form has errors" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

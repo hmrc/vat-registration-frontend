@@ -73,7 +73,6 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val upstream5xx = UpstreamErrorResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
   val validHttpResponse = HttpResponse(OK, "{}")
 
-  // CacheMap from S4l
   val validCacheMap = CacheMap("fooBarWizzBand", Map("foo" -> Json.toJson("wizz")))
 
   //Exceptions

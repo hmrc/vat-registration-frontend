@@ -49,7 +49,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
     }
-    "return OK with 'Yes' pre-populated from S4L" in new Setup {
+    "return OK with 'Yes' pre-populated from backend" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(BankAccount(true, None, None)))
@@ -75,7 +75,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       res.status mustBe OK
       Jsoup.parse(res.body).select("input[id=value]").hasAttr("checked") mustBe true
     }
-    "return OK with 'No' pre-populated from S4L" in new Setup {
+    "return OK with 'No' pre-populated from backend" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(BankAccount(false, None, None)))

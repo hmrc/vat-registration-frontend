@@ -18,7 +18,6 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
     "return OK with pre-pop when is no value for 'goodsToEU' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -31,7 +30,7 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
     "Return OK with pre-pop when there is a value for 'goodsToEU' in the backend" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))))))))
 
       val res = buildClient(url).get()
 
@@ -45,10 +44,8 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
       "return SEE_OTHER for receive goods" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
           .registrationApi.getRegistration(emptyVatSchemeNetp)
           .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount)))))))
-          .s4lContainer[VatApplication].clearedByKey
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

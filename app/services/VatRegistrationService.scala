@@ -33,8 +33,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class VatRegistrationService @Inject()(val s4LService: S4LService,
-                                       vatRegConnector: VatRegistrationConnector,
+class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector,
                                        registrationApiConnector: RegistrationApiConnector,
                                        val sessionService: SessionService
                                       )(implicit ec: ExecutionContext) extends FeatureSwitching {

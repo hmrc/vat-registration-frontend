@@ -20,13 +20,8 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.Application
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.crypto.json.JsonEncryptor
-import uk.gov.hmrc.crypto.{Protected, SymmetricCryptoFactory}
-
-import java.time.LocalDateTime
 
 object WiremockHelper {
   val wiremockPort = 11111
@@ -34,7 +29,7 @@ object WiremockHelper {
   val url = s"http://$wiremockHost:$wiremockPort"
 }
 
-trait WiremockHelper extends WiremockS4LHelper {
+trait WiremockHelper {
 
   import WiremockHelper._
 
@@ -146,58 +141,4 @@ trait WiremockHelper extends WiremockS4LHelper {
   }
 
   def stubVATPatchBankAccount(regId: String, response: JsObject): StubMapping = stubVATPatch(regId, "bank-account", Some(response))
-}
-
-trait WiremockS4LHelper {
-
-  private def encryptJson(body: JsObject)(implicit app: Application): String = {
-    val crypto = SymmetricCryptoFactory.aesCryptoFromConfig(baseConfigKey = "json.encryption", app.configuration.underlying)
-    val encryptionFormat = new JsonEncryptor[JsObject]()(crypto, implicitly)
-    encryptionFormat.writes(Protected(body)).toString()
-  }
-
-  def stubS4LFetch(regId: String, key: String, response: Option[JsObject])(implicit app: Application): StubMapping = {
-    val save4LaterUrl = s"/save4later/vat-registration-frontend/$regId"
-    val json = response.fold(Json.obj())(js => Json.obj(key -> encryptJson(js)))
-
-    stubFor(get(urlMatching(save4LaterUrl))
-      .willReturn(
-        aResponse().
-          withStatus(200).
-          withBody(
-            Json.parse(
-              s"""{
-                 |  "id":"$regId",
-                 |  "data": $json,
-                 |  "modifiedDetails": {
-                 |    "lastUpdated": ${Json.toJson(LocalDateTime.now())},
-                 |    "createdAt": ${Json.toJson(LocalDateTime.now())}
-                 |  }
-                 |}""".stripMargin).as[JsObject].toString()
-          )
-      )
-    )
-  }
-
-  def stubS4LSave(regId: String, key: String): StubMapping = {
-    val save4LaterUrl = s"/save4later/vat-registration-frontend/$regId/data/$key"
-
-    stubFor(put(urlMatching(save4LaterUrl))
-      .willReturn(
-        aResponse().
-          withStatus(200).
-          withBody(
-            Json.parse(
-            s"""{
-               |  "id":"$regId",
-               |  "data": {"test":"cacheMap"},
-               |  "modifiedDetails": {
-               |    "lastUpdated": ${Json.toJson(LocalDateTime.now())},
-               |    "createdAt": ${Json.toJson(LocalDateTime.now())}
-               |  }
-               |}""".stripMargin).as[JsObject].toString()
-          )
-      )
-    )
-  }
 }

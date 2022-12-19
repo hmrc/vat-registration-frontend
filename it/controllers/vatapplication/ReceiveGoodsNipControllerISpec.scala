@@ -33,7 +33,6 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "return OK with no prepop when there is no value for 'receiveGoods' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -46,7 +45,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'receiveGoods' in the backend" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(northernIrelandProtocol = Some(testNIPCompliance))))
 
       val res = buildClient(url).get()
 
@@ -61,10 +60,8 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "redirect to the claim refund page when NETP" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -78,10 +75,8 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "redirect to the returns frequency page when NonUkNonEstablished" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,10 +90,8 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "redirect to the returns frequency page when the registration reason is TOGC" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -112,10 +105,8 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "redirect to the Claim VAT Refund page in all other cases" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(northernIrelandProtocol = Some(testNIPCompliance)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

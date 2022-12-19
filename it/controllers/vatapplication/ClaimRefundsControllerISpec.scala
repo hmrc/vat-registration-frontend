@@ -20,7 +20,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'claim refunds' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -33,7 +32,6 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
     "Return OK when there is a value for 'claim refunds' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(claimVatRefunds = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -50,10 +48,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to the bank account details page when the user is TOGC/COLE" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,10 +65,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to the bank account details page when the user is non-NETP" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -86,10 +82,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to send goods overseas page when the user is NETP" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -104,10 +99,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to send goods overseas page when the user is NonUkNoNEstablished" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testLargeTurnoverApplication)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -124,10 +118,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to Vat Exemption page when the user answers Yes" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testSmallTurnoverApplication)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.replaceSection[VatApplication](testSmallTurnoverApplication.copy(claimVatRefunds = Some(true)))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(testSmallTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -142,10 +135,9 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "follow normal logic and clear down stored exemption answer when the user answers No" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(testSmallTurnoverApplication)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.replaceSection[VatApplication](testSmallTurnoverApplication.copy(claimVatRefunds = Some(false), appliedForExemption = None))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(testSmallTurnoverApplication.copy(claimVatRefunds = Some(false), appliedForExemption = None)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

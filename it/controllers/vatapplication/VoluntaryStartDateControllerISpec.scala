@@ -18,7 +18,6 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(startDate = testApplicantIncorpDate))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -51,7 +50,6 @@ class VoluntaryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[VatApplication](VatApplication(startDate = Some(today)))
-        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient("/vat-start-date").post(Map(
         "value" -> DateSelection.specific_date.toString,

@@ -16,7 +16,6 @@
 
 package models.test
 
-import models.S4LKey
 import play.api.libs.json.Json
 
 case class SicStub(selection: SicStubSelection,
@@ -31,5 +30,4 @@ case class SicStub(selection: SicStubSelection,
 
 object SicStub {
   implicit val format = Json.format[SicStub]
-  implicit val sicStub: S4LKey[SicStub] = S4LKey("SicStub")
 }

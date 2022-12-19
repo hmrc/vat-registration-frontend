@@ -46,7 +46,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
   }
 
   s"GET ${controllers.business.routes.SupplyWorkersIntermediaryController.show}" should {
-    "return OK when there's a Temporary Contracts model in S4L" in new Setup {
+    "return OK when there's a Temporary Contracts model in backend" in new Setup {
       mockGetBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
       mockGetTransactorApplicantName(currentProfile)(None)

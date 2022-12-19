@@ -134,7 +134,6 @@ class MandatoryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(startDate = None)))
         .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(startDate = Some(yesterday)))
-        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map(
         "value" -> DateSelection.specific_date.toString,
@@ -156,7 +155,6 @@ class MandatoryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(startDate = None)))
         .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(startDate = Some(testCalculatedDate)))
-        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map(
         "value" -> DateSelection.calculated_date.toString
@@ -175,7 +173,6 @@ class MandatoryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(startDate = None)))
         .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(startDate = Some(testCalculatedDate)))
-        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(url).post(Map(
         "value" -> DateSelection.specific_date.toString
@@ -194,7 +191,6 @@ class MandatoryStartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(startDate = None)))
         .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(startDate = Some(testCalculatedDate)))
-        .s4lContainer[VatApplication].clearedByKey
 
       val res = buildClient(continueUrl).post(Map[String, String]())
 

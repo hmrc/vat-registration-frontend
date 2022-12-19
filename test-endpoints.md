@@ -1,6 +1,3 @@
-`GET         /s4l-teardown`  
-Clears all data stored in SAVE4LATER mongo collection for the current user.
-
 `GET         /sic-stub`  
 Temporary solution for capturing SIC codes.
 

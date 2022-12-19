@@ -53,7 +53,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   }
 
   s"GET ${controllers.business.routes.WorkersController.show}" should {
-    "return OK when there's a Workers model in S4L" in new Setup {
+    "return OK when there's a Workers model in backend" in new Setup {
       mockGetBusiness(Future.successful(validBusiness))
       mockIsTransactor(Future.successful(true))
 

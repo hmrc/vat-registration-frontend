@@ -25,12 +25,12 @@ import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import testHelpers.{S4LMockSugar, VatRegSpec}
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 
-class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockRegistrationApiConnector {
+class VatRegistrationServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
   val testHeaderKey = "testHeaderKey"
   val testHeaderValue = "testHeaderValue"
@@ -39,7 +39,6 @@ class VatRegistrationServiceSpec extends VatRegSpec with S4LMockSugar with MockR
 
   class Setup {
     val service = new VatRegistrationService(
-      mockS4LService,
       mockVatRegistrationConnector,
       mockRegistrationApiConnector,
       mockSessionService

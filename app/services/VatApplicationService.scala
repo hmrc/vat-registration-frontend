@@ -31,20 +31,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiConnector,
                                       val vatService: VatRegistrationService,
-                                      val s4lService: S4LService,
                                       applicantDetailsService: ApplicantDetailsService,
                                       timeService: TimeService
                                      )(implicit executionContext: ExecutionContext) extends FeatureSwitching {
 
   def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
-    s4lService.fetchAndGet[VatApplication].flatMap {
-      case None | Some(VatApplication(None, None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
-        registrationApiConnector.getSection[VatApplication](profile.registrationId).map {
-          case Some(vatApplication) => vatApplication
-          case None => VatApplication()
-        }
-      case Some(vatApplication) =>
-        Future.successful(vatApplication)
+    registrationApiConnector.getSection[VatApplication](profile.registrationId).map {
+      case Some(vatApplication) => vatApplication
+      case None => VatApplication()
     }
   }
 
@@ -53,7 +47,6 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
       vatApplication <- getVatApplication
       updatedVatApplication = updateModel(data, vatApplication)
       _ <- registrationApiConnector.replaceSection[VatApplication](profile.registrationId, updatedVatApplication)
-      _ <- s4lService.clearKey[VatApplication]
     } yield updatedVatApplication
 
   //scalastyle:off

@@ -16,7 +16,6 @@ class TaxRepControllerISpec extends ControllerISpec {
     "return OK with a blank form if no data is stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -28,7 +27,7 @@ class TaxRepControllerISpec extends ControllerISpec {
     "return OK with 'Yes' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(hasTaxRepresentative = Some(true)))
+        .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(hasTaxRepresentative = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -43,7 +42,7 @@ class TaxRepControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(hasTaxRepresentative = Some(false)))
+        .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(hasTaxRepresentative = Some(false))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -61,9 +60,7 @@ class TaxRepControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,9 +74,7 @@ class TaxRepControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(false)))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

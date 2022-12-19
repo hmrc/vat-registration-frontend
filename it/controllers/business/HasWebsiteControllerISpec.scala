@@ -15,7 +15,6 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "return OK with a blank form if no data is stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -27,7 +26,6 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "return OK with 'Yes' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(hasWebsite = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -39,7 +37,6 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(hasWebsite = Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -54,10 +51,8 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "redirect to business website capture page if yes is chosen" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasWebsite = Some(true)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -70,10 +65,8 @@ class HasWebsiteControllerISpec extends ControllerISpec {
     "redirect to contact preference capture page if no is chosen" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasWebsite = Some(false)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -87,10 +80,8 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       enable(WelshLanguage)
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasWebsite = Some(false)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

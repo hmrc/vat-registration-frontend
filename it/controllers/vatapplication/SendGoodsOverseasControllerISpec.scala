@@ -16,9 +16,10 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'goodsToOverseas' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = None)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
+
 
       val res = buildClient(url).get()
 
@@ -31,7 +32,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'goodsToOverseas' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -48,9 +49,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "redirect to the send goods to EU page when the answer is yes" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,9 +64,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
     "redirect to the storing goods page when the answer is no" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false)))))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

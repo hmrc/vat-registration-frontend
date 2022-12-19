@@ -3,7 +3,6 @@ package controllers.business
 
 import itutil.ControllerISpec
 import models.Business
-import models.api.{Address, Country}
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
@@ -40,9 +39,8 @@ class PpobAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.replaceSection[Business](businessDetails, testRegId)(Business.apiKey, Business.format)
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(businessDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,14 +51,12 @@ class PpobAddressControllerISpec extends ControllerISpec {
       }
 
     }
-    "returnFromTxm should return SEE_OTHER save to s4l as model is incomplete" in new Setup {
+    "returnFromTxm should return SEE_OTHER save to backend as model is incomplete" in new Setup {
       given()
         .user.isAuthorised()
         .address("fudgesicle", testLine1, testLine2, "UK", "XX XX").isFound
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None, testRegId)
         .registrationApi.replaceSection[Business](Business(ppobAddress = Some(addressWithCountry)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

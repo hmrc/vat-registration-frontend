@@ -11,7 +11,7 @@ import play.api.test.Helpers._
 
 class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
-  val frsS4LData: FlatRateScheme = FlatRateScheme(
+  val frsData: FlatRateScheme = FlatRateScheme(
     joinFrs = Some(true),
     overBusinessGoods = Some(true),
     estimateTotalSales = Some(123),
@@ -69,7 +69,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "return OK with prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -86,7 +86,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the Attachments Resolver when the turnover is too high" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.getSection[VatApplication](Some(vatApplicationWithBigTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -103,7 +103,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the Attachments Resolver for a Group Registration" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
         registrationReason = GroupRegistration
@@ -122,7 +122,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "return INTERNAL_SERVER_ERROR if no estimates data available" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.getSection[VatApplication](Some(vatApplicationWithoutTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -140,8 +140,8 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the next FRS page if the user answers Yes" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
-        .registrationApi.replaceSection[FlatRateScheme](frsS4LData.copy(joinFrs = Some(true)))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData))
+        .registrationApi.replaceSection[FlatRateScheme](frsData.copy(joinFrs = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -156,7 +156,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
     "redirect to the Task List if the user answers No" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[FlatRateScheme](Some(frsS4LData))
+        .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.replaceSection[FlatRateScheme](FlatRateScheme(Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

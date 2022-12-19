@@ -16,12 +16,9 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
 
   "show" should {
     "return OK with the form unpopulated" in new Setup {
-      val dataModel = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(dataModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -36,9 +33,8 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
       val dataModel = fullModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(dataModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(dataModel))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -57,10 +53,9 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(initialModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[Business](expectedModel)
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(expectedModel))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,10 +72,8 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(initialModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .registrationApi.replaceSection[Business](expectedModel)
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

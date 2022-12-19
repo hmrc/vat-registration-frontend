@@ -13,7 +13,6 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
     "return OK on show and users answer is pre-popped on page" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(fullModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -30,10 +29,10 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(initialModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[Business](expectedModel)
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(expectedModel))
+
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -45,10 +44,9 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(initialModel)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .registrationApi.replaceSection[Business](expectedModel)
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(expectedModel))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class SicStubController @Inject()(val configConnect: ConfigConnector,
                                   val sessionService: SessionService,
-                                  val s4LService: S4LService,
                                   val businessService: BusinessService,
                                   val authConnector: AuthClientConnector,
                                   view: SicStubPage)

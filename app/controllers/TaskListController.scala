@@ -49,22 +49,16 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
   def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      business <- businessService.getBusiness
-      vatApplication <- vatApplicationService.getVatApplication
       attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
-      scheme = vatScheme.copy(
-        business = Some(business),
-        vatApplication = Some(vatApplication)
-      ) // Grabbing the data from two sources is temporary, until we've removed S4L
       sections = List(
-        Some(registrationReasonSection.build(scheme)),
-        if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(scheme)) else None,
-        Some(verifyBusinessTaskList.build(scheme)),
-        Some(aboutYouTaskList.build(scheme)),
-        Some(aboutTheBusinessTaskList.build(scheme)),
-        Some(vatRegistrationTaskList.build(scheme)),
-        attachmentsTaskListRow.map(attachmentsTaskList.build(scheme, _)),
-        Some(summaryTaskList.build(scheme, attachmentsTaskListRow))
+        Some(registrationReasonSection.build(vatScheme)),
+        if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(vatScheme)) else None,
+        Some(verifyBusinessTaskList.build(vatScheme)),
+        Some(aboutYouTaskList.build(vatScheme)),
+        Some(aboutTheBusinessTaskList.build(vatScheme)),
+        Some(vatRegistrationTaskList.build(vatScheme)),
+        attachmentsTaskListRow.map(attachmentsTaskList.build(vatScheme, _)),
+        Some(summaryTaskList.build(vatScheme, attachmentsTaskListRow))
       ).flatten
     } yield Ok(view(sections: _*))
   }

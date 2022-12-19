@@ -18,7 +18,6 @@ package controllers.sicandcompliance
 
 import helpers.RequestsFinder
 import itutil.ControllerISpec
-import models.Business.s4lKey
 import models._
 import models.api._
 import org.jsoup.Jsoup
@@ -30,7 +29,6 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   "SicHalt on show returns OK" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
 
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -44,7 +42,6 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from VR" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
       .icl.setup()
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -59,7 +56,6 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   "User submitted on the sic halt page should redirect them to ICL, prepopping sic codes from II" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
       .icl.setup()
 
     insertIntoDb(sessionId, sicCodeMapping)
@@ -82,10 +78,9 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
-      .s4lContainer.clearedByKey
+      .registrationApi.getSection[Business](Some(expectedUpdateToBusiness))
       .icl.fetchResults(List(sicCode))
 
     insertIntoDb(sessionId, iclSicCodeMapping)
@@ -102,11 +97,10 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1, sicCode2))
       .registrationApi.replaceSection[Business](fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None))
-      .s4lContainer[Business].clearedByKey
+      .registrationApi.getSection[Business](Some(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None)))
 
     insertIntoDb(sessionId, iclSicCodeMapping)
 
@@ -122,9 +116,8 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
       .registrationApi.replaceSection[Business](fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None))
-      .s4lContainer[Business].clearedByKey
+      .registrationApi.getSection[Business](Some(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None)))
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1, sicCode2))
 
@@ -141,9 +134,8 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(modelWithoutCompliance)
       .registrationApi.replaceSection[Business](modelWithoutCompliance.copy(businessActivities = Some(List(sicCode1)), mainBusinessActivity = Some(sicCode1)))
-      .s4lContainer[Business].clearedByKey
+      .registrationApi.getSection[Business](Some(modelWithoutCompliance.copy(businessActivities = Some(List(sicCode1)), mainBusinessActivity = Some(sicCode1))))
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1))
 
@@ -160,8 +152,8 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   "Workers should return OK on show and users answer is pre-popped on page" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+      .registrationApi.getSection[Business](Some(fullModel))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -186,13 +178,8 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   }
 
   "ComplianceIntroduction should return 303 for labour sic code on submit" in new Setup {
-    val labourSicCode = "42110123"
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel.copy(
-      mainBusinessActivity = Some(SicCode(labourSicCode, "", "")),
-      businessActivities = Some(List(SicCode(labourSicCode, "", "")))
-    ))
 
     insertCurrentProfileIntoDb(currentProfile, sessionId)
 

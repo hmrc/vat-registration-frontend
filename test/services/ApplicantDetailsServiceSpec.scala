@@ -64,9 +64,6 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
         Future.successful(applicantDetails)
       }
     }
-
-    when(mockS4LService.clearKey(any(), any(), any()))
-      .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   "Calling getApplicantDetails" should {

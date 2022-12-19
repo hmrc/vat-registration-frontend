@@ -36,7 +36,6 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -54,7 +53,6 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -75,11 +73,10 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(false)))
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(false))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,11 +92,10 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -115,11 +111,10 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -135,7 +130,6 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

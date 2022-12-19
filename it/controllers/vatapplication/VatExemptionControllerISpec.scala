@@ -33,7 +33,6 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'appliedForExemption' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testVatApplication)
         .registrationApi.getSection[VatApplication](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -50,7 +49,6 @@ class VatExemptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection(Some(testVatApplication.copy(appliedForExemption = Some(false))))
-        .s4lContainer[VatApplication].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -62,10 +60,10 @@ class VatExemptionControllerISpec extends ControllerISpec {
       }
     }
 
-    "Return OK with prepop when there is a value for 'appliedForExemption' in S4L" in new Setup {
+    "Return OK with prepop when there is a value for 'appliedForExemption' in backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testVatApplication.copy(appliedForExemption = Some(true)))
+        .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -82,10 +80,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to the Task List page when the user is TOGC/COLE" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testVatApplication)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
         .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -98,10 +95,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to the Task List page when the user is non-NETP" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testVatApplication)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -114,10 +110,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NETP" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testVatApplication)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
         .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -130,10 +125,9 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NonUkNoNEstablished" in {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testVatApplication)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
         .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 
       val res = buildClient(url).post(Map("value" -> "true"))
 

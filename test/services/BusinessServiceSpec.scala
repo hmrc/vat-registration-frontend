@@ -20,21 +20,13 @@ import _root_.models.api.Address
 import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import models._
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import org.mockito.{ArgumentMatchers => matchers}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
-import scala.concurrent.Future
-
 class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
-  val testService: BusinessService = new BusinessService(
-    mockRegistrationApiConnector,
-    mockS4LService
-  )
+  val testService: BusinessService = new BusinessService(mockRegistrationApiConnector)
 
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
@@ -42,15 +34,13 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
   "getbusiness" should {
     "return a populated Business model" when {
-      "there is a model in S4L" in {
+      "there is a model in backend" in {
         val business = Business(
           ppobAddress = Some(testAddress),
           email = Some("test@test.com"),
           contactPreference = Some(Letter)
         )
-
-        when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(Some(business)))
+        mockGetSection[Business](testRegId, Some(business))
 
         val result = await(testService.getBusiness)
         result mustBe business
@@ -72,13 +62,7 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
           contactPreference = Some(Email)
         )
 
-        when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(None))
-
         mockGetSection[Business](testRegId, Some(business))
-
-        when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(dummyCacheMap))
 
         val result = await(testService.getBusiness)
         result mustBe business
@@ -86,16 +70,10 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
     }
 
     "return an empty model" when {
-      "there is no data in either S4L or the backend" in {
+      "there is no data in the backend" in {
         val business = Business(ppobAddress = None, contactPreference = None)
 
-        when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(None))
-
         mockGetSection[Business](testRegId, None)
-
-        when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-          .thenReturn(Future.successful(dummyCacheMap))
 
         val result = await(testService.getBusiness)
         result mustBe business
@@ -107,15 +85,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
     "update ppobAddress" in {
       val business = Business(ppobAddress = None, contactPreference = None)
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
-      when(mockS4LService.save(matchers.any())(matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
       mockReplaceSection(testRegId, business.copy(ppobAddress = Some(testAddress)))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(ppobAddress = Some(testAddress))))
       result.ppobAddress mustBe Some(testAddress)
@@ -126,13 +98,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedWelshLanguage = Some(true)
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
       mockReplaceSection(testRegId, business.copy(welshLanguage = updatedWelshLanguage))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(welshLanguage = updatedWelshLanguage)))
       result.welshLanguage mustBe updatedWelshLanguage
@@ -143,13 +111,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedContactPreference = Some(Email)
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
       mockReplaceSection(testRegId, business.copy(contactPreference = updatedContactPreference))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(contactPreference = updatedContactPreference)))
       result.contactPreference mustBe updatedContactPreference
@@ -167,13 +131,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedEmail = Some("test@test.com")
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
       mockReplaceSection(testRegId, business.copy(email = updatedEmail))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(email = updatedEmail)))
       result.email mustBe updatedEmail
@@ -191,13 +151,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedTelephoneNumber = Some("123456789")
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
       mockReplaceSection(testRegId, business.copy(telephoneNumber = updatedTelephoneNumber))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(telephoneNumber = updatedTelephoneNumber)))
       result.telephoneNumber mustBe updatedTelephoneNumber
@@ -215,13 +171,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedHasWebsiteAnswer = Some(true)
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
       mockReplaceSection(testRegId, business.copy(hasWebsite = updatedHasWebsiteAnswer))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(hasWebsite = updatedHasWebsiteAnswer)))
       result.hasWebsite mustBe updatedHasWebsiteAnswer
@@ -239,13 +191,9 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedWebsiteAnswer = Some("test.com")
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockGetSection(testRegId, None)
 
       mockReplaceSection(testRegId, business.copy(website = updatedWebsiteAnswer))
-      when(mockS4LService.clearKey(any(), any(), any())).thenReturn(Future.successful(dummyCacheMap))
 
       val result = await(testService.updateBusiness[Business](business.copy(website = updatedWebsiteAnswer)))
       result.website mustBe updatedWebsiteAnswer
@@ -267,13 +215,8 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
       val updatedBusinessDetails = business.copy(hasWebsite = Some(false), website = None)
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockGetSection[Business](testRegId, Some(business))
 
       val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
       result.hasWebsite mustBe Some(false)
@@ -295,13 +238,8 @@ class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
       val businessDescription = Some("test desc")
       val updatedBusinessDetails = business.copy(businessDescription = businessDescription)
 
-      when(mockS4LService.fetchAndGet[Business](matchers.any(), matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(Some(business)))
-
       mockReplaceSection[Business](testRegId, updatedBusinessDetails)
-
-      when(mockS4LService.clearKey(matchers.any(), matchers.any(), matchers.any()))
-        .thenReturn(Future.successful(dummyCacheMap))
+      mockGetSection[Business](testRegId, Some(business))
 
       val result = await(testService.updateBusiness[Business](updatedBusinessDetails))
       result.businessDescription mustBe businessDescription

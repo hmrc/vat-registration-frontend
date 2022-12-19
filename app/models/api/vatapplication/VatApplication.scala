@@ -16,7 +16,7 @@
 
 package models.api.vatapplication
 
-import models.{ApiKey, NIPTurnover, S4LKey}
+import models.{ApiKey, NIPTurnover}
 import play.api.libs.json._
 
 import java.time.LocalDate
@@ -37,7 +37,6 @@ case class VatApplication(tradeVatGoodsOutsideUk: Option[Boolean] = None,
                           currentlyTrading: Option[Boolean] = None)
 
 object VatApplication {
-  implicit val s4lKey: S4LKey[VatApplication] = S4LKey("vatApplication")
   implicit val apiKey: ApiKey[VatApplication] = ApiKey("vatApplication")
   implicit val format: Format[VatApplication] = Json.format[VatApplication]
 }
