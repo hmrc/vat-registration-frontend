@@ -18,7 +18,6 @@ package controllers.sicandcompliance
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.OtherBusinessInvolvement
 import models.api.SicCode
 import models.api.SicCode.SIC_CODES_KEY
 import play.api.mvc.{Action, AnyContent}

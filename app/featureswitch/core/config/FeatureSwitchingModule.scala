@@ -36,7 +36,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
     LandAndProperty,
-    OtherBusinessInvolvement,
     UploadDocuments,
     WelshLanguage,
     OptionToTax,
@@ -98,11 +97,6 @@ case object StubMinorEntityIdentification extends FeatureSwitch {
 case object LandAndProperty extends FeatureSwitch {
   override val configName: String = "feature-switch.land-and-property-fe"
   override val displayName: String = "Enable land and property page (USE WITH ELIGIBILITY L&P FEATURE)"
-}
-
-case object OtherBusinessInvolvement extends FeatureSwitch {
-  override val configName: String = "feature-switch.other-business-involvement"
-  override val displayName: String = "Enable other business involvement journey"
 }
 
 case object UploadDocuments extends FeatureSwitch {

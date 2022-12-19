@@ -1,7 +1,6 @@
 
 package controllers.business
 
-import featureswitch.core.config.OtherBusinessInvolvement
 import itutil.ControllerISpec
 import models.api._
 import models.{Business, LabourCompliance}
@@ -11,7 +10,6 @@ import play.api.test.Helpers._
 class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
 
   "intermediary workers controller" should {
-    disable(OtherBusinessInvolvement)
     "return OK on show and users answer is pre-popped on page" in new Setup {
       given()
         .user.isAuthorised()

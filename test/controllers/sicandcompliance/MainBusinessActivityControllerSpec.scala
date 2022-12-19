@@ -16,7 +16,6 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.{FeatureSwitching, OtherBusinessInvolvement}
 import fixtures.VatRegistrationFixture
 import models.api.SicCode.SIC_CODES_KEY
 import models.api.SicCode
@@ -29,8 +28,7 @@ import views.html.sicandcompliance.main_business_activity
 import scala.concurrent.Future
 
 class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAssertions
-  with VatRegistrationFixture with FeatureSwitching {
-
+  with VatRegistrationFixture {
 
   val mockMainBusinessActivityView: main_business_activity = app.injector.instanceOf[main_business_activity]
 
@@ -47,14 +45,6 @@ class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAsser
     mockWithCurrentProfile(Some(currentProfile))
   }
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    enable(OtherBusinessInvolvement)
-  }
-  override def afterEach(): Unit = {
-    super.afterEach()
-    disable(OtherBusinessInvolvement)
-  }
 
   s"GET ${controllers.sicandcompliance.routes.MainBusinessActivityController.show}" should {
     "return OK when view present in S4L" in new Setup {
