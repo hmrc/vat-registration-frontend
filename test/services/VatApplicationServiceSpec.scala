@@ -20,16 +20,14 @@ import _root_.models._
 import connectors.mocks.MockRegistrationApiConnector
 import featureswitch.core.config.FeatureSwitching
 import models.api.vatapplication._
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.mockito.stubbing.OngoingStubbing
-import play.api.libs.json.{JsString, Reads, Writes}
+import play.api.libs.json.JsString
 import services.VatApplicationService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.InternalServerException
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -40,7 +38,6 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
     object Service extends VatApplicationService(
       mockRegistrationApiConnector,
       vatRegistrationServiceMock,
-      mockS4LService,
       mockApplicantDetailsServiceOld,
       mockTimeService
     )
@@ -49,8 +46,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
   override def beforeEach(): Unit = {
     reset(
       mockRegistrationApiConnector,
-      vatRegistrationServiceMock,
-      mockS4LService
+      vatRegistrationServiceMock
     )
   }
 
@@ -78,38 +74,9 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
   val testOverseasVatApplication: VatApplication = validVatApplication.copy(overseasCompliance = Some(testOverseasCompliance))
   val emptyVatApplication: VatApplication = VatApplication()
 
-  def mockS4LSave(vatApplication: VatApplication): OngoingStubbing[Future[CacheMap]] =
-    when(mockS4LService.save(ArgumentMatchers.eq(vatApplication))(
-      any[S4LKey[VatApplication]](),
-      any[CurrentProfile](),
-      any[HeaderCarrier](),
-      any[Writes[VatApplication]]()
-    )).thenReturn(Future.successful(mockCacheMap))
-
-  def mockS4LClear: OngoingStubbing[Future[CacheMap]] =
-    when(mockS4LService.clearKey(any(), any(), any()))
-      .thenReturn(Future.successful(mockCacheMap))
-
-  def mockS4LGet(vatApplication: Option[VatApplication]): OngoingStubbing[Future[Option[VatApplication]]] =
-    when(mockS4LService.fetchAndGet[VatApplication](
-      any[S4LKey[VatApplication]](),
-      any[CurrentProfile](),
-      any[HeaderCarrier](),
-      any[Reads[VatApplication]]()
-    )).thenReturn(Future.successful(vatApplication))
-
   "getVatApplication" must {
     "return a full VatApplication view model from backend" in new Setup {
-      mockS4LGet(Some(validVatApplication))
-
-      await(Service.getVatApplication) mustBe validVatApplication
-    }
-
-    "return a full VatApplication view model from s4l" in new Setup {
-      mockS4LGet(None)
-
       mockGetSection[VatApplication](testRegId, Some(validVatApplication))
-
       await(Service.getVatApplication) mustBe validVatApplication
     }
   }
@@ -119,30 +86,24 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
       "updating with tradeVatGoodsOutsideUK" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(tradeVatGoodsOutsideUk = Some(true))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(TradeVatGoodsOutsideUk(true))) mustBe expected
       }
       "updating with eoriRequested" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(eoriRequested = Some(true))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(EoriRequested(true))) mustBe expected
       }
       "updating with turnoverEstimate" in new Setup() {
           val expected: VatApplication = emptyVatApplication.copy(turnoverEstimate = Some(testTurnover))
 
-          mockS4LGet(Some(emptyVatApplication))
           mockGetSection[VatApplication](testRegId, None)
           mockReplaceSection(testRegId, expected)
-          mockS4LClear
 
           await(Service.saveVatApplication(Turnover(testTurnover))) mustBe expected
         }
@@ -155,10 +116,9 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
             annualAccountingDetails = None
           )
 
-          mockS4LGet(Some(testAASVatApplication))
           mockDeleteSection[FlatRateScheme](testRegId)
           mockReplaceSection(testRegId, expected)
-          mockS4LClear
+          mockGetSection[VatApplication](testRegId, Some(expected))
 
           await(Service.saveVatApplication(Turnover(largeTurnover))) mustBe expected
         }
@@ -166,10 +126,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
       "updating with zeroRatedSupplies" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(zeroRatedSupplies = Some(testZeroRatedSupplies))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(ZeroRated(testZeroRatedSupplies))) mustBe expected
       }
@@ -180,19 +138,16 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           appliedForExemption = None
         )
 
-        mockS4LGet(Some(testVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(ZeroRated(testTurnover / 2))) mustBe expected
       }
       "updating with claimVatRefunds" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(claimVatRefunds = Some(true))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(ClaimVatRefunds(true))) mustBe expected
       }
@@ -203,39 +158,32 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           appliedForExemption = None
         )
 
-        mockS4LGet(Some(testVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(ClaimVatRefunds(false))) mustBe expected
       }
       "updating with appliedForExemption" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(appliedForExemption = Some(true))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(AppliedForExemption(true))) mustBe expected
       }
       "updating with startDate" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(startDate = Some(testDate))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(testDate)) mustBe expected
       }
       "updating with returnsFrequency" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(returnsFrequency = Some(Quarterly), staggerStart = None)
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(Quarterly)) mustBe expected
       }
@@ -246,19 +194,16 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           annualAccountingDetails = None
         )
 
-        mockS4LGet(Some(validVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(Monthly)) mustBe expected
       }
       "updating with staggerStart" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(staggerStart = Some(JanDecStagger))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(JanDecStagger)) mustBe expected
       }
@@ -269,19 +214,16 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           annualAccountingDetails = None
         )
 
-        mockS4LGet(Some(testAASVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(FebruaryStagger)) mustBe expected
       }
       "updating with hasTaxRepresentative" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(hasTaxRepresentative = Some(true))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(HasTaxRepresentative(true))) mustBe expected
       }
@@ -289,10 +231,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
         val testConditionalTurnover = ConditionalValue(answer = true, Some(testTurnover))
         val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(Some(testConditionalTurnover))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(TurnoverToEu(testConditionalTurnover))) mustBe expected
       }
@@ -300,20 +240,16 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
         val testConditionalTurnover = ConditionalValue(answer = true, Some(testTurnover))
         val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(goodsFromEU = Some(testConditionalTurnover))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(TurnoverFromEu(testConditionalTurnover))) mustBe expected
       }
       "updating with Overseas answer goodsToOverseas" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(goodsToOverseas = Some(true))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(GoodsToOverseas(true))) mustBe expected
       }
@@ -322,29 +258,24 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false), goodsToEu = None))
         )
 
-        mockS4LGet(Some(testOverseasVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(GoodsToOverseas(false))) mustBe expected
       }
       "updating with Overseas answer goodsToEu" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(goodsToEu = Some(true))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(GoodsToEu(true))) mustBe expected
       }
       "updating with Overseas answer storingGoodsForDispatch" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(storingGoodsForDispatch = Some(StoringWithinUk))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(StoringWithinUk)) mustBe expected
       }
@@ -358,19 +289,16 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           ))
         )
 
-        mockS4LGet(Some(testOverseasVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(StoringOverseas)) mustBe expected
       }
       "updating with Overseas answer usingWarehouse" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(usingWarehouse = Some(true))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(UsingWarehouse(true))) mustBe expected
       }
@@ -383,49 +311,40 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
           ))
         )
 
-        mockS4LGet(Some(testOverseasVatApplication))
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
+        mockGetSection[VatApplication](testRegId, Some(expected))
 
         await(Service.saveVatApplication(UsingWarehouse(false))) mustBe expected
       }
       "updating with Overseas answer warehouseNumber" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(WarehouseNumber(testWarehouseNumber))) mustBe expected
       }
       "updating with Overseas answer warehouseName" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(overseasCompliance = Some(OverseasCompliance(fulfilmentWarehouseName = Some(testWarehouseName))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(WarehouseName(testWarehouseName))) mustBe expected
       }
       "updating with AAS answer paymentFrequency" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(MonthlyPayment)) mustBe expected
       }
       "updating with AAS answer paymentMethod" in new Setup() {
         val expected: VatApplication = emptyVatApplication.copy(annualAccountingDetails = Some(AASDetails(paymentMethod = Some(CHAPS))))
 
-        mockS4LGet(Some(emptyVatApplication))
         mockGetSection[VatApplication](testRegId, None)
         mockReplaceSection(testRegId, expected)
-        mockS4LClear
 
         await(Service.saveVatApplication(CHAPS)) mustBe expected
       }
@@ -434,9 +353,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
 
   "getTurnover" must {
     "return turnover from VatApplication" in new Setup {
-      when(mockS4LService.fetchAndGet[VatApplication](any[S4LKey[VatApplication]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(validVatApplication)))
-
+      mockGetSection[VatApplication](testRegId, Some(validVatApplication))
       await(Service.getTurnover) mustBe Some(testTurnover)
     }
   }
@@ -463,11 +380,9 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
     "return a full MandatoryDateModel with a selection of calculated_date if the vatStartDate is present and is equal to the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 25)
 
-      when(mockS4LService.fetchAndGet[VatApplication](any[S4LKey[VatApplication]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(vatApplicationFixed)))
-
       when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = Some(calculatedDate))))
+      mockGetSection[VatApplication](testRegId, Some(validVatApplication.copy(startDate = Some(vatStartDate))))
 
       await(Service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.calculated_date))
     }
@@ -475,17 +390,14 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
     "return a full MandatoryDateModel with a selection of specific_date if the vatStartDate does not equal the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 12)
 
-      when(mockS4LService.fetchAndGet[VatApplication](any[S4LKey[VatApplication]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(vatApplicationAlt)))
-
       when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = Some(calculatedDate))))
+      mockGetSection[VatApplication](testRegId, Some(validVatApplication.copy(startDate = Some(vatStartDate))))
 
       await(Service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, Some(vatStartDate), Some(DateSelection.specific_date))
     }
 
     "return a MandatoryDateModel with just a calculated date if the vatStartDate is not present" in new Setup {
-      mockS4LGet(Some(emptyVatApplication))
       mockGetSection[VatApplication](testRegId, None)
 
       when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
@@ -499,10 +411,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
     "save a company start date as the vat start date" in new Setup {
       val expected: VatApplication = emptyVatApplication.copy(startDate = Some(testIncorpDate))
 
-      mockS4LGet(Some(emptyVatApplication))
       mockGetSection[VatApplication](testRegId, None)
       mockReplaceSection(testRegId, expected)
-      mockS4LClear
 
       await(Service.saveVoluntaryStartDate(
         DateSelection.company_registration_date, None, testIncorpDate
@@ -513,10 +423,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
       val specificStartDate: LocalDate = LocalDate.of(2017, 12, 12)
       val expected: VatApplication = emptyVatApplication.copy(startDate = Some(specificStartDate))
 
-      mockS4LGet(Some(emptyVatApplication))
       mockGetSection[VatApplication](testRegId, None)
       mockReplaceSection[VatApplication](testRegId, expected)
-      mockS4LClear
 
       await(Service.saveVoluntaryStartDate(
         DateSelection.specific_date, Some(specificStartDate), testIncorpDate
@@ -525,35 +433,26 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureSwitching with Mo
   }
 
   "isEligibleForAAS" must {
-    val validTurnover = 1350000L
-    val invalidTurnover = 1350001L
-
     "return false for a turnover that is above 1350000" in new Setup {
-      when(mockS4LService.fetchAndGet[VatApplication](any[S4LKey[VatApplication]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(validVatApplication.copy(turnoverEstimate = Some(invalidTurnover)))))
-
       when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
+      mockGetSection[VatApplication](testRegId, None)
 
       await(Service.isEligibleForAAS) mustBe false
     }
 
     "return false for a Groups Registration" in new Setup {
-      when(mockS4LService.fetchAndGet[VatApplication](any[S4LKey[VatApplication]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(validVatApplication.copy(turnoverEstimate = Some(validTurnover)))))
-
       when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)))
+      mockGetSection[VatApplication](testRegId, None)
 
       await(Service.isEligibleForAAS) mustBe false
     }
 
     "return true when the turnover estimate is valid for AAS" in new Setup {
-      when(mockS4LService.fetchAndGet[VatApplication](any[S4LKey[VatApplication]](), any(), any(), any()))
-        .thenReturn(Future.successful(Some(validVatApplication.copy(turnoverEstimate = Some(validTurnover)))))
-
       when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
+      mockGetSection[VatApplication](testRegId, Some(validVatApplication))
 
       await(Service.isEligibleForAAS) mustBe true
     }

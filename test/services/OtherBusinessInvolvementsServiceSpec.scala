@@ -44,10 +44,7 @@ class OtherBusinessInvolvementsServiceSpec extends VatRegSpec with MockRegistrat
   )
   val idx = 1
 
-  object TestService extends OtherBusinessInvolvementsService(
-    mockS4LService,
-    mockRegistrationApiConnector
-  )
+  object TestService extends OtherBusinessInvolvementsService(mockRegistrationApiConnector)
 
   "getOtherBusinessInvolvement" must {
     "return data from BE" in {

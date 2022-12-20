@@ -50,7 +50,6 @@ class PaymentMethodControllerISpec extends ControllerISpec {
     "return an OK with no prepop data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -61,10 +60,10 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an OK when there is data to prepop in s4l" in new Setup {
+    "return an OK when there is data to prepop in backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO)))))
+        .registrationApi.getSection(Some(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -79,7 +78,6 @@ class PaymentMethodControllerISpec extends ControllerISpec {
     "return an OK when there is data to prepop in BE" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection(Some(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -94,13 +92,12 @@ class PaymentMethodControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "return a redirect to the Join Flat Rate page and update S4L" in new Setup {
+    "return a redirect to the Join Flat Rate page and update backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
         .registrationApi.replaceSection[VatApplication](VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -115,10 +112,9 @@ class PaymentMethodControllerISpec extends ControllerISpec {
     "return a redirect to the Join Flat Rate page and update backend with full model" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testFullVatApplication)
-        .s4lContainer[VatApplication].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData), testRegId)
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
+        .registrationApi.getSection[VatApplication](Some(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -133,12 +129,11 @@ class PaymentMethodControllerISpec extends ControllerISpec {
     "return a redirect to the Tax Representative page if the selected party type is NonUK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testFullVatApplication)
-        .s4lContainer[VatApplication].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](
           Some(testEligibilitySubmissionData.copy(partyType = NETP)), testRegId
         )
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS)))))
+        .registrationApi.getSection[VatApplication](Some(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -153,7 +148,6 @@ class PaymentMethodControllerISpec extends ControllerISpec {
     "return a bad request and update page with errors on an invalid submission" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

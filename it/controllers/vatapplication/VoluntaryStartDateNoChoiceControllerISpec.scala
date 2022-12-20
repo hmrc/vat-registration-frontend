@@ -18,11 +18,10 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
   "GET /voluntary-vat-start-date" when {
     "the user has previously provided a vat start date" when {
-      "when S4L is empty and all data is in the backend" must {
+      "when backend is empty and all data is in the backend" must {
         "return OK with the form populated" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].isEmpty
             .registrationApi.getSection(Some(VatApplication(startDate = Some(testDate))))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -36,11 +35,11 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
           doc.select(fieldSelector("year")).`val`() mustBe testDate.getYear.toString
         }
       }
-      "when the data is stored in S4L" must {
+      "when the data is stored in backend" must {
         "return OK with the form populated" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(VatApplication(startDate = Some(testDate)))
+            .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(startDate = Some(testDate))))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -58,7 +57,6 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
       "return OK with an empty form" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].isEmpty
           .registrationApi.getSection[VatApplication](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -75,49 +73,24 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
   }
 
   "POST /voluntary-vat-start-date" when {
-    "the date entered is valid" when {
-      "the vatApplication block in S4L is complete" must {
-        "store the data and redirect to the Returns Frequency page" in new Setup {
-          given
-            .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(fullVatApplication)
-            .s4lContainer[VatApplication].clearedByKey
-            .registrationApi.replaceSection(fullVatApplication.copy(startDate = Some(testDate)))
-            .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(startDate = Some(testDate)))
-            .s4lContainer[VatApplication].cleared
+    "the date entered is valid" must {
+      "Update backend and redirect to the Returns Frequency page" in new Setup {
+        val vatApplication: VatApplication = fullVatApplication.copy(turnoverEstimate = None)
+        given
+          .user.isAuthorised()
+          .registrationApi.replaceSection[VatApplication](vatApplication.copy(startDate = Some(testDate)))
+          .registrationApi.getSection[VatApplication](Some(vatApplication.copy(startDate = Some(testDate))))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Map(
-            "startDate.day" -> testDate.getDayOfMonth.toString,
-            "startDate.month" -> testDate.getMonthValue.toString,
-            "startDate.year" -> testDate.getYear.toString
-          )))
+        val res = await(buildClient(url).post(Map(
+          "startDate.day" -> testDate.getDayOfMonth.toString,
+          "startDate.month" -> testDate.getMonthValue.toString,
+          "startDate.year" -> testDate.getYear.toString
+        )))
 
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
-        }
-      }
-      "the vatApplication block in S4L block is incomplete" must {
-        "Update S4L and redirect to the Returns Frequency page" in new Setup {
-          val s4lVatApplication: VatApplication = fullVatApplication.copy(turnoverEstimate = None)
-          given
-            .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(s4lVatApplication)
-            .registrationApi.replaceSection[VatApplication](s4lVatApplication.copy(startDate = Some(testDate)))
-            .s4lContainer[VatApplication].clearedByKey
-
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-          val res = await(buildClient(url).post(Map(
-            "startDate.day" -> testDate.getDayOfMonth.toString,
-            "startDate.month" -> testDate.getMonthValue.toString,
-            "startDate.year" -> testDate.getYear.toString
-          )))
-
-          res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
-        }
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)
       }
     }
     "the data entered is invalid" must {

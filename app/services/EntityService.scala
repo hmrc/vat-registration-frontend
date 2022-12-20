@@ -27,8 +27,7 @@ import uk.gov.hmrc.http._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EntityService @Inject()(val s4LService: S4LService,
-                              val sessionService: SessionService,
+class EntityService @Inject()(val sessionService: SessionService,
                               val registrationApiConnector: RegistrationApiConnector
                                )(implicit ec: ExecutionContext) {
 

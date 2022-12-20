@@ -26,17 +26,12 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BusinessService @Inject()(val registrationApiConnector: RegistrationApiConnector,
-                                val s4lService: S4LService)(implicit ec: ExecutionContext) {
+class BusinessService @Inject()(val registrationApiConnector: RegistrationApiConnector)(implicit ec: ExecutionContext) {
 
   def getBusiness(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
-    s4lService.fetchAndGet[Business].flatMap {
-      case None | Some(Business(None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)) =>
-        registrationApiConnector.getSection[Business](cp.registrationId).map {
-          case Some(business) => business
-          case None => Business()
-        }
-      case Some(business) => Future.successful(business)
+    registrationApiConnector.getSection[Business](cp.registrationId).map {
+      case Some(business) => business
+      case None => Business()
     }
   }
 
@@ -45,7 +40,6 @@ class BusinessService @Inject()(val registrationApiConnector: RegistrationApiCon
       business <- getBusiness
       updatedBusiness = updateBusinessModel(data, business)
       _ <- registrationApiConnector.replaceSection[Business](cp.registrationId, updatedBusiness)
-      _ <- s4lService.clearKey[Business]
     } yield updatedBusiness
 
   def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {

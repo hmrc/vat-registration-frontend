@@ -33,7 +33,6 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
     "return OK" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -49,9 +48,9 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
     "return OK with prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(shortOrgName = Some(testShortOrgName)))
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(shortOrgName = Some(testShortOrgName))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,10 +67,9 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
     "return SEE_OTHER" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails)
         .registrationApi.replaceSection(businessDetails.copy(shortOrgName = Some(testShortOrgName)))
-        .s4lContainer[Business].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(shortOrgName = Some(testShortOrgName))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

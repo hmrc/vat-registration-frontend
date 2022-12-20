@@ -36,7 +36,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].isEmpty
           .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
@@ -57,7 +56,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].isEmpty
           .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
@@ -80,7 +78,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].isEmpty
           .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity =
@@ -103,7 +100,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].isEmpty
           .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
@@ -123,7 +119,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(ScotLtdPartnership)
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = ScotLtdPartnership)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = None)))))
@@ -143,7 +138,6 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].isEmpty
           .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))

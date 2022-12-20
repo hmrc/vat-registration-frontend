@@ -32,24 +32,6 @@ class AuthClientConnector @Inject()(val http: HttpClient, config: ServicesConfig
 
 }
 
-@Singleton
-class VatShortLivedHttpCaching @Inject()(val http: HttpClient, config: ServicesConfig) extends ShortLivedHttpCaching {
-
-  override lazy val defaultSource = config.getString("appName")
-  override lazy val baseUri = config.baseUrl("cachable.short-lived-cache")
-  override lazy val domain = config.getConfString("cachable.short-lived-cache.domain",
-    throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
-
-}
-
-@Singleton
-class VatShortLivedCache @Inject()(val shortLiveCache: ShortLivedHttpCaching,
-                                   applicationCrypto: ApplicationCrypto) extends ShortLivedCache {
-
-  override implicit lazy val crypto = applicationCrypto.JsonCrypto
-
-}
-
 trait Logging {
   val logger: Logger = LoggerFactory.getLogger(getClass)
 }

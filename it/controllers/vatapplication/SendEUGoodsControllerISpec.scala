@@ -17,7 +17,7 @@
 package controllers.vatapplication
 
 import itutil.ControllerISpec
-import models.api.vatapplication.{AASDetails, MonthlyPayment, OverseasCompliance, VatApplication}
+import models.api.vatapplication.{OverseasCompliance, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -31,7 +31,6 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'goodsToEu' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -46,7 +45,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
     "Return OK with prepop when there is a value for 'goodsToEu' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true)))))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -64,9 +63,8 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
       val vatApplication: VatApplication = fullVatApplication.copy(overseasCompliance = Some(testOverseasCompliance))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true)))))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -82,9 +80,8 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
       val vatApplication: VatApplication = fullVatApplication.copy(overseasCompliance = Some(testOverseasCompliance))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false)))))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

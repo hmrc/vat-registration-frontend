@@ -14,7 +14,6 @@ class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsF
   "MainBusinessActivity on show returns OK" in new Setup {
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(fullModel)
 
     insertIntoDb(sessionId, sicCodeMapping)
 
@@ -29,10 +28,9 @@ class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsF
     val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
     given()
       .user.isAuthorised()
-      .s4lContainer[Business].contains(incompleteModelWithoutSicCode)
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
-      .s4lContainer[Business].clearedByKey
+      .registrationApi.getSection[Business](Some(expectedUpdateToBusiness))
 
     insertIntoDb(sessionId, sicCodeMapping)
 

@@ -24,7 +24,6 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       "return INTERNAL_SERVER_ERROR" in new Setup {
         given()
           .user.isNotAuthorised
-          .s4lContainer[VatApplication].contains(testVatApplication)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -34,11 +33,10 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       }
     }
     "the user is authorised" must {
-      "S4L doesn't contain an answer" must {
+      "backend doesn't contain an answer" must {
         "return OK with the correct page" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(testVatApplication)
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -47,15 +45,10 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           res.status mustBe OK
         }
       }
-      "S4L contains an answer" must {
+      "backend contains an answer" must {
         "return OK and pre-populate the form if the answer is UK" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(
-            testVatApplication.copy(
-              overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
-            )
-          )
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -68,11 +61,6 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
       "return OK and pre-populate the form if the answer is OVERSEAS" in new Setup {
         given()
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(
-          testVatApplication.copy(
-            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
-          )
-        )
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -88,11 +76,12 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         "redirect to the dispatch from warehouse controller" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(testVatApplication)
-            .s4lContainer[VatApplication].clearedByKey
             .registrationApi.replaceSection(testVatApplication.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
           ))
+            .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(
+            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
+          )))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -108,11 +97,12 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         "redirect to the Task List page" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(testVatApplication)
-            .s4lContainer[VatApplication].clearedByKey
             .registrationApi.replaceSection(testVatApplication.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
           ))
+            .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(
+            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
+          )))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -126,7 +116,6 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         "return BAD_REQUEST" in new Setup {
           given()
             .user.isAuthorised()
-            .s4lContainer[VatApplication].contains(testVatApplication)
             .registrationApi.replaceSection(testVatApplication.copy(
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
           ))

@@ -4,6 +4,7 @@ package controllers.business
 import forms.VatCorrespondenceForm
 import itutil.ControllerISpec
 import models.Business
+import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -19,7 +20,6 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
     "return OK with a blank form if no data is stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -33,7 +33,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
     "return OK with 'English' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(welshLanguage = Some(false)))
+        .registrationApi.getSection[Business](Some(Business(welshLanguage = Some(false))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -47,7 +47,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
     "return OK with 'Welsh' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(welshLanguage = Some(true)))
+        .registrationApi.getSection[Business](Some(Business(welshLanguage = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,9 +65,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isEmpty
         .registrationApi.replaceSection[Business](Business(welshLanguage = Some(true)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

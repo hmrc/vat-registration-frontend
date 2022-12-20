@@ -76,16 +76,12 @@ class TaskListControllerISpec extends ControllerISpec {
       val goodsAndServicesCannotStartYetRow = "Goods and services Cannot start yet"
 
       val bankAccountDetailsCannotStartYetRow = "Bank account details Cannot start yet"
-      val bankAccountDetailsNotStartedRow = "Bank account details Not started"
       val bankAccountDetailsCompletedRow = "Bank account details Completed"
 
       val registrationDateCompletedRow = "Registration date Completed"
-      val registrationDateNotStartedRow = "Registration date Not started"
       val registrationDateCannotStartYetRow = "Registration date Cannot start yet"
 
       val vatReturnsCompletedRow = "VAT returns Completed"
-      val vatReturnsNotStartedRow = "VAT returns Not started"
-      val vatReturnsInProgress = "VAT returns In progress"
       val vatReturnsCannotStartYetRow = "VAT returns Cannot start yet"
 
       val frsCannotStartYetRow = "Flat Rate Scheme Cannot start yet"

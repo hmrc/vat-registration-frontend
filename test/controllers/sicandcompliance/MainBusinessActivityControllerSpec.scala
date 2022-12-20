@@ -47,7 +47,7 @@ class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAsser
 
 
   s"GET ${controllers.sicandcompliance.routes.MainBusinessActivityController.show}" should {
-    "return OK when view present in S4L" in new Setup {
+    "return OK when view present in backend" in new Setup {
       mockGetBusiness(Future.successful(validBusiness))
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
 

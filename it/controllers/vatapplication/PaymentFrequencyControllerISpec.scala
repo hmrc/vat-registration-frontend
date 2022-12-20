@@ -48,7 +48,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return an OK with no prepop data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -62,7 +61,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return an OK when there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -75,13 +73,12 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
   }
 
   s"POST $url" must {
-    "return a redirect to next page and update S4L" in new Setup {
+    "return a redirect to next page and update backend" in new Setup {
       val vatApplication: VatApplication = fullVatApplication.copy(returnsFrequency = Some(Annual))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,11 +93,9 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return a redirect to next page and update backend with full model" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(testFullVatApplication)
-        .s4lContainer[VatApplication].clearedByKey
         .registrationApi.replaceSection(testFullVatApplication)
         .registrationApi.replaceSection[VatApplication](testFullVatApplication)
-        .s4lContainer[VatApplication].cleared
+        .registrationApi.getSection[VatApplication](Some(testFullVatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -115,7 +110,6 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return a bad request and update page with errors on an invalid submission" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

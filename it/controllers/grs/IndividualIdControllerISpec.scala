@@ -4,7 +4,7 @@ package controllers.grs
 import config.FrontendAppConfig
 import controllers.applicant.{routes => applicantRoutes}
 import itutil.ControllerISpec
-import models.{ApplicantDetails, PersonalDetails}
+import models.ApplicantDetails
 import models.api._
 import play.api.libs.json.{Format, JsObject, Json}
 import play.api.libs.ws.WSResponse

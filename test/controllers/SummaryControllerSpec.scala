@@ -41,7 +41,6 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       mockSessionService,
       mockAuthClientConnector,
       mockVatRegistrationService,
-      mockS4LService,
       mockSummaryService,
       mockNonRepuidiationService,
       app.injector.instanceOf[Summary]
@@ -56,7 +55,6 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
   "Calling summary to show the summary page" when {
     "the StoreAnswersForNrs feature switch is enabled" should {
       "return OK with a valid summary view" in new Setup {
-        when(mockS4LService.clear(any(), any())) thenReturn Future.successful(validHttpResponse)
         when(mockSummaryService.getSummaryData(any(), any(), any(), any()))
           .thenReturn(Future.successful(Accordion()))
         mockStoreEncodedUserAnswers(regId)(Future.successful(""))

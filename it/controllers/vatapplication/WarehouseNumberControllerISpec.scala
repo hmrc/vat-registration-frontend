@@ -31,7 +31,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'fulfilmentWarehouseNumber' saved" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -49,7 +48,6 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection(Some(VatApplication(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
       )))
-        .s4lContainer[VatApplication].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -61,12 +59,13 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
       }
     }
 
-    "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in S4L" in new Setup {
+    "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in backend" in new Setup {
+      val valApplication = VatApplication(overseasCompliance =
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
+
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
-      ))
+        .registrationApi.getSection[VatApplication](Some(valApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -82,13 +81,12 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
   s"POST $url" must {
     "redirect to the fulfilment warehouse name page when the answer is a valid number" in new Setup {
       val valApplication = VatApplication(overseasCompliance =
-        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
-      )
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
+
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
         .registrationApi.replaceSection[VatApplication](valApplication)
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(valApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -32,7 +32,6 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
     "return OK" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -48,7 +47,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
     "return OK when there is an answer to prepop" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(Business(hasLandAndProperty = Some(true)))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasLandAndProperty = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,10 +64,8 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
     "redirect to the next page" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasLandAndProperty = Some(true)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

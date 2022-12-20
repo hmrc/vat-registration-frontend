@@ -48,7 +48,6 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
     "return an OK with no prepop data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -62,7 +61,6 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
     "return an OK when there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(staggerStart = Some(FebJanStagger)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -79,9 +77,8 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
       val vatApplication: VatApplication = fullVatApplication.copy(returnsFrequency = Some(Annual))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(staggerStart = Some(FebJanStagger)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(staggerStart = Some(FebJanStagger))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,7 +93,6 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
     "return a bad request and update page with errors on an invalid submission" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(returnsFrequency = Some(Annual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

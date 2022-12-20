@@ -31,7 +31,6 @@ class WarehouseNameControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'fulfilmentWarehouseName' saved" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -49,7 +48,6 @@ class WarehouseNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection(Some(VatApplication(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       )))
-        .s4lContainer[VatApplication].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -61,12 +59,12 @@ class WarehouseNameControllerISpec extends ControllerISpec {
       }
     }
 
-    "Return OK with prepop when there is a value for 'fulfilmentWarehouseName' in S4L" in new Setup {
+    "Return OK with prepop when there is a value for 'fulfilmentWarehouseName' in backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance =
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
-      ))
+      )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -83,11 +81,12 @@ class WarehouseNameControllerISpec extends ControllerISpec {
     "redirect to the Task List page when the answer has a name" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       ))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance =
+        Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
+      )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -17,13 +17,12 @@ class BusinessEmailControllerISpec extends ControllerISpec {
   val businessEmail = "test@test.com"
   val invalidBusinessEmail = "test@@test.com"
 
-  val s4lData: Business = Business(email = Some(businessEmail))
+  val data: Business = Business(email = Some(businessEmail))
 
   s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](Some(businessDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -36,8 +35,8 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     "return OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(email = Some(businessEmail))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,12 +52,10 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     "update BusinessContact and redirect to the next page" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
-        .s4lContainer[Business].contains(businessDetails.copy(email = None))
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[Business](businessDetails.copy(email = Some(businessEmail)))
-        .s4lContainer[Business].clearedByKey
+        .registrationApi.getSection[Business](Some(businessDetails.copy(email = Some(businessEmail))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -71,7 +68,6 @@ class BusinessEmailControllerISpec extends ControllerISpec {
     "Return BAD_REQUEST if invalid email provided" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(email = None))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

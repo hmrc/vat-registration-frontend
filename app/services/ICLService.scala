@@ -50,7 +50,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
       }
     } recover {
       case e =>
-        logger.warn(s"[ICLServiceImpl] [prepopulateSicCodes] Retrieving S4L/VR sic codes failed: ${e.getMessage}")
+        logger.warn(s"[ICLServiceImpl] [prepopulateSicCodes] Retrieving VR sic codes failed: ${e.getMessage}")
         Nil
     }
   }

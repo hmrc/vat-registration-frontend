@@ -19,7 +19,6 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
     "return OK with a blank form if no data is stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -33,7 +32,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
     "return OK with 'Email' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(contactPreference = Some(Email)))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(contactPreference = Some(Email))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -47,7 +46,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
     "return OK with 'Letter' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(contactPreference = Some(Letter)))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(contactPreference = Some(Letter))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,9 +64,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
-        .s4lContainer[Business].isEmpty
         .registrationApi.replaceSection[Business](Business(contactPreference = Some(Letter)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

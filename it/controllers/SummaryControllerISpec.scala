@@ -34,7 +34,6 @@ class SummaryControllerISpec extends ControllerISpec {
       val nrsSubmissionPayload = "nrsSubmissionPayload"
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].cleared
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
         .registrationApi.getRegistration(fullVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson)))
 
@@ -54,7 +53,6 @@ class SummaryControllerISpec extends ControllerISpec {
       val nrsSubmissionPayload = "nrsSubmissionPayload"
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].cleared
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
         .registrationApi.getRegistration(fullNetpVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson)))
 

@@ -15,9 +15,8 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
       "store £0 as the zero rated estimate and bypass the zero-rated supplies page" in new Setup {
         given
           .user.isAuthorised()
-          .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(0)))
           .registrationApi.replaceSection[VatApplication](VatApplication(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0)))
-          .s4lContainer[VatApplication].clearedByKey
+          .registrationApi.getSection[VatApplication](Some(VatApplication(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -30,8 +29,8 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
     "the user has entered a non-zero value for their turnover estimate" must {
       "redirect to the zero-rated supplies page" in new Setup {
         given
-          .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(1)))
           .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(fullVatApplication))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -44,7 +43,6 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
     "the vat scheme doesn't contain turnover" must {
       "return INTERNAL_SERVER_ERROR" in new Setup {
         given
-          .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = None))
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

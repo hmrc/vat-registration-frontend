@@ -26,7 +26,6 @@ class EntityServiceSpec extends VatRegSpec {
 
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val service = new EntityService(
-    mockS4LService,
     mockSessionService,
     mockRegistrationApiConnector
   )

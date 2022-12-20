@@ -19,7 +19,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
     "return OK with a blank form if no data is stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(startDate = Some(regStartDate)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -29,9 +29,11 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'Yes' pre-populated" in new Setup {
+      val vatApplication = fullVatApplication.copy(startDate = Some(regStartDate))
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(true)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(true))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -46,7 +48,8 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
     "return OK with 'No' pre-populated" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(false)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(false))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,9 +68,8 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
 
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -82,9 +84,8 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
 
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(false)))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -99,8 +100,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
 
       given.user
         .isAuthorised()
-        .registrationApi.getSection[VatApplication](None)
-        .s4lContainer[VatApplication].contains(vatApplication)
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

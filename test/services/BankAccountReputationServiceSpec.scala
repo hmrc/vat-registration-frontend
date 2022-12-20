@@ -23,12 +23,12 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json._
-import testHelpers.{S4LMockSugar, VatRegSpec}
+import testHelpers.{VatRegSpec}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BankAccountReputationServiceSpec extends VatRegSpec with S4LMockSugar with FeatureSwitching {
+class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching {
 
   class Setup {
     disable(StubBars)

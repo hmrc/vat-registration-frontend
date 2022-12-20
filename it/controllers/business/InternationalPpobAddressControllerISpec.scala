@@ -17,12 +17,11 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
   val testForeignAddress = address.copy(country = Some(testForeignCountry))
 
   "GET /principal-place-business/international" when {
-    "reading from S4L" must {
+    "reading from backend" must {
       "return OK when the ApplicantDetails block is empty" in new Setup {
         given
           .user.isAuthorised()
           .registrationApi.getSection[Business](None, testRegId)
-          .s4lContainer[Business].contains(Business())
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -33,8 +32,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK and pre-populate when the ApplicantDetails block contains an address" in new Setup {
         given
           .user.isAuthorised()
-          .s4lContainer[Business].contains(Business(ppobAddress = Some(testForeignAddress)))
-          .registrationApi.getSection[Business](None, testRegId)
+          .registrationApi.getSection[Business](Some(businessDetails.copy(ppobAddress = Some(testForeignAddress))), testRegId)
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -52,7 +50,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       "return OK and pre-populate the page" in new Setup {
         given
           .user.isAuthorised()
-          .s4lContainer[Business].isEmpty
           .registrationApi.getSection[Business](
             Some(businessDetails.copy(ppobAddress = Some(testForeignAddress)))
           )(Business.apiKey, Business.format)
@@ -76,9 +73,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
-        .s4lContainer[Business].isEmpty
         .registrationApi.replaceSection[Business](Business(ppobAddress = Some(testShortForeignAddress)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,9 +91,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
-        .s4lContainer[Business].contains(Business())
         .registrationApi.replaceSection[Business](Business(ppobAddress = Some(fullAddress)))
-        .s4lContainer[Business].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -119,7 +112,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
-        .s4lContainer[Business].contains(Business())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -138,7 +130,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
-        .s4lContainer[Business].contains(Business())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -157,7 +148,6 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
-        .s4lContainer[Business].contains(Business())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

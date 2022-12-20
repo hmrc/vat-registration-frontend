@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class SummaryController @Inject()(val sessionService: SessionService,
                                   val authConnector: AuthClientConnector,
                                   val vrs: VatRegistrationService,
-                                  val s4LService: S4LService,
                                   val summaryService: SummaryService,
                                   val nonRepudiationService: NonRepudiationService,
                                   val summaryPage: Summary)
@@ -45,7 +44,6 @@ class SummaryController @Inject()(val sessionService: SessionService,
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       accordion <- summaryService.getSummaryData
-      _ <- s4LService.clear
       html = summaryPage(accordion)
       _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
     } yield Ok(html)

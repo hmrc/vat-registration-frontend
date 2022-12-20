@@ -28,8 +28,7 @@ import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait VatMocks
-  extends MockS4lConnector
-    with AuthMock
+    extends AuthMock
     with SessionServiceMock
     with BusinessServiceMock
     with IncorpIdServiceMock
@@ -37,7 +36,6 @@ trait VatMocks
   this: MockitoSugar =>
 
   implicit lazy val mockAudit = mock[Audit]
-  implicit lazy val mockS4LService = mock[S4LService]
   implicit lazy val mockServicesConfig = mock[ServicesConfig]
 
   //Connectors
@@ -63,8 +61,6 @@ trait VatMocks
 
   def resetMocks() {
     reset(
-      mockS4LConnector,
-      mockS4LService,
       mockSessionService,
       mockAudit,
       mockVatRegistrationService,

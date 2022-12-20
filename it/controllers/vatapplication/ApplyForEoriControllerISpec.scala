@@ -32,7 +32,6 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     "return OK when trading details aren't stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](None)
 
@@ -50,7 +49,6 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     "return OK for overseas page when trading details aren't stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
         .registrationApi.getSection[VatApplication](None)
 
@@ -65,11 +63,11 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       }
     }
 
-    "return OK when trading details are stored in S4L" in new Setup {
+    "return OK when trading details are stored in backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(eoriRequested = Some(false)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(false), eoriRequested = Some(false))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -83,7 +81,6 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     "return OK when trading details are stored in the backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(VatApplication(eoriRequested = Some(true))))
 
@@ -102,10 +99,8 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     "redirect to the next page" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

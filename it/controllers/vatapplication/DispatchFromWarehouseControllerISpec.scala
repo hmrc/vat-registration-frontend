@@ -31,7 +31,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "Return OK when there is no value for 'usingWarehouse' in the backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -47,7 +46,6 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false))))))
-        .s4lContainer[VatApplication].isEmpty
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -59,10 +57,10 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       }
     }
 
-    "Return OK with prepop when there is a value for 'usingWarehouse' in S4L" in new Setup {
+    "Return OK with prepop when there is a value for 'usingWarehouse' in backend" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -79,9 +77,8 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "redirect to the fulfilment warehouse number page when the answer is yes" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,9 +93,8 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
     "redirect to the application progress page when the answer is no" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(overseasCompliance = Some(testOverseasCompliance)))
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

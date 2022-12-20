@@ -25,7 +25,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       res.status mustBe OK
     }
-    "return OK with a pre-populated form from S4L" in new Setup {
+    "return OK with a pre-populated form from backend" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(bankAccount))

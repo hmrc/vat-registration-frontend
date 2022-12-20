@@ -19,13 +19,12 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
   val invalidWebsiteAddress = "https://www.example.com/"
   val validWebsiteAddress = "https://www.example.com/photos/"
 
-  val s4lData: Business = Business(website = Some(businessWebsiteAddress))
+  val data: Business = Business(website = Some(businessWebsiteAddress))
 
   s"GET $url" should {
     "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].isEmpty
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
@@ -38,8 +37,8 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
     "return OK with prepopulated data" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(s4lData)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,15 +52,14 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
   s"POST $url" when {
     "BusinessContact is not complete" should {
-      "Update S4L and redirect to the next page" in new Setup {
+      "Update backend and redirect to the next page" in new Setup {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.getSection[Business](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
-          .s4lContainer[Business].clearedByKey
+          .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,10 +75,9 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
-          .s4lContainer[Business].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -94,10 +91,9 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         enable(WelshLanguage)
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
-          .s4lContainer[Business].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -112,10 +108,9 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
-          .s4lContainer[Business].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -129,10 +124,9 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
         given()
           .user.isAuthorised()
-          .s4lContainer[Business].contains(businessDetails.copy(website = None))
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(validWebsiteAddress)))
-          .s4lContainer[Business].clearedByKey
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(validWebsiteAddress))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -148,9 +142,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
       given()
         .user.isAuthorised()
-        .s4lContainer[Business].contains(businessDetails.copy(website = None))
         .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(invalidUrl)))
-        .s4lContainer[Business].clearedByKey
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

@@ -31,7 +31,6 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     "return OK when trading details aren't stored" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -42,10 +41,10 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         result.status mustBe OK
       }
     }
-    "return OK when vat application is stored in S4L" in new Setup {
+    "return OK when vat application is stored in backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(tradeVatGoodsOutsideUk = Some(false)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(false))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -59,7 +58,6 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     "return OK when trading details are stored in the backend" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -77,10 +75,8 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     "redirect to EORI when yes is selected" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true)))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -95,10 +91,8 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     "redirect to Turnover when no is selected" in new Setup {
       given
         .user.isAuthorised()
-        .s4lContainer[VatApplication].isEmpty
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
-        .s4lContainer[VatApplication].clearedByKey
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

@@ -32,7 +32,8 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an OK if turnoverEstimates are found" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(testTurnover)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(zeroRatedSupplies = Some(10000.53), appliedForExemption = None)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(zeroRatedSupplies = Some(10000.53), turnoverEstimate = Some(10000.53))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -46,7 +47,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an OK if turnoverEstimates are found and there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(testTurnover), zeroRatedSupplies = Some(10000)))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(zeroRatedSupplies = Some(10000.53), turnoverEstimate = Some(10000.53))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -60,7 +61,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an INTERNAL_SERVER_ERROR if turnoverEstimates aren't found" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -77,9 +77,8 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       val vatApplication: VatApplication = fullVatApplication.copy(turnoverEstimate = Some(testTurnover))
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(vatApplication)
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(zeroRatedSupplies = Some(10000.53), appliedForExemption = None))
-        .s4lContainer[VatApplication].clearedByKey
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(zeroRatedSupplies = Some(10000.53), appliedForExemption = None)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -96,7 +95,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "update the page with errors if turnoverEstimates exists and form has errors" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication(turnoverEstimate = Some(testTurnover)))
+        .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(zeroRatedSupplies = Some(BigDecimal(10)))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -112,7 +111,6 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
     "return an INTERNAL_SERVER_ERROR if turnoverEstimates doesn't exist" in new Setup {
       given()
         .user.isAuthorised()
-        .s4lContainer[VatApplication].contains(VatApplication())
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

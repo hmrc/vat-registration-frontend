@@ -43,7 +43,6 @@ case class Business(hasTradingName: Option[Boolean] = None,
 object Business {
   implicit val format: OFormat[Business] = Json.format[Business]
   implicit val apiKey: ApiKey[Business] = ApiKey("business")
-  implicit val s4lKey: S4LKey[Business] = S4LKey("business")
 
   def tradingNameOptional(partyType: PartyType): Boolean =
     Seq(UkCompany, RegSociety, CharitableOrg, NonUkNonEstablished, Trust, UnincorpAssoc, Partnership, ScotPartnership, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership).contains(partyType)

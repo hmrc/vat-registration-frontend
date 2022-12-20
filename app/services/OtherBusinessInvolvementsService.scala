@@ -26,9 +26,8 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class OtherBusinessInvolvementsService @Inject()(val s4LService: S4LService,
-                                                 registrationApiConnector: RegistrationApiConnector
-                                                )(implicit ec: ExecutionContext) extends Logging {
+class OtherBusinessInvolvementsService @Inject()(registrationApiConnector: RegistrationApiConnector)
+                                                (implicit ec: ExecutionContext) extends Logging {
 
   def getOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Option[OtherBusinessInvolvement]] =
     registrationApiConnector.getSection[OtherBusinessInvolvement](profile.registrationId, Some(index))
