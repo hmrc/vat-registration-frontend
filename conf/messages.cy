@@ -1226,7 +1226,7 @@ pages.businessPartnerEntityType.missing                  = Dewiswch fath o fusne
 pages.businessPartnerEntityType.heading                  = Pa fath o fusnes yw’r {0} bartner yn y bartneriaeth?
 
 # PARTNER SUMMARY PAGE
-partner.summary.heading                                  = YRydych wedi ychwanegu {0} aelod o’r bartneriaeth
+partner.summary.heading                                  = Rydych wedi ychwanegu {0} aelod o’r bartneriaeth
 partner.summary.headingPlural                            = Rydych wedi ychwanegu {0} aelod o’r bartneriaeth
 partner.summary.leadPartner                              = Lead partner
 partner.summary.additionalPartners                       = Additional partners
