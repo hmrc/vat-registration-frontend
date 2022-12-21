@@ -17,7 +17,7 @@
 package viewmodels.tasklist
 
 import controllers.partners.PartnerIndexValidation
-import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, WelshLanguage}
+import featureswitch.core.config._
 import fixtures.VatRegistrationFixture
 import models.api.{Attachments, Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
@@ -202,20 +202,17 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
     "business details available but no activity details captured" must {
       "return TLNotStarted" in {
-        enable(LandAndProperty)
         val schema = validVatScheme.copy(business = Some(validBusiness.copy(
           mainBusinessActivity = None, businessDescription = None
         )))
         val sectionRow = section.businessActivitiesRow.build(schema)
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
-        disable(LandAndProperty)
       }
     }
 
     "business details available but activity details partially captured" must {
       "return TLInProgress" in {
-        enable(LandAndProperty)
         val schema = validVatScheme.copy(
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(true), mainBusinessActivity = None, businessDescription = None
@@ -224,11 +221,9 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         val sectionRow = section.businessActivitiesRow.build(schema)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
-        disable(LandAndProperty)
       }
 
       "return TLInProgress if compliance siccode chosen but compliance details not complete" in {
-        enable(LandAndProperty)
         val schema = validVatScheme.copy(
           business = Some(validBusiness.copy(
             mainBusinessActivity = Some(complianceSicCode),
@@ -239,13 +234,11 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         val sectionRow = section.businessActivitiesRow.build(schema)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
-        disable(LandAndProperty)
       }
     }
 
     "business details available and activity details captured" must {
       "return TLCompleted for siccode with no compliance details needed" in {
-        enable(LandAndProperty)
         val schema = validVatScheme.copy(
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
@@ -256,11 +249,9 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         val sectionRow = section.businessActivitiesRow.build(schema)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
-        disable(LandAndProperty)
       }
 
       "return TLCompleted for compliance siccode with required compliance details" in {
-        enable(LandAndProperty)
         val schema = validVatScheme.copy(
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
@@ -272,7 +263,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         val sectionRow = section.businessActivitiesRow.build(schema)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
-        disable(LandAndProperty)
       }
     }
   }
