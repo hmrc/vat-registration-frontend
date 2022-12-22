@@ -18,7 +18,7 @@ package viewmodels.tasklist
 
 import config.FrontendAppConfig
 import controllers.partners.PartnerIndexValidation.minPartnerIndex
-import featureswitch.core.config.{DigitalPartnerFlow, FeatureSwitching, LandAndProperty, WelshLanguage}
+import featureswitch.core.config._
 import models.api._
 import models.external.{MinorEntity, PartnershipIdEntity}
 import models.{Business, CurrentProfile}
@@ -119,28 +119,18 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
 
   def businessActivitiesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessActivities",
-    url = _ =>
-      if (isEnabled(LandAndProperty)) {
-        controllers.business.routes.LandAndPropertyController.show.url
-      } else {
-        controllers.business.routes.BusinessActivityDescriptionController.show.url
-      },
+    url = _ => controllers.business.routes.LandAndPropertyController.show.url,
     tagId = "businessActivitiesRow",
     checks = scheme => Seq(
       scheme.business.exists(_.businessDescription.isDefined),
-      scheme.business.exists(_.mainBusinessActivity.isDefined)
+      scheme.business.exists(_.mainBusinessActivity.isDefined),
+      scheme.business.exists(_.hasLandAndProperty.isDefined)
     ).++ {
       val needsCompliance = scheme.business.flatMap(_.businessActivities).fold(false) { sicCodes =>
         businessService.needComplianceQuestions(sicCodes)
       }
       if (needsCompliance) {
         Seq(scheme.business.exists(_.labourCompliance.exists(businessService.isLabourComplianceModelComplete)))
-      } else {
-        Nil
-      }
-    }.++ {
-      if (isEnabled(LandAndProperty)) {
-        Seq(scheme.business.exists(_.hasLandAndProperty.isDefined))
       } else {
         Nil
       }

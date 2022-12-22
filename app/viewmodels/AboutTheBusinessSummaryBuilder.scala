@@ -150,7 +150,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     optSummaryListRowBoolean(
       s"$sectionId.buySellLandAndProperty",
       business.hasLandAndProperty,
-      Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+      Some(controllers.business.routes.LandAndPropertyController.show.url)
     )
 
   private def businessDescription(business: Business)(implicit messages: Messages): Option[SummaryListRow] =

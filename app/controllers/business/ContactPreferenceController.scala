@@ -18,7 +18,6 @@ package controllers.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.LandAndProperty
 import forms.ContactPreferenceForm
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessService, SessionProfile, SessionService}
