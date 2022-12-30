@@ -19,7 +19,6 @@ package viewmodels.tasklist
 import featureswitch.core.config.FeatureSwitching
 import models.CurrentProfile
 import models.api._
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 
@@ -139,10 +138,8 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
     vatScheme.partyType match {
       case Some(NETP) | Some(NonUkNonEstablished) =>
         controllers.applicant.routes.InternationalHomeAddressController.show.url
-      case Some(_) =>
+      case _ =>
         controllers.applicant.routes.HomeAddressController.redirectToAlf.url
-      case None =>
-        throw new InternalServerException("[AboutYouTaskList][resolveAddressRowUrl] Failed to initiate address details task list due to missing party type")
     }
   }
 

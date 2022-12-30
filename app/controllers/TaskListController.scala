@@ -38,8 +38,6 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    vatRegistrationTaskList: VatRegistrationTaskList,
                                    attachmentsTaskList: AttachmentsTaskList,
                                    summaryTaskList: SummaryTaskList,
-                                   businessService: BusinessService,
-                                   vatApplicationService: VatApplicationService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -50,17 +48,25 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
     for {
       vatScheme <- vatRegistrationService.getVatScheme
       attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
-      sections = List(
-        Some(registrationReasonSection.build(vatScheme)),
-        if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(vatScheme)) else None,
-        Some(verifyBusinessTaskList.build(vatScheme)),
-        Some(aboutYouTaskList.build(vatScheme)),
-        Some(aboutTheBusinessTaskList.build(vatScheme)),
-        Some(vatRegistrationTaskList.build(vatScheme)),
-        attachmentsTaskListRow.map(attachmentsTaskList.build(vatScheme, _)),
-        Some(summaryTaskList.build(vatScheme, attachmentsTaskListRow))
-      ).flatten
-    } yield Ok(view(sections: _*))
+      redirect = vatScheme match {
+        case scheme if scheme.applicationReference.isEmpty =>
+          Redirect(routes.ApplicationReferenceController.show)
+        case scheme if scheme.confirmInformationDeclaration.isEmpty =>
+          Redirect(routes.HonestyDeclarationController.show)
+        case _ =>
+          val sections = List(
+            Some(registrationReasonSection.build(vatScheme)),
+            if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(vatScheme)) else None,
+            Some(verifyBusinessTaskList.build(vatScheme)),
+            Some(aboutYouTaskList.build(vatScheme)),
+            Some(aboutTheBusinessTaskList.build(vatScheme)),
+            Some(vatRegistrationTaskList.build(vatScheme)),
+            attachmentsTaskListRow.map(attachmentsTaskList.build(vatScheme, _)),
+            Some(summaryTaskList.build(vatScheme, attachmentsTaskListRow))
+          ).flatten
+          Ok(view(sections: _*))
+      }
+    } yield redirect
   }
 
 }

@@ -28,6 +28,7 @@ case class VatScheme(registrationId: String,
                      createdDate: LocalDate,
                      status: VatRegStatus.Value,
                      applicationReference: Option[String] = None,
+                     confirmInformationDeclaration: Option[Boolean] = None,
                      eligibilityData: Option[JsObject] = None,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      transactorDetails: Option[TransactorDetails] = None,
@@ -41,7 +42,7 @@ case class VatScheme(registrationId: String,
                      attachments: Option[Attachments] = None) {
 
   def partyType: Option[PartyType] = eligibilitySubmissionData.map(_.partyType)
-
+  def registrationReason: Option[RegistrationReason] = eligibilitySubmissionData.map(_.registrationReason)
 }
 
 object VatScheme {
@@ -53,6 +54,7 @@ object VatScheme {
         (__ \ "createdDate").read[LocalDate] and
         (__ \ "status").read[VatRegStatus.Value] and
         (__ \ "applicationReference").readNullable[String] and
+        (__ \ "confirmInformationDeclaration").readNullable[Boolean] and
         (__ \ "eligibilityData").readNullable[JsObject] and
         (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
         (__ \ "transactorDetails").readNullable[TransactorDetails] and
@@ -70,6 +72,7 @@ object VatScheme {
         (__ \ "createdDate").read[LocalDate] and
         (__ \ "status").read[VatRegStatus.Value] and
         (__ \ "applicationReference").readNullable[String] and
+        (__ \ "confirmInformationDeclaration").readNullable[Boolean] and
         Reads.pure(None) and
         Reads.pure(None) and
         Reads.pure(None) and
@@ -89,6 +92,7 @@ object VatScheme {
     (__ \ "createdDate").write[LocalDate] and
     (__ \ "status").write[VatRegStatus.Value] and
     (__ \ "applicationReference").writeNullable[String] and
+    (__ \ "confirmInformationDeclaration").writeNullable[Boolean] and
     (__ \ "eligibilityData").writeNullable[JsObject] and
     (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
     (__ \ "transactorDetails").writeNullable[TransactorDetails] and

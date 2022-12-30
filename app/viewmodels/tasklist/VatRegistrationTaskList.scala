@@ -20,7 +20,6 @@ import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import play.api.i18n.Messages
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 
@@ -49,7 +48,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       }
     },
     prerequisites = _ =>
-        Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
+      Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
   )
 
   def bankAccountDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
@@ -156,13 +155,11 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
   }
 
   private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
-    vatScheme.eligibilitySubmissionData.map(_.registrationReason) match {
+    vatScheme.registrationReason match {
       case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) | Some(SuppliesOutsideUk) =>
         Some(registrationDateRow)
-      case Some(_) =>
+      case _ =>
         None
-      case None =>
-        throw new InternalServerException("[VatRegistrationTaskList]Failed to get registration reason while building vat registration row tasklist row")
     }
   }
 

@@ -42,7 +42,7 @@ class EmailCoverSheetController @Inject()(view: EmailCoverSheet,
   private val groupSize = 4
   private val separator = " "
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
+  val show: Action[AnyContent] = isAuthenticatedAndSubmitted {
     implicit request =>
       implicit profile =>
         for {

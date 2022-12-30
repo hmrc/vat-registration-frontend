@@ -18,11 +18,10 @@ package viewmodels.tasklist
 
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
+import models._
 import models.api._
 import models.external.Name
-import models._
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.InternalServerException
 
 class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
 
@@ -501,12 +500,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
   }
 
   "checks for address details task list row" when {
-
     "party type not available" must {
-      "throw INTERNAL_SERVER_ERROR if party type is missing" in {
-        intercept[InternalServerException] {
-          section.addressDetailsRow.build(emptyVatScheme)
-        }
+      "return TLCannotStart" in {
+        section.addressDetailsRow.build(emptyVatScheme).status mustBe TLCannotStart
       }
     }
 

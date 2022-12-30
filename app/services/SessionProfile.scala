@@ -50,7 +50,21 @@ trait SessionProfile {
     }
   }
 
-  def getProfile(implicit hc: HeaderCarrier): Future[Option[CurrentProfile]] = {
-    sessionService.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY)
+  def withSubmittedCurrentProfile(f: CurrentProfile => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
+    sessionService.fetchAndGet[CurrentProfile](CURRENT_PROFILE_KEY) flatMap { currentProfile =>
+      currentProfile.fold(
+        Future.successful(Redirect(routes.JourneyController.show))
+      ) {
+        profile =>
+          profile.vatRegistrationStatus match {
+            case VatRegStatus.submitted => f(profile)
+            case VatRegStatus.draft | VatRegStatus.contact => Future.successful(Redirect(routes.TaskListController.show))
+            case VatRegStatus.failedRetryable => Future.successful(Redirect(controllers.errors.routes.ErrorController.submissionRetryable))
+            case VatRegStatus.failed => Future.successful(Redirect(controllers.errors.routes.ErrorController.submissionFailed))
+            case VatRegStatus.duplicateSubmission => Future.successful(Redirect(controllers.errors.routes.ErrorController.alreadySubmitted))
+            case VatRegStatus.locked => Future.successful(Redirect(routes.SubmissionInProgressController.show))
+          }
+      }
+    }
   }
 }

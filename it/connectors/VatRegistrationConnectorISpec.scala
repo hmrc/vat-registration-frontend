@@ -106,13 +106,14 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
         createdDate = testCreatedDate,
         status = VatRegStatus.draft,
         applicationReference = Some(testAppRef),
+        confirmInformationDeclaration = Some(true),
         requiresAttachments = false
       )))
 
       val res = await(vatregConnector.getAllRegistrations)
 
       res mustBe List(
-        VatSchemeHeader(testRegId, VatRegStatus.draft, Some(testAppRef), testCreatedDate, requiresAttachments = false))
+        VatSchemeHeader(testRegId, VatRegStatus.draft, Some(testAppRef), Some(true), testCreatedDate, requiresAttachments = false))
     }
   }
 

@@ -25,6 +25,7 @@ import java.time.LocalDate
 case class VatSchemeHeader(registrationId: String,
                            status: VatRegStatus.Value,
                            applicationReference: Option[String] = None,
+                           confirmInformationDeclaration: Option[Boolean] = None,
                            createdDate: LocalDate,
                            requiresAttachments: Boolean)
 
@@ -33,6 +34,7 @@ case object VatSchemeHeader {
     (__ \ "registrationId").read[String] and
       (__ \ "status").read[VatRegStatus.Value] and
       (__ \ "applicationReference").readNullable[String] and
+      (__ \ "confirmInformationDeclaration").readNullable[Boolean] and
       (__ \ "createdDate").read[LocalDate] and
       (__ \ "attachments").readNullable[Attachments].fmap(block => block.exists(_.method.isDefined))
     )(VatSchemeHeader.apply _)
