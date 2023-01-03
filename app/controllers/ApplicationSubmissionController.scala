@@ -42,7 +42,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
   private val groupSize = 4
   private val separator = " "
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
+  def show: Action[AnyContent] = isAuthenticatedAndSubmitted {
     implicit request =>
       implicit profile =>
         for {

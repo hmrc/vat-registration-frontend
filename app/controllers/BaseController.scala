@@ -100,4 +100,13 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
         }
       }.handleErrorResult
   }
+
+  def isAuthenticatedAndSubmitted(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised(authPredicate) {
+        withSubmittedCurrentProfile { profile =>
+          f(request)(profile)
+        }
+      }.handleErrorResult
+  }
 }

@@ -16,6 +16,7 @@
 
 package controllers
 
+import common.enums.VatRegStatus
 import fixtures.VatRegistrationFixture
 import models.api._
 import org.mockito.ArgumentMatchers
@@ -43,130 +44,208 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
     applicationSubmissionConfirmationView
   )
 
-  s"GET ${routes.ApplicationSubmissionController.show}" should {
-    "display the submission confirmation page to the user" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
+  s"GET ${routes.ApplicationSubmissionController.show}" when {
+    "the registration status is submitted" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)
+      "display the submission confirmation page to the user" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+          .thenReturn(Future.successful("123412341234"))
 
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List()))
+        when(mockAttachmentsService.getAttachmentList(any())(any()))
+          .thenReturn(Future.successful(List()))
 
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = None))))
+        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+          .thenReturn(Future.successful(Some(Attachments(method = None))))
 
-      mockIsTransactor(Future.successful(true))
-      mockGetTransactorDetails(currentProfile)(validTransactorDetails)
+        mockIsTransactor(Future.successful(true))
+        mockGetTransactorDetails(profile)(validTransactorDetails)
 
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe OK
+        }
+      }
+
+      "display the submission confirmation page to the user when IdentityEvidence is available" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any()))
+          .thenReturn(Future.successful(List(IdentityEvidence)))
+
+        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+          .thenReturn(Future.successful(Some(Attachments(method = None))))
+
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+          .thenReturn(Future.successful("123412341234"))
+
+        mockIsTransactor(Future.successful(false))
+        mockGetApplicantDetails(profile)(completeApplicantDetails)
+
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe OK
+        }
+      }
+
+      "display the submission confirmation page to the user when IdentityEvidence is available and Method is Attached" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any()))
+          .thenReturn(Future.successful(List(IdentityEvidence)))
+
+        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+          .thenReturn(Future.successful(Some(Attachments(method = Some(Attached)))))
+
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+          .thenReturn(Future.successful("123412341234"))
+
+        mockIsTransactor(Future.successful(false))
+        mockGetApplicantDetails(profile)(completeApplicantDetails)
+
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe OK
+        }
+      }
+
+      "display the submission confirmation page to the user when IdentityEvidence is available and Method is Post" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any()))
+          .thenReturn(Future.successful(List(IdentityEvidence)))
+
+        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+          .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
+
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+          .thenReturn(Future.successful("123412341234"))
+
+        mockIsTransactor(Future.successful(false))
+        mockGetApplicantDetails(profile)(completeApplicantDetails)
+
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe OK
+        }
+      }
+
+      "display the submission confirmation page to the user when IdentityEvidence is available and Method is EmailMethod" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any()))
+          .thenReturn(Future.successful(List(IdentityEvidence)))
+
+        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+          .thenReturn(Future.successful(Some(Attachments(method = Some(EmailMethod)))))
+
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+          .thenReturn(Future.successful("123412341234"))
+
+        mockIsTransactor(Future.successful(false))
+        mockGetApplicantDetails(profile)(completeApplicantDetails)
+
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe OK
+        }
+      }
+
+      "display the submission confirmation page to the user when VAT51 is available" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any()))
+          .thenReturn(Future.successful(List(VAT51)))
+
+        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+          .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
+
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+          .thenReturn(Future.successful("123412341234"))
+
+        mockIsTransactor(Future.successful(false))
+        mockGetApplicantDetails(profile)(completeApplicantDetails)
+
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe OK
+        }
       }
     }
 
-    "display the submission confirmation page to the user when IdentityEvidence is available" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
+    "the registration status is draft" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.draft)
+      "redirect to TaskList" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(IdentityEvidence)))
-
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = None))))
-
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
-
-      mockIsTransactor(Future.successful(false))
-      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
-
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some(routes.TaskListController.show.url)
+        }
       }
     }
 
-    "display the submission confirmation page to the user when IdentityEvidence is available and Method is Attached" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
+    "the registration status is contact" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.contact)
+      "redirect to TaskList" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(IdentityEvidence)))
-
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = Some(Attached)))))
-
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
-
-      mockIsTransactor(Future.successful(false))
-      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
-
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some(routes.TaskListController.show.url)
+        }
       }
     }
 
-    "display the submission confirmation page to the user when IdentityEvidence is available and Method is Post" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
+    "the registration status is failedRetryable" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)
+      "redirect to Submission retryable page" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(IdentityEvidence)))
-
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
-
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
-
-      mockIsTransactor(Future.successful(false))
-      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
-
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some(controllers.errors.routes.ErrorController.submissionRetryable.url)
+        }
       }
     }
+    "the registration status is failed" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.failed)
+      "redirect to Submission failed page" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-    "display the submission confirmation page to the user when IdentityEvidence is available and Method is EmailMethod" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
-
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(IdentityEvidence)))
-
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = Some(EmailMethod)))))
-
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
-
-      mockIsTransactor(Future.successful(false))
-      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
-
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some(controllers.errors.routes.ErrorController.submissionFailed.url)
+        }
       }
     }
+    "the registration status is duplicateSubmission" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.duplicateSubmission)
+      "redirect to Submission duplicate page" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-    "display the submission confirmation page to the user when VAT51 is available" in {
-      mockAuthenticatedBasic
-      mockWithCurrentProfile(Some(currentProfile))
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some(controllers.errors.routes.ErrorController.alreadySubmitted.url)
+        }
+      }
+    }
+    "the registration status is locked" must {
+      val profile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.locked)
+      "redirect to Submission in progress page" in {
+        mockAuthenticatedBasic
+        mockWithCurrentProfile(Some(profile))
 
-      when(mockAttachmentsService.getAttachmentList(any())(any()))
-        .thenReturn(Future.successful(List(VAT51)))
-
-      when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-        .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
-
-      when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-        .thenReturn(Future.successful("123412341234"))
-
-      mockIsTransactor(Future.successful(false))
-      mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
-
-      callAuthorised(testController.show) { res =>
-        status(res) mustBe OK
+        callAuthorised(testController.show) { res =>
+          status(res) mustBe SEE_OTHER
+          redirectLocation(res) mustBe Some(routes.SubmissionInProgressController.show.url)
+        }
       }
     }
   }

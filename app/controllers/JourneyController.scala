@@ -59,10 +59,11 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
           eligibilitySubmissionData <- vatRegistrationService.getSection[EligibilitySubmissionData](regId)
         } yield header.status match {
           case VatRegStatus.submitted => Redirect(routes.ApplicationSubmissionController.show)
-          case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
           case _ if header.applicationReference.isEmpty => Redirect(routes.ApplicationReferenceController.show)
+          case _ if header.confirmInformationDeclaration.isEmpty => Redirect(routes.HonestyDeclarationController.show)
+          case _ if header.requiresAttachments => Redirect(controllers.attachments.routes.DocumentsRequiredController.resolve)
           case _ if eligibilitySubmissionData.isDefined => Redirect(controllers.routes.TaskListController.show)
-          case _ => Redirect(routes.HonestyDeclarationController.show)
+          case _ => Redirect(appConfig.eligibilityStartUrl(regId))
         }
       case None =>
         Future.successful(BadRequest("No journey ID was specified"))

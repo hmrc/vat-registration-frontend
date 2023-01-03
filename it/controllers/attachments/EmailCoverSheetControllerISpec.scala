@@ -16,12 +16,13 @@
 
 package controllers.attachments
 
+import common.enums.VatRegStatus
 import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import featureswitch.core.config.FeatureSwitching
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
-import models.{ApiKey, ApplicantDetails, TransactorDetails}
+import models.{ApiKey, ApplicantDetails, CurrentProfile, TransactorDetails}
 import play.api.libs.json.Format
 import play.api.libs.ws.WSResponse
 
@@ -33,6 +34,8 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
 
   val testAckRef = "VRN1234567"
 
+  val profile: CurrentProfile = currentProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)
+
   s"GET $url" must {
     "return an OK" in new Setup {
       implicit val key: ApiKey[String] = acknowledgementReferenceKey
@@ -42,7 +45,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection(Some(testAckRef))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(profile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -61,7 +64,7 @@ class EmailCoverSheetControllerISpec extends ControllerISpec with ITRegistration
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection(Some(testAckRef))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(profile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>

@@ -113,12 +113,49 @@ class JourneyControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationSubmissionController.show.url)
       }
     }
+    "the registration has no reference" must {
+      "redirect to the app reference page" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection(Some(VatRegStatus.draft))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject]
+          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
+      }
+    }
+    "the registration does not have declaration confirmation" must {
+      "redirect to the honesty declaration page" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection(Some(VatRegStatus.draft))
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(
+          applicationReference = Some("application reference")
+        )).as[JsObject]
+          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
+      }
+    }
     "the registration requires attachments" must {
       "redirect to the documents required page" in new Setup {
         given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
-          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject]
+          .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(
+          applicationReference = Some("application reference"),
+          confirmInformationDeclaration = Some(true)
+        )).as[JsObject]
           ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -135,9 +172,9 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(
-            eligibilitySubmissionData = Some(testEligibilitySubmissionData),
-            applicationReference = Some("application reference")
-          )).as[JsObject])
+          applicationReference = Some("application reference"),
+          confirmInformationDeclaration = Some(true)
+        )).as[JsObject])
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)

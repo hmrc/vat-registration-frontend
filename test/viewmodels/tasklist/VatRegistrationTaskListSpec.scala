@@ -22,7 +22,6 @@ import models._
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.http.InternalServerException
 
 import java.time.LocalDate
 
@@ -174,10 +173,8 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
         }
       }
 
-      "throw InternalServerException if no registration reason available" in {
-        intercept[InternalServerException] {
-          section.resolveVATRegistrationDateRow(emptyVatScheme) mustBe None
-        }
+      "return None if no registration reason available" in {
+        section.resolveVATRegistrationDateRow(emptyVatScheme) mustBe None
       }
     }
 
