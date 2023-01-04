@@ -73,10 +73,10 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     }
   }
 
-  "Calling getTransactorApplicantName" should {
+  "Calling getApplicantNameForTransactorFlow" should {
     "return firstName from the backend" in new Setup(Some(completeApplicantDetails)) {
       mockIsTransactor(Future.successful(true))
-      service.getTransactorApplicantName returns Some(testFirstName)
+      service.getApplicantNameForTransactorFlow returns Some(testFirstName)
     }
   }
 

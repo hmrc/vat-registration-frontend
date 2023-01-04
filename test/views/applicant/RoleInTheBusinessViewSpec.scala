@@ -17,6 +17,7 @@
 package views.applicant
 
 import forms.RoleInTheBusinessForm
+import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -24,24 +25,23 @@ import views.html.applicant.role_in_the_business
 
 class RoleInTheBusinessViewSpec extends VatRegViewSpec {
 
-  implicit val errorKey: String = "pages.leadPartnerEntityType.missing"
-
   object ExpectedContent {
-    val name: String = "testName"
-    val heading: String = s"What is $name’s role in the business?"
+    val name = "testName"
+    val heading = s"What is $name’s role in the business?"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val button1: String = "Director"
-    val button2: String = "Company secretary"
-    val button3: String = "Trustee"
-    val error: String = "Select the role within the business"
-    val continue: String = "Save and continue"
-    val continueLater: String = "Save and come back later"
+    val button1 = "Director"
+    val button2 = "Company secretary"
+    val button3 = "Trustee"
+    val button4 = "Board Member"
+    val button5 = "Other"
+    val error = "Select the role within the business"
+    val continue = "Save and continue"
+    val continueLater = "Save and come back later"
   }
 
   "Role In The Business Page" should {
-
     val view: role_in_the_business = app.injector.instanceOf[role_in_the_business]
-    implicit val doc: Document = Jsoup.parse(view(RoleInTheBusinessForm(), name = Some(ExpectedContent.name), isTrust = false).body)
+    implicit val doc: Document = Jsoup.parse(view(RoleInTheBusinessForm(UkCompany, isThirdParty = false), name = Some(ExpectedContent.name), partyType = UkCompany).body)
 
     "have the correct title" in new ViewSetup() {
       doc.title mustBe ExpectedContent.title
@@ -51,11 +51,8 @@ class RoleInTheBusinessViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedContent.heading)
     }
 
-    "have the correct button1" in new ViewSetup() {
+    "have the correct radio options" in new ViewSetup() {
       doc.radio("director") mustBe Some(ExpectedContent.button1)
-    }
-
-    "have the correct button2" in new ViewSetup() {
       doc.radio("companySecretary") mustBe Some(ExpectedContent.button2)
     }
 
@@ -68,9 +65,33 @@ class RoleInTheBusinessViewSpec extends VatRegViewSpec {
     }
 
     "have additional button for trustee flow" in new ViewSetup() {
-      val docTrustee: Document = Jsoup.parse(view(RoleInTheBusinessForm(), name = Some(ExpectedContent.name), isTrust = true).body)
-      docTrustee.radio("trustee") mustBe Some(ExpectedContent.button3)
+      val document: Document = Jsoup.parse(view(RoleInTheBusinessForm(Trust, isThirdParty = false), name = Some(ExpectedContent.name), partyType = Trust).body)
+      document.radio("trustee") mustBe Some(ExpectedContent.button3)
+      document.radio("director") mustBe Some(ExpectedContent.button1)
+      document.radio("companySecretary") mustBe Some(ExpectedContent.button2)
+    }
+
+    "have two additional buttons for reg soc flow" in new ViewSetup() {
+      val document: Document = Jsoup.parse(view(RoleInTheBusinessForm(RegSociety, isThirdParty = false), name = Some(ExpectedContent.name), partyType = RegSociety).body)
+      document.radio("director") mustBe Some(ExpectedContent.button1)
+      document.radio("companySecretary") mustBe Some(ExpectedContent.button2)
+      document.radio("boardMember") mustBe Some(ExpectedContent.button4)
+      document.radio("other") mustBe Some(ExpectedContent.button5)
+    }
+
+    "have two additional buttons for unincorp assoc flow" in new ViewSetup() {
+      val document: Document = Jsoup.parse(view(RoleInTheBusinessForm(UnincorpAssoc, isThirdParty = false), name = Some(ExpectedContent.name), partyType = UnincorpAssoc).body)
+      document.radio("director") mustBe Some(ExpectedContent.button1)
+      document.radio("companySecretary") mustBe Some(ExpectedContent.button2)
+      document.radio("boardMember") mustBe Some(ExpectedContent.button4)
+      document.radio("other") mustBe Some(ExpectedContent.button5)
+    }
+
+    "have additional button for non uk company flow" in new ViewSetup() {
+      val document: Document = Jsoup.parse(view(RoleInTheBusinessForm(NonUkNonEstablished, isThirdParty = false), name = Some(ExpectedContent.name), partyType = NonUkNonEstablished).body)
+      document.radio("director") mustBe Some(ExpectedContent.button1)
+      document.radio("companySecretary") mustBe Some(ExpectedContent.button2)
+      document.radio("other") mustBe Some(ExpectedContent.button5)
     }
   }
-
 }

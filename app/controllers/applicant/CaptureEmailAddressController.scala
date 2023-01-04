@@ -45,7 +45,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.contact.email.fold(EmailAddressForm.form)(EmailAddressForm.form.fill)
-          name <- applicantDetailsService.getTransactorApplicantName
+          name <- applicantDetailsService.getApplicantNameForTransactorFlow
         } yield Ok(view(routes.CaptureEmailAddressController.submit, filledForm, name))
   }
 
@@ -54,7 +54,7 @@ class CaptureEmailAddressController @Inject()(view: capture_email_address,
       implicit profile =>
         EmailAddressForm.form.bindFromRequest().fold(
           formWithErrors =>
-            applicantDetailsService.getTransactorApplicantName.map { name =>
+            applicantDetailsService.getApplicantNameForTransactorFlow.map { name =>
               BadRequest(view(routes.CaptureEmailAddressController.submit, formWithErrors, name))
             },
           email =>

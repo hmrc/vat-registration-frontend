@@ -45,7 +45,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
           dob = applicant.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
           formerName = applicant.changeOfName.name.getOrElse(throw new IllegalStateException("Missing applicant former name"))
           filledForm = applicant.changeOfName.change.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
-          name <- applicantDetailsService.getTransactorApplicantName
+          name <- applicantDetailsService.getApplicantNameForTransactorFlow
         } yield Ok(formerNameDatePage(filledForm, formerName.asLabel, name))
   }
 
@@ -57,7 +57,7 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
             val dob = applicantDetails.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
             FormerNameDateForm.form(dob).bindFromRequest().fold(
               badForm => for {
-                name <- applicantDetailsService.getTransactorApplicantName
+                name <- applicantDetailsService.getApplicantNameForTransactorFlow
                 formerName = applicantDetails.changeOfName.name.getOrElse(throw new IllegalStateException("Missing applicant former name"))
               } yield BadRequest(formerNameDatePage(badForm, formerName.asLabel, name)),
               data => {

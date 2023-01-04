@@ -18,9 +18,7 @@ package config
 
 import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}

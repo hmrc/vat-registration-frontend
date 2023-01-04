@@ -957,12 +957,21 @@ pages.completionCapacity.panel.p3.link                   = chofrestru ar gyfer T
 validation.completionCapacity.missing                    = Rhowch wybod i ni pwy sy’n cofrestru’r cwmni ar gyfer TAW
 
 # Role In The Business
-pages.roleInTheBusiness.yourHeading                      = Beth yw’ch swydd yn y busnes?
-pages.roleInTheBusiness.namedHeading                     = Beth yw swydd {0} yn y busnes?
-pages.roleInTheBusiness.radio1                           = Cyfarwyddwr
-pages.roleInTheBusiness.radio2                           = Ysgrifennydd y cwmni
-pages.roleInTheBusiness.radio3                           = Ymddiriedolwr
-pages.roleInTheBusiness.error.message                    = Dewiswch y swydd yn y busnes
+roleInTheBusiness.yourHeading                           = Beth yw’ch swydd yn y busnes?
+roleInTheBusiness.namedHeading                          = Beth yw swydd {0} yn y busnes?
+roleInTheBusiness.radio1                                = Cyfarwyddwr
+roleInTheBusiness.radio2                                = Ysgrifennydd y cwmni
+roleInTheBusiness.radio3                                = Ymddiriedolwr
+roleInTheBusiness.radio4                                = Aelod o’r bwrdd
+roleInTheBusiness.radio5                                = Arall
+validation.roleInTheBusiness.missing                    = Select your role in the business
+validation.roleInTheBusiness.other.missing              = Enter your role in the business
+validation.roleInTheBusiness.other.maxlen               = Your role in the business must be 100 characters or less
+validation.roleInTheBusiness.other.invalid              = Your role in the business cannot include special characters such as exclaimation marks, colons or commas
+validation.roleInTheBusiness.3pt.missing                = Select the role in the business
+validation.roleInTheBusiness.3pt.other.missing          = Enter the role in the business
+validation.roleInTheBusiness.3pt.other.maxlen           = The role in the business must be 100 characters or less
+validation.roleInTheBusiness.3pt.other.invalid          = The role in the business cannot include special characters such as exclaimation marks, colons or commas
 
 # Former Name
 pages.formerName.yourHeading                             = A ydych erioed wedi newid eich enw?

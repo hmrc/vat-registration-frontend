@@ -44,7 +44,7 @@ class FormerNameCaptureController @Inject()(val authConnector: AuthConnector,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.changeOfName.name.fold(FormerNameCaptureForm.form)(FormerNameCaptureForm.form.fill)
-          name <- applicantDetailsService.getTransactorApplicantName
+          name <- applicantDetailsService.getApplicantNameForTransactorFlow
         } yield Ok(formerNameCapturePage(filledForm, name))
   }
 
@@ -53,7 +53,7 @@ class FormerNameCaptureController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         FormerNameCaptureForm.form.bindFromRequest().fold(
           badForm =>
-            applicantDetailsService.getTransactorApplicantName.map { name =>
+            applicantDetailsService.getApplicantNameForTransactorFlow.map { name =>
               BadRequest(formerNameCapturePage(badForm, name))
             },
           data => applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>

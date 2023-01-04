@@ -50,7 +50,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
     implicit request => implicit profile =>
       for {
         applicantDetails <- applicantDetailsService.getApplicantDetails
-        name <- applicantDetailsService.getTransactorApplicantName
+        name <- applicantDetailsService.getApplicantNameForTransactorFlow
         headingMessageKey = if (name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
         filledForm = applicantDetails.currentAddress.fold(formProvider.form())(formProvider.form().fill)
       } yield Ok(view(filledForm, countries.flatMap(_.name), submitAction, headingMessageKey, name))
@@ -59,7 +59,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       for {
-        name <- applicantDetailsService.getTransactorApplicantName
+        name <- applicantDetailsService.getApplicantNameForTransactorFlow
         headingMessageKey = if (name.isDefined) "internationalAddress.home.3pt.heading" else "internationalAddress.home.heading"
         result <- {
           addressFormResultsHandler.handle(

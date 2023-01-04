@@ -39,7 +39,7 @@ class BusinessActivitiesResolverController @Inject()(val sessionService: Session
   // scalastyle:off
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
-      implicit profile =>
+      _ =>
         for {
           iclCodes <- sessionService.fetchAndGet[List[SicCode]](SIC_CODES_KEY).map(_.getOrElse(List.empty[SicCode]))
           mainBusinessActivitySubmissionFlow <- Future.successful(request.headers.get(REFERER).exists(

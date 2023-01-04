@@ -16,37 +16,59 @@
 
 package forms
 
-import models.{CompanySecretary, Director, RoleInTheBusiness, Trustee}
-import play.api.data.Forms.{of, single}
+import forms.FormValidation.{maxLenText, nonEmptyValidText, stopOnFail}
+import models._
+import models.api._
+import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
+import services.ApplicantDetailsService.RoleInTheBusinessAnswer
+import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
+
+import scala.util.matching.Regex
 
 
 object RoleInTheBusinessForm {
 
-  val roleInTheBusiness: String = "value"
+  val roleInTheBusiness = "value"
+  val otherRole = "otherRole"
 
-  val director: String = "director"
+  val director = "director"
+  val companySecretary = "companySecretary"
+  val trustee = "trustee"
+  val boardMember = "boardMember"
+  val other = "other"
 
-  val companySecretary: String = "companySecretary"
+  val roleInTheBusinessError = "validation.roleInTheBusiness.missing"
+  val roleInTheBusinessError3pt = "validation.roleInTheBusiness.3pt.missing"
+  val otherErrorKey = "roleInTheBusiness.other"
+  val otherErrorKey3pt = "roleInTheBusiness.3pt.other"
 
-  val trustee: String = "trustee"
+  val regex: Regex = """^[0-9a-zA-Z &`\-\''\.^]+$""".r
+  val maxLength = 100
 
-  val roleInTheBusinessError: String = "pages.roleInTheBusiness.error.message"
-
-  def apply(): Form[RoleInTheBusiness] = Form(
-    single(
-      roleInTheBusiness -> of(formatter)
-    )
+  def apply(partyType: PartyType, isThirdParty: Boolean): Form[RoleInTheBusinessAnswer] = Form(
+    mapping(
+      roleInTheBusiness -> of(formatter(partyType, isThirdParty)),
+      otherRole -> mandatoryIf(
+        isEqual(roleInTheBusiness, other),
+        text.verifying(stopOnFail(
+          nonEmptyValidText(regex)(if (isThirdParty) otherErrorKey3pt else otherErrorKey),
+          maxLenText(maxLength)(if (isThirdParty) otherErrorKey3pt else otherErrorKey)
+        ))
+      )
+    )(RoleInTheBusinessAnswer.apply)(RoleInTheBusinessAnswer.unapply)
   )
 
-  def formatter: Formatter[RoleInTheBusiness] = new Formatter[RoleInTheBusiness] {
+  def formatter(partyType: PartyType, isThirdParty: Boolean): Formatter[RoleInTheBusiness] = new Formatter[RoleInTheBusiness] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], RoleInTheBusiness] = {
       data.get(key) match {
         case Some(`director`) => Right(Director)
         case Some(`companySecretary`) => Right(CompanySecretary)
-        case Some(`trustee`) => Right(Trustee)
-        case _ => Left(Seq(FormError(key, roleInTheBusinessError)))
+        case Some(`trustee`) if partyType.equals(Trust) => Right(Trustee)
+        case Some(`boardMember`) if Seq(RegSociety, UnincorpAssoc).contains(partyType) => Right(BoardMember)
+        case Some(`other`) if Seq(RegSociety, UnincorpAssoc, NonUkNonEstablished).contains(partyType) => Right(OtherDeclarationCapacity)
+        case _ => Left(Seq(FormError(key, if (isThirdParty) roleInTheBusinessError3pt else roleInTheBusinessError)))
       }
     }
 
@@ -55,6 +77,8 @@ object RoleInTheBusinessForm {
         case Director => director
         case CompanySecretary => companySecretary
         case Trustee => trustee
+        case BoardMember => boardMember
+        case OtherDeclarationCapacity => other
       }
       Map(key -> stringValue)
     }

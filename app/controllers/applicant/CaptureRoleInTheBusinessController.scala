@@ -19,14 +19,14 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.RoleInTheBusinessForm
-import models.api.Trust
 import play.api.mvc.{Action, AnyContent}
+import services.ApplicantDetailsService.RoleInTheBusinessAnswer
 import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.applicant.role_in_the_business
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
@@ -44,27 +44,27 @@ class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          filledForm = applicant.roleInTheBusiness.fold(RoleInTheBusinessForm())(RoleInTheBusinessForm().fill)
-          name <- applicantDetailsService.getTransactorApplicantName
-          eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
-          isTrust = eligibilitySubmissionData.partyType.equals(Trust)
-        } yield Ok(view(filledForm, name, isTrust))
+          roleInTheBusinessAnswer = applicant.roleInTheBusiness.map(role => RoleInTheBusinessAnswer(role, applicant.otherRoleInTheBusiness))
+          partyType <- vatRegistrationService.getEligibilitySubmissionData.map(_.partyType)
+          optName <- applicantDetailsService.getApplicantNameForTransactorFlow
+          filledForm = roleInTheBusinessAnswer.fold(RoleInTheBusinessForm(partyType, optName.isDefined))(RoleInTheBusinessForm(partyType, optName.isDefined).fill)
+        } yield Ok(view(filledForm, optName, partyType))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        RoleInTheBusinessForm().bindFromRequest().fold(
-          formWithErrors =>
-            for {
-              name <- applicantDetailsService.getTransactorApplicantName
-              eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
-              isTrust = eligibilitySubmissionData.partyType.equals(Trust)
-            } yield BadRequest(view(formWithErrors, name, isTrust)),
-          roleInTheBusiness =>
-            applicantDetailsService.saveApplicantDetails(roleInTheBusiness).map { _ =>
-              Redirect(routes.FormerNameController.show)
-            }
-        )
+        for {
+          partyType <- vatRegistrationService.getEligibilitySubmissionData.map(_.partyType)
+          optName <- applicantDetailsService.getApplicantNameForTransactorFlow
+          redirect <- RoleInTheBusinessForm(partyType, optName.isDefined).bindFromRequest().fold(
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, optName, partyType))),
+            roleInTheBusinessAnswer =>
+              applicantDetailsService.saveApplicantDetails(roleInTheBusinessAnswer).map { _ =>
+                Redirect(routes.FormerNameController.show)
+              }
+          )
+        } yield redirect
   }
 }
