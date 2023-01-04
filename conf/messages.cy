@@ -296,8 +296,8 @@ international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitL
 international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Golygu’r cyfeiriad hwn
 
 # businessActivities
-addressLookup.businessActivities.lookupPage.title                   = Find the primary place of business
-addressLookup.businessActivities.lookupPage.heading                 = Find the primary place of business
+addressLookup.businessActivities.lookupPage.title                   = Dewch o hyd i brif leoliad y busnes
+addressLookup.businessActivities.lookupPage.heading                 = Dewch o hyd i brif leoliad y busnes
 addressLookup.businessActivities.lookupPage.filterLabel             = Enw neu rif yr eiddo
 addressLookup.businessActivities.lookupPage.submitLabel             = Yn eich blaen
 addressLookup.businessActivities.lookupPage.manualAddressLinkText   = Nid oes gan y cyfeiriad god post yn y DU
@@ -539,9 +539,9 @@ pages.summary.voluntaryReason.sells                           = Mae’r cwmni ei
 pages.summary.voluntaryReason.intendsToSell                   = Mae’r cwmni’n bwriadu gwerthu nwyddau neu wasanaethau yn y dyfodol
 
 # Mandatory Start Date No Choice page
-pages.start.date.no.choice.heading                              = VAT registration start date
-pages.start.date.no.choice.para1                                = The business’s expected VAT registration start date is {0}.
-pages.start.date.no.choice.para2                                = This could change but we will confirm the date by letter.
+pages.start.date.no.choice.heading                              = Dyddiad dechrau cofrestru ar gyfer TAW
+pages.start.date.no.choice.para1                                = Dyddiad dechrau cofrestru ar gyfer TAW disgwyliedig y busnes yw {0}.
+pages.start.date.no.choice.para2                                = Gall y dyddiad hwn newid, ond byddwn yn ei gadarnhau drwy lythyr.
 
 # Mandatory Start Date Incorp page
 pages.start.date.incorp.title                                = Pryd hoffech i’ch dyddiad cofrestru TAW ddechrau?
@@ -617,8 +617,8 @@ validation.accounting.period.missing                        = Dewiswch y cyfnod 
 
 ##Vat Correspondence Page
 pages.vatCorrespondence.heading                        = Ym mha iaith y dylem anfon gohebiaeth TAW?
-pages.vatCorrespondence.english                        = English
-pages.vatCorrespondence.welsh                          = Welsh
+pages.vatCorrespondence.english                        = Saesneg
+pages.vatCorrespondence.welsh                          = Cymraeg
 vatCorrespondence.error.required                       = Dewiswch iaith ar gyfer gohebiaeth TAW
 
 ##Contact Preference Page
@@ -683,29 +683,29 @@ cya.applicantDetails.leadPartner.registeredPostcode                 = Cod post c
 cya.applicantDetails.leadPartner.postcodeForSelfAssessment          = Cod post cofrestredig y partner arweiniol ar gyfer hunanasesiad
 cya.applicantDetails.leadPartner.charityHMRCReferenceNumber         = Cyfeirnod CThEM yr elusen
 cya.applicantDetails.self.fullName                                  = Enw llawn
-cya.applicantDetails.transactor.fullName                            = Enw llawn
+cya.applicantDetails.transactor.fullName                            = Enw llawn y cyswllt busnes
 cya.applicantDetails.self.dob                                       = Dyddiad geni
-cya.applicantDetails.transactor.dob                                 = Dyddiad geni
+cya.applicantDetails.transactor.dob                                 = Dyddiad geni’r cyswllt busnes
 cya.applicantDetails.self.nino                                      = Rhif Yswiriant Gwladol
-cya.applicantDetails.transactor.nino                                = Rhif Yswiriant Gwladol
+cya.applicantDetails.transactor.nino                                = Rhif Yswiriant Gwladol y cyswllt busnes
 cya.applicantDetails.self.roleInTheBusiness                         = Swydd yn y busnes
-cya.applicantDetails.transactor.roleInTheBusiness                   = Swydd yn y busnes
+cya.applicantDetails.transactor.roleInTheBusiness                   = Rôl y cyswllt busnes yn y busnes
 cya.applicantDetails.self.formerName                                = Enw wedi’i newid
-cya.applicantDetails.transactor.formerName                          = Enw wedi’i newid
+cya.applicantDetails.transactor.formerName                          = Enw’r cyswllt busnes ar ôl iddo ei newid
 cya.applicantDetails.self.formerNameCapture                         = Enw blaenorol
-cya.applicantDetails.transactor.formerNameCapture                   = Enw blaenorol
+cya.applicantDetails.transactor.formerNameCapture                   = Enw blaenorol y cyswllt busnes
 cya.applicantDetails.self.formerNameDate                            = Dyddiad newid enw
-cya.applicantDetails.transactor.formerNameDate                      = Dyddiad newidiodd yr enw blaenorol
+cya.applicantDetails.transactor.formerNameDate                      = Dyddiad newid enw’r cyswllt busnes
 cya.applicantDetails.self.homeAddress                               = Cyfeiriad cartref
-cya.applicantDetails.transactor.homeAddress                         = Cyfeiriad cartref
+cya.applicantDetails.transactor.homeAddress                         = Cyfeiriad cartref y cyswllt busnes
 cya.applicantDetails.self.moreThanThreeYears                        = Cyfeiriad cartref am dair blynedd neu fwy
-cya.applicantDetails.transactor.moreThanThreeYears                  = Wedi byw yn y cyfeiriad presennol yn hirach na 3 mis
+cya.applicantDetails.transactor.moreThanThreeYears                  = Cyfeiriad cartref y cyswllt busnes am 3 blynedd neu fwy
 cya.applicantDetails.self.previousAddress                           = Cyfeiriad cartref blaenorol
-cya.applicantDetails.transactor.previousAddress                     = Cyfeiriad blaenorol
+cya.applicantDetails.transactor.previousAddress                     = Cyfeiriad cartref blaenorol y cyswllt busnes
 cya.applicantDetails.self.email                                     = Cyfeiriad e-bost
-cya.applicantDetails.transactor.email                               = Cyfeiriad e-bost
+cya.applicantDetails.transactor.email                               = Cyfeiriad e-bost y cyswllt busnes
 cya.applicantDetails.self.telephone                                 = Rhif ffôn
-cya.applicantDetails.transactor.telephone                           = Rhif ffôn
+cya.applicantDetails.transactor.telephone                           = Rhif ffôn y cyswllt busnes
 
 # Summary Page Transactor Details
 cya.transactor.isPartOfOrganisation                  = Rhan o sefydliad
@@ -736,8 +736,8 @@ cya.aboutTheBusiness.supplyWorkers                  = Cyflenwi gweithwyr er mwyn
 cya.aboutTheBusiness.numberOfWorkers                = Nifer y gweithwyr a gyflenwyd gan y busnes
 cya.aboutTheBusiness.intermediarySupply             = Cyfryngwr sy’n trefnu’r cyflenwad o weithwyr
 cya.aboutTheBusiness.tradingName                    = Enw masnachu
-cya.aboutTheBusiness.shortOrgName                   = Official business name
-cya.aboutTheBusiness.businessName                   = Business name
+cya.aboutTheBusiness.shortOrgName                   = Enw swyddogol y busnes
+cya.aboutTheBusiness.businessName                   = Enw’r busnes
 cya.aboutTheBusiness.partnershipName                = Enw’r bartneriaeth
 
 # Summary Page GRS Details
@@ -804,7 +804,7 @@ cya.registrationDetails.vatExemption                            = Eithriad rhag 
 cya.registrationDetails.sendGoodsOverseas                       = Nwyddau i gwsmeriaid tramor
 cya.registrationDetails.sendGoodsToEu                           = Nwyddau i gwsmeriaid yn y UE
 cya.registrationDetails.storingGoods                            = Lleoliad ar gyfer anfon nwyddau wedi’u storio
-cya.registrationDetails.storingGoods.uk                         = Within the UK
+cya.registrationDetails.storingGoods.uk                         = O fewn y DU
 cya.registrationDetails.storingGoods.overseas                   = Dramor
 cya.registrationDetails.dispatchFromWarehouse                   = Nwyddau o warws sydd wedi ei gofrestru ar gyfer y Cynllun Diwydrwydd Dyladwy ar gyfer Busnesau Cyflawni
 cya.registrationDetails.warehouseNumber                         = Rhif y Warws Cyflawni
@@ -1228,8 +1228,8 @@ pages.businessPartnerEntityType.heading                  = Pa fath o fusnes yw�
 # PARTNER SUMMARY PAGE
 partner.summary.heading                                  = Rydych wedi ychwanegu {0} aelod o’r bartneriaeth
 partner.summary.headingPlural                            = Rydych wedi ychwanegu {0} aelod o’r bartneriaeth
-partner.summary.leadPartner                              = Lead partner
-partner.summary.additionalPartners                       = Additional partners
+partner.summary.leadPartner                              = Partner arweiniol
+partner.summary.additionalPartners                       = Partneriaid ychwanegol
 partner.summary.subHeadingPlural                         = A oes angen i chi ychwanegu partner arall?
 partner.summary.subHeading                               = Mae angen i chi ychwanegu partner arall
 partner.summary.hint                                     = Mae angen o leiaf 2 bartner arnoch. Gallwch ychwanegu uchafswm o 10 aelod wrth ddefnyddio’r gwasanaeth hwn.
@@ -1351,9 +1351,9 @@ attachments.identityEvidenceRequired.evidence.end               = ddogfen arnom 
 attachments.identityEvidenceRequired.bullet1                    = pasbort
 attachments.identityEvidenceRequired.bullet2                    = trwydded yrru cerdyn-llun yn y DU
 attachments.identityEvidenceRequired.bullet3                    = cerdyn adnabod cenedlaethol
-attachments.identityEvidenceRequired.additionalEvidence.start   = We need
-attachments.identityEvidenceRequired.additionalEvidence.bold    = two
-attachments.identityEvidenceRequired.additionalEvidence.end     = additional pieces of evidence which can be copies of:
+attachments.identityEvidenceRequired.additionalEvidence.start   = Mae arnom angen
+attachments.identityEvidenceRequired.additionalEvidence.bold    = dau
+attachments.identityEvidenceRequired.additionalEvidence.end     = ddarn ychwanegol o dystiolaeth sy’n gallu bod yn gopïau o’r canlynol:
 attachments.identityEvidenceRequired.additionalBullet1          = datganiad morgais
 attachments.identityEvidenceRequired.additionalBullet2          = cytundeb tenantiaeth neu brydles
 attachments.identityEvidenceRequired.additionalBullet3          = trwydded waith neu fisa
@@ -1872,7 +1872,7 @@ eligibility.cya.taxableSuppliesInUk                                 = Cyflenwada
 eligibility.cya.zeroRatedSales.business                             = A yw’r busnes yn gwerthu nwyddau neu wasanaethau cyfradd sero gan fwyaf?
 eligibility.cya.zeroRatedSales.partnership                          = A yw’r bartneriaeth yn gwerthu nwyddau neu wasanaethau cyfradd sero gan fwyaf?
 eligibility.cya.vatExemption                                        = A hoffai’r busnes wneud cais am eithriad rhag TAW?
-eligibility.cya.thresholdOver.on                                    = on
+eligibility.cya.thresholdOver.on                                    = ar
 
 # PARTNER SCOTTISH PARTNERSHIP NAME
 partner.scottishPartnershipName.heading                             = Beth yw enw’r bartneriaeth?
