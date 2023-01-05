@@ -87,7 +87,7 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
         )
   }
 
-  def continue: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def continue: Action[AnyContent] = isAuthenticatedWithProfile { _ => _ =>
     Future.successful(Redirect(routes.PartnerEntityTypeController.showPartnerType(2)))
   }
 }

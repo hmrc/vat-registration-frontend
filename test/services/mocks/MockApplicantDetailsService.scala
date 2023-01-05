@@ -46,8 +46,8 @@ trait MockApplicantDetailsService extends MockitoSugar {
       ArgumentMatchers.any[HeaderCarrier]
     )) thenReturn Future.successful(response)
 
-  def mockGetTransactorApplicantName(profile: CurrentProfile)(response: Option[String]): OngoingStubbing[Future[Option[String]]] =
-    when(mockApplicantDetailsService.getTransactorApplicantName(
+  def mockgetApplicantNameForTransactorFlow(profile: CurrentProfile)(response: Option[String]): OngoingStubbing[Future[Option[String]]] =
+    when(mockApplicantDetailsService.getApplicantNameForTransactorFlow(
       ArgumentMatchers.eq(profile),
       ArgumentMatchers.any[HeaderCarrier])
     ) thenReturn Future.successful(response)

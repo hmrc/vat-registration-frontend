@@ -70,7 +70,7 @@ class JourneyController @Inject()(val vatRegistrationService: VatRegistrationSer
     }
   }
 
-  def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def initJourney(regId: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => _ =>
     journeyService.buildCurrentProfile(regId)
       .map { _ =>
         Redirect(controllers.routes.TaskListController.show)

@@ -18,7 +18,6 @@ package controllers.grs
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.Partner
 import models.api._
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
 import play.api.i18n.Lang

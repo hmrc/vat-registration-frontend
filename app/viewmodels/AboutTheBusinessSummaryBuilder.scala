@@ -19,7 +19,7 @@ package viewmodels
 import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import models.api._
-import models.external.{BusinessEntity, IncorporatedEntity, MinorEntity, PartnershipIdEntity}
+import models.external.{BusinessEntity, MinorEntity, PartnershipIdEntity}
 import models.view.SummaryListRowUtils._
 import models.{ApplicantDetails, Business, English, Entity, Welsh}
 import play.api.i18n.Messages

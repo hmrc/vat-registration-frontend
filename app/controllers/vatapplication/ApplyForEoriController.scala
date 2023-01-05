@@ -72,7 +72,7 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
   }
 
   private def getView(partyType: PartyType, form: Form[Boolean])
-                       (implicit request: Request[_], profile: CurrentProfile) = {
+                       (implicit request: Request[_]) = {
     partyType match {
       case NETP | NonUkNonEstablished => overseasApplyForEoriView(form)
       case _ => applyForEoriView(form)

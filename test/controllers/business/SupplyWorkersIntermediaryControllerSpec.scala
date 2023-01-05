@@ -49,7 +49,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     "return OK when there's a Temporary Contracts model in backend" in new Setup {
       mockGetBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
+      mockgetApplicantNameForTransactorFlow(currentProfile)(None)
 
       callAuthorised(controller.show) {
         result =>
@@ -62,7 +62,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     "return OK where getSicAndCompliance returns empty viewModels for labour" in new Setup {
       mockGetBusiness(Future.successful(validBusinessWithNoDescriptionAndLabour))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
+      mockgetApplicantNameForTransactorFlow(currentProfile)(None)
 
       callAuthorised(controller.show) { result =>
         status(result) mustBe OK
@@ -73,7 +73,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
   s"POST ${controllers.business.routes.SupplyWorkersIntermediaryController.submit}" should {
     "return BAD_REQUEST with Empty data" in new Setup {
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
+      mockgetApplicantNameForTransactorFlow(currentProfile)(None)
       mockPartyType(Future.successful(UkCompany))
       submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
       )) {
@@ -84,7 +84,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
     "redirect to Imports or Exports or OBI with Yes selected for UkCompany" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness))
       mockGetApplicantDetails(currentProfile)(emptyApplicantDetails)
-      mockGetTransactorApplicantName(currentProfile)(None)
+      mockgetApplicantNameForTransactorFlow(currentProfile)(None)
       mockPartyType(Future.successful(UkCompany))
 
       submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "true")) { response =>

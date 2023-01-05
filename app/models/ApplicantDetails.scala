@@ -17,11 +17,9 @@
 package models
 
 import models.api.{Address, PartyType}
-import models.external.{BusinessEntity, Name}
+import models.external.BusinessEntity
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-
-import java.time.LocalDate
 
 case class ApplicantDetails(personalDetails: Option[PersonalDetails] = None,
                             entity: Option[BusinessEntity] = None,
@@ -30,7 +28,8 @@ case class ApplicantDetails(personalDetails: Option[PersonalDetails] = None,
                             previousAddress: Option[Address] = None,
                             contact: Contact = Contact(),
                             changeOfName: FormerName = FormerName(),
-                            roleInTheBusiness: Option[RoleInTheBusiness] = None)
+                            roleInTheBusiness: Option[RoleInTheBusiness] = None,
+                            otherRoleInTheBusiness: Option[String] = None)
 
 object ApplicantDetails {
   implicit val apiKey: ApiKey[ApplicantDetails] = ApiKey("applicant")
@@ -43,7 +42,8 @@ object ApplicantDetails {
       (__ \ "previousAddress").readNullable[Address] and
       (__ \ "contact").readWithDefault[Contact](Contact()) and
       (__ \ "changeOfName").readWithDefault[FormerName](FormerName()) and
-      (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness]
+      (__ \ "roleInTheBusiness").readNullable[RoleInTheBusiness] and
+      (__ \ "otherRoleInTheBusiness").readNullable[String]
     ) (ApplicantDetails.apply _)
 
   implicit val writes: Writes[ApplicantDetails] = (
@@ -54,7 +54,8 @@ object ApplicantDetails {
       (__ \ "previousAddress").writeNullable[Address] and
       (__ \ "contact").write[Contact] and
       (__ \ "changeOfName").write[FormerName] and
-      (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness]
+      (__ \ "roleInTheBusiness").writeNullable[RoleInTheBusiness] and
+      (__ \ "otherRoleInTheBusiness").writeNullable[String]
     ) (unlift(ApplicantDetails.unapply))
 
   def apiFormat(partyType: PartyType): Format[ApplicantDetails] = Format(reads(partyType), writes)

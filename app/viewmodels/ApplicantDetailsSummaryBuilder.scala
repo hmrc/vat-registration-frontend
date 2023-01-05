@@ -90,9 +90,13 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       case _ =>
         optSummaryListRowString(
           if (isTransactor) s"$sectionId.transactor.roleInTheBusiness" else s"$sectionId.self.roleInTheBusiness",
-          applicantDetails.roleInTheBusiness.collect {
-            case Director => "pages.roleInTheBusiness.radio1"
-            case CompanySecretary => "pages.roleInTheBusiness.radio2"
+          applicantDetails.roleInTheBusiness.flatMap {
+            case Director => Some("roleInTheBusiness.radio1")
+            case CompanySecretary => Some("roleInTheBusiness.radio2")
+            case Trustee => Some("roleInTheBusiness.radio3")
+            case BoardMember => Some("roleInTheBusiness.radio4")
+            case OtherDeclarationCapacity => applicantDetails.otherRoleInTheBusiness
+            case _ => None
           },
           Some(applicantRoutes.CaptureRoleInTheBusinessController.show.url)
         )

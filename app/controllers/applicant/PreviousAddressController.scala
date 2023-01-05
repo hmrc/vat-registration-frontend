@@ -49,7 +49,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
         for {
           isTransactor <- vatRegistrationService.isTransactor
           applicantDetails <- applicantDetailsService.getApplicantDetails
-          optName <- if (isTransactor) applicantDetailsService.getTransactorApplicantName else Future.successful(None)
+          optName <- if (isTransactor) applicantDetailsService.getApplicantNameForTransactorFlow else Future.successful(None)
           errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
           filledForm = applicantDetails.noPreviousAddress.fold(PreviousAddressForm.form(errorCode))(PreviousAddressForm.form(errorCode).fill)
         } yield {
@@ -64,10 +64,10 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        applicantDetailsService.getTransactorApplicantName.flatMap { optName =>
+        applicantDetailsService.getApplicantNameForTransactorFlow.flatMap { optName =>
           for {
             isTransactor <- vatRegistrationService.isTransactor
-            optName <- if (isTransactor) applicantDetailsService.getTransactorApplicantName else Future.successful(None)
+            optName <- if (isTransactor) applicantDetailsService.getApplicantNameForTransactorFlow else Future.successful(None)
             errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
             form = PreviousAddressForm.form(errorCode)
             result <- form.bindFromRequest.fold(

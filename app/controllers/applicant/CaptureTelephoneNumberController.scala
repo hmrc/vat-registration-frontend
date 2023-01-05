@@ -44,7 +44,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
         for {
           applicant <- applicantDetailsService.getApplicantDetails
           filledForm = applicant.contact.tel.fold(TelephoneNumberForm.form)(TelephoneNumberForm.form.fill)
-          name <- applicantDetailsService.getTransactorApplicantName
+          name <- applicantDetailsService.getApplicantNameForTransactorFlow
         } yield Ok(view(routes.CaptureTelephoneNumberController.submit, filledForm, name))
   }
 
@@ -53,7 +53,7 @@ class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
       implicit profile =>
         TelephoneNumberForm.form.bindFromRequest().fold(
           formWithErrors =>
-            applicantDetailsService.getTransactorApplicantName.map { name =>
+            applicantDetailsService.getApplicantNameForTransactorFlow.map { name =>
               BadRequest(view(routes.CaptureTelephoneNumberController.submit, formWithErrors, name))
             },
           telephone =>

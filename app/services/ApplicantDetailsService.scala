@@ -54,7 +54,7 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
       applicant.entity.flatMap(_.getBusinessName)
     }
 
-  def getTransactorApplicantName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
+  def getApplicantNameForTransactorFlow(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
     for {
       isTransactor <- vatRegistrationService.isTransactor
       optName <- if (isTransactor) getApplicantDetails.map(_.personalDetails.map(_.firstName)) else Future.successful(None)
@@ -122,8 +122,18 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
         before.copy(changeOfName = before.changeOfName.copy(name = Some(formerName)))
       case formerNameDate: LocalDate =>
         before.copy(changeOfName = before.changeOfName.copy(change = Some(formerNameDate)))
-      case roleInTheBusiness: RoleInTheBusiness =>
-        before.copy(roleInTheBusiness = Some(roleInTheBusiness))
+      case RoleInTheBusinessAnswer(roleInTheBusiness, optOtherRole) =>
+        if (roleInTheBusiness.equals(OtherDeclarationCapacity)) {
+          before.copy(
+            roleInTheBusiness = Some(roleInTheBusiness),
+            otherRoleInTheBusiness = optOtherRole
+          )
+        } else {
+          before.copy(
+            roleInTheBusiness = Some(roleInTheBusiness),
+            otherRoleInTheBusiness = None
+          )
+        }
       case _ =>
         throw new InternalServerException("[ApplicantDetailsService] Attempting to store unsupported data")
     }
@@ -144,4 +154,6 @@ object ApplicantDetailsService {
   case class TelephoneNumber(telephone: String)
 
   case class HasFormerName(hasFormerName: Boolean)
+
+  case class RoleInTheBusinessAnswer(role: RoleInTheBusiness, otherRole: Option[String])
 }
