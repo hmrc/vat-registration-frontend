@@ -18,7 +18,7 @@ package controllers.otherbusinessinvolvements
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.OtherBusinessInvolvementForm
+import forms.otherbusinessinvolvements.OtherBusinessInvolvementForm
 import models.GroupRegistration
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.OtherBusinessInvolvementAnswer

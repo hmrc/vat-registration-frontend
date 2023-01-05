@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.otherbusinessinvolvements.OtherBusinessCheckAnswers
 
-class OtherBusinessCheckAnswersSpec extends VatRegViewSpec with VatRegistrationFixture {
+class OtherBusinessCheckAnswersViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   val view: OtherBusinessCheckAnswers = app.injector.instanceOf[OtherBusinessCheckAnswers]
 

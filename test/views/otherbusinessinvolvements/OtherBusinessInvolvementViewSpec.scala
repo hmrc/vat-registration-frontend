@@ -16,7 +16,7 @@
 
 package views.otherbusinessinvolvements
 
-import forms.OtherBusinessInvolvementForm
+import forms.otherbusinessinvolvements.OtherBusinessInvolvementForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
