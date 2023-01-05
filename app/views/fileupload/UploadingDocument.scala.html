@@ -31,9 +31,9 @@
 
 @(upscanDetails: UpscanDetails)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-<div id="data" data-reference="@{upscanDetails.reference}" data-timeout="@{appConfig.upscanTimeout}" data-interval="@{appConfig.upscanInterval}"></div>
-
 @layout(pageTitle = Some(titleNoForm(heading))) {
+
+<div id="data" data-reference="@{upscanDetails.reference}" data-timeout="@{appConfig.upscanTimeout}" data-interval="@{appConfig.upscanInterval}"></div>
 
     @h1(heading)
 
