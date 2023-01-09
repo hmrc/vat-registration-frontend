@@ -18,12 +18,12 @@ package controllers
 
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.application_progress_saved
+import views.html.ApplicationProgressSaved
 
 class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
-  val applicationProgressSavedView: application_progress_saved =
-    fakeApplication.injector.instanceOf[application_progress_saved]
+  val applicationProgressSavedView: ApplicationProgressSaved =
+    fakeApplication.injector.instanceOf[ApplicationProgressSaved]
 
   val testController = new ApplicationProgressSavedController(
     movkVatApplicationService,

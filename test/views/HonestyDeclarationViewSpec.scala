@@ -17,7 +17,7 @@
 package views
 
 import org.jsoup.Jsoup
-import views.html.honesty_declaration
+import views.html.HonestyDeclaration
 
 class HonestyDeclarationViewSpec extends VatRegViewSpec {
 
@@ -28,8 +28,7 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec {
 
   "Honesty Declaration Page" must {
 
-
-    val view = new honesty_declaration(
+    val view = new HonestyDeclaration(
       layout,
       h1,
       p,

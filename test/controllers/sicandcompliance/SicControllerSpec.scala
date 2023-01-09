@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
 
-  val mockAboutToConfirmSicView: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
+  val mockAboutToConfirmSicView: AboutToConfirmSic = app.injector.instanceOf[AboutToConfirmSic]
 
   class Setup {
     val controller: SicController = new SicController(

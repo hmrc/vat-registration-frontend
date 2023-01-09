@@ -20,7 +20,7 @@ import fixtures.VatRegistrationFixture
 import play.api.test.FakeRequest
 import services.mocks.{MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.supply_workers
+import views.html.sicandcompliance.SupplyWorkers
 
 import scala.concurrent.Future
 
@@ -30,7 +30,7 @@ class SupplyWorkersControllerSpec extends ControllerSpec
   with MockVatRegistrationService
   with MockSoleTraderIdService {
 
-  val view = app.injector.instanceOf[supply_workers]
+  val view = app.injector.instanceOf[SupplyWorkers]
   val fakeRequest = FakeRequest(controllers.business.routes.SupplyWorkersController.show)
 
   class Setup {

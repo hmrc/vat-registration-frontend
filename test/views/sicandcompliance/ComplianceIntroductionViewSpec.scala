@@ -19,7 +19,7 @@ package views.sicandcompliance
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.sicandcompliance.compliance_introduction
+import views.html.sicandcompliance.ComplianceIntroduction
 
 class ComplianceIntroductionViewSpec extends VatRegViewSpec {
   object ExpectedContent {
@@ -29,7 +29,7 @@ class ComplianceIntroductionViewSpec extends VatRegViewSpec {
     val continue = "Save and continue"
   }
 
-  val view: compliance_introduction = app.injector.instanceOf[compliance_introduction]
+  val view: ComplianceIntroduction = app.injector.instanceOf[ComplianceIntroduction]
 
   implicit val doc: Document = Jsoup.parse(view().body)
 

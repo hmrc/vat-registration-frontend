@@ -19,14 +19,14 @@ package controllers.business
 import fixtures.VatRegistrationFixture
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.business_activity_description
+import views.html.sicandcompliance.BusinessActivityDescription
 
 import scala.concurrent.Future
 
 class BusinessActivityDescriptionControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   class Setup {
-    val view = app.injector.instanceOf[business_activity_description]
+    val view = app.injector.instanceOf[BusinessActivityDescription]
     val controller = new BusinessActivityDescriptionController(
       mockAuthClientConnector,
       mockSessionService,

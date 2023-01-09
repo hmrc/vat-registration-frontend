@@ -21,7 +21,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.ControllerSpec
-import views.html.honesty_declaration
+import views.html.HonestyDeclaration
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 class HonestyDeclarationControllerSpec extends ControllerSpec with MockVatRegistrationService with VatRegistrationFixture {
 
   val TestController = new HonestyDeclarationController(
-    app.injector.instanceOf[honesty_declaration],
+    app.injector.instanceOf[HonestyDeclaration],
     mockAuthClientConnector,
     mockSessionService,
     vatRegistrationServiceMock

@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
-import views.html.sicandcompliance.compliance_introduction
+import views.html.sicandcompliance.ComplianceIntroduction
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ComplianceIntroductionController @Inject() (val authConnector: AuthClientConnector,
                                                   val sessionService: SessionService,
-                                                  view: compliance_introduction
+                                                  view: ComplianceIntroduction
                                                  )(implicit appConfig: FrontendAppConfig,
                                                   val executionContext: ExecutionContext,
                                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

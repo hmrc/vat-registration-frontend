@@ -19,7 +19,7 @@ package controllers
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.application_progress_saved
+import views.html.ApplicationProgressSaved
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ApplicationProgressSavedController @Inject()(val vatApplicationService: VatApplicationService,
                                                    val authConnector: AuthClientConnector,
                                                    val sessionService: SessionService,
-                                                   val applicationProgressSavedView: application_progress_saved)
+                                                   val applicationProgressSavedView: ApplicationProgressSaved)
                                                   (implicit appConfig: FrontendAppConfig,
                                                    val executionContext: ExecutionContext,
                                                    baseControllerComponents: BaseControllerComponents)
