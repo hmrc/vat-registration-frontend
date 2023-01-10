@@ -95,7 +95,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     }
 
     "have a second list" in new ViewSetup {
-      doc.para(3) mustBe Some(ExpectedContent.List2.summary)
+      doc.para(5) mustBe Some(ExpectedContent.List2.summary)
       doc.unorderedList(2) mustBe List(
         ExpectedContent.List2.bullet1,
         ExpectedContent.List2.bullet2
@@ -107,7 +107,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     }
 
     "have a final paragraph with a help link" in new ViewSetup {
-      doc.para(4) mustBe Some(ExpectedContent.para2)
+      doc.para(6) mustBe Some(ExpectedContent.para2)
       doc.link(1) mustBe Some(Link(ExpectedContent.link, "https://www.gov.uk/vat-flat-rate-scheme"))
     }
 

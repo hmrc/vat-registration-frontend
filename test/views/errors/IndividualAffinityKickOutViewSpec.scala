@@ -46,7 +46,7 @@ class IndividualAffinityKickOutViewSpec extends VatRegViewSpec {
     }
 
     "have the right text" in {
-      doc.select(Selectors.p(1)).text() mustBe ExpectedContent.text
+      doc.select(Selectors.p).text() mustBe ExpectedContent.text
     }
 
     "have the correct sign-in link" in new ViewSetup {

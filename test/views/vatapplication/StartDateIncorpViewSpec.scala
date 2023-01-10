@@ -76,13 +76,13 @@ class StartDateIncorpViewSpec extends VatRegViewSpec {
       doc.select("form p").text mustBe ExpectedContent.hiddenPara
     }
     "have the correct hidden bullet 1" in new ViewSetup {
-      doc.select(Selectors.bullet(1)).text mustBe ExpectedContent.hiddenBullet1
+      doc.select(Selectors.bullet).toList.map(_.text).lift(0) mustBe Some(ExpectedContent.hiddenBullet1)
     }
     "have the correct hidden bullet 2" in new ViewSetup {
-      doc.select(Selectors.bullet(2)).text mustBe ExpectedContent.hiddenBullet2
+      doc.select(Selectors.bullet).toList.map(_.text).lift(1) mustBe Some(ExpectedContent.hiddenBullet2)
     }
     "have the correct hidden bullet 3" in new ViewSetup {
-      doc.select(Selectors.bullet(3)).text mustBe ExpectedContent.hiddenBullet3
+      doc.select(Selectors.bullet).toList.map(_.text).lift(2) mustBe Some(ExpectedContent.hiddenBullet3)
     }
     "have the correct hidden hint text" in new ViewSetup {
       doc.hintText mustBe Some(ExpectedContent.hiddenHint)

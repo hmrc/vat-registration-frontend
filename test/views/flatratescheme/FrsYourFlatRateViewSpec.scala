@@ -51,11 +51,11 @@ class FrsYourFlatRateViewSpec extends VatRegViewSpec {
     }
 
     "have the correct h2" in new ViewSetup {
-      doc.select(Selectors.h2(1)).text() mustBe h2
+      doc.select(Selectors.h2).toList.map(_.text()).lift(0) mustBe Some(h2)
     }
 
     "have the correct paragraph" in new ViewSetup {
-      doc.select(Selectors.p(1)).text() mustBe para1
+      doc.select(Selectors.p).text() mustBe para1
     }
 
     "have yes/no radio options" in new ViewSetup {

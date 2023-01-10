@@ -47,7 +47,7 @@ class HonestyDeclarationViewSpec extends VatRegViewSpec {
     }
 
     "have the right text" in {
-      doc.select(Selectors.p(1)).text() mustBe text
+      doc.select(Selectors.p).text() mustBe text
     }
 
     "have the right button" in {

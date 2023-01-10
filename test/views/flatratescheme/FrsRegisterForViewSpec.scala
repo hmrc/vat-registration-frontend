@@ -47,7 +47,7 @@ class FrsRegisterForViewSpec extends VatRegViewSpec {
     }
 
     "have the correct paragraph" in new ViewSetup {
-      doc.select(Selectors.p(1)).text() mustBe para
+      doc.select(Selectors.p).text() mustBe para
     }
 
     "have the correct indent text" in new ViewSetup {
@@ -55,7 +55,7 @@ class FrsRegisterForViewSpec extends VatRegViewSpec {
     }
 
     "have the correct subheading" in new ViewSetup {
-      doc.select(Selectors.h2(1)).text() mustBe subheading
+      doc.select(Selectors.h2).toList.map(_.text()).lift(0) mustBe Some(subheading)
     }
 
     "have yes/no radio options" in new ViewSetup {

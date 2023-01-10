@@ -64,16 +64,16 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
       doc.select(Selectors.label).get(1).text mustBe accountNumber
     }
 
-    "have the correct Account Number Hint text" in {
-      doc.select(Selectors.multipleHints(1)).get(1).text mustBe accountNumberHint
+    "have the correct Account Number Hint text" in new ViewSetup {
+      doc.select(Selectors.multipleHints).toList.map(_.text).lift(1) mustBe Some(accountNumberHint)
     }
 
     "have the correct Sort Code label text" in {
       doc.select(Selectors.label).get(2).text mustBe sortCode
     }
 
-    "have the correct Sort Code Hint text" in {
-      doc.select(Selectors.multipleHints(1)).get(2).text mustBe sortCodeHint
+    "have the correct Sort Code Hint text" in new ViewSetup {
+      doc.select(Selectors.multipleHints).toList.map(_.text).lift(2) mustBe Some(sortCodeHint)
     }
 
     "have the correct continue button" in new ViewSetup {

@@ -24,6 +24,7 @@ import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
+import scala.collection.JavaConverters.asScalaIteratorConverter
 import scala.concurrent.Future
 
 class ApplyForEoriControllerISpec extends ControllerISpec {
@@ -41,8 +42,8 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
-        Jsoup.parse(result.body).select("main p:nth-of-type(1)").first().text() mustBe
-          "The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:"
+        Jsoup.parse(result.body).select("main p").iterator.asScala.toList.map(_.text).lift(0) mustBe
+          Some("The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:")
       }
     }
 
@@ -58,7 +59,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
-        Jsoup.parse(result.body).select("main p:nth-of-type(1)").first().text() mustBe
+        Jsoup.parse(result.body).select("main p").first().text() mustBe
           "If your business is not based in the country you’re moving goods to or from, you should get an EORI number if you’re:"
       }
     }

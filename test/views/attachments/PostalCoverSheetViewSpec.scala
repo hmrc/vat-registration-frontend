@@ -97,7 +97,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec with FeatureSwitching {
       doc.headingLevel2(1) mustBe Some(ExpectedContent.heading2)
     }
     "have the correct heading3" in new ViewSetup {
-      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading3)
+      doc.headingLevel2(3) mustBe Some(ExpectedContent.heading3)
     }
 
     "have the correct page title" in new ViewSetup {
@@ -113,7 +113,7 @@ class PostalCoverSheetViewSpec extends VatRegViewSpec with FeatureSwitching {
     }
 
     "have the correct paragraph3 text" in new ViewSetup {
-      doc.para(3) mustBe Some(ExpectedContent.para3)
+      doc.para(5) mustBe Some(ExpectedContent.para3)
     }
 
     "not show the identity documents bullet point when attachment list does not contain IdentityEvidence" in new ViewSetup {
