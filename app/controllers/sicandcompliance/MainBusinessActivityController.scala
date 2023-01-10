@@ -23,10 +23,10 @@ import forms.MainBusinessActivityForm
 import models.api.SicCode.SIC_CODES_KEY
 import models.api.SicCode
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessService.MainBusinessActivity
+import services.BusinessService._
 import services.{BusinessService, FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.sicandcompliance.main_business_activity
+import views.html.sicandcompliance.MainBusinessActivity
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,7 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
                                                val sessionService: SessionService,
                                                val businessService: BusinessService,
                                                val frsService: FlatRateService,
-                                               val mainBusinessActivityPage: main_business_activity)
+                                               val mainBusinessActivityPage: MainBusinessActivity)
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {

@@ -21,11 +21,11 @@ import models.api.SicCode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.sicandcompliance.main_business_activity
+import views.html.sicandcompliance.MainBusinessActivity
 
 class MainBusinessActivityViewSpec extends VatRegViewSpec {
 
-  val view: main_business_activity = app.injector.instanceOf[main_business_activity]
+  val view: MainBusinessActivity = app.injector.instanceOf[MainBusinessActivity]
   lazy val form = MainBusinessActivityForm.form
 
   val heading = "Which activity is the business’s main source of income?"

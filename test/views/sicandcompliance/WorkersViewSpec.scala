@@ -19,11 +19,11 @@ package views.sicandcompliance
 import forms.WorkersForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.sicandcompliance.workers
+import views.html.sicandcompliance.Workers
 
 class WorkersViewSpec extends VatRegViewSpec {
 
-  lazy val view = app.injector.instanceOf[workers]
+  lazy val view = app.injector.instanceOf[Workers]
   implicit val doc = Jsoup.parse(view(WorkersForm.form).body)
 
   object ExpectedContent {

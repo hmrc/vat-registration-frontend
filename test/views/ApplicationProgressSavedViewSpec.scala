@@ -18,7 +18,7 @@ package views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.application_progress_saved
+import views.html.ApplicationProgressSaved
 
 class ApplicationProgressSavedViewSpec extends VatRegViewSpec {
 
@@ -29,7 +29,7 @@ class ApplicationProgressSavedViewSpec extends VatRegViewSpec {
   val linkText = "return to your application"
   val insetText = "Saved applications will only be available for 7 days"
 
-  val view: application_progress_saved = app.injector.instanceOf[application_progress_saved]
+  val view: ApplicationProgressSaved = app.injector.instanceOf[ApplicationProgressSaved]
 
   "Application submission confirmation page" should {
     implicit val doc: Document = Jsoup.parse(view().body)

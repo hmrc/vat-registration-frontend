@@ -23,14 +23,14 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.main_business_activity
+import views.html.sicandcompliance.MainBusinessActivity
 
 import scala.concurrent.Future
 
 class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAssertions
   with VatRegistrationFixture {
 
-  val mockMainBusinessActivityView: main_business_activity = app.injector.instanceOf[main_business_activity]
+  val mockMainBusinessActivityView: MainBusinessActivity = app.injector.instanceOf[MainBusinessActivity]
 
   class Setup {
     val controller: MainBusinessActivityController = new MainBusinessActivityController(

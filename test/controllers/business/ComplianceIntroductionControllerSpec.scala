@@ -19,10 +19,10 @@ package controllers.business
 import featureswitch.core.config.FeatureSwitching
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.compliance_introduction
+import views.html.sicandcompliance.ComplianceIntroduction
 
 class ComplianceIntroductionControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
-  val mockComplianceIntroductionView: compliance_introduction = app.injector.instanceOf[compliance_introduction]
+  val mockComplianceIntroductionView: ComplianceIntroduction = app.injector.instanceOf[ComplianceIntroduction]
 
   class Setup {
     val controller = new ComplianceIntroductionController(

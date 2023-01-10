@@ -19,11 +19,11 @@ package views.sicandcompliance
 import forms.BusinessActivityDescriptionForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.sicandcompliance.business_activity_description
+import views.html.sicandcompliance.BusinessActivityDescription
 
 class BusinessActivityDescriptionViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[business_activity_description]
+  val view = app.injector.instanceOf[BusinessActivityDescription]
   val form = BusinessActivityDescriptionForm.form
   implicit val doc = Jsoup.parse(view(form).body)
 

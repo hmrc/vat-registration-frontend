@@ -22,7 +22,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{BusinessServiceMock, MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.intermediary_supply
+import views.html.sicandcompliance.IntermediarySupply
 
 import scala.concurrent.Future
 
@@ -30,7 +30,7 @@ class SupplyWorkersIntermediaryControllerSpec extends ControllerSpec with Future
   with VatRegistrationFixture with BusinessServiceMock with MockApplicantDetailsService with MockVatRegistrationService {
 
   trait Setup {
-    val view: intermediary_supply = app.injector.instanceOf[intermediary_supply]
+    val view: IntermediarySupply = app.injector.instanceOf[IntermediarySupply]
     val controller: SupplyWorkersIntermediaryController = new SupplyWorkersIntermediaryController(
       mockAuthClientConnector,
       mockSessionService,

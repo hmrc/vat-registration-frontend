@@ -19,11 +19,11 @@ package views.sicandcompliance
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.sicandcompliance.about_to_confirm_sic
+import views.html.sicandcompliance.AboutToConfirmSic
 
 class AboutToConfirmSicViewSpec extends VatRegViewSpec {
 
-  val view: about_to_confirm_sic = app.injector.instanceOf[about_to_confirm_sic]
+  val view: AboutToConfirmSic = app.injector.instanceOf[AboutToConfirmSic]
 
   val heading = "You are about to confirm the business’s Standard Industry Classification (SIC) codes for VAT"
   val title = s"$heading - Register for VAT - GOV.UK"

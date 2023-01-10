@@ -22,7 +22,7 @@ import forms.IntermediarySupplyForm
 import models.LabourCompliance
 import play.api.mvc.{Action, AnyContent}
 import services._
-import views.html.sicandcompliance.intermediary_supply
+import views.html.sicandcompliance.IntermediarySupply
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ class SupplyWorkersIntermediaryController @Inject()(val authConnector: AuthClien
                                                     val sessionService: SessionService,
                                                     val businessService: BusinessService,
                                                     val applicantDetailsService: ApplicantDetailsService,
-                                                    view: intermediary_supply)
+                                                    view: IntermediarySupply)
                                                    (implicit val appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

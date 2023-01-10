@@ -20,9 +20,9 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessActivityDescriptionForm
 import play.api.mvc.{Action, AnyContent}
-import services.BusinessService.BusinessActivityDescription
+import services.BusinessService._
 import services.{BusinessService, SessionProfile, SessionService}
-import views.html.sicandcompliance.business_activity_description
+import views.html.sicandcompliance.BusinessActivityDescription
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessActivityDescriptionController @Inject()(val authConnector: AuthClientConnector,
                                                       val sessionService: SessionService,
                                                       val businessService: BusinessService,
-                                                      view: business_activity_description)
+                                                      view: BusinessActivityDescription)
                                                      (implicit appConfig: FrontendAppConfig,
                                                       val executionContext: ExecutionContext,
                                                       baseControllerComponents: BaseControllerComponents)

@@ -36,7 +36,7 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
                               val businessService: BusinessService,
                               val frsService: FlatRateService,
                               val iclService: ICLService,
-                              val aboutToConfirmSicPage: about_to_confirm_sic)
+                              val aboutToConfirmSicPage: AboutToConfirmSic)
                              (implicit appConfig: FrontendAppConfig,
                               val executionContext: ExecutionContext,
                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {

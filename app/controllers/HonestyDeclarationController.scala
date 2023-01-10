@@ -21,13 +21,13 @@ import connectors.RegistrationApiConnector.honestyDeclarationKey
 import models.ApiKey
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
-import views.html.honesty_declaration
+import views.html.HonestyDeclaration
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class HonestyDeclarationController @Inject()(honestyDeclarationView: honesty_declaration,
+class HonestyDeclarationController @Inject()(honestyDeclarationView: HonestyDeclaration,
                                              val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
                                              val vatRegistrationService: VatRegistrationService
