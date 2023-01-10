@@ -64,7 +64,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def heading: Option[String] = doc.select(h1).headOption.map(_.text)
 
-      def headingLevel2(n: Int) = doc.select(h2(n)).headOption.map(_.text)
+      def headingLevel2(n: Int): Option[String] = doc.select(h2).toList.map(_.text).lift(n-1)
 
       def hasBackLink: Boolean = doc.select(".govuk-back-link").headOption.isDefined
 
@@ -88,19 +88,23 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
         } yield SummaryRow(keyValue, answerValue, actionsSeq)
       }
 
-      def hintWithMultiple(n: Int): Option[String] = doc.select(multipleHints(n)).headOption.map(_.text)
+      def hintWithMultiple(n: Int): Option[String] = doc.select(multipleHints).toList.map(_.text).lift(n-1)
 
       def paras: List[String] = doc.select("main p").toList.map(_.text)
 
-      def para(n: Int): Option[String] = doc.select(p(n)).headOption.map(_.text)
+      def para(n: Int): Option[String] = doc.select(p).toList.map(_.text).lift(n-1)
 
       def panelIndentHeading(n: Int): Option[String] = selectText(panelHeading).lift(n)
 
       def panelIndent(n: Int): Option[String] = selectText("main .govuk-inset-text").lift(n - 1)
 
-      def unorderedList(n: Int): List[String] = doc.select(s"main ul:nth-of-type($n)").first.children().eachText().asScala.toList
+      def unorderedList(n: Int): List[String] = doc.select(s"main ul").toList.lift(n-1).map(_.children().eachText().asScala.toList).getOrElse(throw new Exception("List element does not exist"))
 
-      def orderedList(n: Int): List[String] = doc.select(s"main ol:nth-of-type($n)").first.children().eachText().asScala.toList
+      def legend(n: Int): Option[String] = doc.select(legends).toList.map(_.text).lift(n-1)
+
+      def bullet(n: Int): Option[String] = doc.select(bullets).toList.map(_.text).lift(n-1)
+
+      def orderedList(n: Int): List[String] = doc.select(s"main ol").toList.lift(n-1).map(_.children().eachText().asScala.toList).getOrElse(throw new Exception("List element does not exist"))
 
       def link(n: Int): Option[Link] = doc.select(a).toList.map(l => Link(l.text, l.attr("href"))).lift(n - 1)
 
@@ -149,7 +153,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
         }
 
       def warningText(n: Int): Option[String] =
-        doc.select(s"$warning:nth-of-type($n)").headOption.map(_.text)
+        doc.select(warning).toList.map(_.text).lift(n-1)
     }
   }
 }

@@ -43,7 +43,7 @@ class ChooseBusinessTypeViewSpec extends VatRegViewSpec with FlatRateFixtures {
       doc.heading mustBe Some("Choose the main business type")
     }
     "have a legend for each section" in new ViewSetup {
-      doc.select(doc.legend(1)).text mustBe "section"
+      doc.legend(1) mustBe Some("section")
     }
     "create radio buttons for each category" in new ViewSetup {
       doc.radio("019") mustBe Some("testCategory")

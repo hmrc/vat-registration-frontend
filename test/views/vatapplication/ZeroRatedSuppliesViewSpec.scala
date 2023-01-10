@@ -46,7 +46,7 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
     }
 
     "have the correct text" in {
-      doc.select(Selectors.p(1)).text must include(text)
+      doc.select(Selectors.p).text must include(text)
     }
 
     "have the correct details" in {
