@@ -140,7 +140,7 @@ class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationF
       )
 
       res.map(_.rows.length).get mustBe 1
-      res.map(_.rows.map(_.value.content.asHtml.toString())).get mustBe Seq("Limited company (includes Unlimited companies)")
+      res.map(_.rows.map(_.value.content.asHtml.toString())).get mustBe Seq("UK company (includes Limited and Unlimited companies)")
     }
 
     "return a JsError if section is missing an answer" in {

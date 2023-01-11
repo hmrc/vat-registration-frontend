@@ -72,7 +72,10 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection[Business](expectedModel)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

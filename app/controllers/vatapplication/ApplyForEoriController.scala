@@ -19,8 +19,7 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ApplyForEoriForm
-import models.CurrentProfile
-import models.api.{NETP, NonUkNonEstablished, PartyType}
+import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Request}
 import services.VatApplicationService.EoriRequested
@@ -45,14 +44,13 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatRegistrationService.partyType flatMap {
-          partyType =>
-            vatApplicationService.getVatApplication map {
-              _.eoriRequested match {
-                case Some(eoriRequested) => Ok(getView(partyType, ApplyForEoriForm.form.fill(eoriRequested)))
-                case None => Ok(getView(partyType, ApplyForEoriForm.form))
-              }
+        vatRegistrationService.getEligibilitySubmissionData.flatMap { eligibilityData =>
+          vatApplicationService.getVatApplication.map {
+            _.eoriRequested match {
+              case Some(eoriRequested) => Ok(getView(eligibilityData, ApplyForEoriForm.form.fill(eoriRequested)))
+              case None => Ok(getView(eligibilityData, ApplyForEoriForm.form))
             }
+          }
         }
   }
 
@@ -61,20 +59,20 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
       implicit profile =>
         ApplyForEoriForm.form.bindFromRequest.fold(
           errors =>
-            vatRegistrationService.partyType map {
-              partyType => BadRequest(getView(partyType, errors))
+            vatRegistrationService.getEligibilitySubmissionData.map { eligibilityData =>
+              BadRequest(getView(eligibilityData, errors))
             },
           success =>
-            vatApplicationService.saveVatApplication(EoriRequested(success)) map { _ =>
+            vatApplicationService.saveVatApplication(EoriRequested(success)).map { _ =>
               Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
             }
         )
   }
 
-  private def getView(partyType: PartyType, form: Form[Boolean])
-                       (implicit request: Request[_]) = {
-    partyType match {
-      case NETP | NonUkNonEstablished => overseasApplyForEoriView(form)
+  private def getView(eligibilityData: EligibilitySubmissionData, form: Form[Boolean])
+                     (implicit request: Request[_]) = {
+    eligibilityData.partyType match {
+      case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk => overseasApplyForEoriView(form)
       case _ => applyForEoriView(form)
     }
   }

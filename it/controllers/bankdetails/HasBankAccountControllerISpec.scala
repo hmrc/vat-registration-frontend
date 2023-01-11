@@ -28,7 +28,10 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return SEE_OTHER when the party type is NETP" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NETP,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -40,7 +43,10 @@ class HasBankAccountControllerISpec extends ControllerISpec {
     "return SEE_OTHER when the party type is Non UK Company" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

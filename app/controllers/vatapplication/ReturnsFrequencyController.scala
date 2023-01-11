@@ -69,12 +69,12 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
             BadRequest(returnFrequencyPage(errors, showAAS, showMonthly))
           },
           returnFrequency =>
-            vatRegistrationService.partyType flatMap { partyType =>
+            vatRegistrationService.getEligibilitySubmissionData.flatMap { eligibilityData =>
               vatApplicationService.saveVatApplication(returnFrequency) map { _ =>
                 returnFrequency match {
                   case Monthly =>
-                    partyType match {
-                      case NETP | NonUkNonEstablished =>
+                    eligibilityData.partyType match {
+                      case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
                         Redirect(controllers.vatapplication.routes.TaxRepController.show)
                       case _ =>
                         Redirect(controllers.routes.TaskListController.show)

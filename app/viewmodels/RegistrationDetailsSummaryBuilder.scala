@@ -20,8 +20,8 @@ import config.FrontendAppConfig
 import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import models._
-import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.api.vatapplication._
+import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -45,58 +45,52 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
     val vatApplication = vatScheme.vatApplication.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Missing Returns"))
-    val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(
+    val eligibilityData = vatScheme.eligibilitySubmissionData.getOrElse(
       throw new InternalServerException(s"[RegistrationDetailsSummaryBuilder] Couldn't construct CYA due to missing section: 'Eligibility'")
     )
+    val partyType = eligibilityData.partyType
+    val fixedEstablishment = eligibilityData.fixedEstablishmentInManOrUk
 
     govukSummaryList(SummaryList(
       List(
-        importsOrExports(vatApplication, partyType),
-        applyForEori(vatApplication, partyType),
+        importsOrExports(vatApplication),
+        applyForEori(vatApplication),
         turnoverEstimate(vatApplication),
         zeroRatedTurnover(vatScheme)
       ).flatten ++
-      nipSection(vatApplication) ++
-      List(
-        claimRefunds(vatApplication),
-        vatExemption(vatApplication)
-      ).flatten ++
-        netpSection(vatApplication, partyType) ++
+        nipSection(vatApplication) ++
+        List(
+          claimRefunds(vatApplication),
+          vatExemption(vatApplication)
+        ).flatten ++
+        netpSection(vatApplication, partyType, fixedEstablishment) ++
         bankAccountSection(vatScheme) ++
         List(
-            startDate(vatApplication),
-            currentlyTrading(vatApplication),
-            accountingPeriod(vatApplication),
-            lastMonthOfAccountingYear(vatApplication),
-            paymentFrequency(vatApplication),
-            paymentMethod(vatApplication),
-            taxRep(vatApplication)
+          startDate(vatApplication),
+          currentlyTrading(vatApplication),
+          accountingPeriod(vatApplication),
+          lastMonthOfAccountingYear(vatApplication),
+          paymentFrequency(vatApplication),
+          paymentMethod(vatApplication),
+          taxRep(vatApplication)
         ).flatten ++
         flatRateSchemeSection(vatScheme)
     ))
   }
 
-  private def importsOrExports(vatApplication: VatApplication, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
-    if (partyType == NETP || partyType == NonUkNonEstablished) {
-      None
-    } else {
-      optSummaryListRowBoolean(
-        s"$sectionId.importsOrExports",
-        vatApplication.tradeVatGoodsOutsideUk,
-        Some(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
-      )
-    }
+  private def importsOrExports(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowBoolean(
+      s"$sectionId.importsOrExports",
+      vatApplication.tradeVatGoodsOutsideUk,
+      Some(controllers.vatapplication.routes.ImportsOrExportsController.show.url)
+    )
 
-  private def applyForEori(vatApplication: VatApplication, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
-    if (partyType == NETP || partyType == NonUkNonEstablished) {
-      None
-    } else {
-      optSummaryListRowBoolean(
-        s"$sectionId.applyForEori",
-        vatApplication.eoriRequested,
-        Some(controllers.vatapplication.routes.ApplyForEoriController.show.url)
-      )
-    }
+  private def applyForEori(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowBoolean(
+      s"$sectionId.applyForEori",
+      vatApplication.eoriRequested,
+      Some(controllers.vatapplication.routes.ApplyForEoriController.show.url)
+    )
 
   private def turnoverEstimate(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
@@ -159,8 +153,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     } else {
       Nil
     }
-
   }
+
   private def sellOrMoveNip(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(
       s"$sectionId.sellOrMoveNip",
@@ -191,8 +185,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       Some(vatApplicationRoutes.ReceiveGoodsNipController.show.url)
     )
 
-  private def netpSection(vatApplication: VatApplication, partyType: PartyType)(implicit messages: Messages): List[SummaryListRow] =
-    if (partyType == NETP || partyType == NonUkNonEstablished) {
+  private def netpSection(vatApplication: VatApplication, partyType: PartyType, fixedEstablishment: Boolean)(implicit messages: Messages): List[SummaryListRow] =
+    if ((partyType == NETP || partyType == NonUkNonEstablished) && !fixedEstablishment) {
       List(
         sendGoodsOverseas(vatApplication),
         sendGoodsToEu(vatApplication),

@@ -77,12 +77,4 @@ object PartyType {
   implicit val reads = Reads[PartyType] { partyType => partyType.validate[String] map fromString }
   implicit val format = Format[PartyType](reads, writes)
 
-  val eligibilityDataJsonReads: Reads[PartyType] = Reads[PartyType] { json =>
-    (json \ "businessEntity-value").validate[String].map {
-      case "uk-company" => UkCompany
-      case "sole-trader" => Individual
-      case otherEntity => throw new InternalServerException(s"Entity type $otherEntity not currently supported")
-    }
-  }
-
 }

@@ -36,11 +36,10 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
   val sectionId: String = "cya.transactor"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
-    val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType)
-      .getOrElse(throw new InternalServerException("[TransactorDetailsSummaryBuilder] Missing party type"))
+    val eligibilitySubmissionData = vatScheme.eligibilitySubmissionData.getOrElse(throw new InternalServerException("[TransactorDetailsSummaryBuilder] Missing eligibility data"))
     val optTransactorDetails: Option[TransactorDetails] = vatScheme.transactorDetails
     val summaryListRows: Seq[SummaryListRow] = optTransactorDetails.fold(Seq[SummaryListRow]())(transactorDetails =>
-      generateTransactorSummaryListRows(transactorDetails, partyType)
+      generateTransactorSummaryListRows(transactorDetails, eligibilitySubmissionData.partyType, eligibilitySubmissionData.fixedEstablishmentInManOrUk)
     )
 
     govukSummaryList(SummaryList(
@@ -49,7 +48,8 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
   }
 
   private def generateTransactorSummaryListRows(transactorDetails: TransactorDetails,
-                                                partyType: PartyType)
+                                                partyType: PartyType,
+                                                fixedEstablishment: Boolean)
                                                (implicit messages: Messages): Seq[SummaryListRow] = {
 
     val isAgent = transactorDetails.personalDetails.exists(_.arn.nonEmpty)
@@ -104,7 +104,7 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
       s"$sectionId.homeAddress",
       transactorDetails.address.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished =>
+        case NETP | NonUkNonEstablished if !fixedEstablishment =>
           Some(controllers.transactor.routes.TransactorInternationalAddressController.show.url)
         case _ =>
           Some(controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)

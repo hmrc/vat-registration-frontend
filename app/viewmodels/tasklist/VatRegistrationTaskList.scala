@@ -26,6 +26,18 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) {
 
+  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages): TaskListSection =
+    TaskListSection(
+      heading = messages("tasklist.vatRegistration.heading"),
+      rows = Seq(
+        Some(goodsAndServicesRow.build(vatScheme)),
+        resolveBankDetailsRow(vatScheme).map(_.build(vatScheme)),
+        resolveVATRegistrationDateRow(vatScheme).map(_.build(vatScheme)),
+        Some(vatReturnsRow.build(vatScheme)),
+        resolveFlatRateSchemeRow(vatScheme).map(_.build(vatScheme))
+      ).flatten
+    )
+
   def goodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
     url = _ => controllers.vatapplication.routes.ImportsOrExportsController.show.url,
@@ -41,7 +53,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         )
       }.++ {
         scheme.partyType match {
-          case Some(NETP) | Some(NonUkNonEstablished) =>
+          case Some(NETP) | Some(NonUkNonEstablished) if scheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
             scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
           case _ => Nil
         }
@@ -89,7 +101,9 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
     url = _ => controllers.vatapplication.routes.ReturnsFrequencyController.show.url,
     tagId = "vatReturnsRow",
-    checks = scheme => scheme.vatApplication.fold(Seq(false))(vatAppl => checkVatReturns(scheme.partyType, vatAppl)),
+    checks = scheme => scheme.vatApplication.fold(Seq(false))(vatAppl =>
+      checkVatReturns(scheme.partyType, vatAppl, scheme.eligibilitySubmissionData.exists(_.fixedEstablishmentInManOrUk))
+    ),
     prerequisites = scheme => Seq(
       List(
         resolveVATRegistrationDateRow(scheme),
@@ -116,18 +130,6 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     prerequisites = _ => Seq(vatReturnsRow)
   )
 
-  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages): TaskListSection =
-    TaskListSection(
-      heading = messages("tasklist.vatRegistration.heading"),
-      rows = Seq(
-        Some(goodsAndServicesRow.build(vatScheme)),
-        resolveBankDetailsRow(vatScheme).map(_.build(vatScheme)),
-        resolveVATRegistrationDateRow(vatScheme).map(_.build(vatScheme)),
-        Some(vatReturnsRow.build(vatScheme)),
-        resolveFlatRateSchemeRow(vatScheme).map(_.build(vatScheme))
-      ).flatten
-    )
-
   private def checkImportsAndExports(vatScheme: VatScheme) = {
     {
       Seq(vatScheme.vatApplication.exists(_.tradeVatGoodsOutsideUk.isDefined))
@@ -141,7 +143,11 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
   }
 
   private def resolveBankDetailsRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
-    if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains)) None else Some(bankAccountDetailsRow)
+    if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains) && vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk)) {
+      None
+    } else {
+      Some(bankAccountDetailsRow)
+    }
   }
 
   private[tasklist] def resolveFlatRateSchemeRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
@@ -187,7 +193,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     }
   }
 
-  private def checkVatReturns(partyType: Option[PartyType], vatApplication: VatApplication) = {
+  private def checkVatReturns(partyType: Option[PartyType], vatApplication: VatApplication, fixedEstablishment: Boolean) = {
     Seq(
       Some(vatApplication.returnsFrequency.isDefined),
       Some(vatApplication.staggerStart.isDefined),
@@ -199,7 +205,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         )
         case _ => None
       },
-      if (Seq(NETP, NonUkNonEstablished).exists(partyType.contains)) Some(vatApplication.hasTaxRepresentative.isDefined) else None
+      if (Seq(NETP, NonUkNonEstablished).exists(partyType.contains) && !fixedEstablishment) Some(vatApplication.hasTaxRepresentative.isDefined) else None
     )
   }.flatten
 }

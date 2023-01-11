@@ -57,7 +57,10 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         )
 
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -90,7 +93,10 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         )
 
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -124,7 +130,10 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         )
 
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),

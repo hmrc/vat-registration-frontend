@@ -177,7 +177,10 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided for Non UK Company" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+          partyType = NonUkNonEstablished,
+          fixedEstablishmentInManOrUk = false
+        )))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(createNonUkCompanyJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -253,7 +256,10 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[ApplicantDetails](Some(nonUkCompanyApplicantDetails.copy(entity = None)))
           .registrationApi.replaceSection[ApplicantDetails](nonUkCompanyApplicantDetails)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+          partyType = NonUkNonEstablished,
+          fixedEstablishmentInManOrUk = false
+        )))
 
         stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
         insertCurrentProfileIntoDb(currentProfile, sessionId)

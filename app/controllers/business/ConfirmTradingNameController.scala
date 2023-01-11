@@ -61,12 +61,14 @@ class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
           confirmTradingName => {
             for {
               _ <- businessService.updateBusiness(ConfirmTradingName(confirmTradingName))
-              partyType <- vatRegistrationService.partyType
+              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
             } yield {
               if (confirmTradingName) {
-                partyType match {
-                  case NETP | NonUkNonEstablished => Redirect(routes.InternationalPpobAddressController.show)
-                  case _ => Redirect(routes.PpobAddressController.startJourney)
+                eligibilityData.partyType match {
+                  case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
+                    Redirect(routes.InternationalPpobAddressController.show)
+                  case _ =>
+                    Redirect(routes.PpobAddressController.startJourney)
                 }
               } else {
                 Redirect(routes.CaptureTradingNameController.show)

@@ -170,11 +170,12 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
     "all person details are available from prerequisite but address capture hasn't started" must {
       "return TLNotStarted" in {
 
-        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+        def verifySectionRowUrl(partyType: PartyType, fixedEstablishment: Boolean, url: String) = {
           val scheme = emptyVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
               partyType = partyType,
-              isTransactor = true
+              isTransactor = true,
+              fixedEstablishmentInManOrUk = fixedEstablishment
             )),
             transactorDetails = Some(validTransactorDetails.copy(address = None))
           )
@@ -184,19 +185,21 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
           sectionRow.url mustBe url
         }
 
-        verifySectionRowUrl(RegSociety, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
-        verifySectionRowUrl(NonUkNonEstablished, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
+        verifySectionRowUrl(RegSociety, fixedEstablishment = true, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = false, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = true, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
       }
     }
 
     "all person details are available from prerequisite and address details captured with just arn" must {
       "return TLCompleted" in {
 
-        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+        def verifySectionRowUrl(partyType: PartyType, fixedEstablishment: Boolean, url: String) = {
           val scheme = emptyVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
               partyType = partyType,
-              isTransactor = true
+              isTransactor = true,
+              fixedEstablishmentInManOrUk = fixedEstablishment
             )),
             transactorDetails = Some(validTransactorDetails.copy(
               address = None,
@@ -209,19 +212,21 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
           sectionRow.url mustBe url
         }
 
-        verifySectionRowUrl(RegSociety, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
-        verifySectionRowUrl(NonUkNonEstablished, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
+        verifySectionRowUrl(RegSociety, fixedEstablishment = true, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = false, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = true, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
       }
     }
 
     "all person details are available from prerequisite and address details captured with no arn but address available" must {
       "return TLCompleted" in {
 
-        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+        def verifySectionRowUrl(partyType: PartyType, fixedEstablishment: Boolean, url: String) = {
           val scheme = emptyVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
               partyType = partyType,
-              isTransactor = true
+              isTransactor = true,
+              fixedEstablishmentInManOrUk = fixedEstablishment
             )),
             transactorDetails = Some(validTransactorDetails)
           )
@@ -231,8 +236,9 @@ class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixt
           sectionRow.url mustBe url
         }
 
-        verifySectionRowUrl(RegSociety, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
-        verifySectionRowUrl(NonUkNonEstablished, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
+        verifySectionRowUrl(RegSociety, fixedEstablishment = true, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = false, controllers.transactor.routes.TransactorInternationalAddressController.show.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = true, controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)
       }
     }
   }

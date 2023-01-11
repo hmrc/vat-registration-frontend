@@ -85,7 +85,10 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testNetpSoleTrader)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NETP,
+        fixedEstablishmentInManOrUk = false
+      )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -102,7 +105,10 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testMinorEntity))))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testMinorEntity)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        fixedEstablishmentInManOrUk = false
+      )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

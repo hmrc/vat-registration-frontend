@@ -158,7 +158,11 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
 
       "resolve to None if registration reason available but not eligible for registration date flow" in {
         section.resolveVATRegistrationDateRow(emptyVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk))
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            registrationReason = NonUk,
+            fixedEstablishmentInManOrUk = false
+          ))
         )) mustBe None
       }
 
@@ -231,7 +235,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete and vat registration date captured" must {
       "return TLCompleted" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = true
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -465,7 +472,9 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
       "return TLNotStarted with correct url" in {
         val schema = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            registrationReason = NonUk, partyType = NETP
+            registrationReason = NonUk,
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
@@ -490,7 +499,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete and all vat returns data captured except tax rep for non-uk journey" must {
       "return TLInProgress" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -510,7 +522,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete and all vat returns data captured" must {
       "return TLCompleted" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -566,7 +581,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete but flat rate scheme flow hasn't started with its value None" must {
       "return task list not started with correct url" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -588,7 +606,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete but flat rate scheme flow hasn't started having an empty collection of data" must {
       "return list not started with correct url" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -610,7 +631,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete but flat rate scheme has partial data" must {
       "return task list in progress" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),
@@ -632,7 +656,10 @@ class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture
     "prerequisite is complete and all flat rate scheme data captured" must {
       "return task list completed" in {
         val scheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           business = Some(validBusiness.copy(
             hasLandAndProperty = Some(false),
             otherBusinessInvolvement = Some(false),

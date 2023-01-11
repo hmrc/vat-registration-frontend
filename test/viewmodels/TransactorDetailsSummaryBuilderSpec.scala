@@ -146,7 +146,8 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
       val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = NETP,
-          isTransactor = true
+          isTransactor = true,
+          fixedEstablishmentInManOrUk = false
         )),
         transactorDetails = Some(testTransactorDetails)
       )

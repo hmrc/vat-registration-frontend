@@ -44,7 +44,10 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
       val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection[Business](expectedModel)
         .registrationApi.getSection[Business](Some(expectedModel))
 

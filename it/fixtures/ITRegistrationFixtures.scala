@@ -90,7 +90,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     isTransactor = false,
     appliedForException = Some(false),
     registrationReason = ForwardLook,
-    calculatedDate = Some(testCalculatedDate)
+    calculatedDate = Some(testCalculatedDate),
+    fixedEstablishmentInManOrUk = true
   )
 
   val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
@@ -98,7 +99,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     Partnership,
     isTransactor = false,
     appliedForException = Some(false),
-    registrationReason = ForwardLook
+    registrationReason = ForwardLook,
+    fixedEstablishmentInManOrUk = true
   )
 
   val businessDetails: Business = Business(
@@ -149,14 +151,22 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     testRegId,
     createdDate = testCreatedDate,
     status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP))
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
+      partyType = NETP,
+      fixedEstablishmentInManOrUk = false,
+      registrationReason = NonUk
+    ))
   )
 
   val emptyVatSchemeNonUkCompany: VatScheme = VatScheme(
     testRegId,
     createdDate = testCreatedDate,
     status = VatRegStatus.draft,
-    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished))
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
+      partyType = NonUkNonEstablished,
+      fixedEstablishmentInManOrUk = false,
+      registrationReason = NonUk
+    ))
   )
 
   val fullVatScheme = VatScheme(
@@ -172,7 +182,11 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   lazy val fullNetpVatScheme: VatScheme = fullVatScheme.copy(
-    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = NETP)),
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
+      partyType = NETP,
+      fixedEstablishmentInManOrUk = false,
+      registrationReason = NonUk
+    )),
     applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
     business = Some(businessDetails.copy(tradingName = Some(testCompanyName))),
     vatApplication = Some(fullVatApplication.copy(overseasCompliance = Some(testFullOverseasCompliance))),

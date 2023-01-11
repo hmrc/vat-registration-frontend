@@ -35,7 +35,8 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           applicantDetails = Some(ApplicantDetails(entity = Some(testNetpSoleTrader))),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
             partyType = NETP,
-            isTransactor = false
+            isTransactor = false,
+            fixedEstablishmentInManOrUk = false
           ))
         )
 
@@ -48,7 +49,8 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
             partyType = NETP,
-            isTransactor = false
+            isTransactor = false,
+            fixedEstablishmentInManOrUk = false
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testNetpSoleTrader),
@@ -67,7 +69,8 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
             partyType = NETP,
-            isTransactor = false
+            isTransactor = false,
+            fixedEstablishmentInManOrUk = false
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testNetpSoleTrader),
@@ -86,7 +89,8 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
         val scheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
             partyType = NETP,
-            isTransactor = false
+            isTransactor = false,
+            fixedEstablishmentInManOrUk = false
           )),
           applicantDetails = Some(ApplicantDetails(
             entity = Some(testNetpSoleTrader),
@@ -523,11 +527,12 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
     "all person details are available from prerequisite but address capture hasn't started" must {
       "return TLNotStarted" in {
 
-        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+        def verifySectionRowUrl(partyType: PartyType, fixedEstablishment: Boolean, url: String) = {
           val scheme = emptyVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
               partyType = partyType,
-              isTransactor = false
+              isTransactor = false,
+              fixedEstablishmentInManOrUk = fixedEstablishment
             )),
             applicantDetails = Some(ApplicantDetails(
               entity = Some(testSoleTrader),
@@ -546,19 +551,21 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           sectionRow.url mustBe url
         }
 
-        verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
-        verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+        verifySectionRowUrl(RegSociety, fixedEstablishment = true, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = false, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = true, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
       }
     }
 
     "all person details are available from prerequisite with partial address details captured" must {
       "return TLInProgress" in {
 
-        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+        def verifySectionRowUrl(partyType: PartyType, fixedEstablishment: Boolean, url: String) = {
           val scheme = emptyVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
               partyType = partyType,
-              isTransactor = false
+              isTransactor = false,
+              fixedEstablishmentInManOrUk = fixedEstablishment
             )),
             applicantDetails = Some(ApplicantDetails(
               entity = Some(testSoleTrader),
@@ -578,19 +585,21 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           sectionRow.url mustBe url
         }
 
-        verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
-        verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+        verifySectionRowUrl(RegSociety, fixedEstablishment = true, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = false, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = true, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
       }
     }
 
     "all person details are available from prerequisite and all address details captured" must {
       "return TLCompleted" in {
 
-        def verifySectionRowUrl(partyType: PartyType, url: String) = {
+        def verifySectionRowUrl(partyType: PartyType, fixedEstablishment: Boolean, url: String) = {
           val scheme = emptyVatScheme.copy(
             eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
               partyType = partyType,
-              isTransactor = false
+              isTransactor = false,
+              fixedEstablishmentInManOrUk = fixedEstablishment
             )),
             applicantDetails = Some(ApplicantDetails(
               entity = Some(testSoleTrader),
@@ -612,8 +621,9 @@ class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with F
           sectionRow.url mustBe url
         }
 
-        verifySectionRowUrl(RegSociety, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
-        verifySectionRowUrl(NonUkNonEstablished, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+        verifySectionRowUrl(RegSociety, fixedEstablishment = true, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = false, controllers.applicant.routes.InternationalHomeAddressController.show.url)
+        verifySectionRowUrl(NonUkNonEstablished, fixedEstablishment = true, controllers.applicant.routes.HomeAddressController.redirectToAlf.url)
       }
     }
   }

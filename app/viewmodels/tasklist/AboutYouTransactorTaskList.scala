@@ -111,7 +111,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
 
   def resolveAddressRowUrl(vatScheme: VatScheme): String = {
     vatScheme.partyType match {
-      case Some(NETP) | Some(NonUkNonEstablished) =>
+      case Some(NETP) | Some(NonUkNonEstablished) if vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
         controllers.transactor.routes.TransactorInternationalAddressController.show.url
       case Some(_) =>
         controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url

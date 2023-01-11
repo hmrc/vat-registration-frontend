@@ -73,8 +73,8 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the Join Flat Rate page when they select the jan apr jul oct option" in new Setup {
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.janStaggerKey
@@ -89,8 +89,8 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the Join Flat Rate page when they select the feb may aug nov option" in new Setup {
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(FebruaryStagger))))
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.febStaggerKey
@@ -105,8 +105,8 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the Join Flat Rate page when they select the mar may sep dec option" in new Setup {
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.marStaggerKey

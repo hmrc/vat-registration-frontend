@@ -42,7 +42,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     "called by a NETP and no transactor" must {
       "return the summary list without partner details" in new Setup {
         val vatScheme: VatScheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP, isTransactor = false))
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            isTransactor = false,
+            fixedEstablishmentInManOrUk = false
+          ))
         )
         val expectedSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
@@ -98,7 +102,11 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
     "called by a NETP when transactor exists" must {
       "return the summary list without partner details" in new Setup {
         val vatScheme: VatScheme = validVatScheme.copy(
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP, isTransactor = true))
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            isTransactor = true,
+            fixedEstablishmentInManOrUk = false
+          ))
         )
         val expectedSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
