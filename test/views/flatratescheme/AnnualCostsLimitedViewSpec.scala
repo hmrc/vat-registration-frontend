@@ -20,11 +20,11 @@ import forms.OverBusinessGoodsPercentForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.flatratescheme.annual_costs_limited
+import views.html.flatratescheme.AnnualCostsLimited
 
 class AnnualCostsLimitedViewSpec extends VatRegViewSpec with OverBusinessGoodsPercentForm {
 
-  val view: annual_costs_limited = app.injector.instanceOf[annual_costs_limited]
+  val view: AnnualCostsLimited = app.injector.instanceOf[AnnualCostsLimited]
 
   val pct: BigDecimal = 1
   val heading = "Will the business spend more than £1, including VAT, on relevant goods over the next 3 months?"

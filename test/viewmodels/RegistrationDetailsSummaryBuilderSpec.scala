@@ -122,10 +122,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(questionId = TestContent.paymentFrequency, optAnswer = Some("Quarterly"), optUrl = Some(controllers.vatapplication.routes.PaymentFrequencyController.show.url)),
         optSummaryListRowString(questionId = TestContent.paymentMethod, optAnswer = Some("BACS or internet banking"), optUrl = Some(controllers.vatapplication.routes.PaymentMethodController.show.url)),
         optSummaryListRowBoolean(questionId = TestContent.joinFrs, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)),
-        optSummaryListRowBoolean(questionId = TestContent.costsInclusive, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)),
-        optSummaryListRowString(questionId = TestContent.estimatedTotalSales, optAnswer = Some("£5,003.00"), optUrl = Some(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)),
-        optSummaryListRowBoolean(questionId = TestContent.costsLimited, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage.url)),
-        optSummaryListRowBoolean(questionId = TestContent.flatRate, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage.url)),
+        optSummaryListRowBoolean(questionId = TestContent.costsInclusive, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.AnnualCostsInclusiveController.show.url)),
+        optSummaryListRowString(questionId = TestContent.estimatedTotalSales, optAnswer = Some("£5,003.00"), optUrl = Some(controllers.flatratescheme.routes.EstimateTotalSalesController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.costsLimited, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.AnnualCostsLimitedController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.flatRate, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.YourFlatRateController.show.url)),
         optSummaryListRowString(questionId = TestContent.businessSector, optAnswer = Some("Pubs"), optUrl = Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)),
         optSummaryListRowString(questionId = TestContent.flatRateDate, optAnswer = Some(TestContent.flatRateRegDate), optUrl = Some(controllers.flatratescheme.routes.StartDateController.show.url))
       ).flatten)

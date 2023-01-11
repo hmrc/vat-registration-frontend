@@ -24,36 +24,41 @@
 
 @this(
         layout: layout,
-        errorSummary: errorSummary,
         h1: h1,
-        h2: h2,
+        h2:h2,
         p: p,
-        button: components.button,
+        panelIndent: panelIndent,
         formWithCSRF: FormWithCSRF,
+        button: button,
+        inputRadio: inputRadio,
+        errorSummary: errorSummary,
         yesNoRadio: yesNoRadio
 )
 
-@(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerForWithSector.heading", percentFormat))), backLink = true) {
+
+@layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerFor.heading"))), backLink = true) {
 
     @errorSummary(registerForFrsForm.errors)
 
-    @h1(messages("pages.frs.registerForWithSector.heading", percentFormat))
+    @h1(messages("pages.frs.registerFor.heading"))
 
-    @p {
-        @messages("pages.frs.registerForWithSector.info")
-    }
+    @p{ @messages("pages.frs.registerFor.para") }
 
-    @h2(messages("pages.frs.registerForWithSector.subheading1"))
+    @panelIndent{ @messages("pages.frs.registerFor.indentText") }
 
-    @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitYourFlatRate) {
+    @h2(messages("pages.frs.registerFor.subheading"))
+
+    @formWithCSRF(action = controllers.flatratescheme.routes.RegisterForFrsController.submit) {
         @yesNoRadio(
             form = registerForFrsForm,
-            headingKey = messages("pages.frs.registerForWithSector.heading", percentFormat),
+            headingKey = messages("pages.frs.registerFor.subheading"),
             isPageHeading = false,
+            inline = true,
             classes = "govuk-visually-hidden"
         )
-        @button(messages("app.common.continue"))
+
+        @button("app.common.continue")
     }
 }

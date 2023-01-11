@@ -3,10 +3,10 @@ package pages.flatratescheme
 
 import forms.OverBusinessGoodsForm
 import helpers.A11ySpec
-import views.html.flatratescheme.annual_costs_inclusive
+import views.html.flatratescheme.AnnualCostsInclusive
 
 class AnnualCostsInclusiveA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[annual_costs_inclusive]
+  val view = app.injector.instanceOf[AnnualCostsInclusive]
   val form = OverBusinessGoodsForm.form
 
   "the annual costs inclusive page" when {

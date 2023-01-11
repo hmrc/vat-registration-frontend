@@ -59,7 +59,7 @@
              messages("pages.frs.costsInclusive.list.bullet9"),
              messages("pages.frs.costsInclusive.list.bullet10"))
 
-    @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitAnnualInclusiveCosts) {
+    @formWithCSRF(action = controllers.flatratescheme.routes.AnnualCostsInclusiveController.submit) {
         @inputRadio(
             form = annualCostsInclusiveForm,
             legend = messages("pages.frs.costsInclusive.heading"),

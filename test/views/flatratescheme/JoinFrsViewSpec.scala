@@ -19,12 +19,12 @@ package views.flatratescheme
 import forms.genericForms.YesOrNoFormFactory
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.flatratescheme.frs_join
+import views.html.flatratescheme.JoinFrs
 
 class JoinFrsViewSpec extends VatRegViewSpec {
 
   val form = YesOrNoFormFactory.form()("frs.join")
-  val view = app.injector.instanceOf[frs_join]
+  val view = app.injector.instanceOf[JoinFrs]
 
   object ExpectedContent {
     val heading = "Does the business want to register for the Flat Rate Scheme?"

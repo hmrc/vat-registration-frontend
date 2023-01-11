@@ -17,50 +17,55 @@
 package controllers.flatratescheme
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import connectors.ConfigConnector
 import controllers.BaseController
-import forms.ChooseBusinessTypeForm
+import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
+import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
-import services.FlatRateService.CategoryOfBusinessAnswer
 import services.{FlatRateService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.flatratescheme.ChooseBusinessType
+import views.html.flatratescheme.RegisterForFrs
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ChooseBusinessTypeController @Inject()(val authConnector: AuthConnector,
+class RegisterForFrsController @Inject()(val flatRateService: FlatRateService,
+                                             val authConnector: AuthConnector,
                                              val sessionService: SessionService,
-                                             configConnector: ConfigConnector,
-                                             flatRateService: FlatRateService,
-                                             chooseBusinessTypeView: ChooseBusinessType)
+                                             view: RegisterForFrs)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
-                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                             baseControllerComponents: BaseControllerComponents)
+  extends BaseController with SessionProfile {
+
+
+  val registerForFrsForm: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.registerFor")
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        for {
-          flatRateScheme <- flatRateService.getFlatRate
-          form = ChooseBusinessTypeForm.form(configConnector.businessTypes.flatMap(_.categories.map(_.id)))
-          formFilled = flatRateScheme.categoryOfBusiness.fold(form)(v => form.fill(v))
-        } yield {
-          Ok(chooseBusinessTypeView(formFilled, configConnector.businessTypes))
+        flatRateService.getFlatRate map { flatRateScheme =>
+          val form = flatRateScheme.useThisRate match {
+            case Some(useRate) => registerForFrsForm.fill(YesOrNoAnswer(useRate))
+            case None => registerForFrsForm
+          }
+          Ok(view(form))
         }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ChooseBusinessTypeForm.form(configConnector.businessTypes.flatMap(_.categories.map(_.id))).bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(chooseBusinessTypeView(badForm, configConnector.businessTypes))),
-          data => flatRateService.saveFlatRate(CategoryOfBusinessAnswer(data)) map {
-            _ => Redirect(controllers.flatratescheme.routes.YourFlatRateController.show)
+        registerForFrsForm.bindFromRequest().fold(
+          badForm => Future.successful(BadRequest(view(badForm))),
+          view => flatRateService.saveRegister(view.answer) map { _ =>
+            if (view.answer) {
+              Redirect(controllers.flatratescheme.routes.StartDateController.show)
+            } else {
+              Redirect(controllers.routes.TaskListController.show)
+            }
           }
         )
   }
-
 
 }

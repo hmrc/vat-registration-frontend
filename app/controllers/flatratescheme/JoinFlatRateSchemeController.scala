@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.FlatRateService.JoinFrsAnswer
 import services._
 import uk.gov.hmrc.http.InternalServerException
-import views.html.flatratescheme.frs_join
+import views.html.flatratescheme.JoinFrs
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
                                              val vatApplicationService: VatApplicationService,
                                              val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
-                                             view: frs_join)
+                                             view: JoinFrs)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
@@ -69,7 +69,7 @@ class JoinFlatRateSchemeController @Inject()(val flatRateService: FlatRateServic
           badForm => Future.successful(BadRequest(view(badForm))),
           joiningFRS => flatRateService.saveFlatRate(JoinFrsAnswer(joiningFRS.answer)).map { _ =>
             if (joiningFRS.answer) {
-              Redirect(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage)
+              Redirect(controllers.flatratescheme.routes.AnnualCostsInclusiveController.show)
             } else {
               Redirect(controllers.routes.TaskListController.show)
             }

@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.flatratescheme.estimate_total_sales
+import views.html.flatratescheme.EstimateTotalSales
 
 class EstimateTotalSalesViewSpec extends VatRegViewSpec {
 
@@ -33,7 +33,7 @@ class EstimateTotalSalesViewSpec extends VatRegViewSpec {
   val buttonText = "Save and continue"
 
   val form: Form[BigDecimal] = EstimateTotalSalesForm.form
-  val view: Html = app.injector.instanceOf[estimate_total_sales].apply(form)
+  val view: Html = app.injector.instanceOf[EstimateTotalSales].apply(form)
   implicit val doc: Document = Jsoup.parse(view.body)
 
   "Zero Rated Supplies Page" must {

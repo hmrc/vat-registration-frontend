@@ -149,7 +149,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.flatratescheme.routes.AnnualCostsInclusiveController.show.url)
       }
     }
 

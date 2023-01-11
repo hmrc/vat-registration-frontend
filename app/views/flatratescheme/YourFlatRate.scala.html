@@ -24,41 +24,36 @@
 
 @this(
         layout: layout,
-        h1: h1,
-        h2:h2,
-        p: p,
-        panelIndent: panelIndent,
-        formWithCSRF: FormWithCSRF,
-        button: button,
-        inputRadio: inputRadio,
         errorSummary: errorSummary,
+        h1: h1,
+        h2: h2,
+        p: p,
+        button: components.button,
+        formWithCSRF: FormWithCSRF,
         yesNoRadio: yesNoRadio
 )
 
-@(registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-
-@layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerFor.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerForWithSector.heading", percentFormat))), backLink = true) {
 
     @errorSummary(registerForFrsForm.errors)
 
-    @h1(messages("pages.frs.registerFor.heading"))
+    @h1(messages("pages.frs.registerForWithSector.heading", percentFormat))
 
-    @p{ @messages("pages.frs.registerFor.para") }
+    @p {
+        @messages("pages.frs.registerForWithSector.info")
+    }
 
-    @panelIndent{ @messages("pages.frs.registerFor.indentText") }
+    @h2(messages("pages.frs.registerForWithSector.subheading1"))
 
-    @h2(messages("pages.frs.registerFor.subheading"))
-
-    @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitRegisterForFrs) {
+    @formWithCSRF(action = controllers.flatratescheme.routes.YourFlatRateController.submit) {
         @yesNoRadio(
             form = registerForFrsForm,
-            headingKey = messages("pages.frs.registerFor.subheading"),
+            headingKey = messages("pages.frs.registerForWithSector.heading", percentFormat),
             isPageHeading = false,
-            inline = true,
             classes = "govuk-visually-hidden"
         )
-
-        @button("app.common.continue")
+        @button(messages("app.common.continue"))
     }
 }

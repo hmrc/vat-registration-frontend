@@ -20,11 +20,11 @@ import forms.OverBusinessGoodsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.flatratescheme.annual_costs_inclusive
+import views.html.flatratescheme.AnnualCostsInclusive
 
 class AnnualCostsInclusiveViewSpec extends VatRegViewSpec {
 
-  val view: annual_costs_inclusive = app.injector.instanceOf[annual_costs_inclusive]
+  val view: AnnualCostsInclusive = app.injector.instanceOf[AnnualCostsInclusive]
   val heading = "Will the business spend more than £250 over the next 3 months on ‘relevant goods’?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val para1 = "‘Relevant goods’ are moveable items or materials used exclusively to run the company. They include gas and electricity."

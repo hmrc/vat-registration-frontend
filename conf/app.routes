@@ -267,24 +267,24 @@ GET         /join-flat-rate                                           controller
 POST        /join-flat-rate                                           controllers.flatratescheme.JoinFlatRateSchemeController.submit
 
 ##Do you spend less than 250 a year Page
-GET         /business-spend-relevant-goods                            controllers.flatratescheme.FlatRateController.annualCostsInclusivePage
-POST        /business-spend-relevant-goods                            controllers.flatratescheme.FlatRateController.submitAnnualInclusiveCosts
+GET         /business-spend-relevant-goods                            controllers.flatratescheme.AnnualCostsInclusiveController.show
+POST        /business-spend-relevant-goods                            controllers.flatratescheme.AnnualCostsInclusiveController.submit
 
 ## Estimate Total Sales
-GET         /estimate-total-sales                                     controllers.flatratescheme.EstimateTotalSalesController.estimateTotalSales
-POST        /estimate-total-sales                                     controllers.flatratescheme.EstimateTotalSalesController.submitEstimateTotalSales
+GET         /estimate-total-sales                                     controllers.flatratescheme.EstimateTotalSalesController.show
+POST        /estimate-total-sales                                     controllers.flatratescheme.EstimateTotalSalesController.submit
 
 ## Do you want to register for FRS page
-GET         /business-flat-rate                                       controllers.flatratescheme.FlatRateController.registerForFrsPage
-POST        /business-flat-rate                                       controllers.flatratescheme.FlatRateController.submitRegisterForFrs
+GET         /business-flat-rate                                       controllers.flatratescheme.RegisterForFrsController.show
+POST        /business-flat-rate                                       controllers.flatratescheme.RegisterForFrsController.submit
 
 ## Do you want to register for FRS page - Business Sector selected
-GET         /confirm-flat-rate                                        controllers.flatratescheme.FlatRateController.yourFlatRatePage
-POST        /confirm-flat-rate                                        controllers.flatratescheme.FlatRateController.submitYourFlatRate
+GET         /confirm-flat-rate                                        controllers.flatratescheme.YourFlatRateController.show
+POST        /confirm-flat-rate                                        controllers.flatratescheme.YourFlatRateController.submit
 
 ##Do you spend less than 2% of turnover a year Page
-GET         /company-spend-goods                                      controllers.flatratescheme.FlatRateController.annualCostsLimitedPage
-POST        /company-spend-goods                                      controllers.flatratescheme.FlatRateController.submitAnnualCostsLimited
+GET         /company-spend-goods                                      controllers.flatratescheme.AnnualCostsLimitedController.show
+POST        /company-spend-goods                                      controllers.flatratescheme.AnnualCostsLimitedController.submit
 
 ## Choose business type
 GET         /choose-business-type                                     controllers.flatratescheme.ChooseBusinessTypeController.show

@@ -4,10 +4,10 @@ package pages.flatratescheme
 import forms.ChooseBusinessTypeForm
 import helpers.A11ySpec
 import models.{FrsBusinessType, FrsGroup}
-import views.html.flatratescheme.choose_business_type
+import views.html.flatratescheme.ChooseBusinessType
 
 class ChooseBusinessTypeA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[choose_business_type]
+  val view = app.injector.instanceOf[ChooseBusinessType]
   val form = ChooseBusinessTypeForm.form(Seq("020", "019", "038"))
   val frsGroups =  Seq(FrsGroup(
   label = "Test 1",
