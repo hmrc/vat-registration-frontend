@@ -26,7 +26,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
     val form = EnterBankAccountDetailsForm.form
 
-    val validAccountName = "testAccountName"
+    val validAccountName = 60 + "testAccountName"
     val validAccountNumber = "12345678"
     val validSortCode = "123456"
 
@@ -55,6 +55,22 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NAME
       boundForm.errors.head.message mustBe accountNameEmptyKey
+    }
+
+    "return a FormError when binding an account name which exceeds max length to the form" in {
+      val exceedMaxLength = "AlPacinoLimitedAlPacinoLimitedAlPacinoLimitedAlPacinoLimitedAlPacinoLimited"
+
+      val formData = Map(
+        ACCOUNT_NAME -> exceedMaxLength,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NAME
+      boundForm.errors.head.message mustBe accountNameMaxLengthKey
     }
 
     "return a FormError when binding an invalid account name to the form" in {
