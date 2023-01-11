@@ -20,6 +20,7 @@ import forms.FormValidation._
 import models.BankAccountDetails
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.validation.Constraints.maxLength
 
 object HasCompanyBankAccountForm extends RequiredBooleanForm {
 
@@ -38,6 +39,7 @@ object EnterBankAccountDetailsForm {
   val SORT_CODE = "sortCode"
 
   val accountNameEmptyKey = "validation.companyBankAccount.name.missing"
+  val accountNameMaxLengthKey = "validation.companyBankAccount.name.maxLength"
   val accountNameInvalidKey = "validation.companyBankAccount.name.invalid"
   val accountNumberEmptyKey = "validation.companyBankAccount.number.missing"
   val accountNumberInvalidKey = "validation.companyBankAccount.number.invalid"
@@ -47,7 +49,8 @@ object EnterBankAccountDetailsForm {
   val invalidAccountReputationKey = "sortCodeAndAccountGroup"
   val invalidAccountReputationMessage = "validation.companyBankAccount.invalidCombination"
 
-  private val accountNameRegex = """^[A-Za-z0-9\-',/& ]{1,150}$""".r
+  private val accountNameRegex = """^[A-Za-z0-9 '’‘()\[\]{}<>!«»"ʺ˝ˮ?/\\+=%#*&$€£_\-@¥.,:;]{1,60}$""".r
+  private val accountNameMaxLength = 60
   private val accountNumberRegex = """[0-9]{8}""".r
   private val sortCodeRegex = """[0-9]{6}""".r
 
@@ -55,6 +58,7 @@ object EnterBankAccountDetailsForm {
     mapping(
       ACCOUNT_NAME -> text.verifying(stopOnFail(
         mandatory(accountNameEmptyKey),
+        maxLength(accountNameMaxLength, accountNameMaxLengthKey),
         matchesRegex(accountNameRegex, accountNameInvalidKey)
       )),
       ACCOUNT_NUMBER -> text.verifying(stopOnFail(
