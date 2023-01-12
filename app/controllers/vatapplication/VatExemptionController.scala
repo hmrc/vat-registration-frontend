@@ -57,9 +57,9 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
           success => {
             for {
               _ <- vatApplicationService.saveVatApplication(AppliedForExemption(success))
-              partyType <- vatRegistrationService.getEligibilitySubmissionData.map(_.partyType)
-            } yield partyType match {
-              case NETP | NonUkNonEstablished =>
+              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
+            } yield eligibilityData.partyType match {
+              case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
                 Redirect(controllers.routes.TaskListController.show.url)

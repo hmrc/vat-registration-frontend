@@ -70,7 +70,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
             } yield eligibilityData.partyType match {
               case _ if canApplyForExemption =>
                 Redirect(routes.VatExemptionController.show)
-              case NETP | NonUkNonEstablished =>
+              case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
                 Redirect(controllers.routes.TaskListController.show.url)

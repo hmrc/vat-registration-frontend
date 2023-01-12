@@ -84,8 +84,8 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                   if (data) {
                     Future.successful(Redirect(controllers.routes.TaskListController.show))
                   } else {
-                    vatRegistrationService.partyType.map {
-                      case NETP | NonUkNonEstablished =>
+                    vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).map {
+                      case (NETP | NonUkNonEstablished, false) =>
                         Redirect(routes.InternationalPreviousAddressController.show)
                       case _ =>
                         Redirect(routes.PreviousAddressController.previousAddress)

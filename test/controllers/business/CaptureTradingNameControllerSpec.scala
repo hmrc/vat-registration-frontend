@@ -73,8 +73,8 @@ class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrati
   "submit" must {
     "return 303 with a provided trading name" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "captureTradingName" -> testTradingName

@@ -130,7 +130,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](
-          Some(testEligibilitySubmissionData.copy(partyType = NETP)), testRegId
+          Some(testEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)), testRegId
         )
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS)))))
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS))))))

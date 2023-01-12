@@ -39,13 +39,14 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   val sectionId: String = "cya.applicantDetails"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
-    val partyType: PartyType = vatScheme.eligibilitySubmissionData.map(_.partyType)
-      .getOrElse(throw new InternalServerException("[ApplicantDetailsSummaryBuilder] Missing party type"))
+    val eligibilitySubmissionData = vatScheme.eligibilitySubmissionData.getOrElse(throw new InternalServerException("[ApplicantDetailsSummaryBuilder] Missing eligibility data"))
 
-    govukSummaryList(SummaryList(generateLeadPartnerSummaryListRows(vatScheme) ++ generateApplicantDetailsSummaryListRows(vatScheme, partyType)))
+    govukSummaryList(SummaryList(generateLeadPartnerSummaryListRows(vatScheme)
+      ++ generateApplicantDetailsSummaryListRows(vatScheme, eligibilitySubmissionData.partyType, eligibilitySubmissionData.fixedEstablishmentInManOrUk)))
   }
 
-  def generateApplicantDetailsSummaryListRows(vatScheme: VatScheme, partyType: PartyType)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def generateApplicantDetailsSummaryListRows(vatScheme: VatScheme, partyType: PartyType, fixedEstablishment: Boolean)
+                                             (implicit messages: Messages): Seq[SummaryListRow] = {
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
     val applicantDetails = vatScheme.applicantDetails.getOrElse(throw new InternalServerException("[SummaryApplicantDetailsBuilder] Missing applicant details block"))
 
@@ -136,7 +137,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       if (isTransactor) s"$sectionId.transactor.homeAddress" else s"$sectionId.self.homeAddress",
       applicantDetails.currentAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished =>
+        case NETP | NonUkNonEstablished if !fixedEstablishment =>
           Some(applicantRoutes.InternationalHomeAddressController.show.url)
         case _ =>
           Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
@@ -153,7 +154,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       if (isTransactor) s"$sectionId.transactor.previousAddress" else s"$sectionId.self.previousAddress",
       applicantDetails.previousAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished =>
+        case NETP | NonUkNonEstablished if !fixedEstablishment =>
           Some(applicantRoutes.InternationalPreviousAddressController.show.url)
         case _ =>
           Some(applicantRoutes.PreviousAddressController.show.url)

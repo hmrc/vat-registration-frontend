@@ -41,7 +41,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
   def build(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): HtmlFormat.Appendable = {
     val businessEntity = vatScheme.applicantDetails.flatMap(_.entity)
     val business = vatScheme.business.getOrElse(throw missingSection("Business details"))
-    val partyType = vatScheme.eligibilitySubmissionData.map(_.partyType).getOrElse(throw missingSection("Eligibility"))
+    val eligibilityData = vatScheme.eligibilitySubmissionData.getOrElse(throw missingSection("Eligibility"))
     val applicantDetails = vatScheme.applicantDetails.getOrElse(throw missingSection("GRS"))
     val entities = vatScheme.entities
 
@@ -51,9 +51,9 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
           partnershipMembers(entities),
           shortOrgName(business),
           businessName(applicantDetails),
-          partnershipName(partyType, applicantDetails),
-          tradingName(business, partyType, businessEntity),
-          ppobAddress(business, partyType),
+          partnershipName(eligibilityData.partyType, applicantDetails),
+          tradingName(business, eligibilityData.partyType, businessEntity),
+          ppobAddress(business, eligibilityData.partyType, eligibilityData.fixedEstablishmentInManOrUk),
           businessEmailAddress(business),
           businessDaytimePhoneNumber(business),
           businessHasWebsite(business),
@@ -88,12 +88,12 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
     }
   }
 
-  private def ppobAddress(business: Business, partyType: PartyType)(implicit messages: Messages): Option[SummaryListRow] =
+  private def ppobAddress(business: Business, partyType: PartyType, fixedEstablishment: Boolean)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowSeq(
       s"$sectionId.homeAddress",
       business.ppobAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished =>
+        case NETP | NonUkNonEstablished if !fixedEstablishment =>
           Some(controllers.business.routes.InternationalPpobAddressController.show.url)
         case _ =>
           Some(controllers.business.routes.PpobAddressController.startJourney.url)

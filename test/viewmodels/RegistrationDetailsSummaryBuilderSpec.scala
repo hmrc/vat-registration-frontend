@@ -138,7 +138,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     "returns a registration detail summary list for NETP" in new Setup {
       val testVatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-          partyType = NETP
+          partyType = NETP,
+          fixedEstablishmentInManOrUk = false
         )),
         vatApplication = Some(validVatApplication.copy(
           zeroRatedSupplies = None,
@@ -150,6 +151,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
       )
 
       val expectedSummaryList: SummaryList = SummaryList(List(
+        optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+        optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
         optSummaryListRowString(questionId = TestContent.turnoverEstimate, optAnswer = Some("£100.00"), optUrl = Some(controllers.vatapplication.routes.TurnoverEstimateController.show.url)),
         optSummaryListRowBoolean(questionId = TestContent.claimRefunds, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.ClaimRefundsController.show.url)),
         optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
@@ -265,7 +268,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             otherBusinessInvolvement = Some(false),
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           vatApplication = Some(validVatApplication.copy(
             currentlyTrading = Some(true),
             northernIrelandProtocol = Some(validNipCompliance.copy(
@@ -286,6 +292,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
         Builder.build(scheme) mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+            optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(TestContent.turnoverEstimate, Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
             optSummaryListRowString(TestContent.zeroRated, Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
             optSummaryListRowSeq(TestContent.sellOrMoveNip, Some(Seq("No")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
@@ -312,7 +320,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             otherBusinessInvolvement = Some(false),
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           vatApplication = Some(validVatApplication.copy(
             northernIrelandProtocol = Some(validNipCompliance.copy(
               goodsToEU = Some(ConditionalValue(false, None)),
@@ -332,6 +343,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+            optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(TestContent.turnoverEstimate, Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
             optSummaryListRowString(TestContent.zeroRated, Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
             optSummaryListRowSeq(TestContent.sellOrMoveNip, Some(Seq("No")), Some(vatApplicationRoutes.SellOrMoveNipController.show.url)),
@@ -357,7 +370,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             otherBusinessInvolvement = Some(false),
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
-          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = NETP)),
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
+          )),
           vatApplication = Some(validVatApplication.copy(
             overseasCompliance = Some(OverseasCompliance(
               goodsToOverseas = Some(true),
@@ -371,6 +387,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
+            optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+            optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
             optSummaryListRowString(TestContent.turnoverEstimate, Some(testTurnoverEstimate), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
             optSummaryListRowString(TestContent.zeroRated, Some(testZeroRated), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
             optSummaryListRowBoolean(TestContent.claimRefunds, Some(false), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),

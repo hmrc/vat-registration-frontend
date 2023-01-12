@@ -44,7 +44,10 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+          partyType = NETP,
+          fixedEstablishmentInManOrUk = false
+        )))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
@@ -61,7 +64,11 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
       "redirect to the journey using the ID provided" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, isTransactor = true)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+          partyType = NETP,
+          isTransactor = true,
+          fixedEstablishmentInManOrUk = false
+        )))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())

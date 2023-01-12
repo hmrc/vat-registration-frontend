@@ -110,7 +110,11 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NETP" in {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NETP,
+        registrationReason = NonUk,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 
@@ -125,7 +129,11 @@ class VatExemptionControllerISpec extends ControllerISpec {
     "redirect to send goods overseas page when the user is NonUkNoNEstablished" in {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        registrationReason = NonUk,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection[VatApplication](testVatApplication.copy(appliedForExemption = Some(true)))
         .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(appliedForExemption = Some(true))))
 

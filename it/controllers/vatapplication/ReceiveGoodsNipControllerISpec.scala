@@ -60,7 +60,10 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "redirect to the claim refund page when NETP" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NETP,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -75,7 +78,10 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
     "redirect to the returns frequency page when NonUkNonEstablished" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

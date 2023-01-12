@@ -82,7 +82,11 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to send goods overseas page when the user is NETP" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP, registrationReason = NonUk)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+          partyType = NETP,
+          registrationReason = NonUk,
+          fixedEstablishmentInManOrUk = false
+        )))
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
@@ -99,7 +103,11 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "redirect to send goods overseas page when the user is NonUkNoNEstablished" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished, registrationReason = NonUk)))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+          partyType = NonUkNonEstablished,
+          registrationReason = NonUk,
+          fixedEstablishmentInManOrUk = false
+        )))
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 

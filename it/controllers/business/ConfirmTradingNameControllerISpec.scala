@@ -112,7 +112,10 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NonUkNonEstablished,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 

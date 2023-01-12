@@ -222,7 +222,8 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     UkCompany,
     isTransactor = false,
     appliedForException = None,
-    registrationReason = ForwardLook
+    registrationReason = ForwardLook,
+    fixedEstablishmentInManOrUk = true
   )
 
   val validSoleTraderEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
@@ -230,7 +231,8 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     Individual,
     isTransactor = false,
     appliedForException = None,
-    registrationReason = ForwardLook
+    registrationReason = ForwardLook,
+    fixedEstablishmentInManOrUk = true
   )
 
   val validBusiness = Business(

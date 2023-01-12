@@ -136,7 +136,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
 
   private def resolveAddressRowUrl(vatScheme: VatScheme): String = {
     vatScheme.partyType match {
-      case Some(NETP) | Some(NonUkNonEstablished) =>
+      case Some(NETP) | Some(NonUkNonEstablished) if vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
         controllers.applicant.routes.InternationalHomeAddressController.show.url
       case _ =>
         controllers.applicant.routes.HomeAddressController.redirectToAlf.url

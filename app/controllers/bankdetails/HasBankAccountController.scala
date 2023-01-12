@@ -38,12 +38,14 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
-      vatRegistrationService.partyType.flatMap {
-        case NETP | NonUkNonEstablished => Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
-        case _ => for {
-          bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
-          filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
-        } yield Ok(view(filledForm))
+      vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).flatMap {
+        case (NETP | NonUkNonEstablished, false) =>
+          Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+        case _ =>
+          for {
+            bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+            filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
+          } yield Ok(view(filledForm))
       }
   }
 

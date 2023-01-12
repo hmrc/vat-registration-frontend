@@ -49,7 +49,10 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     "return OK for overseas page when trading details aren't stored" in new Setup {
       given
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
+        partyType = NETP,
+        fixedEstablishmentInManOrUk = false
+      )))
         .registrationApi.getSection[VatApplication](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)

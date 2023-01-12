@@ -26,7 +26,8 @@ case class EligibilitySubmissionData(threshold: Threshold,
                                      isTransactor: Boolean,
                                      appliedForException: Option[Boolean],
                                      registrationReason: RegistrationReason,
-                                     calculatedDate: Option[LocalDate] = None)
+                                     calculatedDate: Option[LocalDate] = None,
+                                     fixedEstablishmentInManOrUk: Boolean)
 
 object EligibilitySubmissionData {
   implicit val apiKey: ApiKey[EligibilitySubmissionData] = ApiKey("eligibility")

@@ -97,8 +97,8 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     val fakeRequest = FakeRequest(controllers.vatapplication.routes.ReturnsFrequencyController.submit)
 
     "redirect to the Join Flat Rate page when they select the monthly option" in new Setup {
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
       when(movkVatApplicationService.isEligibleForAAS(any(), any()))
@@ -115,8 +115,8 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "redirect to the account periods page when they select the quarterly option" in new Setup {
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Quarterly))))
       when(movkVatApplicationService.isEligibleForAAS(any(), any()))
@@ -133,8 +133,8 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "redirect to the last month of accounting year page when they select the annual option" in new Setup {
-      when(mockVatRegistrationService.partyType(any[CurrentProfile], any[HeaderCarrier]))
-        .thenReturn(Future.successful(UkCompany))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData))
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Annual))))
       when(movkVatApplicationService.isEligibleForAAS(any(), any()))

@@ -214,7 +214,8 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val vatScheme: VatScheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP
+            partyType = NETP,
+            fixedEstablishmentInManOrUk = false
           )),
           applicantDetails = Some(testNetp)
         )
@@ -531,7 +532,8 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
         )
         val vatScheme: VatScheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NonUkNonEstablished
+            partyType = NonUkNonEstablished,
+            fixedEstablishmentInManOrUk = false
           )),
           applicantDetails = Some(testNonUkNonEstablished)
         )
