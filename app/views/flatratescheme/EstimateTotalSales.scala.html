@@ -41,7 +41,7 @@
 
     @p{ @messages("pages.frs.estimateTotalSales.info") }
 
-    @formWithCSRF(action = controllers.flatratescheme.routes.EstimateTotalSalesController.submitEstimateTotalSales) {
+    @formWithCSRF(action = controllers.flatratescheme.routes.EstimateTotalSalesController.submit) {
         @inputCurrency(
             form = estimateTotalSalesForm,
             id = "totalSalesEstimate",

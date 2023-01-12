@@ -3,10 +3,10 @@ package pages.flatratescheme
 
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import helpers.A11ySpec
-import views.html.flatratescheme.frs_register_for
+import views.html.flatratescheme.RegisterForFrs
 
 class FrsRegisterForA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[frs_register_for]
+  val view = app.injector.instanceOf[RegisterForFrs]
   val form = YesOrNoFormFactory.form()("frs.registerFor")
 
   "the frs register for page" when {

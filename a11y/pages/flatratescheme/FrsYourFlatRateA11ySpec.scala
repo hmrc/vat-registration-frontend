@@ -3,12 +3,12 @@ package pages.flatratescheme
 
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import helpers.A11ySpec
-import views.html.flatratescheme.frs_your_flat_rate
+import views.html.flatratescheme.YourFlatRate
 
 import java.text.DecimalFormat
 
 class FrsYourFlatRateA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[frs_your_flat_rate]
+  val view = app.injector.instanceOf[YourFlatRate]
   val form = YesOrNoFormFactory.form()("frs.registerForWithSector")
   val decimalFormat = new DecimalFormat("#0.##")
 

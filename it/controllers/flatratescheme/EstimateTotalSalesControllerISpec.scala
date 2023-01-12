@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url
+  val url: String = controllers.flatratescheme.routes.EstimateTotalSalesController.show.url
 
   val testTotalSales = 123456
   val frsData: FlatRateScheme = FlatRateScheme(
@@ -97,7 +97,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage.url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.flatratescheme.routes.AnnualCostsLimitedController.show.url)
       }
     }
 

@@ -360,19 +360,19 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val costsInclusiveRow = optSummaryListRowBoolean(
       s"$sectionId.costsInclusive",
       optFlatRateScheme.flatMap(_.overBusinessGoods),
-      Some(controllers.flatratescheme.routes.FlatRateController.annualCostsInclusivePage.url)
+      Some(controllers.flatratescheme.routes.AnnualCostsInclusiveController.show.url)
     )
 
     val estimateTotalSalesRow = optSummaryListRowString(
       s"$sectionId.estimateTotalSales",
       optFlatRateScheme.flatMap(_.estimateTotalSales.map(Formatters.currency)),
-      Some(controllers.flatratescheme.routes.EstimateTotalSalesController.estimateTotalSales.url)
+      Some(controllers.flatratescheme.routes.EstimateTotalSalesController.show.url)
     )
 
     val costsLimitedRow = optSummaryListRowBoolean(
       s"$sectionId.costsLimited",
       optFlatRateScheme.flatMap(_.overBusinessGoodsPercent),
-      Some(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage.url),
+      Some(controllers.flatratescheme.routes.AnnualCostsLimitedController.show.url),
       Seq(optFlatRateScheme.flatMap(_.estimateTotalSales.map(v => flatRateService.applyPercentRoundUp(v)).map(Formatters.currencyWithoutDecimal)).getOrElse("0"))
     )
 
@@ -380,8 +380,8 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       s"$sectionId.flatRate",
       optFlatRateScheme.flatMap(_.useThisRate),
       Some(
-        if (isLimitedCostTrader) controllers.flatratescheme.routes.FlatRateController.registerForFrsPage.url
-        else controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage.url
+        if (isLimitedCostTrader) controllers.flatratescheme.routes.RegisterForFrsController.show.url
+        else controllers.flatratescheme.routes.YourFlatRateController.show.url
       ),
       Seq(
         if (isLimitedCostTrader) FlatRateService.defaultFlatRate.toString

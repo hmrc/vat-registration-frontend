@@ -3,10 +3,10 @@ package pages.flatratescheme
 
 import forms.OverBusinessGoodsPercentForm
 import helpers.A11ySpec
-import views.html.flatratescheme.annual_costs_limited
+import views.html.flatratescheme.AnnualCostsLimited
 
 class AnnualCostsLimitedA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[annual_costs_limited]
+  val view = app.injector.instanceOf[AnnualCostsLimited]
   val form = new OverBusinessGoodsPercentForm {
     override val pct: BigDecimal = 10
   }.form

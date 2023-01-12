@@ -22,7 +22,7 @@ import forms.EstimateTotalSalesForm
 import play.api.mvc.{Action, AnyContent}
 import services.FlatRateService.EstimateTotalSalesAnswer
 import services._
-import views.html.flatratescheme.estimate_total_sales
+import views.html.flatratescheme.EstimateTotalSales
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,13 +31,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
                                              val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
-                                             estimateTotalSalesPage: estimate_total_sales
+                                             estimateTotalSalesPage: EstimateTotalSales
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  def estimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         flatRateService.getFlatRate map { flatRateScheme =>
@@ -46,13 +46,13 @@ class EstimateTotalSalesController @Inject()(flatRateService: FlatRateService,
         }
   }
 
-  def submitEstimateTotalSales: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         EstimateTotalSalesForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(estimateTotalSalesPage(badForm))),
           data => flatRateService.saveFlatRate(EstimateTotalSalesAnswer(data)) map {
-            _ => Redirect(controllers.flatratescheme.routes.FlatRateController.annualCostsLimitedPage)
+            _ => Redirect(controllers.flatratescheme.routes.AnnualCostsLimitedController.show)
           }
         )
   }

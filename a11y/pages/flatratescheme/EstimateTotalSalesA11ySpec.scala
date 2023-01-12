@@ -3,10 +3,10 @@ package pages.flatratescheme
 
 import forms.EstimateTotalSalesForm
 import helpers.A11ySpec
-import views.html.flatratescheme.estimate_total_sales
+import views.html.flatratescheme.EstimateTotalSales
 
 class EstimateTotalSalesA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[estimate_total_sales]
+  val view = app.injector.instanceOf[EstimateTotalSales]
   val form = EstimateTotalSalesForm.form
 
   "the estimate total sales page" when {

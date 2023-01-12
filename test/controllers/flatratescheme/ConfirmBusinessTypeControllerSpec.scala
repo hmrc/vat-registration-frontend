@@ -22,7 +22,7 @@ import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import testHelpers.ControllerSpec
-import views.html.flatratescheme.frs_confirm_business_sector
+import views.html.flatratescheme.FrsConfirmBusinessSector
 
 import java.util.MissingResourceException
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,7 +31,7 @@ import scala.concurrent.Future
 class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtures {
 
   trait Setup {
-    val view = app.injector.instanceOf[frs_confirm_business_sector]
+    val view = app.injector.instanceOf[FrsConfirmBusinessSector]
     val controller: ConfirmBusinessTypeController = new ConfirmBusinessTypeController(
       mockAuthClientConnector,
       mockSessionService,

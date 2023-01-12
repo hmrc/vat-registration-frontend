@@ -21,7 +21,7 @@ import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.flatratescheme.frs_confirm_business_sector
+import views.html.flatratescheme.FrsConfirmBusinessSector
 
 import java.util.MissingResourceException
 import javax.inject.{Inject, Singleton}
@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext
 class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
                                               val sessionService: SessionService,
                                               flatRateService: FlatRateService,
-                                              view: frs_confirm_business_sector)
+                                              view: FrsConfirmBusinessSector)
                                              (implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents) extends BaseController {
@@ -50,7 +50,7 @@ class ConfirmBusinessTypeController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         flatRateService.saveConfirmSector map { _ =>
-          Redirect(controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage)
+          Redirect(controllers.flatratescheme.routes.YourFlatRateController.show)
         }
   }
 

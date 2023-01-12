@@ -39,7 +39,7 @@
 
     @errorSummary(annualCostsLimitedForm.errors)
 
-    @formWithCSRF(action = controllers.flatratescheme.routes.FlatRateController.submitAnnualCostsLimited) {
+    @formWithCSRF(action = controllers.flatratescheme.routes.AnnualCostsLimitedController.submit) {
         @inputRadio(
             form = annualCostsLimitedForm,
             legend = messages("pages.frs.costsLimited.heading", Formatters.currencyWithoutDecimal(estimateVatTurnover)),

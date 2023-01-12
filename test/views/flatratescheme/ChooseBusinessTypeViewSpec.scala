@@ -21,11 +21,11 @@ import forms.ChooseBusinessTypeForm
 import models.{FrsBusinessType, FrsGroup}
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.flatratescheme.choose_business_type
+import views.html.flatratescheme.ChooseBusinessType
 
 class ChooseBusinessTypeViewSpec extends VatRegViewSpec with FlatRateFixtures {
 
-  val view = app.injector.instanceOf[choose_business_type]
+  val view = app.injector.instanceOf[ChooseBusinessType]
   val groupings = Seq(
     FrsGroup(
       label = "section",

@@ -24,7 +24,7 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.FlatRateService.CategoryOfBusinessAnswer
 import testHelpers.ControllerSpec
-import views.html.flatratescheme.choose_business_type
+import views.html.flatratescheme.ChooseBusinessType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtures {
 
   trait Setup {
-    val view: choose_business_type = app.injector.instanceOf[choose_business_type]
+    val view: ChooseBusinessType = app.injector.instanceOf[ChooseBusinessType]
     val controller: ChooseBusinessTypeController = new ChooseBusinessTypeController(
       mockAuthClientConnector,
       mockSessionService,
@@ -113,7 +113,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
       submitAuthorised(controller.submit, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.flatratescheme.routes.FlatRateController.yourFlatRatePage.url)
+        redirectLocation(result) mustBe Some(controllers.flatratescheme.routes.YourFlatRateController.show.url)
       }
     }
   }

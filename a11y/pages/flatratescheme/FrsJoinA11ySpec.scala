@@ -3,10 +3,10 @@ package pages.flatratescheme
 
 import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import helpers.A11ySpec
-import views.html.flatratescheme.frs_join
+import views.html.flatratescheme.JoinFrs
 
 class FrsJoinA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[frs_join]
+  val view = app.injector.instanceOf[JoinFrs]
   val form = YesOrNoFormFactory.form()("frs.join")
 
   "the frs join page" when {

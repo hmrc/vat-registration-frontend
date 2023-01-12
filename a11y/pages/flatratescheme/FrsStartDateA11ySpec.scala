@@ -4,12 +4,12 @@ package pages.flatratescheme
 import forms.FRSStartDateForm
 import helpers.A11ySpec
 import models.FRSDateChoice
-import views.html.flatratescheme.frs_start_date
+import views.html.flatratescheme.FrsStartDate
 
 import java.time.LocalDate
 
 class FrsStartDateA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[frs_start_date]
+  val view = app.injector.instanceOf[FrsStartDate]
   val startDate = LocalDate.of(2021, 6, 30)
   val endDate = LocalDate.of(2021, 8, 30)
   val form = FRSStartDateForm.form(startDate, endDate)

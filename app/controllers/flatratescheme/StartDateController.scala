@@ -22,7 +22,7 @@ import forms.FRSStartDateForm
 import play.api.mvc.{Action, AnyContent}
 import services.{FlatRateService, SessionService, TimeService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.flatratescheme.frs_start_date
+import views.html.flatratescheme.FrsStartDate
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ class StartDateController @Inject()(val authConnector: AuthConnector,
                                     val sessionService: SessionService,
                                     flatRateService: FlatRateService,
                                     timeService: TimeService,
-                                    view: frs_start_date)
+                                    view: FrsStartDate)
                                    (implicit appConfig: FrontendAppConfig,
                                     val executionContext: ExecutionContext,
                                     baseControllerComponents: BaseControllerComponents) extends BaseController {
