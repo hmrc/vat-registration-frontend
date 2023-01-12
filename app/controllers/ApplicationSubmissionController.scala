@@ -17,6 +17,7 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
+import models.{GroupRegistration, TransferOfAGoingConcern}
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.InternalServerException
@@ -58,8 +59,9 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
           } else {
             applicantDetailsService.getApplicantDetails.map(_.contact.email)
           }
+          eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
           email = optEmail.getOrElse(throw new InternalServerException("[ApplicationSubmissionController] missing user email"))
-        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor))
+        } yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor, eligibilitySubmissionData.registrationReason))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

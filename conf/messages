@@ -662,6 +662,19 @@ pages.application.submission.confirmation.insetLink                 = account fo
 pages.application.submission.confirmation.inset.3pt                 = The business cannot include VAT on its invoices until it gets its VAT number. However, it can increase its prices to
 pages.application.submission.confirmation.insetLink.3pt             = account for the VAT it needs to pay HMRC
 pages.application.submission.confirmation.button                    = Finish
+pages.application.submission.confirmation.list.software.vatGroup        = The VAT group should wait until we confirm its VAT registration before getting software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.list.software.vatGroup.3pt    = The VAT group should wait until we confirm its VAT registration before getting software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.inset.vatGroup                = The VAT group cannot include VAT on its invoices until it gets its VAT number. However, it can increase its prices to
+pages.application.submission.confirmation.inset.vatGroup.3pt            = The VAT group cannot include VAT on its invoices until it gets its VAT number. However, it can increase its prices to
+pages.application.submission.confirmation.insetLink.vatGroup            = account for the VAT it needs to pay HMRC
+pages.application.submission.confirmation.insetLink.vatGroup.3pt        = account for the VAT it needs to pay HMRC
+pages.application.submission.confirmation.inset.togc                    = If you are getting a new VAT number, you cannot include VAT on your invoices until you receive this. However, you can increase your prices to
+pages.application.submission.confirmation.inset.togc.3pt                = If the business is getting a new VAT number, it cannot include VAT on its invoices until it receives this. However, it can increase its prices to
+pages.application.submission.confirmation.insetLink.togc                = account for the VAT you’ll need to pay HMRC
+pages.application.submission.confirmation.insetLink.togc.3pt            = account for the VAT it needs to pay HMRC
+pages.application.submission.confirmation.list.software.togc            = You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.list.software.togc.3pt        = The business should wait until its VAT registration is confirmed before getting software to follow the rules for ‘Making Tax Digital for VAT’.
+
 
 # Progress Saved Page
 pages.application.progress.saved.heading                            = Your application has been saved for 7 days
