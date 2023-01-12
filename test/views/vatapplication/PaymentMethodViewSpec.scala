@@ -53,11 +53,11 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
     "have the correct paragraph" in new ViewSetup()(asDocument(PaymentMethodForm())) {
-      doc.select(Selectors.p(1)).get(0).text() mustBe ExpectedMessages.paragraph
+      doc.select(Selectors.p).get(0).text() mustBe ExpectedMessages.paragraph
     }
 
     "have the correct hiddenBACS content" in new ViewSetup()(asDocument(PaymentMethodForm())) {
-      doc.select(Selectors.p(1)).get(1).text() mustBe ExpectedMessages.hiddenText
+      doc.select(Selectors.p).get(1).text() mustBe ExpectedMessages.hiddenText
     }
 
     "have the correct content for each option" in new ViewSetup()(asDocument(PaymentMethodForm())) {
