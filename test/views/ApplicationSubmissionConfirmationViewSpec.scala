@@ -16,6 +16,7 @@
 
 package views
 
+import models.{ForwardLook, GroupRegistration, TransferOfAGoingConcern}
 import models.api.{EmailMethod, Post}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -35,12 +36,16 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     val listItem1 = "We’ve received your application and we will write to you with a decision in about 30 days."
     val listItem1Doc = "After we receive copies of your documents, we’ll write to you with a decision on your application in about 30 days."
     val listItem2 = "You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’."
+    val vatGroupListItem2 = "The VAT group should wait until we confirm its VAT registration before getting software to follow the rules for ‘Making Tax Digital for VAT’."
     val listItem23pt = "The business should wait until its VAT registration is confirmed before getting software to follow the rules for ‘Making Tax Digital for VAT’."
     val insetLink = "https://www.gov.uk/register-for-vat/how-register-for-vat"
     val insetLinkText = "account for the VAT you’ll need to pay HMRC (opens in new tab)"
     val insetText = s"You cannot include VAT on your invoices until you get your VAT number. However, you can increase your prices to $insetLinkText."
     val insetLinkText3pt = "account for the VAT it needs to pay HMRC (opens in new tab)"
+    val insetTextTOGC = s"If you are getting a new VAT number, you cannot include VAT on your invoices until you receive this. However, you can increase your prices to $insetLinkText."
+    val insetTextVatGroup = s"The VAT group cannot include VAT on its invoices until it gets its VAT number. However, it can increase its prices to $insetLinkText3pt."
     val insetText3pt = s"The business cannot include VAT on its invoices until it gets its VAT number. However, it can increase its prices to $insetLinkText3pt."
+    val insetTextTOGC3pt = s"If the business is getting a new VAT number, it cannot include VAT on its invoices until it receives this. However, it can increase its prices to $insetLinkText3pt."
     val buttonText = "Finish"
 
     val docHeading = "What you must do now"
@@ -59,7 +64,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   val viewInstance: ApplicationSubmissionConfirmation = app.injector.instanceOf[ApplicationSubmissionConfirmation]
 
   "Application submission confirmation page" must {
-    lazy val view = viewInstance(refNum, None, attachmentsListExists = false, testEmail, isTransactor = false)
+    lazy val view = viewInstance(refNum, None, attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -97,7 +102,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   }
 
   "Application submission confirmation page with Post attachment method" must {
-    lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false)
+    lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -138,7 +143,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   }
 
   "Application submission confirmation page with Email attachment method" must {
-    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = false)
+    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -179,7 +184,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   }
 
   "Application submission confirmation page with Post attachment method for a transactor" must {
-    lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true)
+    lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -220,7 +225,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   }
 
   "Application submission confirmation page with Email attachment method for a transactor" must {
-    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = true)
+    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -248,6 +253,170 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 
     "have the correct inset text" in new ViewSetup {
       doc.panelIndent(1) mustBe Some(ExpectedContent.insetText3pt)
+    }
+
+    "have the correct links" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.docEmailLinkText3pt, ExpectedContent.docEmailLink))
+      doc.link(2) mustBe Some(Link(ExpectedContent.insetLinkText3pt, ExpectedContent.insetLink))
+    }
+
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.buttonText)
+    }
+  }
+
+  "Application submission confirmation page with Email attachment method for TOGC registration reason" must {
+    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = TransferOfAGoingConcern)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the correct title" in {
+      doc.title must include(ExpectedContent.title)
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
+
+    "have the correct subheadings" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.docHeading)
+      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
+      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
+    }
+
+    "have the correct paragraphs" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.emailPara)
+      doc.para(2) mustBe Some(ExpectedContent.docEmailText)
+    }
+
+    "have the correct list" in new ViewSetup {
+      doc.orderedList(1) mustBe List(ExpectedContent.listItem1Doc, ExpectedContent.listItem2)
+    }
+
+    "have the correct inset text" in new ViewSetup {
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetTextTOGC)
+    }
+
+    "have the correct links" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.docEmailLinkText, ExpectedContent.docEmailLink))
+      doc.link(2) mustBe Some(Link(ExpectedContent.insetLinkText, ExpectedContent.insetLink))
+    }
+
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.buttonText)
+    }
+  }
+
+  "Application submission confirmation page with Email attachment method with TOGC registration reason and for a transactor" must {
+    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = TransferOfAGoingConcern)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the correct title" in {
+      doc.title must include(ExpectedContent.title)
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
+
+    "have the correct subheadings" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.docHeading)
+      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
+      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
+    }
+
+    "have the correct paragraphs" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.emailPara)
+      doc.para(2) mustBe Some(ExpectedContent.docEmailText3pt)
+    }
+
+    "have the correct list" in new ViewSetup {
+      doc.orderedList(1) mustBe List(ExpectedContent.listItem1Doc, ExpectedContent.listItem23pt)
+    }
+
+    "have the correct inset text" in new ViewSetup {
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetTextTOGC3pt)
+    }
+
+    "have the correct links" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.docEmailLinkText3pt, ExpectedContent.docEmailLink))
+      doc.link(2) mustBe Some(Link(ExpectedContent.insetLinkText3pt, ExpectedContent.insetLink))
+    }
+
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.buttonText)
+    }
+  }
+
+  "Application submission confirmation page with Email attachment method for vat group" must {
+    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = GroupRegistration)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the correct title" in {
+      doc.title must include(ExpectedContent.title)
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
+
+    "have the correct subheadings" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.docHeading)
+      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
+      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
+    }
+
+    "have the correct paragraphs" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.emailPara)
+      doc.para(2) mustBe Some(ExpectedContent.docEmailText)
+    }
+
+    "have the correct list" in new ViewSetup {
+      doc.orderedList(1) mustBe List(ExpectedContent.listItem1Doc, ExpectedContent.vatGroupListItem2)
+    }
+
+    "have the correct inset text" in new ViewSetup {
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetTextVatGroup)
+    }
+
+    "have the correct links" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.docEmailLinkText, ExpectedContent.docEmailLink))
+      doc.link(2) mustBe Some(Link(ExpectedContent.insetLinkText3pt, ExpectedContent.insetLink))
+    }
+
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.buttonText)
+    }
+  }
+
+  "Application submission confirmation page with Email attachment method for vat group and transactor flow" must {
+    lazy val view = viewInstance(refNum, Some(EmailMethod), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = GroupRegistration)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the correct title" in {
+      doc.title must include(ExpectedContent.title)
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
+
+    "have the correct subheadings" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.docHeading)
+      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
+      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
+    }
+
+    "have the correct paragraphs" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.emailPara)
+      doc.para(2) mustBe Some(ExpectedContent.docEmailText3pt)
+    }
+
+    "have the correct list" in new ViewSetup {
+      doc.orderedList(1) mustBe List(ExpectedContent.listItem1Doc, ExpectedContent.vatGroupListItem2)
+    }
+
+    "have the correct inset text" in new ViewSetup {
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetTextVatGroup)
     }
 
     "have the correct links" in new ViewSetup {

@@ -39,7 +39,8 @@
         attachmentMethod: Option[AttachmentMethod],
         attachmentsListExists: Boolean,
         email: String,
-        isTransactor: Boolean
+        isTransactor: Boolean,
+        registrationReason: RegistrationReason
 )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
@@ -67,12 +68,12 @@
             case Some(Post | EmailMethod) if attachmentsListExists =>
                 orderedList(
                     messages("pages.application.submission.confirmation.list.decisionDoc"),
-                    messages(s"pages.application.submission.confirmation.list.software$opt3pt")
+                    messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt")
                 )
             case _ =>
                 orderedList(
                     messages("pages.application.submission.confirmation.list.decisionNoDoc"),
-                    messages(s"pages.application.submission.confirmation.list.software$opt3pt")
+                    messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt")
                 )
         }
     }
@@ -104,8 +105,8 @@
 
 @insetText = {
     @p {
-        @messages(s"pages.application.submission.confirmation.inset$opt3pt")
-        @link(appConfig.govukHowToRegister, s"pages.application.submission.confirmation.insetLink$opt3pt", isExternal = true).
+        @messages(s"pages.application.submission.confirmation.inset$optRegReason$opt3pt")
+        @link(appConfig.govukHowToRegister, s"pages.application.submission.confirmation.insetLink$optRegReason$opt3pt", isExternal = true).
     }
 }
 
@@ -117,4 +118,12 @@
 
 @opt3pt = @{
     if(isTransactor) ".3pt" else ""
+}
+
+@optRegReason = @{
+    registrationReason match {
+        case TransferOfAGoingConcern => ".togc"
+        case GroupRegistration => ".vatGroup"
+        case _ => ""
+    }
 }

@@ -660,8 +660,20 @@ pages.application.submission.confirmation.list.software.3pt         = Dylai’r 
 pages.application.submission.confirmation.inset                     = Ni allwch gynnwys TAW ar eich anfonebau hyd nes eich bod yn cael eich rhif TAW. Fodd bynnag, gallwch godi’ch prisiau i roi
 pages.application.submission.confirmation.insetLink                 = cyfrif am y TAW y bydd angen i chi ei thalu i CThEF
 pages.application.submission.confirmation.inset.3pt                 = Ni all y busnes gynnwys TAW ar ei anfonebau hyd nes ei fod yn cael ei rif TAW. Fodd bynnag, gall godi ei brisiau i roi
-pages.application.submission.confirmation.insetLink.3pt             = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF.
+pages.application.submission.confirmation.insetLink.3pt             = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
 pages.application.submission.confirmation.button                    = Gorffen
+pages.application.submission.confirmation.list.software.vatGroup        = The VAT group should wait until we confirm its VAT registration before getting software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.list.software.vatGroup.3pt    = The VAT group should wait until we confirm its VAT registration before getting software to follow the rules for ‘Making Tax Digital for VAT’.
+pages.application.submission.confirmation.inset.vatGroup                = The VAT group cannot include VAT on its invoices until it gets its VAT number. Fodd bynnag, gall godi ei brisiau i roi
+pages.application.submission.confirmation.inset.vatGroup.3pt            = The VAT group cannot include VAT on its invoices until it gets its VAT number. Fodd bynnag, gall godi ei brisiau i roi
+pages.application.submission.confirmation.insetLink.vatGroup            = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
+pages.application.submission.confirmation.insetLink.vatGroup.3pt        = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
+pages.application.submission.confirmation.inset.togc                    = Os ydych yn cael rhif TAW newydd, ni allwch gynnwys TAW ar eich anfonebau hyd nes i chi gael hwn. Fodd bynnag, gallwch godi’ch prisiau i roi
+pages.application.submission.confirmation.inset.togc.3pt                = Os yw’r busnes yn cael rhif TAW newydd, ni all gynnwys TAW ar ei anfonebau hyd nes iddo gael hwn. Fodd bynnag, gall godi ei brisiau i roi
+pages.application.submission.confirmation.insetLink.togc                = cyfrif am y TAW y bydd angen i chi ei thalu i CThEF
+pages.application.submission.confirmation.insetLink.togc.3pt            = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
+pages.application.submission.confirmation.list.software.togc            = Dylech aros nes i ni gadarnhau eich cofrestriad TAW cyn i chi gael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
+pages.application.submission.confirmation.list.software.togc.3pt        = Dylai’r busnes aros nes i’w gofrestriad TAW gael ei gadarnhau cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
 
 # Progress Saved Page
 pages.application.progress.saved.heading                            = Cedwir eich cais am 7 diwrnod

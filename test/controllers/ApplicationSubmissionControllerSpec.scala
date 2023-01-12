@@ -60,6 +60,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(mockAttachmentsService.getAttachmentDetails(any())(any()))
           .thenReturn(Future.successful(Some(Attachments(method = None))))
 
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         mockIsTransactor(Future.successful(true))
         mockGetTransactorDetails(profile)(validTransactorDetails)
 
@@ -80,6 +83,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
           .thenReturn(Future.successful("123412341234"))
+
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
         mockGetApplicantDetails(profile)(completeApplicantDetails)
@@ -102,6 +108,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
           .thenReturn(Future.successful("123412341234"))
 
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         mockIsTransactor(Future.successful(false))
         mockGetApplicantDetails(profile)(completeApplicantDetails)
 
@@ -122,6 +131,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
           .thenReturn(Future.successful("123412341234"))
+
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
         mockGetApplicantDetails(profile)(completeApplicantDetails)
@@ -144,6 +156,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
           .thenReturn(Future.successful("123412341234"))
 
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
         mockIsTransactor(Future.successful(false))
         mockGetApplicantDetails(profile)(completeApplicantDetails)
 
@@ -164,6 +179,9 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
 
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
           .thenReturn(Future.successful("123412341234"))
+
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
         mockGetApplicantDetails(profile)(completeApplicantDetails)
