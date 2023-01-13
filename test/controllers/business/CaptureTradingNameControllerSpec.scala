@@ -18,7 +18,6 @@ package controllers.business
 
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
-import models.api.UkCompany
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.mvc.AnyContentAsFormUrlEncoded

@@ -18,7 +18,7 @@ package controllers
 
 import connectors.RegistrationApiConnector.nrsSubmissionPayloadKey
 import itutil.ControllerISpec
-import models.{ApiKey, Business}
+import models.ApiKey
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse

@@ -30,7 +30,6 @@ import services.FlatRateService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-import utils.MessageDateFormat
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

@@ -19,7 +19,6 @@ package controllers.vatapplication
 import fixtures.VatRegistrationFixture
 import forms.vatapplication.ReturnsFrequencyForm
 import models.CurrentProfile
-import models.api.UkCompany
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._

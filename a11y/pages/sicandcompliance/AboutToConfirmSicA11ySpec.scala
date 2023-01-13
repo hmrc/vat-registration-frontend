@@ -16,7 +16,6 @@
 
 package pages.sicandcompliance
 
-import controllers.sicandcompliance.routes
 import helpers.A11ySpec
 import views.html.sicandcompliance.AboutToConfirmSic
 
