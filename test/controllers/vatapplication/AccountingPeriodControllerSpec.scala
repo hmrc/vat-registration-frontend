@@ -19,7 +19,6 @@ package controllers.vatapplication
 import _root_.models._
 import fixtures.VatRegistrationFixture
 import forms.vatapplication.AccountingPeriodForm
-import models.api.UkCompany
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._

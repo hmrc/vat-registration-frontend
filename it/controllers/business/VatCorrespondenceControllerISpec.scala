@@ -4,7 +4,6 @@ package controllers.business
 import forms.VatCorrespondenceForm
 import itutil.ControllerISpec
 import models.Business
-import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._

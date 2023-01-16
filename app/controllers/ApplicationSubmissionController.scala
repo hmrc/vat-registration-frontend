@@ -17,7 +17,6 @@
 package controllers
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
-import models.{GroupRegistration, TransferOfAGoingConcern}
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.InternalServerException

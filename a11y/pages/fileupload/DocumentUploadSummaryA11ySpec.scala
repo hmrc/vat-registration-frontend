@@ -4,7 +4,6 @@ package pages.fileupload
 
 import forms.DocumentUploadSummaryForm
 import helpers.A11ySpec
-import models.api.IdentityEvidence
 import play.api.mvc.Call
 import viewmodels.DocumentUploadSummaryRow
 import views.html.fileupload.DocumentUploadSummary

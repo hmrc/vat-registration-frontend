@@ -17,7 +17,6 @@
 package models.api
 
 import play.api.libs.json.{Format, JsString, Reads, Writes}
-import uk.gov.hmrc.http.InternalServerException
 
 sealed trait PartyType
 case object UkCompany extends PartyType

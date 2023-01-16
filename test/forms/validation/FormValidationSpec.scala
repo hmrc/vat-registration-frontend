@@ -21,7 +21,7 @@ import forms.FormValidation.ErrorCode
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{Inside, Inspectors}
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.validation.{Invalid, Valid, ValidationError}
 
 import java.time.LocalDate
 

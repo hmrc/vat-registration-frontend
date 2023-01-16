@@ -22,13 +22,10 @@ import fixtures.ApplicantDetailsFixtures
 import models._
 import models.api.{Address, Individual, UkCompany}
 import models.external.Name
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito.when
 import services.ApplicantDetailsService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import java.time.LocalDate
 import scala.concurrent.Future

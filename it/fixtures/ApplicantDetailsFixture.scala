@@ -4,7 +4,6 @@ package fixtures
 import models._
 import models.api.Address
 import models.external._
-import models.view._
 
 import java.time.LocalDate
 

@@ -1,10 +1,9 @@
 
 package pages.vatapplication
 
-import forms.ApplyForEoriForm
 import forms.vatapplication.ChargeExpectancyForm
 import helpers.A11ySpec
-import views.html.vatapplication.{apply_for_eori, claim_refunds_view}
+import views.html.vatapplication.claim_refunds_view
 
 class ClaimRefundsA11ySpec extends A11ySpec {
 
