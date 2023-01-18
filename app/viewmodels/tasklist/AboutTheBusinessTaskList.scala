@@ -46,7 +46,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
   //scalastyle:off
   def buildPartnersDetailRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListRowBuilder] = {
     vatScheme.partyType match {
-      case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) if isEnabled(DigitalPartnerFlow) =>
+      case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) =>
         Some(
           TaskListRowBuilder(
             messageKey = _ => "tasklist.aboutTheBusiness.partnersDetail",
