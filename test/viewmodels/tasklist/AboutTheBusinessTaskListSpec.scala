@@ -27,7 +27,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
   val section: AboutTheBusinessTaskList = app.injector.instanceOf[AboutTheBusinessTaskList]
 
-  "Additional partners row when DigitalPartnerFlow FS enabled" must {
+  "Additional partners row" must {
     val expectedRowUrl = controllers.partners.routes.PartnerEntityTypeController.showPartnerType(PartnerIndexValidation.minPartnerIndex).url
 
     "not be shown for non-partnership party type" in {
@@ -36,7 +36,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "be TLCannotStart if the prerequisites are not complete" in {
-      enable(DigitalPartnerFlow)
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(
           validEligibilitySubmissionData.copy(partyType = ScotPartnership)
@@ -50,11 +49,9 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = maybePartnersDetail.get.build(scheme)
       row.status mustBe TLCannotStart
       row.url mustBe expectedRowUrl
-      disable(DigitalPartnerFlow)
     }
 
     "be TLNotStarted if the prerequisites are complete but there are no answers" in {
-      enable(DigitalPartnerFlow)
       val scheme = validVatScheme.copy(
         eligibilitySubmissionData = Some(
           validEligibilitySubmissionData.copy(partyType = ScotPartnership)
@@ -69,11 +66,9 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
       row.status mustBe TLNotStarted
       row.url mustBe expectedRowUrl
-      disable(DigitalPartnerFlow)
     }
 
     "be TLInProgress if the prerequisites are complete but there are only some answers for the 2nd entity" in {
-      enable(DigitalPartnerFlow)
       val scheme = validVatScheme.copy(
         eligibilitySubmissionData = Some(
           validEligibilitySubmissionData.copy(partyType = ScotPartnership)
@@ -91,11 +86,9 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.partners.routes.PartnerSummaryController.show.url
-      disable(DigitalPartnerFlow)
     }
 
     "be TLCompleted if the prerequisites are complete and there are all answers" in {
-      enable(DigitalPartnerFlow)
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(
           validEligibilitySubmissionData.copy(partyType = ScotPartnership)
@@ -115,7 +108,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
       val row = maybePartnersDetail.get.build(scheme)
       row.status mustBe TLCompleted
       row.url mustBe controllers.partners.routes.PartnerSummaryController.show.url
-      disable(DigitalPartnerFlow)
     }
   }
 
@@ -155,7 +147,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "be in progress if the prerequisites are complete and there are all answers but companyName not defined for GeneralPartnership" in {
-      enable(DigitalPartnerFlow)
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(partyType = Partnership)),
         applicantDetails = Some(completeApplicantDetails.copy(entity = Some(testGeneralPartnership))),
@@ -170,7 +161,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
-      disable(DigitalPartnerFlow)
     }
 
     "be completed if the prerequisites are complete and there are all answers" in {

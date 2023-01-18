@@ -36,8 +36,7 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
     UploadDocuments,
-    WelshLanguage,
-    DigitalPartnerFlow
+    WelshLanguage
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -100,9 +99,4 @@ case object UploadDocuments extends FeatureSwitch {
 case object WelshLanguage extends FeatureSwitch {
   override val configName: String = "feature-switch.welsh-language-frontend"
   override val displayName: String = "Enable welsh translation"
-}
-
-case object DigitalPartnerFlow extends FeatureSwitch {
-  override val configName: String = "feature-switch.digital-partner-flow"
-  override val displayName: String = "Enable Digital Partner flow"
 }
