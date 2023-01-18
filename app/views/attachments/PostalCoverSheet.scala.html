@@ -18,8 +18,7 @@
 @import views.html.components._
 @import views.html.layouts.layout
 @import models.api.AttachmentType
-@import models.api.{VAT2, VAT51, IdentityEvidence, TransactorIdentityEvidence, VAT5L, TaxRepresentativeAuthorisation}
-@import featureswitch.core.config.OptionToTax
+@import models.api._
 
 @this(
         layout: layout,
@@ -67,11 +66,11 @@
             case TaxRepresentativeAuthorisation => vat1TRBlock
         }
         ::: attachments.map{
-            case VAT5L if appConfig.isEnabled(OptionToTax) => vat1614Block
+            case VAT5L => vat1614Block
             case _ => HtmlFormat.empty
         }.filter(!_.equals(HtmlFormat.empty))
         ::: attachments.map{
-            case VAT5L if appConfig.isEnabled(OptionToTax) => supportingDocsBlock
+            case VAT5L => supportingDocsBlock
             case _ => HtmlFormat.empty
         }.filter(!_.equals(HtmlFormat.empty)): _*
     )

@@ -16,14 +16,13 @@
 
 package views.attachments
 
-import featureswitch.core.config.{FeatureSwitching, OptionToTax}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.attachments.Vat5LRequired
 
-class Vat5LRequiredViewSpec extends VatRegViewSpec with FeatureSwitching {
+class Vat5LRequiredViewSpec extends VatRegViewSpec {
 
   val vat5LRequiredPage: Vat5LRequired = app.injector.instanceOf[Vat5LRequired]
   lazy val view: Html = vat5LRequiredPage()
@@ -57,12 +56,10 @@ class Vat5LRequiredViewSpec extends VatRegViewSpec with FeatureSwitching {
       doc.para(1) mustBe Some(ExpectedContent.para)
     }
 
-    "have vat1614 and supporting docs text when OptionToTax feature switch is on"  in new ViewSetup {
-      enable(OptionToTax)
+    "have vat1614 and supporting docs text"  in new ViewSetup {
       override val doc: Document = Jsoup.parse(vat5LRequiredPage().body)
       doc.para(2) mustBe Some(ExpectedContent.para1614)
       doc.para(3) mustBe Some(ExpectedContent.paraSupportingDocs)
-      disable(OptionToTax)
     }
 
     "have the correct link text" in new ViewSetup {

@@ -16,14 +16,13 @@
 
 package views.attachments
 
-import featureswitch.core.config._
 import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.MultipleDocumentsRequired
 
-class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitching {
+class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
 
   val view: MultipleDocumentsRequired = app.injector.instanceOf[MultipleDocumentsRequired]
 
@@ -97,10 +96,8 @@ class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec with FeatureSwitc
       doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
     }
 
-    "show the vat5L, vat1614 and supporting docs bullet points when option to tax feature switch is on and attachment list contains VAT5L" in new ViewSetup {
-      enable(OptionToTax)
+    "show the vat5L, vat1614 and supporting docs bullet points when attachment list contains VAT5L" in new ViewSetup {
       override val doc: Document = Jsoup.parse(view(List(VAT5L), None, None).body)
-      disable(OptionToTax)
 
       doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
       doc.unorderedList(1) must contain(ExpectedContent.vat1614Bullet)

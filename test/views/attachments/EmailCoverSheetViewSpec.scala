@@ -16,14 +16,13 @@
 
 package views.attachments
 
-import featureswitch.core.config.{FeatureSwitching, OptionToTax}
 import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.EmailCoverSheet
 
-class EmailCoverSheetViewSpec extends VatRegViewSpec with FeatureSwitching {
+class EmailCoverSheetViewSpec extends VatRegViewSpec {
 
   val testRef = "VRN12345689"
   val testAttachments: List[AttachmentType] = List[AttachmentType](VAT2, VAT51, IdentityEvidence, VAT5L, TaxRepresentativeAuthorisation)
@@ -134,14 +133,14 @@ class EmailCoverSheetViewSpec extends VatRegViewSpec with FeatureSwitching {
         ExpectedContent.vat51Bullet,
         ExpectedContent.idEvidence,
         ExpectedContent.vat5LBullet,
-        ExpectedContent.vat1TRBullet
+        ExpectedContent.vat1TRBullet,
+        ExpectedContent.vat1614Bullet,
+        ExpectedContent.supportingDocsBullet
       )
     }
 
-    "have the vat5L, vat1614 and supporting docs bullet list when OptionToTax feature switch is on and attachment list contains VAT5L" in new ViewSetup {
-      enable(OptionToTax)
+    "have the vat5L, vat1614 and supporting docs bullet list when attachment list contains VAT5L" in new ViewSetup {
       override val doc: Document = Jsoup.parse(view(testRef, testVat5L, None, None).body)
-      disable(OptionToTax)
       doc.unorderedList(1) mustBe List(
         ExpectedContent.vat5LBullet,
         ExpectedContent.vat1614Bullet,
