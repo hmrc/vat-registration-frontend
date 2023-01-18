@@ -35,7 +35,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubBars,
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
-    UploadDocuments,
     WelshLanguage
   )
 
@@ -89,11 +88,6 @@ case object StubPartnershipIdentification extends FeatureSwitch {
 case object StubMinorEntityIdentification extends FeatureSwitch {
   val configName = "feature-switch.minor-entity-identification"
   val displayName = "Stub Minor Entity Identification"
-}
-
-case object UploadDocuments extends FeatureSwitch {
-  override val configName: String = "feature-switch.upload-documents"
-  override val displayName: String = "Enable upload documents attachment method"
 }
 
 case object WelshLanguage extends FeatureSwitch {

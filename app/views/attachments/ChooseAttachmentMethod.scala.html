@@ -15,7 +15,6 @@
  *@
 
 @import config.FrontendAppConfig
-@import featureswitch.core.config.UploadDocuments
 @import models.api.AttachmentMethod
 
 @this(
@@ -44,7 +43,12 @@
             legend = messages("attachmentMethod.title"),
             legendAsHeading = false,
             classes = "govuk-visually-hidden",
-            items = digitalAttachmentOption ++ Seq(
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("attachmentMethod.options.upload")),
+                    value = Some("2"),
+                    checked = attachmentMethodForm("value").value.contains("2")
+                ),
                 RadioItem(
                     content = Text(messages("attachmentMethod.options.post")),
                     value = Some("3"),
@@ -56,24 +60,4 @@
         @button("app.common.continueNoSave", showSaveProgressButton = false)
     }
 
-}
-
-@digitalAttachmentOption = @{
-    if(appConfig.isEnabled(UploadDocuments)) {
-        Seq(
-            RadioItem(
-                content = Text(messages("attachmentMethod.options.upload")),
-                value = Some("2"),
-                checked = attachmentMethodForm("value").value.contains("2")
-            )
-        )
-    } else {
-        Seq(
-            RadioItem(
-                content = Text(messages("attachmentMethod.options.email")),
-                value = Some("email"),
-                checked = attachmentMethodForm("value").value.contains("email")
-            )
-        )
-    }
 }

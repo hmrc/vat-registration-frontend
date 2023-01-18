@@ -1,7 +1,6 @@
 
 package controllers.attachments
 
-import featureswitch.core.config.UploadDocuments
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
@@ -27,7 +26,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
         Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe false
-        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe false
       }
     }
     "the backend contains Post as the attachment method" must {
@@ -43,28 +41,10 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
         Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe true
-        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe false
-      }
-    }
-    "the backend contains Email as the attachment method" must {
-      "return OK and render the page with the Email option selected" in new Setup {
-        given
-          .user.isAuthorised()
-          .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(EmailMethod))))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).get())
-
-        res.status mustBe OK
-        Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
-        Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe false
-        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe true
       }
     }
     "the backend contains Upload as the attachment method" must {
       "return OK and render the page with the Upload option selected" in new Setup {
-        enable(UploadDocuments)
         given
           .user.isAuthorised()
           .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(Attached))))
@@ -76,8 +56,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe true
         Jsoup.parse(res.body).select("input[value=3]").hasAttr("checked") mustBe false
-        Jsoup.parse(res.body).select("input[value=email]").hasAttr("checked") mustBe false
-        disable(UploadDocuments)
       }
     }
   }
@@ -85,7 +63,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
   "POST /register-for-vat/attachment-method" when {
     "Upload is selected" must {
       "store the answer and redirect to the next page" in new Setup {
-        enable(UploadDocuments)
         given
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
@@ -99,7 +76,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.fileupload.routes.UploadDocumentController.show.url)
-        disable(UploadDocuments)
       }
     }
     "Post is selected" must {
@@ -116,22 +92,6 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
-      }
-    }
-    "Email is selected" must {
-      "store the answer and redirect to the next page" in new Setup {
-        given
-          .user.isAuthorised()
-          .registrationApi.replaceSection[Attachments](Attachments(Some(EmailMethod)))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val res = await(buildClient(url).post(Map(
-          "value" -> "email"
-        )))
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.EmailDocumentsController.show.url)
       }
     }
     "nothing is selected" must {

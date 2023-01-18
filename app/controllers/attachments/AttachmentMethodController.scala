@@ -18,7 +18,6 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.UploadDocuments
 import forms.AttachmentMethodForm
 import models.api._
 import play.api.mvc.{Action, AnyContent}
@@ -56,14 +55,12 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
           .storeAttachmentDetails(profile.registrationId, attachmentMethod)
           .flatMap { _ =>
             attachmentMethod match {
-              case Attached if isEnabled(UploadDocuments) =>
+              case Attached =>
                 upscanService.deleteAllUpscanDetails(profile.registrationId).map { _ =>
                   Redirect(controllers.fileupload.routes.UploadDocumentController.show)
                 }
               case Post =>
                 Future.successful(Redirect(routes.DocumentsPostController.show))
-              case EmailMethod =>
-                Future.successful(Redirect(routes.EmailDocumentsController.show))
               case _ =>
                 Future.successful(BadRequest(view(form().fill(attachmentMethod))))
             }
