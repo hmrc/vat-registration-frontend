@@ -19,7 +19,6 @@ package controllers.fileupload
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.fileupload.DocumentUploadSummaryController.maxSupportingLandAndPropertyDocs
-import featureswitch.core.config.OptionToTax
 import forms.DocumentUploadSummaryForm
 import models.api._
 import models.external.upscan.{Ready, UpscanDetails}
@@ -106,8 +105,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
       )
   }
 
-  private def canSupply1614Form(uploadedAttachments: Seq[AttachmentType]): Boolean =
-    isEnabled(OptionToTax) && uploadedAttachments.contains(VAT5L)
+  private def canSupply1614Form(uploadedAttachments: Seq[AttachmentType]): Boolean = uploadedAttachments.contains(VAT5L)
 
   private def is1614FormComplete(attachmentDetails: Attachments, uploadedAttachments: Seq[AttachmentType]): Boolean = attachmentDetails match {
     case Attachments(_, Some(false), Some(false), _, _) => true

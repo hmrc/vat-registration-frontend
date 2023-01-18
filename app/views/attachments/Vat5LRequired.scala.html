@@ -17,7 +17,6 @@
 @import config.FrontendAppConfig
 @import views.html.components._
 @import views.html.layouts.layout
-@import featureswitch.core.config.OptionToTax
 
 @this(
         layout: layout,
@@ -34,7 +33,7 @@
 
     @h1(messages("pages.vat5LRequired.heading"))
 
-    @p{
+    @p {
         @messages("pages.vat5LRequired.para1")
         @link(
             link = appConfig.vat5LLink,
@@ -45,26 +44,24 @@
         @messages("pages.vat5LRequired.para2")
     }
 
-    @if(appConfig.isEnabled(OptionToTax)) {
-        @p{
-            @messages("pages.vat5LRequired.para3")
-            @link(
-                link = appConfig.vat1614ALink,
-                messageKey = messages("pages.vat5LRequired.vat1614A.link"),
-                isExternal = true,
-                isButton = false
-            )
-            @messages("pages.vat5LRequired.para4")
-            @link(
-                link = appConfig.vat1614HLink,
-                messageKey = messages("pages.vat5LRequired.vat1614H.link"),
-                isExternal = true,
-                isButton = false
-            )
-        }
-        @p{
-            @messages("pages.vat5LRequired.para5")
-        }
+    @p {
+        @messages("pages.vat5LRequired.para3")
+        @link(
+            link = appConfig.vat1614ALink,
+            messageKey = messages("pages.vat5LRequired.vat1614A.link"),
+            isExternal = true,
+            isButton = false
+        )
+        @messages("pages.vat5LRequired.para4")
+        @link(
+            link = appConfig.vat1614HLink,
+            messageKey = messages("pages.vat5LRequired.vat1614H.link"),
+            isExternal = true,
+            isButton = false
+        )
+    }
+    @p {
+        @messages("pages.vat5LRequired.para5")
     }
 
     @form(controllers.attachments.routes.DocumentsRequiredController.submit) {

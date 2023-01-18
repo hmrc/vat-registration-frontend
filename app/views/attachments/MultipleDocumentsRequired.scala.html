@@ -15,8 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import models.api.{AttachmentType, IdentityEvidence, VAT2, VAT51, TransactorIdentityEvidence, VAT5L, TaxRepresentativeAuthorisation}
-@import featureswitch.core.config.OptionToTax
+@import models.api._
 
 @this(
         layout: layouts.layout,
@@ -50,11 +49,11 @@
             case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
         }
         ::: attachments.map{
-            case VAT5L if appConfig.isEnabled(OptionToTax) => vat1614Block
+            case VAT5L => vat1614Block
             case _ => HtmlFormat.empty
         }.filter(!_.equals(HtmlFormat.empty))
         ::: attachments.map{
-            case VAT5L if appConfig.isEnabled(OptionToTax) => supportingDocsBlock
+            case VAT5L => supportingDocsBlock
             case _ => HtmlFormat.empty
         }.filter(!_.equals(HtmlFormat.empty)): _*
     )

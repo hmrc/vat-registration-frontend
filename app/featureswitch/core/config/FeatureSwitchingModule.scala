@@ -37,7 +37,6 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubMinorEntityIdentification,
     UploadDocuments,
     WelshLanguage,
-    OptionToTax,
     DigitalPartnerFlow
   )
 
@@ -101,11 +100,6 @@ case object UploadDocuments extends FeatureSwitch {
 case object WelshLanguage extends FeatureSwitch {
   override val configName: String = "feature-switch.welsh-language-frontend"
   override val displayName: String = "Enable welsh translation"
-}
-
-case object OptionToTax extends FeatureSwitch {
-  override val configName: String = "feature-switch.option-to-tax"
-  override val displayName: String = "Enable option to tax"
 }
 
 case object DigitalPartnerFlow extends FeatureSwitch {

@@ -1,7 +1,6 @@
 
 package controllers.fileupload
 
-import featureswitch.core.config.{FeatureSwitching, OptionToTax}
 import itutil.ControllerISpec
 import models.api._
 import models.external.upscan.{Ready, UploadDetails, UpscanDetails}
@@ -12,7 +11,7 @@ import play.api.test.Helpers._
 
 import java.time.LocalDateTime
 
-class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureSwitching {
+class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
   val pageUrl: String = routes.DocumentUploadSummaryController.show.url
   val continueUrl: String = routes.DocumentUploadSummaryController.continue.url
@@ -85,7 +84,6 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
     }
 
     "redirect to Supply 1614A page if 1614 info is required but incomplete" in new Setup {
-      enable(OptionToTax)
       given
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L))
@@ -98,11 +96,9 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.Supply1614AController.show.url)
-      disable(OptionToTax)
     }
 
     "redirect to Supply Supporting Documents page if they are required but none are present" in new Setup {
-      enable(OptionToTax)
       given
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(Attachment1614a))
@@ -115,11 +111,9 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.SupplySupportingDocumentsController.show.url)
-      disable(OptionToTax)
     }
 
     "redirect to Task List page if all option to tax conditions are met" in new Setup {
-      enable(OptionToTax)
       given
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(LandPropertyOtherDocs))
@@ -132,7 +126,6 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec with FeatureS
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      disable(OptionToTax)
     }
   }
 
