@@ -18,26 +18,25 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ZeroRated
-import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
-import uk.gov.hmrc.http.InternalServerException
+import services.{SessionProfile, SessionService, VatApplicationService}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ZeroRatedSuppliesResolverController @Inject()(val sessionService: SessionService,
                                                     val authConnector: AuthClientConnector,
-                                                    vatApplicationService: VatApplicationService,
-                                                    vatRegistrationService: VatRegistrationService)
+                                                    vatApplicationService: VatApplicationService)
                                                    (implicit val executionContext: ExecutionContext,
                                                     appConfig: FrontendAppConfig,
                                                     baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
 
-  private val logPrefix = "[ZeroRatedSuppliesRoutingController][route]"
-
   private val NoTurnover = BigDecimal("0")
   private val noZeroRatedSupplies = 0
+
+  val missingDataSection = "tasklist.vatRegistration.goodsAndServices"
 
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -50,7 +49,7 @@ class ZeroRatedSuppliesResolverController @Inject()(val sessionService: SessionS
           case Some(_) =>
             Future.successful(Redirect(routes.ZeroRatedSuppliesController.show))
           case _ =>
-            Future.failed(throw new InternalServerException(s"$logPrefix Turnover estimate not present so unable to route user"))
+            Future.failed(throw MissingAnswerException(missingDataSection))
         }
   }
 

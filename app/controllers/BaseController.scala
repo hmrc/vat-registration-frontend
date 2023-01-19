@@ -18,6 +18,7 @@ package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig, Logging}
 import models.CurrentProfile
+import models.error.MissingAnswerException
 import play.api.i18n.{I18nSupport, Lang, Messages}
 import play.api.mvc._
 import services.SessionProfile
@@ -57,6 +58,11 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
         case ae: AuthorisationException =>
           logger.info(s"User is not authorised - reason: ${ae.reason}")
           Future.successful(InternalServerError)
+        case e: MissingAnswerException =>
+          logger.warn(s"Answer missing: ${e.sectionName} for user with session ID: ${hc.sessionId}")
+          sessionService.cache("missingAnswer", e.sectionName).map { _ =>
+            Redirect(controllers.errors.routes.ErrorController.missingAnswer)
+          }
         case e =>
           logger.warn(s"An exception occurred - err: ${e.getMessage}")
           throw e

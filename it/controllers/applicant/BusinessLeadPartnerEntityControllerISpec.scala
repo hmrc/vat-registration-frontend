@@ -110,6 +110,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
       "throw an exception" in new Setup {
         given()
           .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

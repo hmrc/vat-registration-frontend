@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
-import views.html.errors.{AlreadySubmittedKickout, ContactView, SubmissionFailed, SubmissionRetryableView}
+import views.html.errors._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,8 @@ class ErrorController @Inject()(val authConnector: AuthClientConnector,
                                 submissionFailedView: SubmissionFailed,
                                 submissionRetryableView: SubmissionRetryableView,
                                 alreadySubmittedView: AlreadySubmittedKickout,
-                                contactView: ContactView)
+                                contactView: ContactView,
+                                missingAnswerView: MissingAnswer)
                                (implicit appConfig: FrontendAppConfig,
                                 val executionContext: ExecutionContext,
                                 baseControllerComponents: BaseControllerComponents)
@@ -55,5 +56,14 @@ class ErrorController @Inject()(val authConnector: AuthClientConnector,
 
   def contact: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request => _ => Future.successful(Ok(contactView()))
+  }
+
+  def missingAnswer: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck { implicit request => _ =>
+    sessionService.fetchAndGet[String]("missingAnswer").map {
+      case Some(answer) =>
+        Ok(missingAnswerView(request2Messages(request)(answer)))
+      case _ =>
+        Redirect(controllers.routes.TaskListController.show)
+    }
   }
 }

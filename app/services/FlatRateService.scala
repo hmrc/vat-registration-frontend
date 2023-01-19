@@ -20,6 +20,7 @@ import com.google.inject.Inject
 import connectors.{ConfigConnector, RegistrationApiConnector}
 import models._
 import models.api.SicCode
+import models.error.MissingAnswerException
 import services.FlatRateService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
@@ -33,6 +34,10 @@ class FlatRateService @Inject()(val businessService: BusinessService,
                                 vatApplicationService: VatApplicationService,
                                 val configConnector: ConfigConnector,
                                 registrationApiConnector: RegistrationApiConnector)(implicit ec: ExecutionContext) {
+
+  val missingFrsSection = "tasklist.vatRegistration.flatRateScheme"
+  val missingBusinessActivitySection = "tasklist.aboutTheBusiness.businessActivities"
+  val missingRegDateSection = "tasklist.vatRegistration.registrationDate"
 
   def applyPercentRoundUp(b: BigDecimal): BigDecimal = (b * relevantGoodsPercent).setScale(0, RoundingMode.CEILING)
 
@@ -112,7 +117,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
       case UseThisRateAnswer(answer) =>
         if (answer) {
           val percent = configConnector
-            .getBusinessType(scheme.categoryOfBusiness.getOrElse(throw new InternalServerException("Attempted to confirm flat rate percent without confirming business category")))
+            .getBusinessType(scheme.categoryOfBusiness.getOrElse(throw MissingAnswerException(missingFrsSection)))
             .percentage
           scheme.copy(
             useThisRate = Some(true),
@@ -167,7 +172,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
             case Some(mainBusinessActivity) =>
               val frsId = configConnector.getSicCodeFRSCategory(mainBusinessActivity.code)
               configConnector.getBusinessType(frsId)
-            case None => throw new IllegalStateException("[FlatRateService] [retrieveSectorPercent] Can't determine main business activity")
+            case None => throw MissingAnswerException(missingBusinessActivitySection)
           }
         }
     }
@@ -207,7 +212,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
 
   def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = {
     vatApplicationService.getVatApplication.map(_.startDate.getOrElse(
-      throw new InternalServerException("[FlatRateService] Unable to fetch VatStartDate")
+      throw MissingAnswerException(missingRegDateSection)
     )).recoverWith {
       case _ => vatApplicationService.retrieveCalculatedStartDate
     }

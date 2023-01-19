@@ -29,7 +29,6 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'Yes' pre-populated" in new Setup {
-      val vatApplication = fullVatApplication.copy(startDate = Some(regStartDate))
       given
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(true))))
@@ -60,6 +59,19 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         document.select("input[value=false]").hasAttr("checked") mustBe true
       }
     }
+
+    "redirect to the missing answer page if the VAT registration date is missing" in new Setup {
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = None, currentlyTrading = Some(false))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+    }
   }
 
   s"POST $url" must {
@@ -77,6 +89,21 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+    }
+
+    "throw a missing answer exception if the VAT registration date is missing" in new Setup {
+      val vatApplication = fullVatApplication.copy(startDate = Some(regStartDate))
+
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(startDate = None)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).post(Map("value" -> "true")))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
     }
 
     "save to backend when model is complete and redirect to relevant page if no is selected" in new Setup {
@@ -109,14 +136,17 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
       res.status mustBe BAD_REQUEST
     }
 
-    "return INTERNAL_SERVER_ERROR if reg start date is missing" in new Setup {
+    "redirect to the missing answer page if reg start date is missing" in new Setup {
+      val vatApplication = fullVatApplication.copy(startDate = None)
       given.user.isAuthorised()
+        .registrationApi.getSection[VatApplication](Some(vatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val res = await(buildClient(url).post(""))
 
-      res.status mustBe INTERNAL_SERVER_ERROR
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
     }
   }
 

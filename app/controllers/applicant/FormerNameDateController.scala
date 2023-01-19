@@ -19,6 +19,7 @@ package controllers.applicant
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.FormerNameDateForm
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -42,11 +43,16 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         for {
           applicant <- applicantDetailsService.getApplicantDetails
-          dob = applicant.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
-          formerName = applicant.changeOfName.name.getOrElse(throw new IllegalStateException("Missing applicant former name"))
+          optName <- applicantDetailsService.getApplicantNameForTransactorFlow
+          isTransactor = optName.isDefined
+          dob = applicant.personalDetails.flatMap(_.dateOfBirth).getOrElse(
+            throw MissingAnswerException(missingDataSection(isTransactor)
+          ))
+          formerName = applicant.changeOfName.name.getOrElse(
+            throw MissingAnswerException(missingDataSection(isTransactor))
+          )
           filledForm = applicant.changeOfName.change.fold(FormerNameDateForm.form(dob))(FormerNameDateForm.form(dob).fill)
-          name <- applicantDetailsService.getApplicantNameForTransactorFlow
-        } yield Ok(formerNameDatePage(filledForm, formerName.asLabel, name))
+        } yield Ok(formerNameDatePage(filledForm, formerName.asLabel, optName))
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -54,19 +60,35 @@ class FormerNameDateController @Inject()(val authConnector: AuthConnector,
       implicit profile =>
         applicantDetailsService.getApplicantDetails flatMap {
           applicantDetails =>
-            val dob = applicantDetails.personalDetails.flatMap(_.dateOfBirth).getOrElse(throw new IllegalStateException("Missing date of birth"))
-            FormerNameDateForm.form(dob).bindFromRequest().fold(
-              badForm => for {
-                name <- applicantDetailsService.getApplicantNameForTransactorFlow
-                formerName = applicantDetails.changeOfName.name.getOrElse(throw new IllegalStateException("Missing applicant former name"))
-              } yield BadRequest(formerNameDatePage(badForm, formerName.asLabel, name)),
-              data => {
-                applicantDetailsService.saveApplicantDetails(data) flatMap { _ =>
-                  Future.successful(Redirect(controllers.routes.TaskListController.show))
+            applicantDetailsService.getApplicantNameForTransactorFlow.flatMap { optName =>
+              val isTransactor = optName.isDefined
+
+              val dob = applicantDetails.personalDetails.flatMap(_.dateOfBirth).getOrElse(
+                throw MissingAnswerException(missingDataSection(isTransactor))
+              )
+
+              FormerNameDateForm.form(dob).bindFromRequest().fold(
+                badForm => {
+                  val formerName = applicantDetails.changeOfName.name.getOrElse(
+                    throw MissingAnswerException(missingDataSection(isTransactor))
+                  )
+                  Future.successful(BadRequest(formerNameDatePage(badForm, formerName.asLabel, optName)))
+                },
+                data => {
+                  applicantDetailsService.saveApplicantDetails(data) map { _ =>
+                    Redirect(controllers.routes.TaskListController.show)
+                  }
                 }
-              }
-            )
+              )
+            }
         }
   }
+
+  private def missingDataSection(isTransactor: Boolean): String =
+    if (isTransactor) {
+      "tasklist.aboutBusinessContact.personalDetails"
+    } else {
+      "tasklist.aboutYou.personalDetails"
+    }
 
 }

@@ -20,6 +20,7 @@ import connectors.mocks.MockRegistrationApiConnector
 import models._
 import models.api.SicCode
 import models.api.vatapplication.VatApplication
+import models.error.MissingAnswerException
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import services.FlatRateService.{CategoryOfBusinessAnswer, EstimateTotalSalesAnswer, JoinFrsAnswer, OverBusinessGoodsAnswer, OverBusinessGoodsPercentAnswer, UseThisRateAnswer}
@@ -289,9 +290,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       when(mockConfigConnector.getBusinessType(any()))
         .thenReturn(testBusinessTypeDetails)
 
-      val exception: IllegalStateException = intercept[IllegalStateException](await(service.retrieveBusinessTypeDetails))
-
-      exception.getMessage mustBe "[FlatRateService] [retrieveSectorPercent] Can't determine main business activity"
+      intercept[MissingAnswerException](await(service.retrieveBusinessTypeDetails))
     }
   }
 

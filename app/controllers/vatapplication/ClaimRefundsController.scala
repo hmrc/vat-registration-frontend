@@ -20,11 +20,11 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.ChargeExpectancyForm
 import models.api.{NETP, NonUkNonEstablished}
+import models.error.MissingAnswerException
 import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ClaimVatRefunds
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
-import uk.gov.hmrc.http.InternalServerException
 import views.html.vatapplication.ClaimRefunds
 
 import javax.inject.Inject
@@ -39,6 +39,8 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
+
+  val missingDataSection = "tasklist.vatRegistration.goodsAndServices"
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -60,8 +62,12 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
           success => {
             for {
               vatApplication <- vatApplicationService.saveVatApplication(ClaimVatRefunds(success))
-              turnover = vatApplication.turnoverEstimate.getOrElse(throw new InternalServerException("[ClaimRefundsController] Missing turnover"))
-              zeroRatedSupplies = vatApplication.zeroRatedSupplies.getOrElse(throw new InternalServerException("[ClaimRefundsController] Missing zero rated turnover"))
+              turnover = vatApplication.turnoverEstimate.getOrElse(
+                throw MissingAnswerException(missingDataSection)
+              )
+              zeroRatedSupplies = vatApplication.zeroRatedSupplies.getOrElse(
+                throw MissingAnswerException(missingDataSection)
+              )
               eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
               canApplyForExemption = success &&
                 (zeroRatedSupplies * 2 > turnover) &&

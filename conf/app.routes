@@ -319,6 +319,8 @@ GET         /error/individual-affinity                                controller
 GET         /error/individual-affinity-redirect                       controllers.errors.IndividualAffinityKickOutController.signOutAndRedirect
 GET         /error/individual-affinity-signin                         controllers.errors.IndividualAffinityKickOutController.businessSignInRedirect
 
+GET         /error/missing-answer                                     controllers.errors.ErrorController.missingAnswer
+
 ## LastMonthOfAccountingYearController
 GET         /last-month-of-accounting-year                            controllers.vatapplication.LastMonthOfAccountingYearController.show
 POST        /last-month-of-accounting-year                            controllers.vatapplication.LastMonthOfAccountingYearController.submit

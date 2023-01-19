@@ -21,13 +21,14 @@ import controllers.BaseController
 import controllers.errors.{routes => errorRoutes}
 import forms.TransactorEmailPasscodeForm
 import models.CurrentProfile
+import models.error.MissingAnswerException
 import models.external._
 import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.TransactorEmailVerified
 import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.applicant.CaptureEmailPasscode
 
 import javax.inject.Inject
@@ -104,10 +105,11 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: CaptureEmailPassc
   }
 
   private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[String] = {
+    val missingAnswerSection = "tasklist.aboutYou.contactDetails"
     transactorDetailsService.getTransactorDetails.map {
       _.email match {
         case Some(transactorEmail) => transactorEmail
-        case None => throw new InternalServerException("Failed to retrieve email address")
+        case None => throw MissingAnswerException(missingAnswerSection)
       }
     }
   }

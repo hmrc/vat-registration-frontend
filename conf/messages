@@ -465,6 +465,13 @@ contact.heading                         = Sorry this service is unavailable
 contact.p                               = Sorry the system is unavailable. Please try again later or contact the
 contact.oshLink                         = HM Revenue & Customs Online Service Helpdesk
 
+# Missing answer page
+missingAnswer.title                     = You need to provide more information
+missingAnswer.heading                   = You need to provide more information
+missingAnswer.p                         = You are missing information from the following section of your application:
+missingAnswer.p2                        = You need to provide this before you can continue
+missingAnswer.button                    = Return to application
+
 # Start Date Page
 pages.startDate.heading                               = What do you want the business’s VAT start date to be?
 pages.startDate.para1                                 = This is when the company needs to start accounting for VAT.

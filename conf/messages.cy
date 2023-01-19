@@ -465,6 +465,13 @@ contact.heading                         = Mae’n ddrwg gennym, nid yw’r gwasa
 contact.p                               = Mae’n ddrwg gennym, nid yw’r system ar gael. Rhowch gynnig arall arni nes ymlaen neu cysylltwch â
 contact.oshLink                         = Gwasanaeth Cwsmeriaid Cymraeg CThEF
 
+# Missing answer page
+missingAnswer.title                     = Mae angen i chi roi rhagor o wybodaeth
+missingAnswer.heading                   = Mae angen i chi roi rhagor o wybodaeth
+missingAnswer.p                         = Mae gwybodaeth ar goll o’r adran ganlynol o’ch cais:
+missingAnswer.p2                        = Mae angen i chi roi hyn cyn y gallwch fynd yn eich blaen
+missingAnswer.button                    = Yn ôl i’r cais
+
 # Start Date Page
 pages.startDate.heading                               = Beth hoffech i ddyddiad dechrau TAW y busnes fod?
 pages.startDate.para1                                 = Dyma pryd y mae angen i’r cwmni ddechrau rhoi cyfrif am TAW.
