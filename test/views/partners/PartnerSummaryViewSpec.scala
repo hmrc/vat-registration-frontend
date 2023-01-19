@@ -56,7 +56,7 @@ class PartnerSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture 
       Entity(Some(testLimitedCompany), UkCompany, Some(true), None, None, None, None),
       Entity(Some(testLimitedCompany), UkCompany, Some(false), None, Some(validCurrentAddress), Some(testEmail), Some(testPhoneNumber))
     )
-    implicit val doc: Document = Jsoup.parse(view(PartnerSummaryForm(), testList, testList.size).body)
+    implicit val doc: Document = Jsoup.parse(view(PartnerSummaryForm(), testList).body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(ExpectedMessages.headingPlural)
@@ -96,7 +96,7 @@ class PartnerSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture 
     val testList = List(
       Entity(Some(testLimitedCompany), UkCompany, Some(true), None, None, None, None)
     )
-    implicit val doc: Document = Jsoup.parse(view(PartnerSummaryForm(), testList, testList.size).body)
+    implicit val doc: Document = Jsoup.parse(view(PartnerSummaryForm(), testList).body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(ExpectedMessages.heading)
