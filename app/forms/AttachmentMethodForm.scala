@@ -41,7 +41,6 @@ object AttachmentMethodForm {
   private object Options {
     val Upload = "2"
     val Post = "3"
-    val Email = "email"
   }
 
   def formatter: Formatter[AttachmentMethod] = new Formatter[AttachmentMethod] {
@@ -49,7 +48,6 @@ object AttachmentMethodForm {
       data.get(key) match {
         case Some(Options.Upload) => Right(Attached)
         case Some(Options.Post) => Right(Post)
-        case Some(Options.Email) => Right(EmailMethod)
         case _ => Left(Seq(FormError(key, Messages.invalidSelection)))
       }
     }
@@ -58,7 +56,6 @@ object AttachmentMethodForm {
       val selectedOption = value match {
         case Attached => Options.Upload
         case Post => Options.Post
-        case EmailMethod => Options.Email
       }
       Map(key -> selectedOption)
     }

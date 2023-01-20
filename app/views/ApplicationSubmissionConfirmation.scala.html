@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import models.api.{AttachmentMethod, EmailMethod, Post}
+@import models.api._
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.components._
 @import views.html.layouts.layout
@@ -56,7 +56,6 @@
     @{
         attachmentMethod match {
             case Some(Post) if attachmentsListExists => guidancePost
-            case Some(EmailMethod) if attachmentsListExists => guidanceEmail
             case _ =>
         }
     }
@@ -65,7 +64,7 @@
 
     @{
         attachmentMethod match {
-            case Some(Post | EmailMethod) if attachmentsListExists =>
+            case Some(Post) if attachmentsListExists =>
                 orderedList(
                     messages("pages.application.submission.confirmation.list.decisionDoc"),
                     messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt")
@@ -92,14 +91,6 @@
     @p {
         @messages("pages.application.submission.confirmation.doc.para")
         @link(controllers.attachments.routes.PostalCoverSheetController.show.url, s"pages.application.submission.confirmation.doc.linkPost$opt3pt", isExternal = true).
-    }
-}
-
-@guidanceEmail = {
-    @h2(messages("pages.application.submission.confirmation.doc.heading"))
-    @p {
-        @messages("pages.application.submission.confirmation.doc.para")
-        @link(controllers.attachments.routes.EmailCoverSheetController.show.url, s"pages.application.submission.confirmation.doc.linkEmail$opt3pt", isExternal = true).
     }
 }
 

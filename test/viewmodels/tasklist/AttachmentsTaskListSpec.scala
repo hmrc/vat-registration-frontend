@@ -231,28 +231,5 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       row.status mustBe TLCompleted
       row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
-
-    "be completed when attachment method is email" in new Setup {
-      val scheme = validVatScheme.copy(
-        business = Some(validBusiness.copy(
-          hasLandAndProperty = Some(false),
-          otherBusinessInvolvement = Some(false),
-          businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
-        )),
-        vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
-          startDate = Some(LocalDate.of(2017, 10, 10))
-        )),
-        flatRateScheme = Some(validFlatRate),
-        attachments = Some(Attachments(Some(EmailMethod)))
-      )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
-
-      val rowBuilder = await(section.attachmentsRequiredRow)
-      val row = rowBuilder.get.build(scheme)
-
-      row.status mustBe TLCompleted
-      row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
-    }
   }
 }

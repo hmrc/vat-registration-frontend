@@ -37,13 +37,10 @@ case object Attached extends AttachmentMethod
 
 case object Post extends AttachmentMethod
 
-case object EmailMethod extends AttachmentMethod
-
 object AttachmentMethod {
   val map: Map[AttachmentMethod, String] = Map(
     Attached -> "2",
-    Post -> "3",
-    EmailMethod -> "email"
+    Post -> "3"
   )
   val inverseMap: Map[String, AttachmentMethod] = map.map(_.swap)
 
