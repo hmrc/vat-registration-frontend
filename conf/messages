@@ -651,8 +651,8 @@ pages.application.submission.confirmation.doc.para                  = We’ve re
 pages.application.submission.confirmation.doc.linkPost              = post us a cover letter and copies of your documents
 pages.application.submission.confirmation.doc.linkPost.3pt          = post us a cover letter and copies of the required documents
 pages.application.submission.confirmation.heading2                  = What happens next
-pages.application.submission.confirmation.list.decisionDoc          = After we receive copies of your documents, we’ll write to you with a decision on your application in about 30 days.
-pages.application.submission.confirmation.list.decisionNoDoc        = We’ve received your application and we will write to you with a decision in about 30 days.
+pages.application.submission.confirmation.list.decisionDoc          = After we receive copies of your documents, we’ll write to you with a decision on your application in about 40 days.
+pages.application.submission.confirmation.list.decisionNoDoc        = We’ve received your application and we will write to you with a decision in about 40 days.
 pages.application.submission.confirmation.list.software             = You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’.
 pages.application.submission.confirmation.list.software.3pt         = The business should wait until its VAT registration is confirmed before getting software to follow the rules for ‘Making Tax Digital for VAT’.
 pages.application.submission.confirmation.inset                     = You cannot include VAT on your invoices until you get your VAT number. However, you can increase your prices to
@@ -1576,7 +1576,7 @@ validation.scottishPartnershipName.invalid               = Enter a partnership n
 
 # ALREADY SUBMITTED KICKOUT PAGE
 alreadySubmitted.heading                                 = We have already received a VAT registration application for this business
-alreadySubmitted.para                                    = Applications can take up to 30 days to process, you should wait for this period of time before contacting us.
+alreadySubmitted.para                                    = Applications can take up to 40 days to process, you should wait for this period of time before contacting us.
 
 # VAT51 REQUIRED
 pages.vat51Required.heading                              = You must send us a completed VAT 50/51 form in order for us to process this application
