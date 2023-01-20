@@ -143,30 +143,6 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         }
       }
 
-      "display the submission confirmation page to the user when IdentityEvidence is available and Method is EmailMethod" in {
-        mockAuthenticatedBasic
-        mockWithCurrentProfile(Some(profile))
-
-        when(mockAttachmentsService.getAttachmentList(any())(any()))
-          .thenReturn(Future.successful(List(IdentityEvidence)))
-
-        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
-          .thenReturn(Future.successful(Some(Attachments(method = Some(EmailMethod)))))
-
-        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
-          .thenReturn(Future.successful("123412341234"))
-
-        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
-          .thenReturn(Future.successful(validEligibilitySubmissionData))
-
-        mockIsTransactor(Future.successful(false))
-        mockGetApplicantDetails(profile)(completeApplicantDetails)
-
-        callAuthorised(testController.show) { res =>
-          status(res) mustBe OK
-        }
-      }
-
       "display the submission confirmation page to the user when VAT51 is available" in {
         mockAuthenticatedBasic
         mockWithCurrentProfile(Some(profile))

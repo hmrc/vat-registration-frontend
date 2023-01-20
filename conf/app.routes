@@ -407,9 +407,6 @@ GET         /post-documents                                           controller
 ## Postal Cover Sheet Page
 GET         /postal-cover-sheet                                       controllers.attachments.PostalCoverSheetController.show
 
-## Email Cover Sheet Page
-GET         /email-cover-sheet                                        controllers.attachments.EmailCoverSheetController.show
-
 ## Northern Ireland Receive Goods Page
 GET         /receive-goods-nip                                        controllers.vatapplication.ReceiveGoodsNipController.show
 POST        /receive-goods-nip                                        controllers.vatapplication.ReceiveGoodsNipController.submit
@@ -417,9 +414,6 @@ POST        /receive-goods-nip                                        controller
 ## Northern Ireland Sell Or Move Page
 GET         /sell-or-move-nip                                         controllers.vatapplication.SellOrMoveNipController.show
 POST        /sell-or-move-nip                                         controllers.vatapplication.SellOrMoveNipController.submit
-
-## Attachments Email Documents Page
-GET         /attachments/email-documents                              controllers.attachments.EmailDocumentsController.show
 
 ## Part Of Organisation Page
 GET         /part-of-organisation                                     controllers.transactor.PartOfOrganisationController.show

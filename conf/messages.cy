@@ -650,8 +650,6 @@ pages.application.submission.confirmation.doc.heading               = Yr hyn y m
 pages.application.submission.confirmation.doc.para                  = Mae’ch cais wedi dod i law. Er mwyn i ni allu prosesu’r cais,
 pages.application.submission.confirmation.doc.linkPost              = postiwch lythyr eglurhaol a chopïau o’ch dogfennau atom
 pages.application.submission.confirmation.doc.linkPost.3pt          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom
-pages.application.submission.confirmation.doc.linkEmail             = anfonwch gopïau o’ch dogfennau atom drwy e-bost
-pages.application.submission.confirmation.doc.linkEmail.3pt         = anfonwch gopïau o’r dogfennau angenrheidiol atom drwy e-bost
 pages.application.submission.confirmation.heading2                  = Yr hyn sy’n digwydd nesaf
 pages.application.submission.confirmation.list.decisionDoc          = Ar ôl i ni gael copïau o’ch dogfennau, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais mewn tua 30 diwrnod.
 pages.application.submission.confirmation.list.decisionNoDoc        = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad mewn tua 30 diwrnod.
@@ -1336,7 +1334,6 @@ internationalAddress.error.country.invalid               = Dewiswch wlad
 attachmentMethod.title                                    = Sut yr hoffech anfon y dogfennau ychwanegol?
 attachmentMethod.text                                     = Dim ond un dull y gallwch ei ddewis.
 attachmentMethod.options.upload                           = Uwchlwytho’r dogfennau gan ddefnyddio’r gwasanaeth hwn
-attachmentMethod.options.email                            = E-bostio copïau at CThEM
 attachmentMethod.options.post                             = Postio copïau at CThEM
 attachmentMethod.error.missing                            = Dewiswch sut yr hoffech anfon copïau o’r dogfennau at CThEM
 
@@ -1418,15 +1415,6 @@ pages.PostalCoverSheet.panel3                            = BT VAT
 pages.PostalCoverSheet.panel4                            = HM Revenue and Customs
 pages.PostalCoverSheet.panel5                            = BX9 1WR
 pages.PostalCoverSheet.panel6                            = United Kingdom
-
-# EMAIL ATTACHMENTS
-pages.EmailCoverSheet.heading                           = Sut i e-bostio dogfennau at CThEM
-pages.EmailCoverSheet.para                              = Mae’n rhaid i linell pwnc yr e-bost gynnwys eich cyfeirnod Cofrestru ar gyfer TAW. Bydd hyn yn ein galluogi i baru’ch cais ar-lein â’ch dogfennau ategol.
-pages.EmailCoverSheet.panel1                            = Cofrestru ar gyfer cyfeirnod TAW:
-pages.EmailCoverSheet.whatYouMustSend.heading           = Yr hyn y mae’n rhaid i chi ei atodi i’r e-bost
-pages.EmailCoverSheet.sendHeading                       = Cyfeiriad e-bost
-pages.EmailCoverSheet.sendDocsTo                        = Anfonwch eich dogfennau i:
-pages.EmailCoverSheet.attachmentsEmail                  = VATREGBETA@hmrc.gov.uk
 
 # COMMON COVER SHEET MESSAGES
 pages.CoverSheet.whatYouMustSend.para              = Mae’n rhaid i chi anfon dogfennau ychwanegol atom er mwyn i ni brosesu’r cais TAW hwn:

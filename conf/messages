@@ -650,8 +650,6 @@ pages.application.submission.confirmation.doc.heading               = What you m
 pages.application.submission.confirmation.doc.para                  = We’ve received your application. So we can process it,
 pages.application.submission.confirmation.doc.linkPost              = post us a cover letter and copies of your documents
 pages.application.submission.confirmation.doc.linkPost.3pt          = post us a cover letter and copies of the required documents
-pages.application.submission.confirmation.doc.linkEmail             = email us copies of your documents
-pages.application.submission.confirmation.doc.linkEmail.3pt         = email us copies of the required documents
 pages.application.submission.confirmation.heading2                  = What happens next
 pages.application.submission.confirmation.list.decisionDoc          = After we receive copies of your documents, we’ll write to you with a decision on your application in about 30 days.
 pages.application.submission.confirmation.list.decisionNoDoc        = We’ve received your application and we will write to you with a decision in about 30 days.
@@ -1337,7 +1335,6 @@ internationalAddress.error.country.invalid               = Select a country
 attachmentMethod.title                                    = How would you like to send the additional documents?
 attachmentMethod.text                                     = You can only select one method.
 attachmentMethod.options.upload                           = Upload the documents using this service
-attachmentMethod.options.email                            = Email copies to HMRC
 attachmentMethod.options.post                             = Post copies to HMRC
 attachmentMethod.error.missing                            = Select how you want to send copies of the documents to HMRC
 
@@ -1418,15 +1415,6 @@ pages.PostalCoverSheet.panel3                            = BT VAT
 pages.PostalCoverSheet.panel4                            = HM Revenue and Customs
 pages.PostalCoverSheet.panel5                            = BX9 1WR
 pages.PostalCoverSheet.panel6                            = United Kingdom
-
-# EMAIL ATTACHMENTS
-pages.EmailCoverSheet.heading                           = How to email documents to HMRC
-pages.EmailCoverSheet.para                              = The subject line of the email must include your Register for VAT reference number. This will enable us to match your online application to your documents.
-pages.EmailCoverSheet.panel1                            = Register for VAT reference number:
-pages.EmailCoverSheet.whatYouMustSend.heading           = What you must attach to the email
-pages.EmailCoverSheet.sendHeading                       = Email address
-pages.EmailCoverSheet.sendDocsTo                        = Send your documents to:
-pages.EmailCoverSheet.attachmentsEmail                  = VATREGBETA@hmrc.gov.uk
 
 # COMMON COVER SHEET MESSAGES
 pages.CoverSheet.whatYouMustSend.para              = You must send us additional documents in order for us to process this VAT application:

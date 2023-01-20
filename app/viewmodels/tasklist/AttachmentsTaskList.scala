@@ -88,7 +88,7 @@ class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTask
             case Nil => checkPassed
             case _ => checkPassed ++ checkFailed
           }
-        case Some(Post | EmailMethod) => checkPassed
+        case Some(Post) => checkPassed
         case _ => checkFailed
       }
     }.getOrElse(checkFailed)

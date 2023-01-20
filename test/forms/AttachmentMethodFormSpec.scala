@@ -33,10 +33,6 @@ class AttachmentMethodFormSpec extends VatRegSpec {
         val res = form().bind(Map("value" -> "3"))
         res.value mustBe Some(Post)
       }
-      "email is selected" in {
-        val res = form().bind(Map("value" -> "email"))
-        res.value mustBe Some(EmailMethod)
-      }
     }
     "return a form error" when {
       "nothing is selected" in {
