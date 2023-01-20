@@ -25,7 +25,7 @@ class AlreadySubmittedViewSpec extends VatRegViewSpec {
   object ExpectedContent {
     val heading = "We have already received a VAT registration application for this business"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "Applications can take up to 30 days to process, you should wait for this period of time before contacting us."
+    val para1 = "Applications can take up to 40 days to process, you should wait for this period of time before contacting us."
     val button = "Sign out"
   }
 
