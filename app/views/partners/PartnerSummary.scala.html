@@ -33,39 +33,42 @@
 )
 
 
-@(partnerSummaryForm: Form[Boolean], partnerList: List[Entity], numOfPartners: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(partnerSummaryForm: Form[Boolean], partnerList: List[Entity])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@defining(if(numOfPartners > 1) messages("partner.summary.headingPlural", numOfPartners) else messages("partner.summary.heading", numOfPartners)) { headingMessage =>
-    @layout(pageTitle = Some(title(partnerSummaryForm, headingMessage)), backLink = true) {
+@defining(partnerList.size) { numOfPartners =>
+    @defining(if(numOfPartners > 1) messages("partner.summary.headingPlural", numOfPartners) else messages("partner.summary.heading", numOfPartners)) { headingMessage =>
+        @layout(pageTitle = Some(title(partnerSummaryForm, headingMessage)), backLink = true) {
 
-        @errorSummary(errors = partnerSummaryForm.errors)
+            @errorSummary(errors = partnerSummaryForm.errors)
 
-        @h1(headingMessage)
+            @h1(headingMessage)
 
-        @partnerSummaryTable(partnerList)
+            @partnerSummaryTable(partnerList)
 
-        @if(numOfPartners > 1) {
-            @formWithCSRF(action = controllers.partners.routes.PartnerSummaryController.submit) {
-                @yesNoRadio(
-                    form = partnerSummaryForm,
-                    headingKey = messages("partner.summary.subHeadingPlural"),
-                    isPageHeading = false,
-                    inline = true,
-                    fieldName = "value",
-                    hint = Some(Html(messages("partner.summary.hint"))),
-                    classes = "govuk-fieldset__legend--m"
-                )
+            @if(numOfPartners > 1) {
+                @formWithCSRF(action = controllers.partners.routes.PartnerSummaryController.submit) {
+                    @yesNoRadio(
+                        form = partnerSummaryForm,
+                        headingKey = messages("partner.summary.subHeadingPlural"),
+                        isPageHeading = false,
+                        inline = true,
+                        fieldName = "value",
+                        hint = Some(Html(messages("partner.summary.hint"))),
+                        classes = "govuk-fieldset__legend--m"
+                    )
 
-                @button("app.common.continue", showSaveProgressButton = true)
-            }
-        } else {
-            @h2(messages("partner.summary.subHeading"), classes = "govuk-heading-m govuk-!-margin-bottom-2")
+                    @button("app.common.continue", showSaveProgressButton = true)
+                }
+            } else {
+                @h2(messages("partner.summary.subHeading"), classes = "govuk-heading-m govuk-!-margin-bottom-2")
 
-            @p { @messages("partner.summary.hint") }
+                @p { @messages("partner.summary.hint") }
 
-            @formWithCSRF(action = controllers.partners.routes.PartnerSummaryController.continue) {
-                @button("app.common.continue", showSaveProgressButton = true)
+                @formWithCSRF(action = controllers.partners.routes.PartnerSummaryController.continue) {
+                    @button("app.common.continue", showSaveProgressButton = true)
+                }
             }
         }
     }
+
 }

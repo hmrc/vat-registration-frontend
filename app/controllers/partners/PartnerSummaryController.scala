@@ -48,7 +48,7 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
             val clearedPartners = partners.filter { partner =>
               partner.isModelComplete(isLeadPartner = partner.isLeadPartner.contains(true))
             }
-            val page = Ok(view(PartnerSummaryForm(), clearedPartners, clearedPartners.size))
+            val page = Ok(view(PartnerSummaryForm(), clearedPartners))
 
             if (clearedPartners != partners) {
               entityService.upsertEntityList(profile.registrationId, clearedPartners).map(_ => page)
@@ -66,7 +66,7 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
           errors =>
             entityService.getAllEntities(profile.registrationId).map {
               case Nil => Redirect(controllers.routes.TaskListController.show)
-              case partnerEntities => BadRequest(view(errors, partnerEntities, partnerEntities.size))
+              case partnerEntities => BadRequest(view(errors, partnerEntities))
             },
           addMore =>
             if (addMore) {
