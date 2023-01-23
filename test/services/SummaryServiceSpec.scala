@@ -21,7 +21,6 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.libs.json.JsObject
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import viewmodels.SummaryCheckYourAnswersBuilder
@@ -43,7 +42,7 @@ class SummaryServiceSpec extends VatRegSpec {
 
   "getRegistrationSummary" should {
     "map a valid VatScheme object to a Summary object" in new Setup {
-      val testVatScheme = validVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson.as[JsObject]))
+      val testVatScheme = validVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson))
       when(mockVatRegistrationService.getVatScheme(any(), any()))
         .thenReturn(Future.successful(testVatScheme))
       when(mockSummaryCheckYourAnswersBuilder.generateSummaryAccordion(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages), ArgumentMatchers.eq(appConfig)))

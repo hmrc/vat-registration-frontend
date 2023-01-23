@@ -31,10 +31,11 @@ import javax.inject.{Inject, Singleton}
 class EligibilitySummaryBuilder @Inject()(govukSummaryList: GovukSummaryList)
                                          (implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
 
-  private[viewmodels] def eligibilityCall(uri: String): String = s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri"
+  private[viewmodels] def eligibilityCall(regId: String)(uri: String): String =
+    s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri&regId=$regId"
 
   def build(json: JsValue, regId: String)(implicit messages: Messages): HtmlFormat.Appendable = {
-    json.validate[SummaryList](EligibilityJsonParser.eligibilitySummaryListReads(eligibilityCall)).fold(
+    json.validate[SummaryList](EligibilityJsonParser.reads(eligibilityCall(regId))).fold(
       errors => throw new Exception(s"[EligibilitySummaryBuilder] Json could not be parsed with errors: $errors with regId: $regId"),
       list => govukSummaryList(identity(list))
     )

@@ -16,19 +16,18 @@
 
 package models.view
 
+import models.api._
+import models.view.EligibilityJsonParser.EligibilityPageIds._
 import play.api.i18n.Messages
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
 import play.api.libs.json.Reads._
+import play.api.libs.json._
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
-import uk.gov.hmrc.http.InternalServerException
 import utils.MessageDateFormat
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import scala.util.Try
 
 object SummaryListRowUtils {
   def optSummaryListRowString(questionId: String,
@@ -72,10 +71,10 @@ object SummaryListRowUtils {
     )
 
   def optSummaryListRow(questionId: String,
-                                optAnswer: Option[HtmlContent],
-                                optUrl: Option[String],
-                                questionArgs: Seq[String] = Nil
-                               )(implicit messages: Messages): Option[SummaryListRow] =
+                        optAnswer: Option[HtmlContent],
+                        optUrl: Option[String],
+                        questionArgs: Seq[String] = Nil
+                       )(implicit messages: Messages): Option[SummaryListRow] =
     optAnswer.map { answer =>
       SummaryListRow(
         key = Key(Text(messages(questionId, questionArgs: _*)), "govuk-!-width-one-half"),
@@ -122,104 +121,131 @@ object SummaryListRowUtils {
 
 object EligibilityJsonParser {
 
-  private def replaceAnswer(getOptionalData: String => Option[JsValue])(implicit messages: Messages) = {
-    (
-      (__ \ "question").read[String] and
-        (__ \ "answer").read[String] and
-        (__ \ "answerValue").read[JsValue] and
-        (__ \ "questionId").read[String]
-    ) ((question, answer, answerValue, questionId) => {
-      val isPartnershipEntity = question == "eligibility.cya.businessEntity" && answer.contains("partnership")
-      val updatedAnswer = if (isPartnershipEntity) messages("eligibility.businessEntity.partnership") else answer
-      val value = messages(getAnswer(updatedAnswer, answerValue))
-      val optionalData = getOptionalData(questionId).map(opt => {
-        s"$value - ${messages("eligibility.cya.thresholdOver.on")} ${opt.as[String]}"
-      })
+  //scalastyle:off
+  def reads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryList] = Reads { json =>
+    val answerMap = json.validate[Map[String, JsValue]]
 
-      JsArray(
-        List(
-          Json.toJson(
-            Map(
-              "question" -> question,
-              "answer" -> optionalData.getOrElse(value),
-              "questionId" -> questionId.replaceAll("[-](?<=-).*", "")
-            )
-          )
-        ) ++ {
-          if (!isPartnershipEntity) Nil else {
-            List(
-              Json.toJson(
-                Map(
-                  "question" -> "eligibility.cya.businessEntityPartnership",
-                  "answer" -> answer,
-                  "questionId" -> "businessEntityPartnership"
-                )
-              )
-            )
+    def isOptDate(js: JsValue) = (js \ "value").asOpt[JsValue].isDefined
+
+    def isDate(js: JsValue) = (js \ "date").asOpt[JsValue].isDefined
+
+    answerMap.map { answers =>
+      val regReason = answers(registrationReason).as[String]
+
+      SummaryList(reorder(answers).flatMap {
+        case (questionId, answerJson) if isOptDate(answerJson) =>
+          val optDateAnswer = (answerJson \ "optionalData").asOpt[String]
+            .map(date => LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE))
+            .map(MessageDateFormat.format)
+          val yesNoAnswer = lookupAnswer(questionId, (answerJson \ "value").as[JsValue])
+
+          val question = lookupQuestion(questionId, regReason)
+          val answer = optDateAnswer.map(date => {
+            s"$yesNoAnswer - ${messages("eligibility.answer.thresholdOver.on")} $date"
+          }).getOrElse(yesNoAnswer)
+
+          Seq(eligibilitySummaryRow(changeUrl, questionId, question, answer))
+        case (questionId, answerJson) if isDate(answerJson) =>
+          val question = lookupQuestion(questionId, regReason)
+          val dateAnswer = MessageDateFormat.format(LocalDate.parse((answerJson \ "date").as[String], DateTimeFormatter.ISO_LOCAL_DATE))
+
+          Seq(eligibilitySummaryRow(changeUrl, questionId, question, dateAnswer))
+        case (questionId, answerJson) if questionId == businessEntity =>
+          val isPartnership = Seq(Partnership, LtdPartnership, ScotPartnership, ScotLtdPartnership, LtdLiabilityPartnership)
+            .contains(answerJson.as[PartyType])
+          val optPartnershipAnswer = if (isPartnership) {
+            Seq(eligibilitySummaryRow(changeUrl, businessEntityPartnership, lookupQuestion(businessEntityPartnership, regReason), lookupAnswer(businessEntityPartnership, answerJson)))
+          } else {
+            Nil
           }
-        }
-      )
-    })
+
+          val question = lookupQuestion(questionId, regReason)
+          val answer = if (isPartnership) lookupAnswer(questionId, JsString("partnership")) else lookupAnswer(questionId, answerJson)
+
+          Seq(eligibilitySummaryRow(changeUrl, questionId, question, answer)) ++ optPartnershipAnswer
+        case (questionId, answerJson) =>
+          val question = lookupQuestion(questionId, regReason)
+          val answer = lookupAnswer(questionId, answerJson)
+
+          Seq(eligibilitySummaryRow(changeUrl, questionId, question, answer))
+      })
+    }
+  }
+  //scalastyle:on
+
+  private def lookupQuestion(questionId: String, regReason: String)(implicit messages: Messages): String = {
+    val togcColeSuffix = if (togcColeQuestionIds.contains(questionId)) s".$regReason" else ""
+    messages(s"eligibility.question.$questionId" + togcColeSuffix)
   }
 
-  private def eligibilitySummaryRowReads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryListRow] = {
-    (
-      (__ \ "question").read[String] and
-        (__ \ "answer").read[String] and
-        (__ \ "questionId").read[String]
-      ) ((question, answer, questionId) =>
-      SummaryListRow(
-        key = Key(Text(messages(question)), "govuk-!-width-one-half"),
-        value = Value(Text(messages(answer))),
-        actions = Some(Actions(
-          items = Seq(
-            ActionItem(
-              href = changeUrl(questionId),
-              content = Text(messages("app.common.change")),
-              visuallyHiddenText = Some(messages(question))
-            )
+  private def lookupAnswer(questionId: String, json: JsValue)(implicit messages: Messages): String =
+    json.validate[String].fold(
+      invalid => messages(s"eligibility.answer.${json.as[Boolean]}"),
+      valid => {
+        val key = s"eligibility.answer.$questionId.$valid"
+        if (messages.isDefinedAt(key)) messages(s"eligibility.answer.$questionId.$valid") else valid
+      }
+    )
+
+  private def eligibilitySummaryRow(changeUrl: String => String, questionId: String, question: String, answer: String)(implicit messages: Messages): SummaryListRow = {
+    SummaryListRow(
+      key = Key(Text(messages(question)), "govuk-!-width-one-half"),
+      value = Value(Text(messages(answer))),
+      actions = Some(Actions(
+        items = Seq(
+          ActionItem(
+            href = changeUrl(questionId),
+            content = Text(messages("app.common.change")),
+            visuallyHiddenText = Some(messages(question))
           )
-        ))
-      )
+        )
+      ))
     )
   }
 
-  private def getAnswer(answer: String, answerValue: JsValue)(implicit messages: Messages): String = {
-    Try(LocalDate.parse(answerValue.as[String], DateTimeFormatter.ISO_LOCAL_DATE))
-      .map(date => MessageDateFormat.format(date))
-      .getOrElse(answer)
+  private def reorder(answers: Map[String, JsValue]): List[(String, JsValue)] =
+    List(
+      (fixedEstablishment, answers.get(fixedEstablishment)),
+      (businessEntity, answers.get(businessEntity)),
+      (agriculturalFlatRateScheme, answers.get(agriculturalFlatRateScheme)),
+      (internationalActivities, answers.get(internationalActivities)),
+      (registeringBusiness, answers.get(registeringBusiness)),
+      (registrationReason, answers.get(registrationReason)),
+      (dateOfBusinessTransfer, answers.get(dateOfBusinessTransfer)),
+      (previousBusinessName, answers.get(previousBusinessName)),
+      (vatNumber, answers.get(vatNumber)),
+      (keepOldVrn, answers.get(keepOldVrn)),
+      (termsAndConditions, answers.get(termsAndConditions)),
+      (thresholdInTwelveMonths, answers.get(thresholdInTwelveMonths)),
+      (thresholdNextThirtyDays, answers.get(thresholdNextThirtyDays)),
+      (thresholdPreviousThirtyDays, answers.get(thresholdPreviousThirtyDays)),
+      (vatRegistrationException, answers.get(vatRegistrationException)),
+      (voluntaryRegistration, answers.get(voluntaryRegistration)),
+      (taxableSuppliesInUk, answers.get(taxableSuppliesInUk)),
+      (thresholdTaxableSupplies, answers.get(thresholdTaxableSupplies))
+    ).collect { case (id, Some(value)) => (id, value) }
+
+  object EligibilityPageIds {
+    val thresholdInTwelveMonths = "thresholdInTwelveMonths"
+    val thresholdNextThirtyDays = "thresholdNextThirtyDays"
+    val thresholdPreviousThirtyDays = "thresholdPreviousThirtyDays"
+    val thresholdTaxableSupplies = "thresholdTaxableSupplies"
+    val vatRegistrationException = "vatRegistrationException"
+    val voluntaryRegistration = "voluntaryRegistration"
+    val dateOfBusinessTransfer = "dateOfBusinessTransfer"
+    val previousBusinessName = "previousBusinessName"
+    val keepOldVrn = "keepOldVrn"
+    val vatNumber = "vatNumber"
+    val termsAndConditions = "termsAndConditions"
+    val fixedEstablishment = "fixedEstablishment"
+    val businessEntity = "businessEntity"
+    val businessEntityPartnership = "businessEntityPartnership"
+    val agriculturalFlatRateScheme = "agriculturalFlatRateScheme"
+    val internationalActivities = "internationalActivities"
+    val registeringBusiness = "registeringBusiness"
+    val registrationReason = "registrationReason"
+    val taxableSuppliesInUk = "taxableSuppliesInUk"
+
+    val togcColeQuestionIds = Seq(dateOfBusinessTransfer, previousBusinessName, vatNumber, keepOldVrn, termsAndConditions)
   }
-
-  private def getOptionalData(data: Seq[JsValue])(questionId: String)(implicit messages: Messages): Option[JsValue] = {
-    data
-      .find(v => (v \ "questionId").as[String] == s"$questionId-optionalData")
-      .flatMap(v => {
-        v.transform(
-          (
-            (__ \ "answer").read[String] and
-              (__ \ "answerValue").read[JsValue]
-            ) ((answer, answerValue) => {
-            JsString(getAnswer(answer, answerValue))
-          })
-        ).asOpt
-      })
-  }
-
-  def eligibilitySummaryListReads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryList] = {
-    val transformer: Reads[JsArray] = of[JsArray].map {
-      case JsArray(data) =>
-
-        val (optionalAnswers, answers) = data.partition(v => (v \ "questionId").as[String].contains("optionalData"))
-
-        answers.map(_.transform(replaceAnswer(getOptionalData(optionalAnswers))) match {
-          case JsSuccess(value, _) => value
-          case JsError(errors) => throw new InternalServerException(s"Failed to transform eligibility data, errors: $errors")
-        }).reduce(_ ++ _)
-    }
-
-    (__ \ "sections").read(Reads.seq[Seq[SummaryListRow]](
-      (__ \ "data").read(transformer andThen Reads.seq[SummaryListRow](eligibilitySummaryRowReads(changeUrl)))
-    )).map(rowLists => SummaryList(rowLists.flatten))
-  }
-
 }

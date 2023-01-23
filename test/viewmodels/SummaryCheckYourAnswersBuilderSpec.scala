@@ -23,7 +23,6 @@ import models.view.SummaryListRowUtils.optSummaryListRowString
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.libs.json.JsObject
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -82,7 +81,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
   )
 
   val testObiSection = List(testObi, testObi)
-  val testVatScheme: VatScheme = validVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson.as[JsObject]))
+  val testVatScheme: VatScheme = validVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson))
 
   "generateSummaryAccordion" must {
     "combine the summary sections into an accordion" in new Setup {
