@@ -651,8 +651,8 @@ pages.application.submission.confirmation.doc.para                  = Mae’ch c
 pages.application.submission.confirmation.doc.linkPost              = postiwch lythyr eglurhaol a chopïau o’ch dogfennau atom
 pages.application.submission.confirmation.doc.linkPost.3pt          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom
 pages.application.submission.confirmation.heading2                  = Yr hyn sy’n digwydd nesaf
-pages.application.submission.confirmation.list.decisionDoc          = Ar ôl i ni gael copïau o’ch dogfennau, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais mewn tua 30 diwrnod.
-pages.application.submission.confirmation.list.decisionNoDoc        = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad mewn tua 30 diwrnod.
+pages.application.submission.confirmation.list.decisionDoc          = Ar ôl i ni gael copïau o’ch dogfennau, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais mewn tua 40 diwrnod.
+pages.application.submission.confirmation.list.decisionNoDoc        = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad mewn tua 40 diwrnod.
 pages.application.submission.confirmation.list.software             = Dylech aros nes i ni gadarnhau eich cofrestriad TAW cyn i chi gael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
 pages.application.submission.confirmation.list.software.3pt         = Dylai’r busnes aros nes i’w gofrestriad TAW gael ei gadarnhau cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
 pages.application.submission.confirmation.inset                     = Ni allwch gynnwys TAW ar eich anfonebau hyd nes eich bod yn cael eich rhif TAW. Fodd bynnag, gallwch godi’ch prisiau i roi
@@ -1576,7 +1576,7 @@ validation.scottishPartnershipName.invalid               = Nodwch enw partneriae
 
 # ALREADY SUBMITTED KICKOUT PAGE
 alreadySubmitted.heading                                 = Rydym eisoes wedi cael cais am gofrestriad TAW ar gyfer y busnes hwn
-alreadySubmitted.para                                    = Gall gymryd hyd at 30 diwrnod i brosesu ceisiadau. Dylech aros i’r cyfnod hwnnw fynd heibio cyn cysylltu â ni.
+alreadySubmitted.para                                    = Gall gymryd hyd at 40 diwrnod i brosesu ceisiadau. Dylech aros i’r cyfnod hwnnw fynd heibio cyn cysylltu â ni.
 
 # VAT51 REQUIRED
 pages.vat51Required.heading                              = Mae’n rhaid i chi anfon ffurflen VAT 50/51 wedi’i chwblhau atom er mwyn i ni brosesu’r cais hwn
