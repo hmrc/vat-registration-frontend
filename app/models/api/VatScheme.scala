@@ -29,7 +29,7 @@ case class VatScheme(registrationId: String,
                      status: VatRegStatus.Value,
                      applicationReference: Option[String] = None,
                      confirmInformationDeclaration: Option[Boolean] = None,
-                     eligibilityData: Option[JsObject] = None,
+                     eligibilityJson: Option[JsObject] = None,
                      eligibilitySubmissionData: Option[EligibilitySubmissionData] = None,
                      transactorDetails: Option[TransactorDetails] = None,
                      applicantDetails: Option[ApplicantDetails] = None,
@@ -55,7 +55,7 @@ object VatScheme {
         (__ \ "status").read[VatRegStatus.Value] and
         (__ \ "applicationReference").readNullable[String] and
         (__ \ "confirmInformationDeclaration").readNullable[Boolean] and
-        (__ \ "eligibilityData").readNullable[JsObject] and
+        (__ \ "eligibilityJson").readNullable[JsObject] and
         (__ \ "eligibilitySubmissionData").readNullable[EligibilitySubmissionData] and
         (__ \ "transactorDetails").readNullable[TransactorDetails] and
         (__ \ "applicantDetails").readNullable[ApplicantDetails](ApplicantDetails.reads(partyType)) and
@@ -93,7 +93,7 @@ object VatScheme {
     (__ \ "status").write[VatRegStatus.Value] and
     (__ \ "applicationReference").writeNullable[String] and
     (__ \ "confirmInformationDeclaration").writeNullable[Boolean] and
-    (__ \ "eligibilityData").writeNullable[JsObject] and
+    (__ \ "eligibilityJson").writeNullable[JsObject] and
     (__ \ "eligibilitySubmissionData").writeNullable[EligibilitySubmissionData] and
     (__ \ "transactorDetails").writeNullable[TransactorDetails] and
     (__ \ "applicantDetails").writeNullable[ApplicantDetails](ApplicantDetails.writes) and

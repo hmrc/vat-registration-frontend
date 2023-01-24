@@ -373,37 +373,22 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
       |     }
     """.stripMargin).as[JsObject]
 
-  val fullEligibilityDataJson = Json.parse(
-    """
-      |{ "sections": [
-      |            {
-      |              "title": "section_1",
-      |              "data": [
-      |                {"questionId": "mandatoryRegistration", "question": "Question 1", "answer": "FOO", "answerValue": true},
-      |                {"questionId": "voluntaryRegistration", "question": "Question 2", "answer": "BAR", "answerValue": false},
-      |                {"questionId": "thresholdPreviousThirtyDays", "question": "Question 3", "answer": "wizz", "answerValue": "2017-05-23"},
-      |                {"questionId": "thresholdInTwelveMonths", "question": "Question 4", "answer": "woosh", "answerValue": "2017-07-16"}
-      |              ]
-      |            },
-      |            {
-      |              "title": "section_2",
-      |              "data": [
-      |                {"questionId": "applicantUKNino", "question": "Question 5", "answer": "bang", "answerValue": "SR123456C"},
-      |                {"questionId": "turnoverEstimate", "question": "Question 6", "answer": "BUZZ", "answerValue": 2024},
-      |                {"questionId": "completionCapacity", "question": "Question 7", "answer": "cablam", "answerValue": "noneOfThese"},
-      |                {"questionId": "completionCapacityFillingInFor", "question": "Question 8", "answer": "weez", "answerValue": {
-      |                "name": {
-      |                    "first": "This is my first",
-      |                    "middle": "This is my middle name",
-      |                    "surname": "This is my surname"
-      |                    },
-      |                "role": "director"
-      |                 }
-      |                }
-      |              ]
-      |            }
-      |          ]
-      |         }
-                                           """.stripMargin)
+  val fullEligibilityDataJson: JsObject = Json.obj(
+    "fixedEstablishment" -> true,
+    "businessEntity" -> "50",
+    "agriculturalFlatRateScheme" -> false,
+    "internationalActivities" -> false,
+    "registeringBusiness" -> "own",
+    "registrationReason" -> "selling-goods-and-services",
+    "thresholdPreviousThirtyDays" -> Json.obj(
+      "value" -> true,
+      "optionalData" -> "2017-05-23"
+    ),
+    "thresholdInTwelveMonths" -> Json.obj(
+      "value" -> true,
+      "optionalData" -> "2017-07-16"
+    ),
+    "vatRegistrationException" -> false
+  )
 
 }

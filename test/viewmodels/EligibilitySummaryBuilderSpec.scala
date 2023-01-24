@@ -33,13 +33,15 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
+    def url(questionId: String) = s"http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=$questionId&regId=$testRegId"
+
     object Builder extends EligibilitySummaryBuilder(govukSummaryList)
   }
 
   "eligibilityCall" must {
     "return a full url" in new Setup {
-      val res: String = Builder.eligibilityCall("page1OfEligibility")
-      res mustBe "http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=page1OfEligibility"
+      val res: String = Builder.eligibilityCall(testRegId)("page1OfEligibility")
+      res mustBe s"http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=page1OfEligibility&regId=$testRegId"
     }
   }
 
@@ -48,14 +50,15 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
       Builder.build(fullEligibilityDataJson, testRegId) mustBe HtmlFormat.fill(
         List(
           govukSummaryList(SummaryList(List(
-            optSummaryListRowString("Question 1", Some("FOO"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=mandatoryRegistration")),
-            optSummaryListRowString("Question 2", Some("BAR"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=voluntaryRegistration")),
-            optSummaryListRowString("Question 3", Some("23 May 2017"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=thresholdPreviousThirtyDays")),
-            optSummaryListRowString("Question 4", Some("16 July 2017"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=thresholdInTwelveMonths")),
-            optSummaryListRowString("Question 5", Some("bang"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=applicantUKNino")),
-            optSummaryListRowString("Question 6", Some("BUZZ"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=turnoverEstimate")),
-            optSummaryListRowString("Question 7", Some("cablam"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=completionCapacity")),
-            optSummaryListRowString("Question 8", Some("weez"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=completionCapacityFillingInFor")),
+            optSummaryListRowString("Fixed UK establishment", Some("Yes"), Some(url("fixedEstablishment"))),
+            optSummaryListRowString("Business type", Some("UK company (includes Limited and Unlimited companies)"), Some(url("businessEntity"))),
+            optSummaryListRowString("Agricultural Flat Rate Scheme", Some("No"), Some(url("agriculturalFlatRateScheme"))),
+            optSummaryListRowString("Activities over the next 12 months", Some("No"), Some(url("internationalActivities"))),
+            optSummaryListRowString("Whose business to register", Some("Your own"), Some(url("registeringBusiness"))),
+            optSummaryListRowString("VAT registration reason", Some("It’s selling goods or services and needs or wants to charge VAT to customers"), Some(url("registrationReason"))),
+            optSummaryListRowString("Taxable turnover over £85,000 in 12 months", Some("Yes - on 16 July 2017"), Some(url("thresholdInTwelveMonths"))),
+            optSummaryListRowString("Expect taxable turnover over £85,000 in 30 days past", Some("Yes - on 23 May 2017"), Some(url("thresholdPreviousThirtyDays"))),
+            optSummaryListRowString("VAT registration exception", Some("No"), Some(url("vatRegistrationException")))
           ).flatten))
         )
       )
@@ -64,19 +67,21 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
     "return a Summary with welsh translated dates when language choice is welsh and FS enabled" in new Setup {
       enable(WelshLanguage)
       implicit val welshMessages = messagesApi.preferred(Seq(Lang("cy")))
+
       object WelshBuilder extends EligibilitySummaryBuilder(govukSummaryList)
 
       WelshBuilder.build(fullEligibilityDataJson, testRegId) mustBe HtmlFormat.fill(
         List(
           govukSummaryList(SummaryList(List(
-            optSummaryListRowString("Question 1", Some("FOO"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=mandatoryRegistration")),
-            optSummaryListRowString("Question 2", Some("BAR"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=voluntaryRegistration")),
-            optSummaryListRowString("Question 3", Some("23 Mai 2017"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=thresholdPreviousThirtyDays")),
-            optSummaryListRowString("Question 4", Some("16 Gorffennaf 2017"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=thresholdInTwelveMonths")),
-            optSummaryListRowString("Question 5", Some("bang"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=applicantUKNino")),
-            optSummaryListRowString("Question 6", Some("BUZZ"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=turnoverEstimate")),
-            optSummaryListRowString("Question 7", Some("cablam"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=completionCapacity")),
-            optSummaryListRowString("Question 8", Some("weez"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=completionCapacityFillingInFor")),
+            optSummaryListRowString("Sefydliad sefydlog yn y DU", Some("Iawn"), Some(url("fixedEstablishment"))),
+            optSummaryListRowString("Math o fusnes", Some("Cwmni yn y DU (gan gynnwys cwmnïau Cyfyngedig ac Anghyfyngedig)"), Some(url("businessEntity"))),
+            optSummaryListRowString("Cynllun Cyfradd Unffurf Amaethyddol", Some("Na"), Some(url("agriculturalFlatRateScheme"))),
+            optSummaryListRowString("Gweithgareddau dros y 12 mis nesaf", Some("Na"), Some(url("internationalActivities"))),
+            optSummaryListRowString("Busnes pwy sy’n cael ei gofrestru", Some("Eich un chi"), Some(url("registeringBusiness"))),
+            optSummaryListRowString("Y rheswm dros gofrestru ar gyfer TAW", Some("Mae’n gwerthu nwyddau neu wasanaethau, ac mae angen neu eisiau codi TAW ar gwsmeriaid"), Some(url("registrationReason"))),
+            optSummaryListRowString("Trosiant trethadwy dros £85,000 yn ystod 12 mis", Some("Iawn - ar 16 Gorffennaf 2017"), Some(url("thresholdInTwelveMonths"))),
+            optSummaryListRowString("Yn disgwyl i drosiant trethadwy fod dros £85,000 yn y 30 diwrnod diwethaf", Some("Iawn - ar 23 Mai 2017"), Some(url("thresholdPreviousThirtyDays"))),
+            optSummaryListRowString("Eithriad rhag cofrestru ar gyfer TAW", Some("Na"), Some(url("vatRegistrationException")))
           ).flatten))
         )
       )
@@ -85,17 +90,18 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
 
     "return a Summary with english translated dates when language choice is welsh but FS not enabled" in new Setup {
       enable(WelshLanguage)
-      Builder.build(fullEligibilityDataJson, testRegId)mustBe HtmlFormat.fill(
+      Builder.build(fullEligibilityDataJson, testRegId) mustBe HtmlFormat.fill(
         List(
           govukSummaryList(SummaryList(List(
-            optSummaryListRowString("Question 1", Some("FOO"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=mandatoryRegistration")),
-            optSummaryListRowString("Question 2", Some("BAR"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=voluntaryRegistration")),
-            optSummaryListRowString("Question 3", Some("23 May 2017"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=thresholdPreviousThirtyDays")),
-            optSummaryListRowString("Question 4", Some("16 July 2017"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=thresholdInTwelveMonths")),
-            optSummaryListRowString("Question 5", Some("bang"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=applicantUKNino")),
-            optSummaryListRowString("Question 6", Some("BUZZ"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=turnoverEstimate")),
-            optSummaryListRowString("Question 7", Some("cablam"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=completionCapacity")),
-            optSummaryListRowString("Question 8", Some("weez"), Some("http://localhost:9894/check-if-you-can-register-for-vat/question?pageId=completionCapacityFillingInFor")),
+            optSummaryListRowString("Fixed UK establishment", Some("Yes"), Some(url("fixedEstablishment"))),
+            optSummaryListRowString("Business type", Some("UK company (includes Limited and Unlimited companies)"), Some(url("businessEntity"))),
+            optSummaryListRowString("Agricultural Flat Rate Scheme", Some("No"), Some(url("agriculturalFlatRateScheme"))),
+            optSummaryListRowString("Activities over the next 12 months", Some("No"), Some(url("internationalActivities"))),
+            optSummaryListRowString("Whose business to register", Some("Your own"), Some(url("registeringBusiness"))),
+            optSummaryListRowString("VAT registration reason", Some("It’s selling goods or services and needs or wants to charge VAT to customers"), Some(url("registrationReason"))),
+            optSummaryListRowString("Taxable turnover over £85,000 in 12 months", Some("Yes - on 16 July 2017"), Some(url("thresholdInTwelveMonths"))),
+            optSummaryListRowString("Expect taxable turnover over £85,000 in 30 days past", Some("Yes - on 23 May 2017"), Some(url("thresholdPreviousThirtyDays"))),
+            optSummaryListRowString("VAT registration exception", Some("No"), Some(url("vatRegistrationException")))
           ).flatten))
         )
       )

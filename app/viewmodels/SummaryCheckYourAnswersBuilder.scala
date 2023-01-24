@@ -41,7 +41,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: Eligib
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
 
     val summaryMap = ListMap(
-      messages(s"cya.heading.eligibility") -> eligibilitySummaryBuilder.build(vatScheme.eligibilityData.getOrElse(throw new InternalServerException("Missing eligibility json")), vatScheme.registrationId),
+      messages(s"cya.heading.eligibility") -> eligibilitySummaryBuilder.build(vatScheme.eligibilityJson.getOrElse(throw new InternalServerException("Missing eligibility json")), vatScheme.registrationId),
       messages(s"cya.heading.transactor") -> transactorDetailsSummaryBuilder.build(vatScheme),
       messages(s"cya.heading.verifyBusiness") -> grsSummaryBuilder.build(vatScheme),
       (if (isTransactor) messages(s"cya.heading.applicant.transactor") else messages(s"cya.heading.applicant.self")) -> applicantDetailsSummaryBuilder.build(vatScheme),

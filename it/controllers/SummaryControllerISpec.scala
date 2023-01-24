@@ -35,7 +35,7 @@ class SummaryControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
-        .registrationApi.getRegistration(fullVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson)))
+        .registrationApi.getRegistration(fullVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -54,7 +54,7 @@ class SummaryControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
-        .registrationApi.getRegistration(fullNetpVatScheme.copy(eligibilityData = Some(fullEligibilityDataJson)))
+        .registrationApi.getRegistration(fullNetpVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
