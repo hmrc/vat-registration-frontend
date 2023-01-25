@@ -25,7 +25,7 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.vatapplication.start_date_incorp_view
+import views.html.vatapplication.StartDateIncorp
 
 import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
@@ -40,7 +40,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       mockAuthClientConnector,
       movkVatApplicationService,
       mockTimeService,
-      app.injector.instanceOf[start_date_incorp_view]
+      app.injector.instanceOf[StartDateIncorp]
     )
 
     mockAuthenticated()

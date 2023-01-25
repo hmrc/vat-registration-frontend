@@ -4,11 +4,11 @@ package pages.vatapplication
 import forms.PaymentMethodForm
 import helpers.A11ySpec
 import models.api.vatapplication.StandingOrder
-import views.html.vatapplication.aas_payment_method
+import views.html.vatapplication.AasPaymentMethod
 
 class AasPaymentMethodA11ySpec extends A11ySpec {
 
-  val view: aas_payment_method = app.injector.instanceOf[aas_payment_method]
+  val view: AasPaymentMethod = app.injector.instanceOf[AasPaymentMethod]
 
   "aas payment method page" when {
     "rendered with no value and there are no form errors" must {

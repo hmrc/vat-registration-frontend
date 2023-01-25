@@ -22,7 +22,7 @@ import forms.EmailPasscodeForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.applicant.capture_email_passcode
+import views.html.applicant.CaptureEmailPasscode
 
 class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
 
@@ -42,7 +42,7 @@ class CaptureEmailPasscodeViewSpec extends VatRegViewSpec {
   val linkText2 = "provide another email address"
   val detailsContent = s"The email may take a few minutes to arrive. Its subject line is: ‘Your email confirmation code’. Check your spam or junk folder – if it still has not arrived, you can $linkText1 or $linkText2."
 
-  val view: capture_email_passcode = app.injector.instanceOf[capture_email_passcode]
+  val view: CaptureEmailPasscode = app.injector.instanceOf[CaptureEmailPasscode]
 
   "Capture Email Passcode Page" when {
     "the user is not a transactor" when {

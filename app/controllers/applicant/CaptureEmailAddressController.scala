@@ -24,12 +24,12 @@ import play.api.mvc.{Action, AnyContent}
 import services.ApplicantDetailsService.{EmailAddress, EmailVerified}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.applicant.capture_email_address
+import views.html.applicant.CaptureEmailAddress
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CaptureEmailAddressController @Inject()(view: capture_email_address,
+class CaptureEmailAddressController @Inject()(view: CaptureEmailAddress,
                                               val authConnector: AuthConnector,
                                               val sessionService: SessionService,
                                               applicantDetailsService: ApplicantDetailsService,

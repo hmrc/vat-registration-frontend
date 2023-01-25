@@ -23,7 +23,7 @@ import models.api.vatapplication.AASDetails
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
-import views.html.vatapplication.aas_payment_method
+import views.html.vatapplication.AasPaymentMethod
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
                                         val sessionService: SessionService,
-                                        view: aas_payment_method,
+                                        view: AasPaymentMethod,
                                         vatApplicationService: VatApplicationService,
                                         vatRegistrationService: VatRegistrationService
                                        )(implicit appConfig: FrontendAppConfig,

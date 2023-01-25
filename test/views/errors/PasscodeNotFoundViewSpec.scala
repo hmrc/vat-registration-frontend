@@ -19,11 +19,11 @@ package views.errors
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.errors.passcode_not_found
+import views.html.errors.PasscodeNotFound
 
 class PasscodeNotFoundViewSpec extends VatRegViewSpec {
 
-  val view: passcode_not_found = app.injector.instanceOf[passcode_not_found]
+  val view: PasscodeNotFound = app.injector.instanceOf[PasscodeNotFound]
   val testUrl = "test"
 
   val heading = "You need to start again"

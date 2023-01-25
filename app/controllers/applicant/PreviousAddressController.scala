@@ -16,17 +16,17 @@
 
 package controllers.applicant
 
-import common.enums.AddressLookupJourneyIdentifier.{addressThreeYearsOrLess, applicantAddressThreeYearsOrLess}
+import common.enums.AddressLookupJourneyIdentifier._
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.ApplicantDetailsService.{NoPreviousAddress, PreviousAddress}
+import services.ApplicantDetailsService._
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.applicant.previous_address
+import views.html.applicant.PreviousAddress
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                                           val applicantDetailsService: ApplicantDetailsService,
                                           val addressLookupService: AddressLookupService,
                                           val vatRegistrationService: VatRegistrationService,
-                                          previousAddressPage: previous_address
+                                          previousAddressPage: PreviousAddress
                                          )(implicit appConfig: FrontendAppConfig,
                                            val executionContext: ExecutionContext,
                                            baseControllerComponents: BaseControllerComponents)

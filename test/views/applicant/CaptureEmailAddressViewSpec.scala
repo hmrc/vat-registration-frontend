@@ -19,7 +19,7 @@ package views.applicant
 import forms.EmailAddressForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.applicant.capture_email_address
+import views.html.applicant.CaptureEmailAddress
 
 class CaptureEmailAddressViewSpec extends VatRegViewSpec {
 
@@ -33,8 +33,8 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
   "Capture Email Address Page" should {
     val form = EmailAddressForm.form
     val name = "testFirstName"
-    val nonTransactorView = app.injector.instanceOf[capture_email_address].apply(testCall, form, None)
-    val transactorView = app.injector.instanceOf[capture_email_address].apply(testCall, form, Some(name))
+    val nonTransactorView = app.injector.instanceOf[CaptureEmailAddress].apply(testCall, form, None)
+    val transactorView = app.injector.instanceOf[CaptureEmailAddress].apply(testCall, form, Some(name))
 
     implicit val nonTransactorDoc = Jsoup.parse(nonTransactorView.body)
     val transactorDoc = Jsoup.parse(transactorView.body)

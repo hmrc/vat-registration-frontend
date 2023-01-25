@@ -22,12 +22,12 @@ import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
-import views.html.errors.maxConfirmationCodeAttemptsExceeded
+import views.html.errors.MaxConfirmationCodeAttemptsExceeded
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class EmailConfirmationCodeMaxAttemptsExceededController @Inject()(view: maxConfirmationCodeAttemptsExceeded,
+class EmailConfirmationCodeMaxAttemptsExceededController @Inject()(view: MaxConfirmationCodeAttemptsExceeded,
                                                                    val authConnector: AuthConnector,
                                                                    val sessionService: SessionService,
                                                                    val vatRegistrationService: VatRegistrationService,

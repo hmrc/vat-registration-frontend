@@ -23,11 +23,11 @@ import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.Html
 import views.VatRegViewSpec
-import views.html.applicant.previous_address
+import views.html.applicant.PreviousAddress
 
 class PreviousAddressViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
-  val previousAddressPage: previous_address = app.injector.instanceOf[previous_address]
+  val previousAddressPage: PreviousAddress = app.injector.instanceOf[PreviousAddress]
 
   val name = "testFirstName"
   lazy val form: Form[Boolean] = PreviousAddressForm.form()

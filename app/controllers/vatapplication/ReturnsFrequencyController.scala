@@ -23,7 +23,7 @@ import models.api.vatapplication.{Annual, Monthly}
 import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services._
-import views.html.vatapplication.return_frequency_view
+import views.html.vatapplication.ReturnFrequency
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -33,7 +33,7 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
                                            val authConnector: AuthClientConnector,
                                            val vatApplicationService: VatApplicationService,
                                            vatRegistrationService: VatRegistrationService,
-                                           returnFrequencyPage: return_frequency_view
+                                           returnFrequencyPage: ReturnFrequency
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

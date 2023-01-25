@@ -19,7 +19,7 @@ package views.vatapplication
 import forms.AnnualStaggerForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.vatapplication.last_month_of_accounting_year
+import views.html.vatapplication.LastMonthOfAccountingYear
 
 class LastMonthOfAccountingYearViewSpec extends VatRegViewSpec {
 
@@ -42,7 +42,7 @@ class LastMonthOfAccountingYearViewSpec extends VatRegViewSpec {
 
   "Honesty Declaration Page" must {
 
-    val view = app.injector.instanceOf[last_month_of_accounting_year].apply(AnnualStaggerForm.form)
+    val view = app.injector.instanceOf[LastMonthOfAccountingYear].apply(AnnualStaggerForm.form)
 
     implicit val doc = Jsoup.parse(view.body)
 

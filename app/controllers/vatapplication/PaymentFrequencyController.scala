@@ -22,13 +22,13 @@ import forms.PaymentFrequencyForm
 import models.api.vatapplication.AASDetails
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.vatapplication.payment_frequency
+import views.html.vatapplication.PaymentFrequencyView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PaymentFrequencyController @Inject()(view: payment_frequency,
+class PaymentFrequencyController @Inject()(view: PaymentFrequencyView,
                                            val authConnector: AuthClientConnector,
                                            val sessionService: SessionService,
                                            vatApplicationService: VatApplicationService

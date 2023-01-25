@@ -19,7 +19,7 @@ package views.applicant
 import forms.TelephoneNumberForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.applicant.capture_telephone_number
+import views.html.applicant.CaptureTelephoneNumber
 
 class CaptureTelephoneNumberViewSpec extends VatRegViewSpec {
 
@@ -34,9 +34,9 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec {
 
   "Capture Telephone Number Page" should {
     lazy val form = TelephoneNumberForm.form
-    lazy val view = app.injector.instanceOf[capture_telephone_number].apply(testCall, form, None)
+    lazy val view = app.injector.instanceOf[CaptureTelephoneNumber].apply(testCall, form, None)
     implicit lazy val doc = Jsoup.parse(view.body)
-    lazy val transactorView = app.injector.instanceOf[capture_telephone_number].apply(testCall, form, Some(name))
+    lazy val transactorView = app.injector.instanceOf[CaptureTelephoneNumber].apply(testCall, form, Some(name))
     lazy val transactorDoc = Jsoup.parse(transactorView.body)
 
     "have the correct title" in new ViewSetup {

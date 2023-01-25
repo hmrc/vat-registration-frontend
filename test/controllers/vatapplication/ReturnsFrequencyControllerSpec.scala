@@ -27,14 +27,14 @@ import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.vatapplication.return_frequency_view
+import views.html.vatapplication.ReturnFrequency
 
 import scala.concurrent.Future
 
 class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
 
   class Setup() {
-    val returnFrequencyView: return_frequency_view = app.injector.instanceOf[return_frequency_view]
+    val returnFrequencyView: ReturnFrequency = app.injector.instanceOf[ReturnFrequency]
     val testController = new ReturnsFrequencyController(
       mockSessionService, mockAuthClientConnector, movkVatApplicationService, mockVatRegistrationService, returnFrequencyView
     )

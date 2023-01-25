@@ -19,11 +19,11 @@ package views.vatapplication
 import forms.vatapplication.ReturnsFrequencyForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.vatapplication.return_frequency_view
+import views.html.vatapplication.ReturnFrequency
 
 class ReturnFrequencyViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[return_frequency_view]
+  val view = app.injector.instanceOf[ReturnFrequency]
   implicit val doc = Jsoup.parse(view(form = ReturnsFrequencyForm.form, showAAS = true, showMonthly = false).body)
 
   object ExpectedContent {

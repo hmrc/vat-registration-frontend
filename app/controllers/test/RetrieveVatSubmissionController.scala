@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import views.html.test.vat_submission_json
+import views.html.test.VatSubmissionJson
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext
 class RetrieveVatSubmissionController @Inject()(val authConnector: AuthConnector,
                                                 val sessionService: SessionService,
                                                 testVatRegistrationConnector: TestVatRegistrationConnector,
-                                                view: vat_submission_json)
+                                                view: VatSubmissionJson)
                                                (implicit val executionContext: ExecutionContext,
                                                 bcc: BaseControllerComponents,
                                                 appConfig: FrontendAppConfig) extends BaseController with SessionProfile with AuthorisedFunctions {

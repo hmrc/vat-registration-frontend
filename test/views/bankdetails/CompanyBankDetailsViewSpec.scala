@@ -20,11 +20,11 @@ import forms.EnterBankAccountDetailsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.bankdetails.enter_company_bank_account_details
+import views.html.bankdetails.EnterCompanyBankAccountDetails
 
 class CompanyBankDetailsViewSpec extends VatRegViewSpec {
 
-  val view: enter_company_bank_account_details = app.injector.instanceOf[enter_company_bank_account_details]
+  val view: EnterCompanyBankAccountDetails = app.injector.instanceOf[EnterCompanyBankAccountDetails]
 
   val title = "What are the business’s bank or building society account details?"
   val heading = "What are the business’s bank or building society account details?"

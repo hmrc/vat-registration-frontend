@@ -4,11 +4,11 @@ package pages.vatapplication
 import forms.PaymentFrequencyForm
 import helpers.A11ySpec
 import models.api.vatapplication.MonthlyPayment
-import views.html.vatapplication.payment_frequency
+import views.html.vatapplication.PaymentFrequencyView
 
 class PaymentFrequencyA11ySpec extends A11ySpec {
 
-  val view: payment_frequency = app.injector.instanceOf[payment_frequency]
+  val view: PaymentFrequencyView = app.injector.instanceOf[PaymentFrequencyView]
 
   "payment frequency page" when {
     "rendered with no value and there are no form errors" must {

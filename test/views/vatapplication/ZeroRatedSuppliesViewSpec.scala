@@ -19,7 +19,7 @@ package views.vatapplication
 import forms.ZeroRatedSuppliesForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.vatapplication.zero_rated_supplies
+import views.html.vatapplication.ZeroRatedSupplies
 
 class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
 
@@ -34,7 +34,7 @@ class ZeroRatedSuppliesViewSpec extends VatRegViewSpec {
 
   "Zero Rated Supplies Page" must {
     val form = ZeroRatedSuppliesForm.form(10000)
-    val view = app.injector.instanceOf[zero_rated_supplies].apply(testCall, form)
+    val view = app.injector.instanceOf[ZeroRatedSupplies].apply(testCall, form)
     implicit val doc = Jsoup.parse(view.body)
 
     "have the correct title" in {

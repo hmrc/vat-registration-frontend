@@ -25,23 +25,16 @@
         link: link
 )
 
-@(email: String, isTransactor: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(titleNoForm(messages("page.MaxConfirmationCodeAttemptsExceeded.heading"))), backLink = false) {
+@layout(Some(titleNoForm(messages("page.MaxPasscodeAttemptsExceeded.heading"))), backLink = false) {
 
-    @h1(messages("page.MaxConfirmationCodeAttemptsExceeded.heading"))
+    @h1(messages("page.MaxPasscodeAttemptsExceeded.heading"))
+    @p{@messages("page.MaxPasscodeAttemptsExceeded.p1")}
 
-    @p{
-        @messages("page.MaxConfirmationCodeAttemptsExceeded.p", email)
-
-        @link(
-            link = if(isTransactor) {
-                controllers.transactor.routes.TransactorCaptureEmailAddressController.show.url
-            } else {
-                controllers.applicant.routes.CaptureEmailAddressController.show.url
-            },
-            messageKey = messages("page.MaxConfirmationCodeAttemptsExceeded.link")
-        ).
+    @p {
+        @messages("page.MaxPasscodeAttemptsExceeded.p2")
+        @link(controllers.callbacks.routes.SignInOutController.signOut.url, messages("page.MaxPasscodeAttemptsExceeded.link")).
     }
 
 }

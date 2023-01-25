@@ -4,11 +4,11 @@ package pages.vatapplication
 import forms.vatapplication.ReturnsFrequencyForm
 import helpers.A11ySpec
 import models.api.vatapplication.Monthly
-import views.html.vatapplication.return_frequency_view
+import views.html.vatapplication.ReturnFrequency
 
 class ReturnFrequencyA11ySpec extends A11ySpec {
 
-  val view: return_frequency_view = app.injector.instanceOf[return_frequency_view]
+  val view: ReturnFrequency = app.injector.instanceOf[ReturnFrequency]
 
   "return frequency page" when {
     "rendered with no value and there are no form errors" must {

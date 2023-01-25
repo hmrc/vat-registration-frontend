@@ -2,15 +2,15 @@
 package pages.bankdetails
 
 import helpers.A11ySpec
-import views.html.bankdetails.enter_company_bank_account_details
+import views.html.bankdetails.EnterCompanyBankAccountDetails
 import forms.EnterBankAccountDetailsForm
 
 class UkBankAccountDetailsA11ySpec extends A11ySpec {
 
-  val view = app.injector.instanceOf[enter_company_bank_account_details]
+  val view = app.injector.instanceOf[EnterCompanyBankAccountDetails]
   val form = EnterBankAccountDetailsForm.form
 
-  "the enter_company_bank_account_details page" when {
+  "the Enter Company Bank Account Details page" when {
     "there are no form errors" must {
       "pass all a11y checks" in {
         view(form).body must passAccessibilityChecks

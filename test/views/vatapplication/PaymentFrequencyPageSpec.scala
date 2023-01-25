@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import views.VatRegViewSpec
-import views.html.vatapplication.payment_frequency
+import views.html.vatapplication.PaymentFrequencyView
 
 class PaymentFrequencyPageSpec extends VatRegViewSpec {
 
@@ -37,7 +37,7 @@ class PaymentFrequencyPageSpec extends VatRegViewSpec {
     val error = "Select how often the business wants to make payments"
   }
 
-  val view: payment_frequency = app.injector.instanceOf[payment_frequency]
+  val view: PaymentFrequencyView = app.injector.instanceOf[PaymentFrequencyView]
 
   def asDocument(form: Form[PaymentFrequency]): Document = Jsoup.parse(view(form).body)
 

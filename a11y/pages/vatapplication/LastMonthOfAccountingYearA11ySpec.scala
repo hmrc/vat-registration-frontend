@@ -4,11 +4,11 @@ package pages.vatapplication
 import forms.AnnualStaggerForm
 import helpers.A11ySpec
 import models.api.vatapplication.JanDecStagger
-import views.html.vatapplication.last_month_of_accounting_year
+import views.html.vatapplication.LastMonthOfAccountingYear
 
 class LastMonthOfAccountingYearA11ySpec extends A11ySpec {
 
-  val view: last_month_of_accounting_year = app.injector.instanceOf[last_month_of_accounting_year]
+  val view: LastMonthOfAccountingYear = app.injector.instanceOf[LastMonthOfAccountingYear]
 
   "last month of accounting year page" when {
     "rendered with no value and there are no form errors" must {

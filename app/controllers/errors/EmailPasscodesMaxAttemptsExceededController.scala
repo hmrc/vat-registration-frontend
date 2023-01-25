@@ -21,12 +21,12 @@ import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.errors.maxPasscodeAttemptsExceeded
+import views.html.errors.MaxPasscodeAttemptsExceeded
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmailPasscodesMaxAttemptsExceededController @Inject()(view: maxPasscodeAttemptsExceeded,
+class EmailPasscodesMaxAttemptsExceededController @Inject()(view: MaxPasscodeAttemptsExceeded,
                                                             val authConnector: AuthConnector,
                                                             val sessionService: SessionService
                                                            )(implicit appConfig: FrontendAppConfig,

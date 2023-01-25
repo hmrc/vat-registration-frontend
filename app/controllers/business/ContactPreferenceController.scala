@@ -22,7 +22,7 @@ import forms.ContactPreferenceForm
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.business.contact_preference
+import views.html.business.ContactPreferenceView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ContactPreferenceController @Inject()(val authConnector: AuthConnector,
                                             val sessionService: SessionService,
                                             val businessService: BusinessService,
-                                            view: contact_preference)
+                                            view: ContactPreferenceView)
                                            (implicit val appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents)

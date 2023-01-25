@@ -2,13 +2,13 @@
 package pages.errors
 
 import helpers.A11ySpec
-import views.html.errors.passcode_not_found
+import views.html.errors.PasscodeNotFound
 
 class EmailPasscodeNotFoundA11ySpec extends A11ySpec {
 
-  val view: passcode_not_found = app.injector.instanceOf[passcode_not_found]
+  val view: PasscodeNotFound = app.injector.instanceOf[PasscodeNotFound]
 
-  "the passcode_not_found page" must {
+  "the Passcode Not Found page" must {
     "pass all a11y checks" in {
       view("redirectUrl").body must passAccessibilityChecks
     }

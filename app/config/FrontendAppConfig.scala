@@ -23,8 +23,6 @@ import play.api.Configuration
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import java.nio.charset.Charset
-import java.util.Base64
 import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
@@ -47,18 +45,12 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def incompleteAttachmentsApiUrl(regId: String): String = s"$backendHost/vatreg/$regId/incomplete-attachments"
 
-  lazy val otrsRoute: String = "https://www.tax.service.gov.uk/business-registration/select-taxes"
-
   val contactFormServiceIdentifier = "vrs"
 
   lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
   lazy val feedbackUrl = s"$feedbackFrontendUrl/feedback/vat-registration"
   lazy val contactFrontendUrl: String = loadConfig("microservice.services.contact-frontend.url")
   lazy val oshLink: String = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
-  lazy val analyticsToken = loadConfig(s"google-analytics.token")
-  lazy val analyticsHost = loadConfig(s"google-analytics.host")
-  lazy val reportAProblemPartialUrl = s"$contactFrontendUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl = s"$contactFrontendUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   lazy val betaFeedbackUrl = s"$contactFrontendUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
 
   lazy val accessibilityStatementPath = loadConfig("accessibility-statement.host")
@@ -82,13 +74,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     runModeConfiguration.getOptional[String]("sosOrigin").getOrElse(appName)
   }
 
-  private def loadStringConfigBase64(key: String): String = {
-    new String(Base64.getDecoder.decode(servicesConfig.getString(key)), Charset.forName("UTF-8"))
-  }
-
   lazy val scoreKey = servicesConfig.getString("constants.score")
-
-  lazy val csrfBypassValue = loadStringConfigBase64("Csrf-Bypass-value")
 
   // Bank holidays
   lazy val bankHolidaysUrl = servicesConfig.getString("microservice.services.bank-holidays.url")

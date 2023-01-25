@@ -10,7 +10,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.i18n.MessagesApi
-import views.html.test.vat_submission_json
+import views.html.test.VatSubmissionJson
 
 import scala.concurrent.Future
 
@@ -26,7 +26,7 @@ class RetrieveVatSubmissionControllerISpec extends ControllerISpec {
     "allWent" -> "well"
   )
 
-  val view: vat_submission_json = app.injector.instanceOf[vat_submission_json]
+  val view: VatSubmissionJson = app.injector.instanceOf[VatSubmissionJson]
   val viewHtml: String = view(Json.prettyPrint(testJsonResponse))(FakeRequest("GET", url), messages, appConfig).body.trim
 
   "GET /test-only/submission-payload" must {

@@ -22,13 +22,13 @@ import forms.AnnualStaggerForm
 import models.api.vatapplication.AnnualStagger
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.vatapplication.last_month_of_accounting_year
+import views.html.vatapplication.LastMonthOfAccountingYear
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class LastMonthOfAccountingYearController @Inject()(view: last_month_of_accounting_year,
+class LastMonthOfAccountingYearController @Inject()(view: LastMonthOfAccountingYear,
                                                     val authConnector: AuthClientConnector,
                                                     val sessionService: SessionService,
                                                     vatApplicationService: VatApplicationService
