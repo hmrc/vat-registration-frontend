@@ -17,7 +17,6 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
-import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import itutil.ControllerISpec
 import play.api.mvc.Cookie
 import play.api.test.FakeRequest
@@ -27,7 +26,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class BaseControllerISpec extends ControllerISpec with FeatureSwitching {
+class BaseControllerISpec extends ControllerISpec {
 
   val messageKey = "service.name"
   val testMessage = "Register for VAT"
@@ -39,26 +38,12 @@ class BaseControllerISpec extends ControllerISpec with FeatureSwitching {
   val cyRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "cy"))
 
   "request2Messages" when {
-    "the welsh FS is disabled" must {
+    "the welsh FS" must {
       "return english text if he user has an english language cookie" in {
-        disable(WelshLanguage)
         controller.request2Messages(enRequest)("service.name") mustBe testMessage
       }
       "return english text if he user has an welsh language cookie" in {
-        disable(WelshLanguage)
-        controller.request2Messages(cyRequest)("service.name") mustBe testMessage
-      }
-    }
-    "the welsh FS is enabled" must {
-      "return english text if he user has an english language cookie" in {
-        enable(WelshLanguage)
-        controller.request2Messages(enRequest)("service.name") mustBe testMessage
-        disable(WelshLanguage)
-      }
-      "return welsh text if he user has an welsh language cookie" in {
-        enable(WelshLanguage)
         controller.request2Messages(cyRequest)("service.name") mustBe testWelshMessage
-        disable(WelshLanguage)
       }
     }
   }

@@ -17,7 +17,6 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import models.view.SummaryListRowUtils.optSummaryListRowString
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.Json
@@ -26,7 +25,7 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 
-class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
+class EligibilitySummaryBuilderSpec extends VatRegSpec {
   class Setup {
     val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
@@ -64,8 +63,7 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
       )
     }
 
-    "return a Summary with welsh translated dates when language choice is welsh and FS enabled" in new Setup {
-      enable(WelshLanguage)
+    "return a Summary with welsh translated dates when language choice is welsh" in new Setup {
       implicit val welshMessages = messagesApi.preferred(Seq(Lang("cy")))
 
       object WelshBuilder extends EligibilitySummaryBuilder(govukSummaryList)
@@ -85,28 +83,8 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec with FeatureSwitching {
           ).flatten))
         )
       )
-      disable(WelshLanguage)
     }
 
-    "return a Summary with english translated dates when language choice is welsh but FS not enabled" in new Setup {
-      enable(WelshLanguage)
-      Builder.build(fullEligibilityDataJson, testRegId) mustBe HtmlFormat.fill(
-        List(
-          govukSummaryList(SummaryList(List(
-            optSummaryListRowString("Fixed UK establishment", Some("Yes"), Some(url("fixedEstablishment"))),
-            optSummaryListRowString("Business type", Some("UK company (includes Limited and Unlimited companies)"), Some(url("businessEntity"))),
-            optSummaryListRowString("Agricultural Flat Rate Scheme", Some("No"), Some(url("agriculturalFlatRateScheme"))),
-            optSummaryListRowString("Activities over the next 12 months", Some("No"), Some(url("internationalActivities"))),
-            optSummaryListRowString("Whose business to register", Some("Your own"), Some(url("registeringBusiness"))),
-            optSummaryListRowString("VAT registration reason", Some("It’s selling goods or services and needs or wants to charge VAT to customers"), Some(url("registrationReason"))),
-            optSummaryListRowString("Taxable turnover over £85,000 in 12 months", Some("Yes - on 16 July 2017"), Some(url("thresholdInTwelveMonths"))),
-            optSummaryListRowString("Expect taxable turnover over £85,000 in 30 days past", Some("Yes - on 23 May 2017"), Some(url("thresholdPreviousThirtyDays"))),
-            optSummaryListRowString("VAT registration exception", Some("No"), Some(url("vatRegistrationException")))
-          ).flatten))
-        )
-      )
-      disable(WelshLanguage)
-    }
 
     "return an exception when invalid json returned from vatregservice" in new Setup {
       intercept[Exception](Builder.build(Json.obj("invalid" -> "json"), testRegId))

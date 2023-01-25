@@ -19,7 +19,6 @@ package services
 import common.enums.VatRegStatus
 import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import connectors._
-import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import models._
 import models.api._
 import play.api.i18n.MessagesApi
@@ -36,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector,
                                        registrationApiConnector: RegistrationApiConnector,
                                        val sessionService: SessionService
-                                      )(implicit ec: ExecutionContext) extends FeatureSwitching {
+                                      )(implicit ec: ExecutionContext) {
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration[VatScheme](profile.registrationId)
@@ -75,7 +74,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
 
   def submitRegistration()(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_], messagesApi: MessagesApi): Future[DESResponse] = {
     val lang = request.cookies.get(messagesApi.langCookieName) match {
-      case Some(langCookie) if isEnabled(WelshLanguage) => langCookie.value
+      case Some(langCookie) => langCookie.value
       case _ => "en"
     }
 

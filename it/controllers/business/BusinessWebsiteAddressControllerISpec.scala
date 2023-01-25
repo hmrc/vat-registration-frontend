@@ -2,7 +2,6 @@
 
 package controllers.business
 
-import featureswitch.core.config.WelshLanguage
 import itutil.ControllerISpec
 import models.Business
 import models.api.EligibilitySubmissionData
@@ -66,29 +65,12 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
 
         response.status mustBe SEE_OTHER
-        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+        response.header("LOCATION") mustBe Some(controllers.business.routes.VatCorrespondenceController.show.url)
       }
     }
 
     "BusinessContact is complete" should {
-      "Post the block to the backend and redirect to contact preference page" in new Setup {
-
-        given()
-          .user.isAuthorised()
-          .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-          .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-        val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
-
-        response.status mustBe SEE_OTHER
-        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
-      }
-
-      "Post the block to the backend and redirect to vat correspondence page when WelshLanguage feature switch is enabled" in new Setup {
-        enable(WelshLanguage)
+      "Post the block to the backend and redirect to vat correspondence page" in new Setup {
         given()
           .user.isAuthorised()
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
@@ -101,7 +83,6 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
 
         response.status mustBe SEE_OTHER
         response.header("LOCATION") mustBe Some(controllers.business.routes.VatCorrespondenceController.show.url)
-        disable(WelshLanguage)
       }
 
       "Post the block to the backend and redirect to the next page and remove trailing slashes when necessary" in new Setup {
@@ -117,7 +98,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(invalidWebsiteAddress))))
 
         response.status mustBe SEE_OTHER
-        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+        response.header("LOCATION") mustBe Some(controllers.business.routes.VatCorrespondenceController.show.url)
       }
 
       "Post the block to the backend and redirect to the next page and not remove trailing slashes when not necessary" in new Setup {
@@ -133,7 +114,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(validWebsiteAddress))))
 
         response.status mustBe SEE_OTHER
-        response.header("LOCATION") mustBe Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)
+        response.header("LOCATION") mustBe Some(controllers.business.routes.VatCorrespondenceController.show.url)
       }
     }
 

@@ -244,6 +244,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     website = Some("/test/url"),
     ppobAddress = Some(testAddress),
     contactPreference = Some(Email),
+    welshLanguage = Some(false),
     labourCompliance = Some(complianceWithoutLabour),
     businessDescription = Some(testBusinessActivityDescription),
     mainBusinessActivity = Some(sicCode)

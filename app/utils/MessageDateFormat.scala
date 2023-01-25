@@ -16,13 +16,12 @@
 
 package utils
 
-import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import play.api.i18n.Messages
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-object MessageDateFormat extends FeatureSwitching {
+object MessageDateFormat {
 
   private[utils] val monthsInCy = Map(
     1 -> "Ionawr",
@@ -41,7 +40,7 @@ object MessageDateFormat extends FeatureSwitching {
 
   def format(date: LocalDate)(implicit messages: Messages): String = {
     val formatter = messages.lang.code match {
-      case "cy" if isEnabled(WelshLanguage) => DateTimeFormatter.ofPattern(s"d '${monthsInCy(date.getMonthValue)}' yyyy")
+      case "cy" => DateTimeFormatter.ofPattern(s"d '${monthsInCy(date.getMonthValue)}' yyyy")
       case _ => DateTimeFormatter.ofPattern("d MMMM yyyy")
     }
 

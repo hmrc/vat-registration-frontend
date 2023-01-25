@@ -34,8 +34,7 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubUpscan,
     StubBars,
     StubPartnershipIdentification,
-    StubMinorEntityIdentification,
-    WelshLanguage
+    StubMinorEntityIdentification
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -88,9 +87,4 @@ case object StubPartnershipIdentification extends FeatureSwitch {
 case object StubMinorEntityIdentification extends FeatureSwitch {
   val configName = "feature-switch.minor-entity-identification"
   val displayName = "Stub Minor Entity Identification"
-}
-
-case object WelshLanguage extends FeatureSwitch {
-  override val configName: String = "feature-switch.welsh-language-frontend"
-  override val displayName: String = "Enable welsh translation"
 }

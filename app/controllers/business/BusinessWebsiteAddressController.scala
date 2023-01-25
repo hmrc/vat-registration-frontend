@@ -18,7 +18,6 @@ package controllers.business
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.WelshLanguage
 import forms.BusinessWebsiteAddressForm
 import models.CurrentProfile
 import play.api.mvc.{Action, AnyContent, Result}
@@ -75,11 +74,7 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
   private def formSuccess(businessWebsiteAddress: String)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Result] =
     businessService.updateBusiness(Website(businessWebsiteAddress)).map {
       _ =>
-        if(isEnabled(WelshLanguage)) {
           Redirect(controllers.business.routes.VatCorrespondenceController.show)
-        } else {
-          Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
-        }
     }
 
 }

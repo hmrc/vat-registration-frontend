@@ -18,7 +18,6 @@ package viewmodels.tasklist
 
 import config.FrontendAppConfig
 import controllers.partners.PartnerIndexValidation.minPartnerIndex
-import featureswitch.core.config._
 import models.api._
 import models.external.{MinorEntity, PartnershipIdEntity}
 import models.{Business, CurrentProfile}
@@ -28,7 +27,7 @@ import services.BusinessService
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService, appConfig: FrontendAppConfig) extends FeatureSwitching {
+class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService, appConfig: FrontendAppConfig) {
 
   def build(vatScheme: VatScheme)
            (implicit profile: CurrentProfile,
@@ -81,14 +80,9 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         scheme.business.exists(_.telephoneNumber.isDefined),
         scheme.business.exists(_.email.isDefined),
         scheme.business.exists(_.hasWebsite.isDefined),
+        scheme.business.exists(_.welshLanguage.isDefined),
         scheme.business.exists(_.contactPreference.isDefined)
       ) ++ {
-        if (isEnabled(WelshLanguage)) {
-          Seq(scheme.business.exists(_.welshLanguage.isDefined))
-        } else {
-          Nil
-        }
-      } ++ {
         if (scheme.business.exists(_.hasWebsite.contains(true))) {
           Seq(scheme.business.exists(_.website.isDefined))
         } else {
