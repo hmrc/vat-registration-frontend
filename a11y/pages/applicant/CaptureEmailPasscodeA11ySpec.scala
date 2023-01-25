@@ -3,11 +3,11 @@ package pages.applicant
 
 import forms.EmailPasscodeForm
 import helpers.A11ySpec
-import views.html.applicant.capture_email_passcode
+import views.html.applicant.CaptureEmailPasscode
 
 class CaptureEmailPasscodeA11ySpec extends A11ySpec {
 
-  val view = app.injector.instanceOf[capture_email_passcode]
+  val view = app.injector.instanceOf[CaptureEmailPasscode]
   val form = EmailPasscodeForm.form
 
   "the email passcode page" when {

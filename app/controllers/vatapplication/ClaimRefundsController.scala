@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ClaimVatRefunds
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
 import uk.gov.hmrc.http.InternalServerException
-import views.html.vatapplication.claim_refunds_view
+import views.html.vatapplication.ClaimRefunds
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +34,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
                                        val authConnector: AuthClientConnector,
                                        val vatApplicationService: VatApplicationService,
                                        val vatRegistrationService: VatRegistrationService,
-                                       val claimRefundsView: claim_refunds_view)
+                                       val claimRefundsView: ClaimRefunds)
                                       (implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents)

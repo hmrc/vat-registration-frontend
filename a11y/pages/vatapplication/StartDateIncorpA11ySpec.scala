@@ -5,11 +5,11 @@ import forms.vatapplication.VoluntaryDateForm
 import helpers.A11ySpec
 import models.DateSelection
 import services.TimeService
-import views.html.vatapplication.start_date_incorp_view
+import views.html.vatapplication.StartDateIncorp
 
 class StartDateIncorpA11ySpec extends A11ySpec {
 
-  val view: start_date_incorp_view = app.injector.instanceOf[start_date_incorp_view]
+  val view: StartDateIncorp = app.injector.instanceOf[StartDateIncorp]
 
   val timeService = app.injector.instanceOf[TimeService]
   val dateMin = timeService.today

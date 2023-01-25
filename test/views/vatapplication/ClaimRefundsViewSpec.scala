@@ -20,12 +20,12 @@ import org.jsoup.Jsoup
 import play.api.data.Form
 import play.api.data.Forms.{boolean, single}
 import views.VatRegViewSpec
-import views.html.vatapplication.claim_refunds_view
+import views.html.vatapplication.ClaimRefunds
 
 class ClaimRefundsViewSpec extends VatRegViewSpec {
 
   val form = Form(single("value" -> boolean))
-  val view = app.injector.instanceOf[claim_refunds_view]
+  val view = app.injector.instanceOf[ClaimRefunds]
   implicit val doc = Jsoup.parse(view(form).body)
 
   object ExpectedContent {

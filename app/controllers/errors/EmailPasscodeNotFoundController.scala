@@ -21,12 +21,12 @@ import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.errors.passcode_not_found
+import views.html.errors.PasscodeNotFound
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class EmailPasscodeNotFoundController @Inject()(view: passcode_not_found,
+class EmailPasscodeNotFoundController @Inject()(view: PasscodeNotFound,
                                                 val authConnector: AuthConnector,
                                                 val sessionService: SessionService
                                                )(implicit appConfig: FrontendAppConfig,

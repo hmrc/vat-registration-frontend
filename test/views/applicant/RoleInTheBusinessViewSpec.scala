@@ -21,7 +21,7 @@ import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.applicant.role_in_the_business
+import views.html.applicant.RoleInTheBusiness
 
 class RoleInTheBusinessViewSpec extends VatRegViewSpec {
 
@@ -40,7 +40,7 @@ class RoleInTheBusinessViewSpec extends VatRegViewSpec {
   }
 
   "Role In The Business Page" should {
-    val view: role_in_the_business = app.injector.instanceOf[role_in_the_business]
+    val view: RoleInTheBusiness = app.injector.instanceOf[RoleInTheBusiness]
     implicit val doc: Document = Jsoup.parse(view(RoleInTheBusinessForm(UkCompany, isThirdParty = false), name = Some(ExpectedContent.name), partyType = UkCompany).body)
 
     "have the correct title" in new ViewSetup() {

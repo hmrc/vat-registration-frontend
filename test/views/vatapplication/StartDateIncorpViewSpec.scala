@@ -21,11 +21,11 @@ import models.DateSelection
 import org.jsoup.Jsoup
 import services.TimeService
 import views.VatRegViewSpec
-import views.html.vatapplication.start_date_incorp_view
+import views.html.vatapplication.StartDateIncorp
 
 class StartDateIncorpViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[start_date_incorp_view]
+  val view = app.injector.instanceOf[StartDateIncorp]
   val timeService = app.injector.instanceOf[TimeService]
   val dateMin = timeService.today
   val dateMax = timeService.today

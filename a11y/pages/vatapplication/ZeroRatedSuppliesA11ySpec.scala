@@ -4,12 +4,12 @@ package pages.vatapplication
 import forms.ZeroRatedSuppliesForm
 import helpers.A11ySpec
 import play.api.mvc.Call
-import views.html.vatapplication.zero_rated_supplies
+import views.html.vatapplication.ZeroRatedSupplies
 
 class ZeroRatedSuppliesA11ySpec extends A11ySpec {
 
   val testCall: Call = Call("POST", "/test-url")
-  val view: zero_rated_supplies = app.injector.instanceOf[zero_rated_supplies]
+  val view: ZeroRatedSupplies = app.injector.instanceOf[ZeroRatedSupplies]
 
   "zero rated supplies page" when {
     val form = ZeroRatedSuppliesForm.form(15000)

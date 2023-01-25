@@ -1,13 +1,10 @@
 # Global
-
 site.govuk                              = GOV.UK
 service.name                            = Register for VAT
 app.title                               = Register for VAT
 app.phaseBanner1                        = This is a new service - your
 app.phaseBanner2                        = feedback (opens in new tab)
 app.phaseBanner3                        = will help us to improve it.
-app.common.not.applied                  = Not applied
-app.common.applied                      = Applied
 app.common.yes                          = Yes
 app.common.no                           = No
 app.common.continue                     = Save and continue
@@ -18,21 +15,17 @@ app.common.confirmAndContinue           = Confirm and continue
 app.common.errorSummaryLabel            = There is a problem
 app.common.change                       = Change
 app.common.remove                       = Remove
-app.common.gbp.symbol                   = £
-app.common.back                         = Back
-app.common.openInNewWindow              = (opens in a new window)
 app.common.openInNewTab                 = (opens in new tab)
 app.common.signOut                      = Sign out
 error.required                          = Select an option
-error.unknown                           = Invalid input
 error.browser.title.prefix              = Error:
 validation.numeric                      = Enter numbers only
-getHelp.linkText                        = Is this page not working properly? (opens in new tab)
 date.day                                = Day
 date.month                              = Month
 date.year                               = Year
 radio.item.divider.or                   = or
 
+# Tasklist
 tasklist.heading                                    = Register for VAT
 tasklist.button                                     = Check answers and submit
 tasklist.applicationIncomplete                      = Application incomplete
@@ -72,7 +65,7 @@ tasklist.attachments.documentsAndForms              = Documents and forms
 tasklist.cya.heading                                = Send application
 tasklist.vatRegistration.cya.submit                 = Check answers and submit
 
-# Ordinal numbers
+# Ordinal Numbers
 ordinals.1 = First
 ordinals.2 = Second
 ordinals.3 = Third
@@ -95,20 +88,10 @@ ordinals.18 = Eighteenth
 ordinals.19 = Nineteenth
 ordinals.20 = Twentieth
 
-#Sections
-section.vatRegistration                 = VAT registration
-
-#Feedback
-page.feedback.title                     = Feedback
-page.feedback.thank-you.title           = Thank you
-
-#Address journeys
-addressLookup.common.homeNavHref                            = http://www.hmrc.gov.uk/
-addressLookup.common.navTitle                               = Register for VAT
+# Address Journeys
 addressLookup.common.phaseBannerHtml                        = This is a new service. Help us improve it - send your <a href="https://www.tax.service.gov.uk/register-for-vat/feedback">feedback</a>.
-addressLookup.common.deskProServiceName                     = SCRS
 
-# homeAddress
+# Home Address
 addressLookup.homeAddress.lookupPage.title                   = Find your home address
 addressLookup.homeAddress.lookupPage.heading                 = Find your home address
 addressLookup.homeAddress.lookupPage.filterLabel             = Property name or number
@@ -137,7 +120,7 @@ addressLookup.homeAddress.confirmPage.submitLabel            = Continue
 addressLookup.homeAddress.countryPicker.title                = Find your home address
 addressLookup.homeAddress.countryPicker.heading              = Find your home address
 
-# international.homeAddress
+# International Home Address
 international.addressLookup.homeAddress.editPage.title                     = Enter your home address
 international.addressLookup.homeAddress.editPage.heading                   = Enter your home address
 international.addressLookup.homeAddress.editPage.line1Label                = Address line 1
@@ -153,7 +136,7 @@ international.addressLookup.homeAddress.confirmPage.heading                = Con
 international.addressLookup.homeAddress.confirmPage.changeLinkText         = Edit this address
 international.addressLookup.homeAddress.confirmPage.submitLabel            = Continue
 
-# applicantAddress
+# Applicant Address
 addressLookup.applicantAddress.lookupPage.title                   = Find their address
 addressLookup.applicantAddress.lookupPage.heading                 = Find their address
 addressLookup.applicantAddress.lookupPage.filterLabel             = Property name or number
@@ -183,7 +166,7 @@ addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
 addressLookup.applicantAddress.countryPicker.title                = Find their address
 addressLookup.applicantAddress.countryPicker.heading              = Find their address
 
-# international.applicantAddress
+# International Applicant Address
 international.addressLookup.applicantAddress.editPage.title                     = Enter their address
 international.addressLookup.applicantAddress.editPage.heading                   = Enter their address
 international.addressLookup.applicantAddress.editPage.line1Label                = Address line 1
@@ -199,7 +182,7 @@ international.addressLookup.applicantAddress.confirmPage.heading                
 international.addressLookup.applicantAddress.confirmPage.changeLinkText         = Edit this address
 international.addressLookup.applicantAddress.confirmPage.submitLabel            = Continue
 
-# addressThreeYearsOrLess
+# Address Three Years Or Less
 addressLookup.addressThreeYearsOrLess.lookupPage.title                   = Find your previous home address
 addressLookup.addressThreeYearsOrLess.lookupPage.heading                 = Find your previous home address
 addressLookup.addressThreeYearsOrLess.lookupPage.filterLabel             = Property name or number (optional)
@@ -230,7 +213,7 @@ addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit 
 addressLookup.addressThreeYearsOrLess.countryPicker.title                = Find your home address
 addressLookup.addressThreeYearsOrLess.countryPicker.heading              = Find your home address
 
-# international.addressThreeYearsOrLess
+# International Address Three Years Or Less
 international.addressLookup.addressThreeYearsOrLess.editPage.title                     = Enter your previous home address
 international.addressLookup.addressThreeYearsOrLess.editPage.heading                   = Enter your previous home address
 international.addressLookup.addressThreeYearsOrLess.editPage.line1Label                = Address line 1
@@ -247,7 +230,7 @@ international.addressLookup.addressThreeYearsOrLess.confirmPage.heading         
 international.addressLookup.addressThreeYearsOrLess.confirmPage.submitLabel            = Continue
 international.addressLookup.addressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
-# applicantAddressThreeYearsOrLess
+# Applicant Address Three Years Or Less
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.title                   = Find their previous address
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.heading                 = Find their previous address
 addressLookup.applicantAddressThreeYearsOrLess.lookupPage.filterLabel             = Property name or number (optional)
@@ -278,7 +261,7 @@ addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText       
 addressLookup.applicantAddressThreeYearsOrLess.countryPicker.title                = Find their previous address
 addressLookup.applicantAddressThreeYearsOrLess.countryPicker.heading              = Find their previous address
 
-# international.applicantAddressThreeYearsOrLess
+# International Applicant Address Three Years Or Less
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.title                     = Enter their previous address
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.heading                   = Enter their previous address
 international.addressLookup.applicantAddressThreeYearsOrLess.editPage.line1Label                = Address line 1
@@ -295,7 +278,7 @@ international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.heading
 international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.submitLabel            = Continue
 international.addressLookup.applicantAddressThreeYearsOrLess.confirmPage.changeLinkText         = Edit this address
 
-# businessActivities
+# Business Activities
 addressLookup.businessActivities.lookupPage.title                   = Find the primary place of business
 addressLookup.businessActivities.lookupPage.heading                 = Find the primary place of business
 addressLookup.businessActivities.lookupPage.filterLabel             = Property name or number
@@ -323,7 +306,7 @@ addressLookup.businessActivities.confirmPage.heading                = Confirm th
 addressLookup.businessActivities.confirmPage.submitLabel            = Continue
 addressLookup.businessActivities.confirmPage.changeLinkText         = Edit this address
 
-# transactorAddress
+# Transactor Address
 addressLookup.transactorAddress.lookupPage.title                   = Find your address
 addressLookup.transactorAddress.lookupPage.heading                 = Find your address
 addressLookup.transactorAddress.lookupPage.filterLabel             = Property name or number
@@ -365,7 +348,7 @@ addressLookup.transactorAddress.confirmPage.submitLabel            = Continue
 addressLookup.transactorAddress.countryPicker.title                = Find your home address
 addressLookup.transactorAddress.countryPicker.heading              = Find your home address
 
-# individualPartner
+# Individual Partner
 addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
 addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
 addressLookup.individualPartner.lookupPage.filterLabel             = Property name or number
@@ -394,7 +377,7 @@ addressLookup.individualPartner.confirmPage.submitLabel            = Continue
 addressLookup.individualPartner.countryPicker.title                = Where is {0}’s home address?
 addressLookup.individualPartner.countryPicker.heading              = Where is {0}’s home address?
 
-# international.individualPartner
+# International Individual Partner
 international.addressLookup.individualPartner.lookupPage.title                   = Find {0}’s home address
 international.addressLookup.individualPartner.lookupPage.heading                 = Find {0}’s home address
 international.addressLookup.individualPartner.lookupPage.filterLabel             = Property name or number
@@ -416,7 +399,7 @@ international.addressLookup.individualPartner.confirmPage.heading               
 international.addressLookup.individualPartner.confirmPage.changeLinkText         = Edit this address
 international.addressLookup.individualPartner.confirmPage.submitLabel            = Continue
 
-# companyPartner
+# Company Partner
 addressLookup.companyPartner.lookupPage.title                   = Find {0}’s registered office address
 addressLookup.companyPartner.lookupPage.heading                 = Find {0}’s registered office address
 addressLookup.companyPartner.lookupPage.filterLabel             = Property name or number
@@ -442,12 +425,12 @@ addressLookup.companyPartner.confirmPage.heading                = Confirm {0}’
 addressLookup.companyPartner.confirmPage.changeLinkText         = Edit this address
 addressLookup.companyPartner.confirmPage.submitLabel            = Continue
 
-#Timeout Page
+# Timeout Page
 pages.timeout.heading                   = Your session has timed out due to inactivity
 pages.timeout.body.one                  = Your answers have been saved.
 pages.timeout.body.url                  = Sign in to <a href="{0}">continue registration</a>.
 
-##Submission Timeout Page
+# Submission Timeout Page
 pages.retrySubmission.heading           = We could not process your application
 pages.retrySubmission.p1                = Sorry, there is a technical problem and we could not process your application. Any details you entered have been saved.
 pages.retrySubmission.p2                = Please resend your application.
@@ -458,20 +441,20 @@ pages.failedSubmission.heading          = There’s a problem
 pages.failedSubmission.p1               = You cannot submit this application. You need to register for VAT using the
 pages.failedSubmission.link             = VAT1 form
 
-##Passcode Not Found Page
+# Passcode Not Found Page
 page.passcodeNotFound.heading           = You need to start again
 page.passcodeNotFound.p1                = The code we sent you cannot be found or has expired.
 page.passcodeNotFound.p2a               = You will need to
 page.passcodeNotFound.linkText          = get a new code
 page.passcodeNotFound.p2b               = to continue with the registration.
 
-##Max Passcode Attempts Exceeded
+# Max Passcode Attempts Exceeded Page
 page.MaxPasscodeAttemptsExceeded.heading           = You need to start again
 page.MaxPasscodeAttemptsExceeded.p1                = This is because you have entered the wrong code too many times.
 page.MaxPasscodeAttemptsExceeded.p2                = To start again you need to
 page.MaxPasscodeAttemptsExceeded.link              = sign out
 
-##Max Confirmation Code Attempts Exceeded
+# Max Confirmation Code Attempts Exceeded Page
 page.MaxConfirmationCodeAttemptsExceeded.heading           = You have reached the maximum number of confirmation code requests
 page.MaxConfirmationCodeAttemptsExceeded.p                 = We cannot send another code to {0}. If it is not in your inbox, spam or junk folder, you can
 page.MaxConfirmationCodeAttemptsExceeded.link              = provide another email address
@@ -506,6 +489,7 @@ validation.startDate.range                            = Enter a date between {0}
 validation.startDate.invalid                          = Enter a valid date
 validation.startDate.missing                          = Enter a date
 
+# Currently Trading Page
 currentlyTrading.heading.past                         = Was the business trading taxable goods or services by {0}?
 currentlyTrading.heading.future                       = Will the business be trading taxable goods or services by {0}?
 currentlyTrading.no.past                              = No - it started trading after this date
@@ -533,10 +517,6 @@ captureTradingName.hint                         = You cannot include ‘limited�
 validation.captureTradingName.invalid           = Enter a valid trading name
 validation.captureTradingName.maxlen            = Enter a trading name using 160 characters or less
 validation.captureTradingName.missing           = Enter a trading name
-
-# Voluntary Registration Reason Summary
-pages.summary.voluntaryReason.sells                           = The company is already selling goods or services
-pages.summary.voluntaryReason.intendsToSell                   = The company intends to sell good or services in the future
 
 # Mandatory Start Date No Choice page
 pages.start.date.no.choice.heading                              = VAT registration start date
@@ -591,7 +571,7 @@ pages.vatExemption.heading                                  = Does the business 
 pages.vatExemption.para1                                    = The business may not have to register for VAT if it sells mainly or only zero-rated goods or services.
 validation.vatExemption.missing                             = Select yes if the business wants to apply for a VAT exemption
 
-# Vat Return Frequency
+# Vat Return Frequency Page
 pages.vat.return.frequency.heading                         = When will the business do its VAT Returns?
 pages.vat.return.frequency.para                            = Usually, VAT-registered businesses submit their VAT returns and payments to HM Revenue and Customs 4 times a year.
 pages.vat.return.frequency.radio.monthly                   = Monthly
@@ -615,13 +595,13 @@ pages.accounting.period.radio.february                      = February, May, Aug
 pages.accounting.period.radio.march                         = March, June, September and December
 validation.accounting.period.missing                        = Select the period the business will submit its VAT returns
 
-##Vat Correspondence Page
+# Vat Correspondence Page
 pages.vatCorrespondence.heading                        = What language should we send VAT correspondence in?
 pages.vatCorrespondence.english                        = English
 pages.vatCorrespondence.welsh                          = Welsh
 vatCorrespondence.error.required                       = Select a language for VAT correspondence
 
-##Contact Preference Page
+# Contact Preference Page
 pages.contactPreference.title                          = How should we contact the business about VAT?
 pages.contactPreference.heading                        = How should we contact the business about VAT?
 pages.contactPreference.text1                          = We can send an email when there is a new message about VAT.
@@ -630,7 +610,7 @@ pages.contactPreference.letter                         = Letter
 pages.contactPreference.email                          = Email
 contactPreference.error.required                       = Select how you would like the business to be contacted
 
-##Business Activity Description
+# Business Activity Description Page
 pages.business.activity.description.title                     = What does the business do?
 pages.business.activity.description.heading                   = What does the business do?
 pages.business.activity.description.label                     = Describe the type of goods or services the business sells.
@@ -729,7 +709,7 @@ cya.transactor.homeAddress                           = Home address
 cya.transactor.telephoneNumber                       = Telephone number
 cya.transactor.emailAddress                          = Email address
 
-# CYA About the business
+# Summary About The Business Details
 cya.aboutTheBusiness.partnershipMembers             = Additional members of the partnership
 cya.aboutTheBusiness.homeAddress                    = Primary place of business
 cya.aboutTheBusiness.emailBusiness                  = Business email address
@@ -764,7 +744,7 @@ cya.grsDetails.trustSaPostcode                       = Self Assessment postcode
 cya.grsDetails.overseasIdentifier                    = Overseas tax identifier
 cya.grsDetails.overseasCountry                       = Country of overseas tax identifier
 
-# CYA Registration Details
+# Summary Registration Details
 cya.registrationDetails.startDate                               = VAT registration start date
 cya.registrationDetails.accountingPeriod                        = VAT Returns
 cya.registrationDetails.accountingPeriod.monthly                = Once a month
@@ -836,15 +816,15 @@ cya.heading.vatRegDetails                            = VAT Registration Details
 cya.heading.obi                                      = {0} other business involvement
 
 # Error Pages
-error.error_template.tryagain                        = Try again
+error.errorTemplate.tryAgain                         = Try again
 
-# Individual Affinity
+# Individual Affinity Kickout Page
 page.IndividualAffinityKickOut.heading               = You need to use a business tax account for this service
 page.IndividualAffinityKickOut.p1                    = To register for VAT and manage your VAT online, you need to use a business tax account. The account you have signed into is for personal tax.
 page.IndividualAffinityKickOut.signInLink            = Sign into your organisation’s business tax account
 page.IndividualAffinityKickOut.createLink            = Create a business tax account
 
-# Company Bank Account
+# Company Bank Account Page
 pages.hasCompanyBankAccount.heading                   = Are you able to provide bank or building society account details for the business?
 pages.hasCompanyBankAccount.para                      = If we owe the business money, we can repay this directly into your bank by BACS. This is faster and more secure than HMRC cheques.
 pages.hasCompanyBankAccount.para2                     = The account does not have to be a dedicated business account but it must be:
@@ -854,7 +834,7 @@ pages.hasCompanyBankAccount.bullet3                   = in the UK
 pages.hasCompanyBankAccount.bullet4                   = able to receive BACS payments
 validation.hasCompanyBankAccount.missing              = Select yes if you are able to provide bank or building society details for the business
 
-# No UK Bank Account
+# No UK Bank Account Page
 pages.noUKBankAccount.heading                        = Why are you unable to provide bank account details for the business?
 pages.noUKBankAccount.beingSetup                     = It is being set up but is taking a while
 pages.noUKBankAccount.beingSetupOrNameChange         = The bank account is still being set up (for example, the name is being changed from a sole trader to a limited company)
@@ -882,11 +862,11 @@ validation.companyBankAccount.sortCode.missing      = Enter the account sort cod
 validation.companyBankAccount.sortCode.invalid      = Enter a valid account sort code
 validation.companyBankAccount.invalidCombination    = Enter a valid bank account number and sort code
 
-# Main Business Activity
+# Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?
 validation.mainBusinessActivity.missing                   = Select the business’s main source of income
 
-# Confirm SIC
+# Confirm SIC Codes Page
 pages.confirmsic.heading                                  = You are about to confirm the business’s Standard Industry Classification (SIC) codes for VAT
 pages.confirmsic.p1                                       = A SIC code describes a business activity.
 pages.confirmsic.p2                                       = Every business has one or more SIC codes. If the business registered with Companies House, it had to provide at least one.
@@ -900,19 +880,19 @@ pages.compliance.introduction.heading                        = Tell us more abou
 pages.compliance.introduction.para1                          = We’re going to ask you a few questions so we can understand what the business does.
 
 # Labour Compliance
-# Does Company Provide Workers
+# Does Company Provide Workers Page
 pages.labourCompliance.supplyWorkers.heading                 = Does the business supply workers to provide a service to another business?
 validation.labourCompliance.supplyWorkers.missing            = Select yes if the business supplies workers to provide a service to another business
 
-# Workers
+# Workers Page
 pages.labourCompliance.workers.heading                       = How many workers does the business supply?
 validation.labourCompliance.numberOfWorkers.missing          = Enter the number of workers the business supplies
 
-# Intermediary supply
+# Intermediary Supply Workers Page
 pages.labourCompliance.intermediarySupply.heading            = Is the business an intermediary arranging the supply of workers?
 validation.labourCompliance.intermediarySupply.missing       = Select yes if the business is an intermediary arranging the supply of workers
 
-# Apply For Eori
+# Apply For Eori Page
 pages.applyForEori.heading                  = Do you need an EORI number?
 pages.applyForEori.p1                       = The business may need an Economic Operators Registration and Identification number (EORI number) if it moves goods:
 pages.applyForEori.bullet1                  = between Great Britain (England, Scotland and Wales) or the Isle of Man and any other country (including the EU)
@@ -925,7 +905,7 @@ pages.applyForEori.p2.bullet2               = is based in the Channel Islands an
 pages.applyForEori.linkText                 = Find out more about EORI numbers
 validation.applyForEori.missing             = Select yes if you need an EORI number
 
-# Overseas Apply For Eori
+# Overseas Apply For Eori Page
 pages.applyForEori.overseas.p1                  = If your business is not based in the country you’re moving goods to or from, you should get an EORI number if you’re:
 pages.applyForEori.overseas.bullet1.start       = making a customs declaration -
 pages.applyForEori.overseas.bullet1.linkText    = check if you’re eligible to make a customs declaration
@@ -948,27 +928,7 @@ pages.applyForEori.overseas.p2.linkText         = appoint someone to deal with c
 pages.applyForEori.overseas.p2.end              = The person you appoint will need to get the EORI number instead of you.
 pages.applyForEori.overseas.p3                  = If you’re based in the Channel Islands and you move goods to or from the UK, you do not need an EORI number. You’ll need an EORI number if you use HMRC’s customs systems like Customs Handling of Import and Export Freight (CHIEF).
 
-# Applicant Home Address Page
-pages.applicantHomeAddress.title                           = What is the applicant’s home address?
-pages.applicantHomeAddress.heading                         = What is your home address?
-pages.applicantHomeAddress.different.address               = A different address
-validation.applicantHomeAddress.missing                    = Enter the address
-
-# Applicant Completion Capacity
-pages.completionCapacity.title                           = Who is registering the company for VAT?
-pages.completionCapacity.heading                         = Who is registering the company for VAT?
-pages.completionCapacity.panel.title                     = What if these company applicants are wrong?
-pages.completionCapacity.panel.p1                        = If the company applicants shown are wrong,
-pages.completionCapacity.panel.p1.link                   = tell Companies House
-pages.completionCapacity.panel.p1.1                      = It will take less than 24 hours for Companies House to confirm the changes via email.
-pages.completionCapacity.panel.p2                        = After you get the email,
-pages.completionCapacity.panel.p2.link                   = sign back into this service from GOV.UK
-pages.completionCapacity.panel.p2.1                      = to continue your application.
-pages.completionCapacity.panel.p3                        = If you’re an agent for the company, you’ll need to log in to Government Gateway using your agent ID and
-pages.completionCapacity.panel.p3.link                   = register for VAT with another HMRC service.
-validation.completionCapacity.missing                    = Tell us who is registering the company for VAT
-
-# Role In The Business
+# Role In The Business Page
 roleInTheBusiness.yourHeading                           = What is your role in the business?
 roleInTheBusiness.namedHeading                          = What is {0}’s role in the business?
 roleInTheBusiness.radio1                                = Director
@@ -979,19 +939,19 @@ roleInTheBusiness.radio5                                = Other
 validation.roleInTheBusiness.missing                    = Select your role in the business
 validation.roleInTheBusiness.other.missing              = Enter your role in the business
 validation.roleInTheBusiness.other.maxlen               = Your role in the business must be 100 characters or less
-validation.roleInTheBusiness.other.invalid              = Your role in the business cannot include special characters such as exclaimation marks, colons or commas
+validation.roleInTheBusiness.other.invalid              = Your role in the business cannot include special characters such as exclamation marks, colons or commas
 validation.roleInTheBusiness.3pt.missing                = Select the role in the business
 validation.roleInTheBusiness.3pt.other.missing          = Enter the role in the business
 validation.roleInTheBusiness.3pt.other.maxlen           = The role in the business must be 100 characters or less
-validation.roleInTheBusiness.3pt.other.invalid          = The role in the business cannot include special characters such as exclaimation marks, colons or commas
+validation.roleInTheBusiness.3pt.other.invalid          = The role in the business cannot include special characters such as exclamation marks, colons or commas
 
-# Former Name
+# Former Name Page
 pages.formerName.yourHeading                             = Have you ever changed your name?
 pages.formerName.namedHeading                            = Has {0} ever changed their name?
 pages.formerName.married                                 = This could be if they got married or changed their name by deed poll.
 validation.formerName.choice.missing                     = Select yes if there’s been a name change
 
-# Former Name Capture
+# Former Name Capture Page
 pages.formerNameCapture.yourHeading                      = What was your previous name?
 pages.formerNameCapture.namedHeading                     = What was {0}’s previous name?
 pages.formerNameCapture.first.label                      = First name
@@ -1003,7 +963,7 @@ validation.formerNameCapture.last.invalid                = Enter a valid last na
 validation.formerNameCapture.first.maxlen                = Enter a name using 35 characters or less
 validation.formerNameCapture.last.maxlen                 = Enter a name using 35 characters or less
 
-# Former Name Date
+# Former Name Date Page
 pages.formerNameDate.yourHeading                         = When did you change your name?
 pages.formerNameDate.namedHeading                        = When did {0} change their name?
 pages.formerNameDate.hint1                               = For example, 27 3 2007
@@ -1012,31 +972,11 @@ validation.formerNameDate.missing                        = Enter the date when t
 validation.formerNameDate.range.below                    = Enter a date which is on or after the date of birth
 validation.formerNameDate.range.above                    = Enter a date that is in the past
 
-# Previous Address Question
+# Previous Address Question Page
 pages.previousAddressQuestion.yourHeading                = Have you lived at this home address for 3 years or more?
 pages.previousAddressQuestion.namedHeading               = Has {0} lived at this home address for 3 years or more?
 validation.previousAddressQuestion.missing               = Select yes if you have lived at your current address for 3 years or more
 validation.previousAddressQuestionThirdParty.missing     = Select yes if they have lived at the current address for 3 years or more
-
-# PPOB
-pages.ppob.title                                        = What is the ’principal place of business’?
-pages.ppob.heading                                      = What is the ’principal place of business’?
-pages.ppob.p1                                           = This is where the business does most of its work.
-pages.ppob.p2                                           = If this is in different locations, use the address where the business keeps its records. This could be a home address.
-pages.ppob.different.address                            = A different UK address
-pages.ppob.panel.heading                                = You cannot use:
-pages.ppob.panel.p1                                     = the address of a third-party accountant or tax agent
-pages.ppob.panel.p2                                     = a PO box address
-pages.ppob.panel.p3                                     = a ’care of’ address
-pages.ppob.nonuk.address                                = A non-UK address
-validation.ppob.missing                                 = Enter the address for the primary place of business
-
-# PPOB Drop Out page
-pages.ppobdropout.title                                 = The address must be a UK address
-pages.ppobdropout.heading                               = You cannot register for VAT with this service
-pages.ppobdropout.p1                                    = To use this service, the address where the company carries out most its business activities (its ’principal place of business’) must be in the UK.
-pages.ppobdropout.p2                                    = Please
-pages.ppobdropout.url                                   = register with another service
 
 # Are you interested in FRS Page
 pages.frs.join.heading                          = Does the business want to register for the Flat Rate Scheme?
@@ -1094,28 +1034,28 @@ pages.frs.confirmBusinessSector.exclamationPoint          = It’s your legal re
 pages.frs.confirmBusinessSector.changeLink                = Change the business type
 validation.frs.confirmBusinessSector.missing              = Select yes if you want to use this rate
 
-# Choose business type
-pages.frs.chooseBusinessType.heading      = Choose the main business type
-validation.frs.chooseBusinessType.missing = Select the business’ss main business type
+# Choose Business Type Page
+pages.frs.chooseBusinessType.heading                      = Choose the main business type
+validation.frs.chooseBusinessType.missing                 = Select the business’ss main business type
 
-# Do you want to register for FRS Page 16.5% rate
+# Do you want to register for FRS Page 16.5% rate Page
 pages.frs.registerFor.heading                             = To join the Flat Rate Scheme the business must use the 16.5% flat rate
 pages.frs.registerFor.para                                = This is because the business doesn’t spend enough (including VAT) on relevant goods.
 pages.frs.registerFor.indentText                           = Businesses in their first year of VAT registration can take an extra 1% off their flat rate.
 pages.frs.registerFor.subheading                          = Do you want the business to join the Flat Rate Scheme with this rate?
 validation.frs.registerFor.missing                        = Select yes if you want to use the 16.5% flat rate
 
-# Do you want to register for FRS Page business sector rate
+# Do you want to register for FRS Page business sector rate Page
 pages.frs.registerForWithSector.heading                   = The business’s VAT flat rate is {0}%
 pages.frs.registerForWithSector.info                      = Businesses in their first year of VAT registration can take 1% off their flat rate.
 pages.frs.registerForWithSector.subheading1               = Do you want the business to join the Flat Rate Scheme?
 validation.frs.registerForWithSector.missing              = Select yes if you want the business to join the Flat Rate Scheme
 
 # Do you spend less than 2% of your turn over Page
-pages.frs.costsLimited.heading                          = Will the business spend more than {0}, including VAT, on relevant goods over the next 3 months?
-validation.frs.costsLimited.missing                     = Select yes if the business will spend more than £{0}, including VAT, on relevant goods over the next 3 months
+pages.frs.costsLimited.heading                            = Will the business spend more than {0}, including VAT, on relevant goods over the next 3 months?
+validation.frs.costsLimited.missing                       = Select yes if the business will spend more than £{0}, including VAT, on relevant goods over the next 3 months
 
-# When do you want to join the Flat Rate Scheme?
+# When do you want to join the Flat Rate Scheme Page
 pages.frs.startDate.heading                               = When does the business want to join the Flat Rate Scheme?
 pages.frs.startDate.radio1                                = The same date that it’s registered for VAT
 pages.frs.startDate.radio2                                = On a different date
@@ -1161,7 +1101,6 @@ capture-email-passcode.details.para2.start              = Check your spam or jun
 capture-email-passcode.details.para2.requestPasscode    = request a new code
 capture-email-passcode.details.para2.or                 = or
 capture-email-passcode.details.para2.provideEmail       = provide another email address
-
 capture-email-passcode.error.incorrect_passcode         = Enter the correct confirmation code
 capture-email-passcode.error.incorrect_length           = Enter the 6 digit confirmation code
 
@@ -1402,6 +1341,7 @@ attachments.uploadingDocument.heading.supportingDocuments    = Uploading the sup
 attachments.uploadingDocument.heading.VAT1614A               = Uploading the VAT1614A
 attachments.uploadingDocument.heading.VAT1614H               = Uploading the VAT1614H
 
+# POSTAL COVER SHEET MESSAGES
 pages.PostalCoverSheet.heading                           = Print cover letter for documents
 pages.PostalCoverSheet.para                              = Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your documents.
 pages.PostalCoverSheet.warningText                       = Do not post the original documents to HMRC as we are unable to return them to you.
@@ -1479,10 +1419,6 @@ validation.sellOrMoveNip.missing                         = Enter the estimated v
 validation.sellOrMoveNip.invalid                         = Enter the estimated value of the goods in the correct format
 validation.sellOrMoveNip.commasNotAllowed                = The estimated value of the goods cannot include commas
 validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed   = The estimated value of the goods can only include pounds and pence
-
-pages.EmailDocuments.heading                             = We need you to send the documents to the following HMRC email address
-pages.EmailDocuments.para1                               = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.
-pages.EmailDocuments.panel1                              = VATREGBETA@hmrc.gov.uk
 
 # BUSINESS NAME
 businessName.heading                                     = What is the official name of the business?

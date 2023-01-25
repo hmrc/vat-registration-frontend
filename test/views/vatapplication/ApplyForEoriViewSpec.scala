@@ -20,13 +20,13 @@ import forms.ApplyForEoriForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import views.VatRegViewSpec
-import views.html.vatapplication.apply_for_eori
+import views.html.vatapplication.ApplyForEori
 
 import scala.collection.JavaConverters._
 
 class ApplyForEoriViewSpec extends VatRegViewSpec {
 
-  val view: apply_for_eori = app.injector.instanceOf[apply_for_eori]
+  val view: ApplyForEori = app.injector.instanceOf[ApplyForEori]
   implicit val doc: Document = Jsoup.parse(view(ApplyForEoriForm.form).body)
 
   object ExpectedContent {

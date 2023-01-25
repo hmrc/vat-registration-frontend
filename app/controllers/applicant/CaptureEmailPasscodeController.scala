@@ -28,12 +28,12 @@ import services.ApplicantDetailsService.EmailVerified
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import views.html.applicant.capture_email_passcode
+import views.html.applicant.CaptureEmailPasscode
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CaptureEmailPasscodeController @Inject()(view: capture_email_passcode,
+class CaptureEmailPasscodeController @Inject()(view: CaptureEmailPasscode,
                                                val authConnector: AuthConnector,
                                                val sessionService: SessionService,
                                                emailVerificationService: EmailVerificationService,

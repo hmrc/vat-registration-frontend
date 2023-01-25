@@ -22,7 +22,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.data.Form
 import views.VatRegViewSpec
-import views.html.vatapplication.aas_payment_method
+import views.html.vatapplication.AasPaymentMethod
 
 class PaymentMethodViewSpec extends VatRegViewSpec {
 
@@ -41,7 +41,7 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     val hiddenText = s"To pay by Direct Debit, complete this VAT registration to get the VAT Registration Number. The business can then $linkText"
   }
 
-  val view = app.injector.instanceOf[aas_payment_method]
+  val view = app.injector.instanceOf[AasPaymentMethod]
 
   def asDocument(form: Form[PaymentMethod]): Document = Jsoup.parse(view(form).body)
 

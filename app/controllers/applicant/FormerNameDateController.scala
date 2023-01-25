@@ -22,7 +22,7 @@ import forms.FormerNameDateForm
 import play.api.mvc.{Action, AnyContent}
 import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.applicant.former_name_date
+import views.html.applicant.FormerNameDate
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FormerNameDateController @Inject()(val authConnector: AuthConnector,
                                          val sessionService: SessionService,
                                          val applicantDetailsService: ApplicantDetailsService,
-                                         formerNameDatePage: former_name_date
+                                         formerNameDatePage: FormerNameDate
                                         )(implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
                                           baseControllerComponents: BaseControllerComponents)

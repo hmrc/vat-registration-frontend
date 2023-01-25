@@ -24,12 +24,12 @@ import play.api.mvc.{Action, AnyContent}
 import services.TransactorDetailsService.{TransactorEmail, TransactorEmailVerified}
 import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.applicant.capture_email_address
+import views.html.applicant.CaptureEmailAddress
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TransactorCaptureEmailAddressController @Inject()(view: capture_email_address,
+class TransactorCaptureEmailAddressController @Inject()(view: CaptureEmailAddress,
                                                         val authConnector: AuthConnector,
                                                         val sessionService: SessionService,
                                                         transactorDetailsService: TransactorDetailsService,

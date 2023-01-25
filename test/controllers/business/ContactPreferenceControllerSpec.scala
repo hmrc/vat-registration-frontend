@@ -23,13 +23,13 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.business.contact_preference
+import views.html.business.ContactPreferenceView
 
 import scala.concurrent.Future
 
 class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions with FeatureSwitching {
 
-  val view: contact_preference = app.injector.instanceOf[contact_preference]
+  val view: ContactPreferenceView = app.injector.instanceOf[ContactPreferenceView]
 
   class Setup {
     val controller: ContactPreferenceController = new ContactPreferenceController(

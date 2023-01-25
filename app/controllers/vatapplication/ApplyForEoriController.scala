@@ -24,7 +24,7 @@ import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Request}
 import services.VatApplicationService.EoriRequested
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
-import views.html.vatapplication.{OverseasApplyForEori, apply_for_eori => ApplyForEoriView}
+import views.html.vatapplication.{OverseasApplyForEori, ApplyForEori => ApplyForEoriView}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext

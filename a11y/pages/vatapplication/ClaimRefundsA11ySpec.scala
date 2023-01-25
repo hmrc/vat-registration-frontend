@@ -3,11 +3,11 @@ package pages.vatapplication
 
 import forms.vatapplication.ChargeExpectancyForm
 import helpers.A11ySpec
-import views.html.vatapplication.claim_refunds_view
+import views.html.vatapplication.ClaimRefunds
 
 class ClaimRefundsA11ySpec extends A11ySpec {
 
-  val view: claim_refunds_view = app.injector.instanceOf[claim_refunds_view]
+  val view: ClaimRefunds = app.injector.instanceOf[ClaimRefunds]
 
   "claim refunds page" when {
     "rendered with no value and there are no form errors" must {

@@ -4,10 +4,10 @@ package pages.applicant
 import controllers.applicant.routes
 import forms.EmailAddressForm
 import helpers.A11ySpec
-import views.html.applicant.capture_email_address
+import views.html.applicant.CaptureEmailAddress
 
 class CaptureEmailAddressA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[capture_email_address]
+  val view = app.injector.instanceOf[CaptureEmailAddress]
   val form = EmailAddressForm.form
   val formAction = routes.CaptureEmailAddressController.submit
 

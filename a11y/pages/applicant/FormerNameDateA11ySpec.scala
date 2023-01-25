@@ -3,12 +3,12 @@ package pages.applicant
 
 import forms.FormerNameDateForm
 import helpers.A11ySpec
-import views.html.applicant.former_name_date
+import views.html.applicant.FormerNameDate
 
 import java.time.LocalDate
 
 class FormerNameDateA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[former_name_date]
+  val view = app.injector.instanceOf[FormerNameDate]
   val form = FormerNameDateForm.form(LocalDate.now())
 
   "the former name change date page" when {

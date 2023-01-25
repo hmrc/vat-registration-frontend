@@ -23,13 +23,13 @@ import play.api.mvc.{Action, AnyContent}
 import services.ApplicantDetailsService.TelephoneNumber
 import services.{ApplicantDetailsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.applicant.capture_telephone_number
+import views.html.applicant.CaptureTelephoneNumber
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class CaptureTelephoneNumberController @Inject()(view: capture_telephone_number,
+class CaptureTelephoneNumberController @Inject()(view: CaptureTelephoneNumber,
                                                  val authConnector: AuthConnector,
                                                  val sessionService: SessionService,
                                                  applicantDetailsService: ApplicantDetailsService

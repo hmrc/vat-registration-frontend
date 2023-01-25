@@ -19,7 +19,7 @@ package views.business
 import forms.ContactPreferenceForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.business.contact_preference
+import views.html.business.ContactPreferenceView
 
 class ContactPreferenceViewSpec extends VatRegViewSpec {
 
@@ -30,7 +30,7 @@ class ContactPreferenceViewSpec extends VatRegViewSpec {
   val email = "email"
   val letter = "letter"
   val buttonText = "Save and continue"
-  val viewInstance = app.injector.instanceOf[contact_preference]
+  val viewInstance = app.injector.instanceOf[ContactPreferenceView]
 
   "Contact Preference Page" should {
     lazy val form = ContactPreferenceForm()

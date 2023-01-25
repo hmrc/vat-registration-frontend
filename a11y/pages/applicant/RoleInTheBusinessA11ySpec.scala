@@ -4,10 +4,10 @@ package pages.applicant
 import forms.RoleInTheBusinessForm
 import helpers.A11ySpec
 import models.api.{Trust, UkCompany}
-import views.html.applicant.role_in_the_business
+import views.html.applicant.RoleInTheBusiness
 
 class RoleInTheBusinessA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[role_in_the_business]
+  val view = app.injector.instanceOf[RoleInTheBusiness]
 
   "the role in the business capture page" when {
     "the user is a trust" when {

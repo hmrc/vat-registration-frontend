@@ -23,13 +23,13 @@ import play.api.mvc.{Action, AnyContent}
 import services.ApplicantDetailsService.RoleInTheBusinessAnswer
 import services.{ApplicantDetailsService, SessionProfile, SessionService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.applicant.role_in_the_business
+import views.html.applicant.RoleInTheBusiness
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CaptureRoleInTheBusinessController @Inject()(view: role_in_the_business,
+class CaptureRoleInTheBusinessController @Inject()(view: RoleInTheBusiness,
                                                    val authConnector: AuthConnector,
                                                    val sessionService: SessionService,
                                                    val applicantDetailsService: ApplicantDetailsService,

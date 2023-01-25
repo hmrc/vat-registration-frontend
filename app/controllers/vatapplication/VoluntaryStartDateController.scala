@@ -23,7 +23,7 @@ import models._
 import play.api.mvc.{Action, AnyContent}
 import services._
 import utils.MessageDateFormat
-import views.html.vatapplication.start_date_incorp_view
+import views.html.vatapplication.StartDateIncorp
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +33,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
                                              val authConnector: AuthClientConnector,
                                              val vatApplicationService: VatApplicationService,
                                              val timeService: TimeService,
-                                             voluntaryStartDateIncorpPage: start_date_incorp_view
+                                             voluntaryStartDateIncorpPage: StartDateIncorp
                                             )(implicit appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
                                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {

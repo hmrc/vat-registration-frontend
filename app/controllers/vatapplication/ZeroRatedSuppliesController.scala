@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ZeroRated
 import services.{SessionProfile, SessionService, VatApplicationService}
 import uk.gov.hmrc.http.InternalServerException
-import views.html.vatapplication.zero_rated_supplies
+import views.html.vatapplication.ZeroRatedSupplies
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                                             val authConnector: AuthClientConnector,
                                             vatApplicationService: VatApplicationService,
-                                            zeroRatesSuppliesView: zero_rated_supplies
+                                            zeroRatesSuppliesView: ZeroRatedSupplies
                                            )(implicit val executionContext: ExecutionContext,
                                              appConfig: FrontendAppConfig,
                                              baseControllerComponents: BaseControllerComponents)

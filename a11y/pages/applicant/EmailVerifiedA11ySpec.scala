@@ -3,10 +3,10 @@ package pages.applicant
 
 import controllers.applicant.routes
 import helpers.A11ySpec
-import views.html.applicant.email_verified
+import views.html.applicant.EmailVerified
 
 class EmailVerifiedA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[email_verified]
+  val view = app.injector.instanceOf[EmailVerified]
   val formAction = routes.EmailAddressVerifiedController.submit
 
   "the email address verified page" when {

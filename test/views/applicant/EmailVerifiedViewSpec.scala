@@ -18,7 +18,7 @@ package views.applicant
 
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.applicant.email_verified
+import views.html.applicant.EmailVerified
 
 class EmailVerifiedViewSpec extends VatRegViewSpec {
 
@@ -27,7 +27,7 @@ class EmailVerifiedViewSpec extends VatRegViewSpec {
   val buttonText = "Save and continue"
 
   "Email Verified Page" should {
-    val view = app.injector.instanceOf[email_verified].apply(testCall)
+    val view = app.injector.instanceOf[EmailVerified].apply(testCall)
 
     implicit val doc = Jsoup.parse(view.body)
 

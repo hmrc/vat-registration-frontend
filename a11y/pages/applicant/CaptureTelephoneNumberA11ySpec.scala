@@ -4,10 +4,10 @@ package pages.applicant
 import controllers.applicant.routes
 import forms.TelephoneNumberForm
 import helpers.A11ySpec
-import views.html.applicant.capture_telephone_number
+import views.html.applicant.CaptureTelephoneNumber
 
 class CaptureTelephoneNumberA11ySpec extends A11ySpec {
-  val view = app.injector.instanceOf[capture_telephone_number]
+  val view = app.injector.instanceOf[CaptureTelephoneNumber]
   val form = TelephoneNumberForm.form
   val formAction = routes.CaptureTelephoneNumberController.submit
 

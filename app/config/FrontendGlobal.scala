@@ -20,15 +20,15 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import views.html.errors.error_template
+import views.html.errors.ErrorTemplate
 
 import javax.inject.Inject
 
-class FrontendGlobal @Inject()(error_template: error_template)(val messagesApi: MessagesApi, val appConfig: FrontendAppConfig) extends FrontendErrorHandler {
+class FrontendGlobal @Inject()(errorTemplate: ErrorTemplate)(val messagesApi: MessagesApi, val appConfig: FrontendAppConfig) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html = {
     implicit val ac = appConfig
-    error_template(pageTitle, heading, message)
+    errorTemplate(pageTitle, heading, message)
   }
 
 }

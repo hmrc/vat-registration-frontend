@@ -3,11 +3,11 @@ package pages.vatapplication
 
 import forms.ApplyForEoriForm
 import helpers.A11ySpec
-import views.html.vatapplication.apply_for_eori
+import views.html.vatapplication.ApplyForEori
 
 class ApplyForEoriA11ySpec extends A11ySpec {
 
-  val view: apply_for_eori = app.injector.instanceOf[apply_for_eori]
+  val view: ApplyForEori = app.injector.instanceOf[ApplyForEori]
 
   "apply for eori page" when {
     "rendered with no value and there are no form errors" must {
