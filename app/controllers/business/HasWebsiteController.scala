@@ -18,7 +18,6 @@ package controllers.business
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.WelshLanguage
 import forms.HasWebsiteForm.{form => hasWebsiteForm}
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.HasWebsiteAnswer
@@ -55,10 +54,8 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
             businessService.updateBusiness(HasWebsiteAnswer(hasWebsite)) map { _ =>
               if (hasWebsite) {
                 Redirect(controllers.business.routes.BusinessWebsiteAddressController.show)
-              } else if (isEnabled(WelshLanguage)) {
-                Redirect(controllers.business.routes.VatCorrespondenceController.show)
               } else {
-                Redirect(controllers.business.routes.ContactPreferenceController.showContactPreference)
+                Redirect(controllers.business.routes.VatCorrespondenceController.show)
               }
             }
         )

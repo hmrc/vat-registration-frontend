@@ -17,21 +17,20 @@
 package models
 
 import config.FrontendAppConfig
-import featureswitch.core.config.WelshLanguage
 import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class FrsGroup(label: String, labelCy: String, categories: List[FrsBusinessType]) {
   def groupLabel(implicit messages: Messages, appConfig: FrontendAppConfig): String = messages.lang.code match {
-    case "cy" if appConfig.isEnabled(WelshLanguage) => labelCy
+    case "cy" => labelCy
     case _ => label
   }
 }
 
 case class FrsBusinessType(id: String, label: String, labelCy: String, percentage: BigDecimal) {
   def businessTypeLabel(implicit messages: Messages, appConfig: FrontendAppConfig): String = messages.lang.code match {
-    case "cy" if appConfig.isEnabled(WelshLanguage) => labelCy
+    case "cy" => labelCy
     case _ => label
   }
 }

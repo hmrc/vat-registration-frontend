@@ -17,7 +17,6 @@
 package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig, Logging}
-import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import models.CurrentProfile
 import play.api.i18n.{I18nSupport, Lang, Messages}
 import play.api.mvc._
@@ -39,17 +38,12 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
     with I18nSupport
     with Logging
     with AuthorisedFunctions
-    with SessionProfile
-    with FeatureSwitching {
+    with SessionProfile {
 
   import utils.EnrolmentUtil._
 
   override implicit def request2Messages(implicit request: RequestHeader): Messages = {
-    if (isEnabled(WelshLanguage)) {
-      messagesApi.preferred(request)
-    } else {
-      messagesApi.preferred(Seq(Lang("en")))
-    }
+    messagesApi.preferred(request)
   }
 
   implicit class HandleResult(res: Future[Result])(implicit hc: HeaderCarrier) {

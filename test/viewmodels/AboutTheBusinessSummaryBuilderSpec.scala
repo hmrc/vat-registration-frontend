@@ -41,6 +41,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
   val testMobileNumber = "987654"
   val testWebsite = "/test/url"
   val testNumWorkers = "12"
+  val testLanguage = "English"
 
   import models.view.SummaryListRowUtils._
 
@@ -96,6 +97,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(controllers.business.routes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)),
+            optSummaryListRowString(s"$sectionId.correspondenceLanguage", Some(testLanguage), Some(controllers.business.routes.VatCorrespondenceController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowBoolean(s"$sectionId.buySellLandAndProperty", Some(true), Some(controllers.business.routes.LandAndPropertyController.show.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)),
@@ -129,6 +131,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(controllers.business.routes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)),
+            optSummaryListRowString(s"$sectionId.correspondenceLanguage", Some(testLanguage), Some(controllers.business.routes.VatCorrespondenceController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)),
             optSummaryListRowString(s"$sectionId.mainSicCode", Some(sicCode.description), Some(controllers.sicandcompliance.routes.MainBusinessActivityController.show.url)),
@@ -164,6 +167,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
               optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(controllers.business.routes.HasWebsiteController.show.url)),
               optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)),
+              optSummaryListRowString(s"$sectionId.correspondenceLanguage", Some(testLanguage), Some(controllers.business.routes.VatCorrespondenceController.show.url)),
               optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
               optSummaryListRowBoolean(s"$sectionId.buySellLandAndProperty", Some(true), Some(controllers.business.routes.LandAndPropertyController.show.url)),
               optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)),
@@ -203,6 +207,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
               optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
               optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(controllers.business.routes.HasWebsiteController.show.url)),
               optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)),
+              optSummaryListRowString(s"$sectionId.correspondenceLanguage", Some(testLanguage), Some(controllers.business.routes.VatCorrespondenceController.show.url)),
               optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
               optSummaryListRowBoolean(s"$sectionId.buySellLandAndProperty", Some(true), Some(controllers.business.routes.LandAndPropertyController.show.url)),
               optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)),
@@ -259,6 +264,7 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString(s"$sectionId.daytimePhoneBusiness", Some(testPhoneNumber), Some(controllers.business.routes.BusinessTelephoneNumberController.show.url)),
             optSummaryListRowBoolean(s"$sectionId.hasWebsite", Some(true), Some(controllers.business.routes.HasWebsiteController.show.url)),
             optSummaryListRowString(s"$sectionId.website", Some(testWebsite), Some(controllers.business.routes.BusinessWebsiteAddressController.show.url)),
+            optSummaryListRowString(s"$sectionId.correspondenceLanguage", Some(testLanguage), Some(controllers.business.routes.VatCorrespondenceController.show.url)),
             optSummaryListRowString(s"$sectionId.contactPreference", Some(ContactPreference.email), Some(controllers.business.routes.ContactPreferenceController.showContactPreference.url)),
             optSummaryListRowBoolean(s"$sectionId.buySellLandAndProperty", Some(true), Some(controllers.business.routes.LandAndPropertyController.show.url)),
             optSummaryListRowString(s"$sectionId.businessDescription", Some(testBusinessActivityDescription), Some(controllers.business.routes.BusinessActivityDescriptionController.show.url)),
@@ -273,3 +279,5 @@ class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
     }
   }
 }
+
+

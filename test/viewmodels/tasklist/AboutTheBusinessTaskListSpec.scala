@@ -17,13 +17,12 @@
 package viewmodels.tasklist
 
 import controllers.partners.PartnerIndexValidation
-import featureswitch.core.config._
 import fixtures.VatRegistrationFixture
 import models.api.{Attachments, Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
 import testHelpers.VatRegSpec
 
-class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
+class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
 
   val section: AboutTheBusinessTaskList = app.injector.instanceOf[AboutTheBusinessTaskList]
 
@@ -164,7 +163,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
     }
 
     "be completed if the prerequisites are complete and there are all answers" in {
-      enable(WelshLanguage)
       val scheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         applicantDetails = Some(completeApplicantDetails),
@@ -175,7 +173,6 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
       row.status mustBe TLCompleted
       row.url mustBe controllers.routes.TradingNameResolverController.resolve.url
-      disable(WelshLanguage)
     }
   }
 

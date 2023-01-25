@@ -16,38 +16,27 @@
 
 package utils
 
-import featureswitch.core.config.{FeatureSwitching, WelshLanguage}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi}
 
 import java.time.LocalDate
 
-class MessageDateFormatSpec extends PlaySpec with GuiceOneAppPerSuite with FeatureSwitching {
+class MessageDateFormatSpec extends PlaySpec with GuiceOneAppPerSuite {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   "date format" should {
     "return welsh translated months" when {
-      "welsh language choice is welsh and FS enabled" in {
-        enable(WelshLanguage)
+      "language choice is welsh" in {
         implicit val messages: Messages = messagesApi.preferred(Seq(Lang("cy")))
         (1 to 12).foreach(month => {
           val date = LocalDate.now().withMonth(month)
           MessageDateFormat.format(date) must include(MessageDateFormat.monthsInCy(month))
         })
-        disable(WelshLanguage)
       }
     }
 
     "return english months" when {
-      "welsh language choice is welsh and but FS not enabled" in {
-        implicit val messages: Messages = messagesApi.preferred(Seq(Lang("cy")))
-        (1 to 12).foreach(month => {
-          val date = LocalDate.now().withMonth(month)
-          MessageDateFormat.format(date) must not include MessageDateFormat.monthsInCy(month)
-        })
-      }
-
       "language choice is english" in {
         implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
         (1 to 12).foreach(month => {
