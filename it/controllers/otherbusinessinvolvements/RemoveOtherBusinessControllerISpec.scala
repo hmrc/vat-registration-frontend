@@ -52,8 +52,6 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
     "redirect to minIdx page if given index is less than minIdx" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -65,7 +63,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an error when Other Business Name is missing" in new Setup {
+    "redirect to Obi Summary when Other Business Name is missing" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -76,7 +74,24 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(pageGetUrl(idx1)).get()
 
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ObiSummaryController.show.url)
+      }
+    }
+
+    "redirect to Obi Summary when other business can't be found" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[OtherBusinessInvolvement](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageGetUrl(idx1)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ObiSummaryController.show.url)
       }
     }
   }

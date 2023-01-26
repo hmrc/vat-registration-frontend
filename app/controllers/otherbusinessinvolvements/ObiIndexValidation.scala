@@ -25,7 +25,7 @@ import scala.concurrent.Future
 
 trait ObiIndexValidation {
 
-  def validateIndex(index: Int, call: Int => Call)(function: Future[Result])(implicit appConfig: FrontendAppConfig): Future[Result] =
+  def validateIndex(index: Int, call: Int => Call)(function: => Future[Result])(implicit appConfig: FrontendAppConfig): Future[Result] =
     if (index > appConfig.maxObiLimit) {
       Future.successful(Redirect(call(appConfig.maxObiLimit)))
     } else if (index < OtherBusinessInvolvement.minIndex) {
