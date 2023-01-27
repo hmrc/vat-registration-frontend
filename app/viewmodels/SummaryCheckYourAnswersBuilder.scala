@@ -19,11 +19,11 @@ package viewmodels
 import config.FrontendAppConfig
 import featureswitch.core.config.FeatureSwitching
 import models.api._
+import models.error.MissingAnswerException
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.{Accordion, Section}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.collection.immutable.ListMap
@@ -39,9 +39,11 @@ class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: Eligib
 
   def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): Accordion = {
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
+    val missingRegReasonSection = "tasklist.eligibilty.regReason"
 
     val summaryMap = ListMap(
-      messages(s"cya.heading.eligibility") -> eligibilitySummaryBuilder.build(vatScheme.eligibilityJson.getOrElse(throw new InternalServerException("Missing eligibility json")), vatScheme.registrationId),
+
+      messages(s"cya.heading.eligibility") -> eligibilitySummaryBuilder.build(vatScheme.eligibilityJson.getOrElse(throw MissingAnswerException(missingRegReasonSection)), vatScheme.registrationId),
       messages(s"cya.heading.transactor") -> transactorDetailsSummaryBuilder.build(vatScheme),
       messages(s"cya.heading.verifyBusiness") -> grsSummaryBuilder.build(vatScheme),
       (if (isTransactor) messages(s"cya.heading.applicant.transactor") else messages(s"cya.heading.applicant.self")) -> applicantDetailsSummaryBuilder.build(vatScheme),

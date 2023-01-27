@@ -19,6 +19,7 @@ package controllers.transactor
 import featureswitch.core.config.StubEmailVerification
 import itutil.ControllerISpec
 import models.TransactorDetails
+import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -43,8 +44,19 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
-  }
+    "redirect to the missing answer page if the email is missing" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+    }
+  }
 
   "GET /email-address-verification-retry" must {
     "show the view after requesting a passcode successfully" in new Setup {
@@ -59,6 +71,21 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
       val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
 
       res.status mustBe OK
+    }
+
+    "redirect to the missing answer page if the email is missing" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", CREATED, Json.obj().toString)
+
+      val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
     }
 
     "redirect to email verified after requesting a passcode and getting an email verified response" in new Setup {
@@ -76,22 +103,10 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
       res.header("LOCATION") mustBe Some(routes.TransactorEmailAddressVerifiedController.show.url)
       res.status mustBe SEE_OTHER
     }
-
-    "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
-
-      res.status mustBe INTERNAL_SERVER_ERROR
-    }
   }
 
   "POST /transactor-details/enter-the-verification-code" when {
-    "the email verification feature switch is enabled" must {
+    "the answer is valid" must {
       "verify the entered passcode and redirect to Transactor Email Verified page" in new Setup {
         disable(StubEmailVerification)
 
@@ -110,6 +125,26 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.header("LOCATION") mustBe Some(routes.TransactorEmailAddressVerifiedController.show.url)
       }
 
+      "redirect to the missing answer page if the email is missing" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
+          .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
+
+        val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+    }
+
+    "the answer is invalid" must {
       "return BAD_REQUEST for an incorrect passcode" in new Setup {
         disable(StubEmailVerification)
 
@@ -124,6 +159,23 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe BAD_REQUEST
+      }
+
+      "redirect to the missing answer page if the email is missing" in new Setup {
+        disable(StubEmailVerification)
+
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
+
+        val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
 
       "redirect to passcode not found error page if the passcode can't be found" in new Setup {
@@ -176,7 +228,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.status mustBe BAD_REQUEST
       }
 
-      "return INTERNAL_SERVER for valid passcode submitted with no email available" in new Setup {
+      "redirect to the missing answer page for valid passcode submitted with no email available" in new Setup {
         disable(StubEmailVerification)
 
         given()
@@ -189,7 +241,8 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
   }

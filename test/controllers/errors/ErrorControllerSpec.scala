@@ -20,7 +20,7 @@ import fixtures.VatRegistrationFixture
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.errors.{AlreadySubmittedKickout, ContactView, SubmissionFailed, SubmissionRetryableView}
+import views.html.errors.{AlreadySubmittedKickout, ContactView, MissingAnswer, SubmissionFailed, SubmissionRetryableView}
 
 class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
@@ -28,6 +28,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
   val mockSubmissionRetryableView = app.injector.instanceOf[SubmissionRetryableView]
   val mockAlreadySubmittedView = app.injector.instanceOf[AlreadySubmittedKickout]
   val contactView = app.injector.instanceOf[ContactView]
+  val missingAnswerView = app.injector.instanceOf[MissingAnswer]
 
   val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
@@ -38,7 +39,8 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       mockSubmissionFailedView,
       mockSubmissionRetryableView,
       mockAlreadySubmittedView,
-      contactView
+      contactView,
+      missingAnswerView
     )
 
     mockAuthenticated()
@@ -84,6 +86,17 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
           contentType(result) mustBe Some("text/html")
           charset(result) mustBe Some("utf-8")
           contentAsString(result) mustBe contactView()(FakeRequest(), appConfig, messages).body
+      }
+    }
+    "return the Missing Answer view" in new Setup {
+      val answer = "test"
+      mockSessionFetchAndGet("missingAnswer", Some(answer))
+      callAuthorised(testErrorController.missingAnswer, useBasicAuth = true) {
+        result =>
+          status(result) mustBe OK
+          contentType(result) mustBe Some("text/html")
+          charset(result) mustBe Some("utf-8")
+          contentAsString(result) mustBe missingAnswerView(answer)(messages, FakeRequest(), appConfig).body
       }
     }
   }

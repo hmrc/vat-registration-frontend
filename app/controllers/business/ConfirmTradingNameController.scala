@@ -20,10 +20,10 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ConfirmTradingNameForm
 import models.api.{NETP, NonUkNonEstablished}
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.ConfirmTradingName
 import services._
-import uk.gov.hmrc.http.InternalServerException
 import views.html.business.ConfirmTradingNameView
 
 import javax.inject.Inject
@@ -40,11 +40,15 @@ class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  val missingDataSection = "tasklist.aboutTheBusiness.heading"
+
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         for {
-          companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(throw new InternalServerException("Missing company name")))
+          companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(
+            throw MissingAnswerException(missingDataSection)
+          ))
           business <- businessService.getBusiness
           form = business.hasTradingName.fold(ConfirmTradingNameForm.form)(ConfirmTradingNameForm.form.fill)
         } yield Ok(view(form, companyName))
@@ -56,7 +60,9 @@ class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
         ConfirmTradingNameForm.form.bindFromRequest.fold(
           errors =>
             for {
-              companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(throw new InternalServerException("Missing company name")))
+              companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(
+                throw MissingAnswerException(missingDataSection)
+              ))
             } yield BadRequest(view(errors, companyName)),
           confirmTradingName => {
             for {

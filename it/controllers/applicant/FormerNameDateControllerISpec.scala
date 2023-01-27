@@ -84,12 +84,14 @@ class FormerNameDateControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).get()
+
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
 
-    "fail if the user is missing former name" in new Setup {
+    "redirect to the missing answer page if the user is missing former name" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
@@ -99,8 +101,27 @@ class FormerNameDateControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url).get()
+
       whenReady(response) { res =>
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+    }
+
+    "redirect to the missing answer page if the user is missing date of birth" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None)))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
   }
@@ -125,6 +146,48 @@ class FormerNameDateControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "redirect to the missing answer page if the user is missing former name" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(changeOfName = FormerName())))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(url).post(Map(
+        "formerNameDate.day" -> "",
+        "formerNameDate.month" -> "",
+        "formerNameDate.year" -> ""
+      ))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+    }
+
+    "redirect to the missing answer page if the user is missing date of birth" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None)))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(url).post(Map(
+        "formerNameDate.day" -> "",
+        "formerNameDate.month" -> "",
+        "formerNameDate.year" -> ""
+      ))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
 

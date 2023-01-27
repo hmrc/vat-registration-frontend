@@ -21,6 +21,7 @@ import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import connectors._
 import models._
 import models.api._
+import models.error.MissingAnswerException
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{Format, Reads}
 import play.api.mvc.Request
@@ -36,6 +37,8 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
                                        registrationApiConnector: RegistrationApiConnector,
                                        val sessionService: SessionService
                                       )(implicit ec: ExecutionContext) {
+
+  val missingRegReasonSection = "tasklist.eligibilty.regReason"
 
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
     vatRegConnector.getRegistration[VatScheme](profile.registrationId)
@@ -83,7 +86,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
 
   def getEligibilitySubmissionData(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[EligibilitySubmissionData] =
     registrationApiConnector.getSection[EligibilitySubmissionData](profile.registrationId).map(optData =>
-      optData.getOrElse(throw new IllegalStateException(s"No EligibilitySubmissionData block found in the backend for regId: ${profile.registrationId}"))
+      optData.getOrElse(throw MissingAnswerException(missingRegReasonSection))
     )
 
   def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[PartyType] =

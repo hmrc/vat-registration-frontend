@@ -19,10 +19,10 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import models.GroupRegistration
+import models.error.MissingAnswerException
 import models.external.{IncorporatedEntity, PartnershipIdEntity}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatRegistrationService}
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -36,12 +36,14 @@ class VatRegStartDateResolverController @Inject()(val sessionService: SessionSer
                                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  val missingDataSection = "tasklist.eligibilty.regReason"
+
   def resolve: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       for {
         scheme <- vatRegistrationService.getVatScheme
         registrationReason = scheme.eligibilitySubmissionData.map(_.registrationReason)
-          .getOrElse(throw new InternalServerException("[ClaimRefundsController] Unable to retrieve eligibility data"))
+          .getOrElse(throw MissingAnswerException(missingDataSection))
         incorpDate = scheme.applicantDetails.flatMap {
           _.entity.flatMap {
             case incorpEntity: IncorporatedEntity => incorpEntity.dateOfIncorporation

@@ -18,6 +18,7 @@ package controllers.vatapplication
 
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
+import models.error.MissingAnswerException
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -58,17 +59,16 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an INTERNAL_SERVER_ERROR if turnoverEstimates aren't found" in new Setup {
+    "tredirect to the missing answer page if turnoverEstimates aren't found" in new Setup {
       given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(url).get()
+      val res = await(buildClient(url).get)
 
-      whenReady(res) { result =>
-        result.status mustBe INTERNAL_SERVER_ERROR
-      }
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
     }
   }
 
@@ -108,19 +108,16 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       }
     }
 
-    "return an INTERNAL_SERVER_ERROR if turnoverEstimates doesn't exist" in new Setup {
+    "redirect to the missing answer page if turnoverEstimates doesn't exist" in new Setup {
       given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val res: Future[WSResponse] = buildClient(url).post(Map(
-        "zeroRatedSupplies" -> "10,000.53"
-      ))
+      val res = await(buildClient(url).post(Map("zeroRatedSupplies" -> "10,000.53")))
 
-      whenReady(res) { result =>
-        result.status mustBe INTERNAL_SERVER_ERROR
-      }
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
     }
   }
 

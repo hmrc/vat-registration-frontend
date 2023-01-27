@@ -62,6 +62,36 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
+      "redirect to the missing answer page when the turnover answer is missing" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+          .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(turnoverEstimate = None, claimVatRefunds = Some(true)))
+          .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(turnoverEstimate = None, claimVatRefunds = Some(true))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+
+      "redirect to the missing answer page when the zero-rated supplies answer is missing" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+          .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(zeroRatedSupplies = None, claimVatRefunds = Some(true)))
+          .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(zeroRatedSupplies = None, claimVatRefunds = Some(true))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+
       "redirect to the bank account details page when the user is non-NETP" in new Setup {
         given()
           .user.isAuthorised()

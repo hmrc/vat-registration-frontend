@@ -66,6 +66,24 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         Jsoup.parse(res.body).getElementsByAttribute("checked").first().parent().text() mustBe "Yes"
       }
     }
+
+    "redirect to the missing answer page when the company name isn't present" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(companyName = None)))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+    }
   }
 
   "submit Trading Name page" should {
@@ -126,6 +144,25 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPpobAddressController.show.url)
+      }
+    }
+
+    "redirect to the missing answer page if the company name is missing and the request was invalid" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(companyName = None)))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+        .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
+        .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("dfsdfsd")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
 

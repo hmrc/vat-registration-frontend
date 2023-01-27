@@ -23,7 +23,7 @@ import models.api.{SicCode, UkCompany}
 import org.mockito.Mockito.when
 import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
-import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
@@ -48,7 +48,7 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
 
       callAuthorised(controller.resolve) {
         res =>
-          status(res) mustBe 303
+          status(res) mustBe SEE_OTHER
           res redirectsTo controllers.sicandcompliance.routes.MainBusinessActivityController.show.url
       }
     }
@@ -60,7 +60,7 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
 
       callAuthorised(controller.resolve) {
         res =>
-          status(res) mustBe 303
+          status(res) mustBe SEE_OTHER
           res redirectsTo controllers.business.routes.ComplianceIntroductionController.show.url
       }
     }
@@ -72,16 +72,21 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
 
       callAuthorised(controller.resolve) {
         res =>
-          status(res) mustBe 303
+          status(res) mustBe SEE_OTHER
           res redirectsTo controllers.routes.TaskListController.show.url
       }
     }
 
     "return exception if no sic codes available" in new Setup {
+      mockAuthenticated()
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, None)
-      intercept[InternalServerException](callAuthorised(controller.resolve) {
-        res => status(res) mustBe 500
-      })
+      mockSessionCache("missingAnswer", "tasklist.aboutTheBusiness.businessActivities")(Future.successful(CacheMap("", Map())))
+
+      callAuthorised(controller.resolve) {
+        res =>
+          status(res) mustBe SEE_OTHER
+          res redirectsTo controllers.errors.routes.ErrorController.missingAnswer.url
+      }
     }
   }
 

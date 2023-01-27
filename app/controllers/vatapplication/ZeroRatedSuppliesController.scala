@@ -19,10 +19,10 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ZeroRatedSuppliesForm
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ZeroRated
 import services.{SessionProfile, SessionService, VatApplicationService}
-import uk.gov.hmrc.http.InternalServerException
 import views.html.vatapplication.ZeroRatedSupplies
 
 import javax.inject.{Inject, Singleton}
@@ -37,6 +37,8 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                                              appConfig: FrontendAppConfig,
                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
+
+  val missingDataSection = "tasklist.vatRegistration.goodsAndServices"
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -53,7 +55,7 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                 routes.ZeroRatedSuppliesController.submit,
                 ZeroRatedSuppliesForm.form(estimates)
               ))
-            case (_, None) => throw new InternalServerException("[ZeroRatedSuppliesController][show] Did not find user's turnover estimates")
+            case (_, None) => throw MissingAnswerException(missingDataSection)
           }
         }
   }
@@ -72,7 +74,7 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
               Redirect(routes.SellOrMoveNipController.show)
             }
           )
-          case None => throw new InternalServerException("[ZeroRatedSuppliesController][submit] Did not find user's turnover estimates")
+          case None => throw MissingAnswerException(missingDataSection)
         }
   }
 

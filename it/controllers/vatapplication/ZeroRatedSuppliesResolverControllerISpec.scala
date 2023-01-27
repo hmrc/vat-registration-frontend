@@ -41,7 +41,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
       }
     }
     "the vat scheme doesn't contain turnover" must {
-      "return INTERNAL_SERVER_ERROR" in new Setup {
+      "redirect to the missin answer page" in new Setup {
         given
           .user.isAuthorised()
 
@@ -49,7 +49,8 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
 
         val res = await(buildClient(url).get)
 
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
   }

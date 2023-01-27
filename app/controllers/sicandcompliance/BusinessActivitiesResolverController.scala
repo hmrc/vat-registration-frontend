@@ -20,10 +20,10 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import models.api.SicCode
 import models.api.SicCode.SIC_CODES_KEY
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,7 +50,7 @@ class BusinessActivitiesResolverController @Inject()(val sessionService: Session
             case codes if codes.size > 1 && !mainBusinessActivitySubmissionFlow =>
               Redirect(controllers.sicandcompliance.routes.MainBusinessActivityController.show)
             case List() =>
-              throw new InternalServerException("[SicResolverController][resolve] Failed to resolve due to empty sic code list")
+              throw MissingAnswerException("tasklist.aboutTheBusiness.businessActivities")
             case codes if businessService.needComplianceQuestions(codes) =>
               Redirect(controllers.business.routes.ComplianceIntroductionController.show)
             case _ =>

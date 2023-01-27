@@ -116,6 +116,22 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(routes.VoluntaryStartDateNoChoiceController.show.url)
       }
     }
+    "the registration reason is missing" must {
+      "redirect to the missing answer page exception" in new Setup {
+        given
+          .user.isAuthorised()
+          .registrationApi.getRegistration(emptyUkCompanyVatScheme.copy(
+            eligibilitySubmissionData = None
+          ))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(url).get)
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
+      }
+    }
   }
 
 }

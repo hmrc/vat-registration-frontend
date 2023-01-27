@@ -21,7 +21,10 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Format
 import services.SessionService
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
@@ -34,6 +37,14 @@ trait SessionServiceMock {
 
   def mockSessionFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
     when(mockSessionService.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model.pure))
+
+  def mockSessionCache(key: String, value: String)(response: Future[CacheMap]) =
+    when(mockSessionService.cache[String](
+      ArgumentMatchers.eq(key),
+      ArgumentMatchers.eq(value))(
+      ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[Format[String]]
+    )).thenReturn(response)
 
   def mockSessionClear(): OngoingStubbing[Future[Boolean]] = when(mockSessionService.remove(any())) thenReturn Future.successful(true)
 

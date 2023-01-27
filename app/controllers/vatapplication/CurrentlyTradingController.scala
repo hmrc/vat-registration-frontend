@@ -19,11 +19,11 @@ package controllers.vatapplication
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.CurrentlyTradingForm
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.CurrentlyTrading
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.InternalServerException
 import utils.MessageDateFormat
 import views.html.vatapplication.CurrentlyTradingView
 
@@ -42,6 +42,8 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
                                            val baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  val missingDataSection = "tasklist.vatRegistration.registrationDate"
+
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
@@ -54,7 +56,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
 
               Ok(view(vatApplication.currentlyTrading.fold(form)(form.fill), msgKeySuffix, registrationDate))
             case None =>
-              throw new InternalServerException("[CurrentlyTradingController][show] Missing registration start date")
+              throw MissingAnswerException(missingDataSection)
           }
         }
   }
@@ -77,7 +79,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
                 }
               )
             case None =>
-              throw new InternalServerException("[CurrentlyTradingController][submit] Missing registration start date")
+              throw MissingAnswerException(missingDataSection)
           }
         }
   }

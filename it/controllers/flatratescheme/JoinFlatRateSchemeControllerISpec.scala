@@ -119,7 +119,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       }
     }
 
-    "return INTERNAL_SERVER_ERROR if no estimates data available" in new Setup {
+    "redirect to the missing answer page if the turnover estimate isn't present" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[FlatRateScheme](Some(frsData))
@@ -131,7 +131,8 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
       val res = buildClient("/join-flat-rate").get()
 
       whenReady(res) { result =>
-        result.status mustBe INTERNAL_SERVER_ERROR
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
       }
     }
   }
