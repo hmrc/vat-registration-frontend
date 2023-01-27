@@ -23,7 +23,6 @@ import models.OtherBusinessInvolvement
 import play.api.mvc.{Action, AnyContent}
 import services.{OtherBusinessInvolvementsService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.InternalServerException
 import views.html.otherbusinessinvolvements.RemoveOtherBusiness
 
 import javax.inject.{Inject, Singleton}
@@ -35,8 +34,8 @@ class RemoveOtherBusinessController @Inject()(val authConnector: AuthConnector,
                                               otherBusinessInvolvementsService: OtherBusinessInvolvementsService,
                                               view: RemoveOtherBusiness)
                                              (implicit appConfig: FrontendAppConfig,
-                                            val executionContext: ExecutionContext,
-                                            baseControllerComponents: BaseControllerComponents)
+                                              val executionContext: ExecutionContext,
+                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with ObiIndexValidation with SessionProfile {
 
   def show(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
@@ -47,7 +46,8 @@ class RemoveOtherBusinessController @Inject()(val authConnector: AuthConnector,
             case Some(OtherBusinessInvolvement(Some(businessName), _, _, _, _, _)) =>
               Future.successful(Ok(view(RemoveOtherBusinessForm(businessName).form, businessName, index)))
             case _ =>
-              throw new InternalServerException("Invalid entity for remove other business page")
+              logger.warn("[RemoveOtherBusinessController] Attempted to remove OBI without OBI details")
+              Future.successful(Redirect(routes.ObiSummaryController.show))
           }
         }
   }
@@ -59,7 +59,7 @@ class RemoveOtherBusinessController @Inject()(val authConnector: AuthConnector,
           errors =>
             Future.successful(BadRequest(view(errors, otherBusinessName, index))),
           success => {
-            if(success) {
+            if (success) {
               for {
                 _ <- otherBusinessInvolvementsService.deleteOtherBusinessInvolvement(index)
                 otherBusinessInvolvements <- otherBusinessInvolvementsService.getOtherBusinessInvolvements

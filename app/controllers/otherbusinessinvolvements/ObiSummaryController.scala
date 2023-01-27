@@ -44,9 +44,7 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         otherBusinessInvolvementsService.getOtherBusinessInvolvements.flatMap {
-          case Nil =>
-            Future.successful(Redirect(routes.OtherBusinessInvolvementController.show))
-          case otherBusinessInvolvements =>
+          case otherBusinessInvolvements if otherBusinessInvolvements.exists(_.isModelComplete) =>
             val clearedObiList = otherBusinessInvolvements.filter(_.isModelComplete)
             val page = Ok(view(ObiSummaryForm(), buildRows(clearedObiList), clearedObiList.size))
 
@@ -55,6 +53,8 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
             } else {
               Future.successful(page)
             }
+          case _ =>
+            Future.successful(Redirect(routes.OtherBusinessInvolvementController.show))
         }
   }
 

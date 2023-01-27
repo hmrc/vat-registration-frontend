@@ -56,7 +56,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
         res.status mustBe OK
       }
 
-      "return INTERNAL_SERVER_ERROR if any of the OBI has business name missing" in new Setup {
+      "return a redirect to 'Do you have OBIs' page if the OBI is missing business name" in new Setup {
         given
           .user.isAuthorised()
           .registrationApi.getListSection[OtherBusinessInvolvement](Some(testObis.map(_.copy(businessName = None))))
@@ -67,7 +67,8 @@ class ObiSummaryControllerISpec extends ControllerISpec {
 
         val res = await(buildClient(pageUrl()).get)
 
-        res.status mustBe INTERNAL_SERVER_ERROR
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessInvolvementController.show.url)
       }
     }
   }
