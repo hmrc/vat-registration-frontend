@@ -16,6 +16,7 @@
 
 package controllers.partners
 
+import config.FrontendAppConfig
 import controllers.partners.PartnerIndexValidation.minPartnerIndex
 import itutil.ControllerISpec
 import models.Entity
@@ -27,6 +28,9 @@ import play.api.test.Helpers._
 import scala.concurrent.Future
 
 class RemovePartnerEntityControllerISpec extends ControllerISpec {
+
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+
   def pageGetUrl(index: Int): String = routes.RemovePartnerEntityController.show(index).url
   def pagePostUrl(index: Int): String = routes.RemovePartnerEntityController.submit(Some("testPartnerName"), index).url
 
@@ -86,6 +90,26 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe OK
+      }
+    }
+
+    "redirect to partner summary page if submitted with valid index but entity name missing" in new Setup {
+      given()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection[Entity](Some(List(
+          Entity(Some(testPartnership.copy(companyName = None)), ScotPartnership, Some(true), None, None, None, None),
+        )))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pageGetUrl(minPartnerIndex)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerSummaryController.show.url)
       }
     }
   }
@@ -154,6 +178,40 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerSummaryController.show.url)
+      }
+    }
+
+    "redirect back to remove partner entity page if submitted with index less than min partner count" in new Setup {
+      val partnerIndex = 1
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pagePostUrl(partnerIndex)).post(Map("value" -> Seq("false")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.RemovePartnerEntityController.show(PartnerIndexValidation.minPartnerIndex).url)
+      }
+    }
+
+    "redirect back to remove partner entity page if submitted with index more than max partner count" in new Setup {
+      val partnerIndex = 100
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(pagePostUrl(partnerIndex)).post(Map("value" -> Seq("false")))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.RemovePartnerEntityController.show(appConfig.maxPartnerCount).url)
       }
     }
 

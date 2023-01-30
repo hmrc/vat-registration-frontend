@@ -61,8 +61,6 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
                 }
               case Post =>
                 Future.successful(Redirect(routes.DocumentsPostController.show))
-              case _ =>
-                Future.successful(BadRequest(view(form().fill(attachmentMethod))))
             }
           }
       }

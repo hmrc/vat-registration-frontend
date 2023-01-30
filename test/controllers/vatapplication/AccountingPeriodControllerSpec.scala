@@ -19,6 +19,7 @@ package controllers.vatapplication
 import _root_.models._
 import fixtures.VatRegistrationFixture
 import forms.vatapplication.AccountingPeriodForm
+import models.api.NETP
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -69,7 +70,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
   "submitAccountsPeriod" should {
     val fakeRequest = FakeRequest(controllers.vatapplication.routes.AccountingPeriodController.submit)
 
-    "redirect to the Join Flat Rate page when they select the jan apr jul oct option" in new Setup {
+    "redirect to the TaskListController when they select the jan apr jul oct option" in new Setup {
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
@@ -85,7 +86,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       }
     }
 
-    "redirect to the Join Flat Rate page when they select the feb may aug nov option" in new Setup {
+    "redirect to the TaskListController when they select the feb may aug nov option" in new Setup {
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(FebruaryStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
@@ -101,7 +102,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       }
     }
 
-    "redirect to the Join Flat Rate page when they select the mar may sep dec option" in new Setup {
+    "redirect to the TaskListController when they select the mar may sep dec option" in new Setup {
       when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
@@ -114,6 +115,22 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "redirect to the TaxRepController if overseas entity does not have a fixed establishment in IsleOfManOrUK" in new Setup {
+      when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
+        "value" -> AccountingPeriodForm.marStaggerKey
+      )
+
+      submitAuthorised(testController.submit, request) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.vatapplication.routes.TaxRepController.show.url)
       }
     }
 

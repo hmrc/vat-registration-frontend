@@ -31,6 +31,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
+
     "return OK and pre-populate the page" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       val appDetails = ApplicantDetails(
@@ -40,6 +41,29 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[ApplicantDetails](Some(appDetails))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).get())
+
+      res.status mustBe OK
+
+      val doc = Jsoup.parse(res.body)
+      doc.select("input[id=line1]").`val`() mustBe testLine1
+      doc.select("input[id=line2]").`val`() mustBe testLine2
+      doc.select("option[value=Norway]").hasAttr("selected") mustBe true
+    }
+
+    "return OK and pre-populate the page for transactor journey" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      val appDetails = ApplicantDetails(
+        personalDetails = Some(testPersonalDetails),
+        currentAddress = Some(testShortForeignAddress)
+      )
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -75,6 +99,27 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.show.url)
     }
+
+    "Store the address for transactor journey and redirect to the previous address page if a minimal address is provided" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(currentAddress = Some(testShortForeignAddress)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(url).post(Map(
+        "line1" -> testLine1,
+        "line2" -> testLine2,
+        "country" -> "Norway"
+      )))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.show.url)
+    }
+
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given
@@ -98,6 +143,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.show.url)
     }
+
     "return BAD_REQUEST if line 1 is missing" in new Setup {
       given
         .user.isAuthorised()
@@ -116,6 +162,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
       res.status mustBe BAD_REQUEST
     }
+
     "return BAD_REQUEST if country is missing" in new Setup {
       given
         .user.isAuthorised()

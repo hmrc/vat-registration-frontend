@@ -96,7 +96,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(changeOfName = FormerName())))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 

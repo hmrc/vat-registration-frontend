@@ -16,9 +16,11 @@
 
 package controllers.partners
 
+import config.FrontendAppConfig
 import itutil.ControllerISpec
 import models.Entity
-import models.api.{Individual, UkCompany}
+import models.api.{EligibilitySubmissionData, Individual, ScotPartnership, UkCompany}
+import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -28,6 +30,7 @@ import scala.concurrent.Future
 class PartnerAddressControllerISpec extends ControllerISpec {
 
   def url(index: Int): String = routes.PartnerAddressController.redirectToAlf(index).url
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val testCallbackId = "testCallbackId"
 
@@ -104,6 +107,78 @@ class PartnerAddressControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(2).url)
       }
     }
+
+    "redirect to task list controller if no entities available" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url(2)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "redirect back to partner entity type page if requested index is less than min allowed index" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection[Entity](Some(List(
+        Entity(None, ScotPartnership, Some(true), None, None, None, None),
+        Entity(None, UkCompany, Some(false), None, None, None, None)
+      )))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url(1)).get()
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe
+          Some(routes.PartnerAddressController.redirectToAlf(PartnerIndexValidation.minPartnerIndex).url)
+      }
+    }
+
+    "redirect back to partner entity type page if requested index is greater than max allowed index" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection[Entity](Some(List(
+        Entity(None, ScotPartnership, Some(true), None, None, None, None),
+        Entity(None, UkCompany, Some(false), None, None, None, None)
+      )))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url(100)).get()
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe
+          Some(routes.PartnerAddressController.redirectToAlf(appConfig.maxPartnerCount).url)
+      }
+    }
+
+    "redirect back to partner entity type page if requested index is greater than available partners plus 1" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection[Entity](Some(List(
+        Entity(None, ScotPartnership, Some(true), None, None, None, None),
+        Entity(None, UkCompany, Some(false), None, None, None, None)
+      )))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url(4)).get()
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe
+          Some(routes.PartnerAddressController.redirectToAlf(3).url)
+      }
+    }
   }
 
   s"GET ${callbackUrl(2)}" should {
@@ -122,6 +197,40 @@ class PartnerAddressControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerTelephoneNumberController.show(2).url)
+      }
+    }
+
+    "redirect back to partner address page if submitted with index that is less than configured min partner count" in new Setup {
+      val requestedIndex = 1
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(callbackUrl(requestedIndex)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerAddressController.redirectToAlf(PartnerIndexValidation.minPartnerIndex).url)
+      }
+    }
+
+    "redirect back to partner address page if submitted with index that is greater than configured max partner count" in new Setup {
+      val requestedIndex = 100
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(callbackUrl(requestedIndex)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerAddressController.redirectToAlf(appConfig.maxPartnerCount).url)
       }
     }
   }

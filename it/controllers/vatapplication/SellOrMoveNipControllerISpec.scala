@@ -45,7 +45,9 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getRegistration(emptyVatSchemeNetp)
-          .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount)))))))
+          .registrationApi.replaceSection[VatApplication](
+            VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))))))
+          )
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -53,6 +55,22 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
         whenReady(response) { res =>
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ReceiveGoodsNipController.show.url)
+        }
+      }
+
+      "return BAD_REQUEST when submitted with missing data" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getRegistration(emptyVatSchemeNetp)
+          .registrationApi.replaceSection[VatApplication](
+            VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))))))
+          )
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val response = buildClient("/sell-or-move-nip").post(Map.empty[String, String])
+        whenReady(response) { res =>
+          res.status mustBe BAD_REQUEST
         }
       }
     }

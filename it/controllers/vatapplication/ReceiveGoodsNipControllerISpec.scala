@@ -123,5 +123,18 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       }
     }
 
+    "return BAD_REQUEST if submitted with missing data" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient("/receive-goods-nip").post(Map.empty[String, String])
+      whenReady(response) { res =>
+        res.status mustBe BAD_REQUEST
+      }
+    }
   }
 }

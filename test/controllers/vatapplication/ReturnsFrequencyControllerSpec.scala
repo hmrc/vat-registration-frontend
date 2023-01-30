@@ -19,6 +19,7 @@ package controllers.vatapplication
 import fixtures.VatRegistrationFixture
 import forms.vatapplication.ReturnsFrequencyForm
 import models.CurrentProfile
+import models.api.NETP
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -110,6 +111,24 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "redirect to the TaxRepController when they select the monthly option and overseas entity does not have a fixed establishment in IsleOfManOrUK" in new Setup {
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)))
+      when(movkVatApplicationService.saveVatApplication(any())(any(), any()))
+        .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
+      when(movkVatApplicationService.isEligibleForAAS(any(), any()))
+        .thenReturn(Future.successful(true))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
+        "value" -> ReturnsFrequencyForm.monthlyKey
+      )
+
+      submitAuthorised(testController.submit, request) { result =>
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.vatapplication.routes.TaxRepController.show.url)
       }
     }
 

@@ -96,6 +96,25 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
     }
 
+    "redirect to max emails exceeded when use has hit max limit and forbidden to do futher email verifications" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
+        .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = Contact(Some(testEmail), None, Some(true))))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.requestNew.url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
+    }
+
     "return INTERNAL_SERVER_ERROR if email missing" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()

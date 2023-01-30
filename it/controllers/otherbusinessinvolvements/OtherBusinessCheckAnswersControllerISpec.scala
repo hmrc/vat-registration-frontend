@@ -44,7 +44,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
     }
     "no data exists for the index" when {
       "the index is valid" must {
-        "redirect to the index" in new Setup {
+        "but higher than highest valid index, then redirect to max index" in new Setup {
           given
             .user.isAuthorised()
             .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(testIndex2))
@@ -59,7 +59,24 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessCheckAnswersController.show(testIndex1).url)
         }
+
+        "and no data available, then redirect business name controller at given index" in new Setup {
+          given
+            .user.isAuthorised()
+            .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(testIndex2))
+            .registrationApi.getListSection[OtherBusinessInvolvement](Some(List()))
+            .audit.writesAudit()
+            .audit.writesAuditMerged()
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(url(testIndex1)).get)
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessNameController.show(testIndex1).url)
+        }
       }
+
       "the index is higher than the highest possible index (n + 1)" must {
         "redirect to the first index without data" in new Setup {
           given

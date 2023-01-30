@@ -54,11 +54,23 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
   "voluntaryStartPage" should {
     "show the page" when {
       "return an OK when returns are not present" in new Setup {
-        when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
-          .thenReturn(Future.successful(Some(testIncorpDate)))
-
         when(movkVatApplicationService.getVatApplication(any(), any()))
           .thenReturn(Future.successful(validVatApplication))
+
+        when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
+          .thenReturn(Future.successful(validEligibilitySubmissionData))
+
+        when(movkVatApplicationService.calculateEarliestStartDate()(any(), any()))
+          .thenReturn(Future.successful(testIncorpDate))
+
+        callAuthorised(testController.show) { result =>
+          status(result) mustBe OK
+        }
+      }
+
+      "return an OK when incorp date same as reg start date" in new Setup {
+        when(movkVatApplicationService.getVatApplication(any(), any()))
+          .thenReturn(Future.successful(validVatApplication.copy(startDate = Some(testIncorpDate))))
 
         when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
@@ -84,9 +96,6 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
 
       when(movkVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(validVatApplication))
-
-      when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any()))
-        .thenReturn(Future.successful(Some(incorpDate)))
 
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))

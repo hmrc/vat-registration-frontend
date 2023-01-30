@@ -92,6 +92,22 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.StoringGoodsController.show.url)
       }
     }
+
+    "return BAD_REQUEST when submitted with missing data" in new Setup {
+      val vatApplication: VatApplication = fullVatApplication.copy(overseasCompliance = Some(testOverseasCompliance))
+      given()
+        .user.isAuthorised()
+        .registrationApi.replaceSection[VatApplication](vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false)))))
+        .registrationApi.getSection[VatApplication](Some(vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false))))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).post(Map("value" -> ""))
+
+      whenReady(res) { result =>
+        result.status mustBe BAD_REQUEST
+      }
+    }
   }
 
 }

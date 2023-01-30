@@ -17,70 +17,62 @@
 package controllers.partners
 
 import config.FrontendAppConfig
-import forms.PartnerTelephoneForm
 import itutil.ControllerISpec
 import models.Entity
-import models.api.{EligibilitySubmissionData, Individual, ScotPartnership, UkCompany}
+import models.api._
 import org.jsoup.Jsoup
 import org.scalatest.Assertion
 import play.api.http.HeaderNames
-import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
+class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
 
-  def url(index: Int): String = routes.PartnerTelephoneNumberController.show(index).url
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  def url(index: Int): String = routes.PartnerCaptureEmailAddressController.show(index).url
 
-  private val testTelephone = "12345678"
+  val email = "test@test.com"
+  val invalidEmail = "test@@test.com"
 
-  s"GET ${url(2)}" must {
-    "return OK" in new Setup {
+  s"GET ${url(2)}" should {
+    "show the view correctly" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(
-        Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
-        Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)
-      )))
+        Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None),
+        Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: WSResponse = await(buildClient(url(2)).get)
+      response.status mustBe OK
+    }
+
+    "return OK with pre-populated data" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection[Entity](Some(List(
+        Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None),
+        Entity(Some(testSoleTrader), Individual, Some(false), None, None, Some(email), None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
-
       whenReady(response) { res =>
         res.status mustBe OK
+        Jsoup.parse(res.body).getElementById("email-address").attr("value") mustBe email
       }
     }
 
-    "return OK with pre-pop for existing data" in new Setup {
+    "redirect to Partner Entity Type page if entity is missing" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(
-        Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
-        Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone))
-      )))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url(2)).get()
-
-      whenReady(response) { res =>
-        res.status mustBe OK
-        Jsoup.parse(res.body).getElementById("partnerTelephone").attr("value") mustBe testTelephone
-      }
-    }
-
-    "redirect to partner type page when entity name does not exist" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.getListSection[Entity](Some(List(
-          Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None),
-          Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
+          Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None)
         )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -89,11 +81,29 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.partners.routes.PartnerEntityTypeController.showPartnerType(2).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(2).url)
       }
     }
 
-    "redirect to task list controller if no entities exist" in new Setup {
+    "redirect to Partner Entity Type page if entity is missing business details" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getListSection[Entity](Some(List(
+          Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None),
+          Entity(None, Individual, Some(false), None, None, Some(email), None)
+        )))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url(2)).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(2).url)
+      }
+    }
+
+    "redirect to task list controller if no entities available" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -114,7 +124,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(
           Entity(None, ScotPartnership, Some(true), None, None, None, None),
-          Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
+          Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -123,7 +133,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe
-          Some(routes.PartnerTelephoneNumberController.show(PartnerIndexValidation.minPartnerIndex).url)
+          Some(routes.PartnerCaptureEmailAddressController.show(PartnerIndexValidation.minPartnerIndex).url)
       }
     }
 
@@ -133,7 +143,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(
           Entity(None, ScotPartnership, Some(true), None, None, None, None),
-          Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
+          Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -142,7 +152,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe
-          Some(routes.PartnerTelephoneNumberController.show(appConfig.maxPartnerCount).url)
+          Some(routes.PartnerCaptureEmailAddressController.show(appConfig.maxPartnerCount).url)
       }
     }
 
@@ -152,7 +162,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(
           Entity(None, ScotPartnership, Some(true), None, None, None, None),
-          Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
+          Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
@@ -161,111 +171,79 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe
-          Some(routes.PartnerTelephoneNumberController.show(3).url)
+          Some(routes.PartnerCaptureEmailAddressController.show(3).url)
       }
     }
   }
 
-  s"POST ${url(2)}" must {
-    "update the backend and redirect to partner email address page" in new Setup {
+  s"POST ${url(2)}" should {
+    "update the backend and redirect to the Partner Summary page" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
-        .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))
+        .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, Some(email), None), idx = Some(2))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url(2))
-        .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
+      val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(email))))
 
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.partners.routes.PartnerCaptureEmailAddressController.show(2).url)
-      }
+      response.status mustBe SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerSummaryController.show.url)
     }
 
-    "redirect back to partner telephone number page if submitted with index less than configured min partner count" in new Setup {
+    "redirect back to partner email address page if submitted with index less than configured min allowed partner count" in new Setup {
       val requestedIndex = 1
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
-        .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url(requestedIndex))
-        .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
+      val response: WSResponse = await(buildClient(url(requestedIndex)).post(Map("email-address" -> Seq(email))))
 
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerTelephoneNumberController.show(PartnerIndexValidation.minPartnerIndex).url)
-      }
+      response.status mustBe SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerCaptureEmailAddressController.show(PartnerIndexValidation.minPartnerIndex).url)
     }
 
-    "redirect back to partner telephone number page if submitted with index less than configured max partner count" in new Setup {
+    "redirect back to partner email address page if submitted with index greater than configured max allowed partner count" in new Setup {
       val requestedIndex = 100
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
-        .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url(requestedIndex))
-        .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
+      val response: WSResponse = await(buildClient(url(requestedIndex)).post(Map("email-address" -> Seq(email))))
 
-      whenReady(response) { res =>
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerTelephoneNumberController.show(appConfig.maxPartnerCount).url)
-      }
+      response.status mustBe SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerCaptureEmailAddressController.show(appConfig.maxPartnerCount).url)
     }
 
-    "return BAD_REQUEST for missing telephone" in new Setup {
+    "Return BAD_REQUEST if email is not provided" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url(2)).post("")
+      val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(""))))
 
-      whenReady(response) { res =>
-        res.status mustBe BAD_REQUEST
-      }
+      response.status mustBe BAD_REQUEST
     }
 
-    "return BAD_REQUEST for missing telephone number and entity name available" in new Setup {
+    "Return BAD_REQUEST if invalid email provided" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getListSection[Entity](Some(List(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-      val response: Future[WSResponse] = buildClient(url(2)).post("")
+      val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(invalidEmail))))
 
-      whenReady(response) { res =>
-        res.status mustBe BAD_REQUEST
-      }
-    }
-
-    "return BAD_REQUEST for invalid telephone" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
-
-      val response: Future[WSResponse] = buildClient(url(2))
-        .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> "a" * 106))
-
-      whenReady(response) { res =>
-        res.status mustBe BAD_REQUEST
-      }
+      response.status mustBe BAD_REQUEST
     }
   }
 }

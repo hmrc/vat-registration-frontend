@@ -56,6 +56,22 @@ class ObiSummaryControllerISpec extends ControllerISpec {
         res.status mustBe OK
       }
 
+      "update OBIs with only the completed ones and return OK with the view" in new Setup {
+        given
+          .user.isAuthorised()
+          .registrationApi.getListSection[OtherBusinessInvolvement](Some(
+            List(otherBusinessInvolvement, otherBusinessInvolvement.copy(businessName = None))
+          ))
+          .registrationApi.replaceListSection[OtherBusinessInvolvement](testObis)
+          .audit.writesAudit()
+          .audit.writesAuditMerged()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res = await(buildClient(pageUrl()).get)
+        res.status mustBe OK
+      }
+
       "return a redirect to 'Do you have OBIs' page if the OBI is missing business name" in new Setup {
         given
           .user.isAuthorised()
@@ -91,6 +107,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           res.header(HeaderNames.LOCATION) mustBe Some(routes.OtherBusinessInvolvementController.show.url)
         }
       }
+
       "the user has 1 or more OBIs" must {
         "return BAD_REQUEST with the view" in new Setup {
           given
@@ -104,6 +121,20 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
 
           res.status mustBe BAD_REQUEST
+        }
+
+        "return INTERNAL_SERVER_ERROR if OBI business name missing and form submitted with errors" in new Setup {
+          given
+            .user.isAuthorised()
+            .registrationApi.getListSection[OtherBusinessInvolvement](Some(testObis.map(_.copy(businessName = None))))
+            .audit.writesAudit()
+            .audit.writesAuditMerged()
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
+
+          res.status mustBe INTERNAL_SERVER_ERROR
         }
       }
     }

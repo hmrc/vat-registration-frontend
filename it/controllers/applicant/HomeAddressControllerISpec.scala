@@ -41,6 +41,21 @@ class HomeAddressControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
       }
     }
+
+    "redirect to ALF for transactor journey" in new Setup {
+      given()
+        .user.isAuthorised()
+        .alfeJourney.initialisedSuccessfully()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
+      }
+    }
   }
 
   "GET Txm ALF callback for Home Address" must {

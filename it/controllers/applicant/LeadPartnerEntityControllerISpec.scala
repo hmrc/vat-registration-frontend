@@ -30,7 +30,22 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe OK
+        Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 0
+      }
+    }
 
+    "display the page for transactor journey" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+        .registrationApi.getSection[Entity](None, idx = Some(1))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
         Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 0
       }
     }
@@ -108,6 +123,18 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "")))
+
+        res.status mustBe BAD_REQUEST
+      }
+
+      "return the page with errors for transactor journey" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

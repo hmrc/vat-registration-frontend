@@ -61,6 +61,7 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
     "return an OK when there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](Some(testFullVatApplication))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
