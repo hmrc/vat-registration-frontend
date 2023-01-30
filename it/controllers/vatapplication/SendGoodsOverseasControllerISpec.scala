@@ -75,5 +75,19 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(routes.StoringGoodsController.show.url)
       }
     }
+
+    "return BAD_REQUEST when submitted with missing data" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false)))))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = buildClient(url).post(Map("value" -> ""))
+
+      whenReady(res) { result =>
+        result.status mustBe BAD_REQUEST
+      }
+    }
   }
 }

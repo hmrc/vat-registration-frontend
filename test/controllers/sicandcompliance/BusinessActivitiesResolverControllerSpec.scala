@@ -21,6 +21,7 @@ import fixtures.VatRegistrationFixture
 import models.api.SicCode.SIC_CODES_KEY
 import models.api.{SicCode, UkCompany}
 import org.mockito.Mockito.when
+import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -62,6 +63,22 @@ class BusinessActivitiesResolverControllerSpec extends ControllerSpec with Futur
         res =>
           status(res) mustBe SEE_OTHER
           res redirectsTo controllers.business.routes.ComplianceIntroductionController.show.url
+      }
+    }
+
+    "redirect to task-list if journey is main business activity submission" in new Setup {
+      implicit val testRequest: FakeRequest[_] = FakeRequest().withHeaders(
+        REFERER -> controllers.sicandcompliance.routes.MainBusinessActivityController.submit.url
+      )
+
+      val sicCodes: List[SicCode] = List(sicCode)
+      mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(sicCodes))
+      when(mockBusinessService.needComplianceQuestions(sicCodes)).thenReturn(false)
+
+      callAuthorised(controller.resolve) {
+        res =>
+          status(res) mustBe SEE_OTHER
+          res redirectsTo controllers.routes.TaskListController.show.url
       }
     }
 

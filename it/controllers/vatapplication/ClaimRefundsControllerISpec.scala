@@ -5,6 +5,7 @@ import itutil.ControllerISpec
 import models.api._
 import models.api.vatapplication.VatApplication
 import models.{NonUk, TransferOfAGoingConcern}
+import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
@@ -29,9 +30,11 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         result.status mustBe OK
       }
     }
+
     "Return OK when there is a value for 'claim refunds' in the backend" in new Setup {
       given()
         .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionId)
 
@@ -39,6 +42,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe OK
+        Jsoup.parse(result.body).getElementsByAttribute("checked").size() mustBe 1
       }
     }
   }

@@ -34,6 +34,21 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
+    "display the page for transactor journey" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response: Future[WSResponse] = buildClient(url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe OK
+        Jsoup.parse(res.body).getElementsByAttribute("checked").size() mustBe 0
+      }
+    }
+
     "display the page with pre-pop" in new Setup {
       given()
         .user.isAuthorised()
@@ -106,11 +121,26 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
       }
     }
 
+    "the user submits with missing data" must {
+      "return BAD_REQUEST" in new Setup {
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+        val res: WSResponse = await(buildClient("/business-type-in-partnership").post(Map("value" -> "")))
+
+        res.status mustBe BAD_REQUEST
+      }
+    }
+
     "the user submits an invalid lead partner" must {
       "throw an exception" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
+          .registrationApi.replaceSection(Entity(None, NonUkNonEstablished, Some(true), None, None, None, None), idx = Some(1))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 

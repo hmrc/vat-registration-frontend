@@ -6,13 +6,14 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
   val url = "/storing-goods-for-dispatch"
 
-  val testOverseasCompliance = OverseasCompliance(
+  val testOverseasCompliance: OverseasCompliance = OverseasCompliance(
     goodsToOverseas = Some(true),
     goodsToEu = Some(true)
   )
@@ -27,11 +28,12 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe INTERNAL_SERVER_ERROR
       }
     }
+
     "the user is authorised" must {
       "backend doesn't contain an answer" must {
         "return OK with the correct page" in new Setup {
@@ -40,34 +42,42 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).get())
+          val res: WSResponse = await(buildClient(url).get())
 
           res.status mustBe OK
         }
       }
+
       "backend contains an answer" must {
         "return OK and pre-populate the form if the answer is UK" in new Setup {
           given()
             .user.isAuthorised()
+            .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(
+              overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk))))
+            ))
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).get())
+          val res: WSResponse = await(buildClient(url).get())
 
           res.status mustBe OK
-          Jsoup.parse(res.body).select("input[id=value]").hasAttr("checked")
+          Jsoup.parse(res.body).select("input[id=value]").hasAttr("checked") mustBe true
         }
       }
+
       "return OK and pre-populate the form if the answer is OVERSEAS" in new Setup {
         given()
           .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(testVatApplication.copy(
+            overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas))))
+          ))
 
         insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
-        Jsoup.parse(res.body).select("input[id=value-2]").hasAttr("checked")
+        Jsoup.parse(res.body).select("input[id=value-2]").hasAttr("checked") mustBe true
       }
     }
 
@@ -85,15 +95,14 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Map("value" -> "UK")))
+          val res: WSResponse = await(buildClient(url).post(Map("value" -> "UK")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.DispatchFromWarehouseController.show.url)
         }
       }
+
       "the user submits Storing Overseas" must {
-
-
         "redirect to the Task List page" in new Setup {
           given()
             .user.isAuthorised()
@@ -106,12 +115,13 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(Map("value" -> "OVERSEAS")))
+          val res: WSResponse = await(buildClient(url).post(Map("value" -> "OVERSEAS")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
         }
       }
+
       "the user submits an invalid answer" must {
         "return BAD_REQUEST" in new Setup {
           given()
@@ -122,7 +132,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
 
           insertCurrentProfileIntoDb(currentProfile, sessionId)
 
-          val res = await(buildClient(url).post(""))
+          val res: WSResponse = await(buildClient(url).post(""))
 
           res.status mustBe BAD_REQUEST
         }

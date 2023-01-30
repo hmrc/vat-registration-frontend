@@ -118,6 +118,22 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
     }
 
+    "redirect to previous address controller if the overseas user is established in UK" in new Setup {
+      implicit val format = ApplicantDetails.apiFormat(NETP)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
+        .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testNetpSoleTrader)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val res = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.previousAddress.url)
+    }
+
     "patch Applicant Details in backend when no previous address" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
@@ -132,6 +148,55 @@ class PreviousAddressControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "redirect to Alf with form errors for an invalid answer and missing current address in a transactor journey" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(currentAddress = None)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(pageUrl).post(Map("value" -> ""))
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HomeAddressController.redirectToAlf.url)
+      }
+    }
+
+    "redirect to ALF callback for requesting previous address in a non-transactor journey" in new Setup {
+      given()
+        .user.isAuthorised()
+        .alfeJourney.initialisedSuccessfully()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(routes.PreviousAddressController.previousAddress.url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
+      }
+    }
+
+    "redirect to ALF callback for requesting previous address in a transactor journey" in new Setup {
+      given()
+        .user.isAuthorised()
+        .alfeJourney.initialisedSuccessfully()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      val response = buildClient(routes.PreviousAddressController.previousAddress.url).get()
+
+      whenReady(response) { res =>
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
       }
     }
 

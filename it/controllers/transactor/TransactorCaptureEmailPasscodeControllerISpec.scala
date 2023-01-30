@@ -44,6 +44,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
+
     "redirect to the missing answer page if the email is missing" in new Setup {
       given()
         .user.isAuthorised()
@@ -82,7 +83,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       stubPost("/email-verification/request-passcode", CREATED, Json.obj().toString)
 
-      val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
@@ -100,8 +101,24 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
 
-      res.header("LOCATION") mustBe Some(routes.TransactorEmailAddressVerifiedController.show.url)
       res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(routes.TransactorEmailAddressVerifiedController.show.url)
+    }
+
+    "redirect to max emails exceeded when use has hit max limit and forbidden to do futher email verifications" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[TransactorDetails](Some(testTransactor))
+        .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+      stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
+
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.requestNew.url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url)
     }
   }
 

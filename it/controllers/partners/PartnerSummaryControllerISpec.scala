@@ -92,6 +92,19 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
     )
 
     "the user doesn't select an answer" when {
+      "scheme has no partner entities" must {
+        "redirect to task list controller" in new Setup {
+          given().user.isAuthorised()
+
+          insertCurrentProfileIntoDb(currentProfile, sessionId)
+
+          val res = await(buildClient(pageUrl).post(Map("value" -> "")))
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+        }
+      }
+
       "scheme has multiple partner entities" must {
         "return BAD_REQUEST with the view" in new Setup {
           given()

@@ -64,37 +64,35 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        applicantDetailsService.getApplicantNameForTransactorFlow.flatMap { optName =>
-          for {
-            isTransactor <- vatRegistrationService.isTransactor
-            optName <- if (isTransactor) applicantDetailsService.getApplicantNameForTransactorFlow else Future.successful(None)
-            errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
-            form = PreviousAddressForm.form(errorCode)
-            result <- form.bindFromRequest.fold(
-              badForm =>
-                applicantDetailsService.getApplicantDetails.map { applicant =>
-                  applicant.currentAddress.fold(
-                    Redirect(routes.HomeAddressController.redirectToAlf)
-                  )(address =>
-                    BadRequest(previousAddressPage(badForm, optName, address))
-                  )
-                },
-              data =>
-                applicantDetailsService.saveApplicantDetails(NoPreviousAddress(data)).flatMap { _ =>
-                  if (data) {
-                    Future.successful(Redirect(controllers.routes.TaskListController.show))
-                  } else {
-                    vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).map {
-                      case (NETP | NonUkNonEstablished, false) =>
-                        Redirect(routes.InternationalPreviousAddressController.show)
-                      case _ =>
-                        Redirect(routes.PreviousAddressController.previousAddress)
-                    }
+        for {
+          isTransactor <- vatRegistrationService.isTransactor
+          optName <- if (isTransactor) applicantDetailsService.getApplicantNameForTransactorFlow else Future.successful(None)
+          errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
+          form = PreviousAddressForm.form(errorCode)
+          result <- form.bindFromRequest.fold(
+            badForm =>
+              applicantDetailsService.getApplicantDetails.map { applicant =>
+                applicant.currentAddress.fold(
+                  Redirect(routes.HomeAddressController.redirectToAlf)
+                )(address =>
+                  BadRequest(previousAddressPage(badForm, optName, address))
+                )
+              },
+            data =>
+              applicantDetailsService.saveApplicantDetails(NoPreviousAddress(data)).flatMap { _ =>
+                if (data) {
+                  Future.successful(Redirect(controllers.routes.TaskListController.show))
+                } else {
+                  vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).map {
+                    case (NETP | NonUkNonEstablished, false) =>
+                      Redirect(routes.InternationalPreviousAddressController.show)
+                    case _ =>
+                      Redirect(routes.PreviousAddressController.previousAddress)
                   }
                 }
-            )
-          } yield result
-        }
+              }
+          )
+        } yield result
   }
 
   def addressLookupCallback(id: String): Action[AnyContent] = isAuthenticatedWithProfile {
