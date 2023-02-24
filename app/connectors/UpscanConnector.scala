@@ -22,6 +22,7 @@ import models.api.AttachmentType
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import play.api.libs.json.Json
+import services.logger
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
@@ -56,8 +57,8 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
   }
 
   def storeUpscanReference(regId: String, reference: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    logger.info(s"[UpscanConnector][storeUpscanReference] attempting to store upscan reference: $reference for regId $regId")
     lazy val url = appConfig.storeUpscanReferenceUrl(regId)
-
     httpClient.post(url"$url")
       .withBody(
         Json.obj(
@@ -71,6 +72,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
   }
 
   def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[UpscanDetails] = {
+    logger.info(s"[UpscanConnector][fetchUpscanFileDetails] attempting to retrieve upscan file details. regId $regId reference $reference")
     lazy val url = appConfig.fetchUpscanFileDetails(regId, reference)
 
     httpClient.get(url"$url")

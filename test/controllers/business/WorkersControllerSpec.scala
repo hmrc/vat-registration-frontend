@@ -23,7 +23,7 @@ import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{BusinessServiceMock, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.Workers
+import views.html.sicandcompliance.workers
 
 import scala.concurrent.Future
 
@@ -31,7 +31,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   with VatRegistrationFixture with BusinessServiceMock with MockVatRegistrationService {
 
   trait Setup {
-    val view = app.injector.instanceOf[Workers]
+    val view = app.injector.instanceOf[workers]
     val controller: WorkersController = new WorkersController(
       mockAuthClientConnector,
       mockSessionService,

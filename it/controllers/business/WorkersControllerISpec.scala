@@ -8,11 +8,11 @@ import models.{Business, LabourCompliance}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
-import views.html.sicandcompliance.Workers
+import views.html.sicandcompliance.workers
 
 class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
 
-  val view = app.injector.instanceOf[Workers]
+  val view = app.injector.instanceOf[workers]
 
   "show" should {
     "return OK with the form unpopulated" in new Setup {

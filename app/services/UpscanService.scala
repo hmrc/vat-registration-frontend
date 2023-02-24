@@ -28,7 +28,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executionContext: ExecutionContext) {
 
   def initiateUpscan(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
+    logger.info(s"[UploadDocumentController][show] attempting to initiate upscan. regId $regId")
     upscanConnector.upscanInitiate().flatMap { response =>
+      logger.info(s"[UpscanService][UpscanService] upscan upload initiated. regId $regId upscanRef ${response.reference}")
       upscanConnector.storeUpscanReference(regId, response.reference, attachmentType).map(_ => response)
     }
   }
