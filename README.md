@@ -4,6 +4,8 @@
 
 The purpose of this microservice is to allow users to register their business for VAT online.
 
+Testing
+
 ## How to start the service locally
 To start all the dependent services required by VAT Registration Frontend in service manager, you can either use `sm --start VAT_REG_ALL -r` or `sm2 --start VAT_REG_ALL -r` if you are using sm2.
 
