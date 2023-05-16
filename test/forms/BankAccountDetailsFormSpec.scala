@@ -181,6 +181,19 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.key mustBe SORT_CODE
       boundForm.errors.head.message mustBe sortCodeInvalidKey
     }
+    "return No FormError when binding a sort code with spaces ( ) part to the form" in {
+      val invalidSortCode = "02 03  06"
+
+      val formData = Map(
+        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE -> invalidSortCode
+      )
+
+      val boundForm = form.bind(formData)
+
+      boundForm.errors.size mustBe 0
+    }
 
     "return a single FormError when the sort code is missing" in {
       val emptySortCode = ""

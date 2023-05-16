@@ -65,7 +65,7 @@ object EnterBankAccountDetailsForm {
         mandatory(accountNumberEmptyKey),
         matchesRegex(accountNumberRegex, accountNumberInvalidKey)
       )),
-      SORT_CODE -> text.verifying(stopOnFail(
+      SORT_CODE -> text.transform(removeSpaces, identity[String]).verifying(stopOnFail(
         mandatory(sortCodeEmptyKey),
         matchesRegex(sortCodeRegex, sortCodeInvalidKey)
       ))
