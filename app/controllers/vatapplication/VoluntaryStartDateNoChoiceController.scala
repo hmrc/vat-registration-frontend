@@ -41,7 +41,7 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     vatApplicationService.getVatApplication.map { vatApplication =>
       val form = vatApplication.startDate.fold(formProvider())(formProvider().fill)
-      Ok(view(form, MessageDateFormat.format(timeService.today)))
+      Ok(view(form, MessageDateFormat.formatNoText(timeService.today)))
     }
   }
 
