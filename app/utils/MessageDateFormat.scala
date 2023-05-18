@@ -46,4 +46,9 @@ object MessageDateFormat {
 
     date.format(formatter)
   }
+
+  def formatNoText(date: LocalDate): String = {
+    val formatter = DateTimeFormatter.ofPattern("dd MM yyyy")
+    date.format(formatter)
+  }
 }
