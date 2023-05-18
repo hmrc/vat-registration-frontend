@@ -51,7 +51,7 @@ object EnterBankAccountDetailsForm {
 
   private val accountNameRegex = """^[A-Za-z0-9 '’‘()\[\]{}<>!«»"ʺ˝ˮ?/\\+=%#*&$€£_\-@¥.,:;]{1,60}$""".r
   private val accountNameMaxLength = 60
-  private val accountNumberRegex = """[0-9]{8}""".r
+  private val accountNumberRegex = """[0-9]{6,8}""".r
   private val sortCodeRegex = """[0-9]{6}""".r
 
   val form = Form[BankAccountDetails] (
@@ -61,7 +61,7 @@ object EnterBankAccountDetailsForm {
         maxLength(accountNameMaxLength, accountNameMaxLengthKey),
         matchesRegex(accountNameRegex, accountNameInvalidKey)
       )),
-      ACCOUNT_NUMBER -> text.verifying(stopOnFail(
+      ACCOUNT_NUMBER -> text.transform(removeSpaces, identity[String]).verifying(stopOnFail(
         mandatory(accountNumberEmptyKey),
         matchesRegex(accountNumberRegex, accountNumberInvalidKey)
       )),
