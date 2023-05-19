@@ -23,7 +23,7 @@ object AppDependencies {
 
 private object CompileDependencies {
   private val hmrcMongoVersion = "0.74.0"
-  private val bootstrapVersion = "7.12.0"
+  private val bootstrapVersion = "7.15.0"
   private val timeVersion = "3.25.0"
   private val partialsVersion = "8.3.0-play-28"
   private val cachingClientVersion = "10.0.0-play-28"
@@ -31,7 +31,7 @@ private object CompileDependencies {
   private val catsVersion = "1.0.0"
   private val playJsonJodaVersion = "2.9.3"
 
-  private val playHmrcFrontendVersion = "6.2.0-play-28"
+  private val playHmrcFrontendVersion = "7.7.0-play-28"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
