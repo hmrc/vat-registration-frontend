@@ -24,11 +24,13 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerE
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import utils.LoggingUtil
+import play.api.mvc.Request
 
 @Singleton
-class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends LoggingUtil {
 
-  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
+  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[List[AttachmentType]] = {
     implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
 
     httpClient.get(url"${config.attachmentsApiUrl(regId)}")
@@ -36,12 +38,14 @@ class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendA
       .map { result =>
         result.status match {
           case OK => result.json.as[List[AttachmentType]]
-          case status => throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
+          case status => 
+            errorLog(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
+            throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
         }
       }
   }
 
-  def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] = {
+  def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier, reuqest: Request[_]): Future[List[AttachmentType]] = {
     implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
 
     httpClient.get(url"${config.incompleteAttachmentsApiUrl(regId)}")
@@ -49,7 +53,9 @@ class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendA
       .map { result =>
         result.status match {
           case OK => result.json.as[List[AttachmentType]]
-          case status => throw new InternalServerException(s"[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: $status")
+          case status => 
+            errorLog(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
+            throw new InternalServerException(s"[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: $status")
         }
       }
   }

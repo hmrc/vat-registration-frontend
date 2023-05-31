@@ -22,7 +22,7 @@ import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
-
+import play.api.mvc.Request
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,14 +34,14 @@ class VatRegistrationConnector @Inject()(val http: HttpClientV2,
   lazy val vatRegUrl: String = config.servicesConfig.baseUrl("vat-registration")
   lazy val vatRegElUrl: String = config.servicesConfig.baseUrl("vat-registration-eligibility-frontend")
 
-  def createNewRegistration(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme]): Future[VatScheme] =
+  def createNewRegistration(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme], request: Request[_]): Future[VatScheme] =
     http.post(url"$vatRegUrl/vatreg/registrations")
       .execute[VatScheme]
       .recover {
         case e => throw logResponse(e, "createNewRegistration")
       }
 
-  def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
+  def getAllRegistrations(implicit hc: HeaderCarrier, request: Request[_]): Future[List[VatSchemeHeader]] =
     http.get(url"$vatRegUrl/vatreg/registrations")
       .execute[List[JsValue]]
       .recover {
@@ -57,14 +57,14 @@ class VatRegistrationConnector @Inject()(val http: HttpClientV2,
         }
       }
 
-  def getRegistration[T](regId: String)(implicit hc: HeaderCarrier, reads: HttpReads[T]): Future[T] =
+  def getRegistration[T](regId: String)(implicit hc: HeaderCarrier, reads: HttpReads[T], request: Request[_]): Future[T] =
     http.get(url"$vatRegUrl/vatreg/registrations/$regId")
       .execute[T]
       .recover {
         case e => throw logResponse(e, "getRegistration")
       }
 
-  def upsertRegistration(regId: String, vatScheme: VatScheme)(implicit hc: HeaderCarrier, writes: Writes[VatScheme]): Future[VatScheme] =
+  def upsertRegistration(regId: String, vatScheme: VatScheme)(implicit hc: HeaderCarrier, writes: Writes[VatScheme], request: Request[_]): Future[VatScheme] =
     http.put(url"$vatRegUrl/vatreg/registrations/$regId")
       .withBody(Json.toJson(vatScheme))
       .execute[VatScheme]

@@ -40,13 +40,13 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
 
   val missingRegReasonSection = "tasklist.eligibilty.regReason"
 
-  def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
+  def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[VatScheme] =
     vatRegConnector.getRegistration[VatScheme](profile.registrationId)
 
-  def upsertVatScheme(vatScheme: VatScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[VatScheme] =
+  def upsertVatScheme(vatScheme: VatScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[VatScheme] =
     vatRegConnector.upsertRegistration(profile.registrationId, vatScheme)
 
-  def getAllRegistrations(implicit hc: HeaderCarrier): Future[List[VatSchemeHeader]] =
+  def getAllRegistrations(implicit hc: HeaderCarrier, request: Request[_]): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations.map(_.filter(_.createdDate.isAfter(LocalDate.MIN.plusDays(1)))) //Sanity check to guard against broken schemes
 
   def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[Option[T]] =
@@ -55,7 +55,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
   def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[T] =
     registrationApiConnector.replaceSection[T](regId, data)
 
-  def getVatSchemeHeader(regId: String)(implicit hc: HeaderCarrier): Future[VatSchemeHeader] = {
+  def getVatSchemeHeader(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[VatSchemeHeader] = {
     implicit val reads: Reads[VatSchemeHeader] = VatSchemeHeader.vatSchemeReads
     vatRegConnector.getRegistration[VatSchemeHeader](regId)
   }
@@ -66,7 +66,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     getSection[String](regId).map(_.getOrElse(throw new InternalServerException("Missing Acknowledgement Reference")))
   }
 
-  def createRegistrationFootprint(implicit hc: HeaderCarrier): Future[VatScheme] = {
+  def createRegistrationFootprint(implicit hc: HeaderCarrier, request: Request[_]): Future[VatScheme] = {
     logger.info("[createRegistrationFootprint] Creating registration footprint")
     vatRegConnector.createNewRegistration
   }

@@ -68,10 +68,10 @@ class RegisterForFrsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected Yes" in new Setup {
-      when(mockFlatRateService.saveRegister(any())(any(), any()))
+      when(mockFlatRateService.saveRegister(any())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -85,10 +85,10 @@ class RegisterForFrsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "return 303 with RegisterFor Flat Rate Scheme selected No" in new Setup {
-      when(mockFlatRateService.saveRegister(any())(any(), any()))
+      when(mockFlatRateService.saveRegister(any())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -102,10 +102,10 @@ class RegisterForFrsControllerSpec extends ControllerSpec with VatRegistrationFi
     }
 
     "redirect to task list when selected No" in new Setup {
-      when(mockFlatRateService.saveRegister(any())(any(), any()))
+      when(mockFlatRateService.saveRegister(any())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

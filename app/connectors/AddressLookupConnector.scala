@@ -29,10 +29,12 @@ import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NoStackTrace
+import utils.LoggingUtil
+import play.api.mvc.Request
 
 @Singleton
 class AddressLookupConnector @Inject()(val http: HttpClientV2, appConfig: FrontendAppConfig)
-                                      (implicit ec: ExecutionContext) {
+                                      (implicit ec: ExecutionContext) extends LoggingUtil {
 
   implicit val reads: Address.addressLookupReads.type = Address.addressLookupReads
 
@@ -40,16 +42,16 @@ class AddressLookupConnector @Inject()(val http: HttpClientV2, appConfig: Fronte
     http.get(url"${appConfig.addressLookupRetrievalUrl(id)}")
       .execute[Address]
 
-  def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier): Future[Call] =
+  def getOnRampUrl(alfConfig: AddressLookupConfigurationModel)(implicit hc: HeaderCarrier, request: Request[_]): Future[Call] =
     http.post(url"${appConfig.addressLookupJourneyUrl}")
       .withBody(Json.toJson(alfConfig))
       .execute
-      .map { resp =>
+      .map ( resp =>
         resp.header(LOCATION).map(Call(GET, _)).getOrElse { //here resp will be a 202 Accepted with a Location header
-          logger.warn("[getOnRampUrl] - ERROR: Location header not set in ALF response")
+          warnLog("[getOnRampUrl] - ERROR: Location header not set in ALF response")
           throw new ALFLocationHeaderNotSetException
         }
-      }
+      )
 }
 
 private[connectors] class ALFLocationHeaderNotSetException extends NoStackTrace

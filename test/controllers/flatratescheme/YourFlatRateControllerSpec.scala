@@ -49,7 +49,7 @@ class YourFlatRateControllerSpec extends ControllerSpec with VatRegistrationFixt
 
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate))
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
       callAuthorised(controller.show) { result =>
@@ -62,7 +62,7 @@ class YourFlatRateControllerSpec extends ControllerSpec with VatRegistrationFixt
     val fakeRequest = FakeRequest(routes.YourFlatRateController.submit)
 
     "return 400 with Empty data" in new Setup {
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()
@@ -73,10 +73,10 @@ class YourFlatRateControllerSpec extends ControllerSpec with VatRegistrationFixt
     }
 
     "return 303 with Register For Flat Rate Scheme when Yes is selected" in new Setup {
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -90,10 +90,10 @@ class YourFlatRateControllerSpec extends ControllerSpec with VatRegistrationFixt
     }
 
     "return 303 with Register For Flat Rate Scheme when No is selected" in new Setup {
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[UseThisRateAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

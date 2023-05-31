@@ -23,11 +23,14 @@ import models.{ConditionalValue, GroupRegistration, NIPTurnover}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
-
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import java.time.LocalDate
 import scala.concurrent.Future
 
 class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   val vatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
 
@@ -51,8 +54,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
 
     "be cannot start if the prerequesites are not complete" in new Setup {
       val scheme = emptyVatScheme.copy(eligibilitySubmissionData = Some(validEligibilitySubmissionData))
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -62,8 +65,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
     }
 
     "be None when attachments are missing" in new Setup {
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List.empty))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
 
@@ -83,8 +86,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         attachments = None,
         flatRateScheme = None
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -106,8 +109,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         flatRateScheme = Some(validFlatRate),
         attachments = None
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -129,8 +132,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         )),
         attachments = None
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -153,8 +156,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         )),
         attachments = None
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -176,8 +179,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         flatRateScheme = Some(validFlatRate),
         attachments = Some(Attachments(Some(Attached)))
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List(VAT2)))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List(VAT2)))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -199,8 +202,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         flatRateScheme = Some(validFlatRate),
         attachments = Some(Attachments(Some(Attached)))
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)
@@ -222,8 +225,8 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         flatRateScheme = Some(validFlatRate),
         attachments = Some(Attachments(Some(Post)))
       )
-      when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
-      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
       val rowBuilder = await(section.attachmentsRequiredRow)
       val row = rowBuilder.get.build(scheme)

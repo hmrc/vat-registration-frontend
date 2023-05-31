@@ -28,9 +28,11 @@ import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, SessionId, Upstream5xxResponse}
+import play.api.mvc.Request
 
 class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures with FeatureSwitching {
 
+  implicit val req : Request[_] = this.request
   val connector: UpscanConnector = app.injector.instanceOf[UpscanConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 

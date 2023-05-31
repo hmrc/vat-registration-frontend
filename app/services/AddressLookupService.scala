@@ -25,6 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
+import play.api.mvc.Request
 
 @Singleton
 class AddressLookupService @Inject()(val addressLookupConnector: AddressLookupConnector,
@@ -32,7 +33,7 @@ class AddressLookupService @Inject()(val addressLookupConnector: AddressLookupCo
 
   def getAddressById(id: String)(implicit hc: HeaderCarrier): Future[Address] = addressLookupConnector.getAddress(id)
 
-  def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call, useUkMode: Boolean = false, optName: Option[String] = None)(implicit hc: HeaderCarrier): Future[Call] = {
+  def getJourneyUrl(journeyId: AddressLookupJourneyIdentifier.Value, continueUrl: Call, useUkMode: Boolean = false, optName: Option[String] = None)(implicit hc: HeaderCarrier, request: Request[_]): Future[Call] = {
     addressLookupConnector.getOnRampUrl(alfConfig(journeyId, continueUrl, useUkMode, optName))
   }
 

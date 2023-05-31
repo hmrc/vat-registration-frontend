@@ -25,6 +25,7 @@ import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
 
 import scala.concurrent.Future
+import play.api.mvc.Request
 
 trait MockAttachmentsConnector extends MockitoSugar {
   self: Suite =>
@@ -32,10 +33,10 @@ trait MockAttachmentsConnector extends MockitoSugar {
   val mockAttachmentsConnector = mock[AttachmentsConnector]
 
   def mockGetAttachmentsList(regId: String)(response: Future[List[AttachmentType]]): OngoingStubbing[Future[List[AttachmentType]]] =
-    when(mockAttachmentsConnector.getAttachmentList(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
+    when(mockAttachmentsConnector.getAttachmentList(ArgumentMatchers.eq(regId))(ArgumentMatchers.any(), ArgumentMatchers.any[Request[_]]))
       .thenReturn(response)
 
   def mockGetIncompleteAttachments(regId: String)(response: Future[List[AttachmentType]]): OngoingStubbing[Future[List[AttachmentType]]] =
-    when(mockAttachmentsConnector.getIncompleteAttachments(ArgumentMatchers.eq(regId))(ArgumentMatchers.any()))
+    when(mockAttachmentsConnector.getIncompleteAttachments(ArgumentMatchers.eq(regId))(ArgumentMatchers.any(), ArgumentMatchers.any[Request[_]]))
       .thenReturn(response)
 }

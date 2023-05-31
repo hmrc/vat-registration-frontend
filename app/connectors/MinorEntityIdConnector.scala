@@ -25,15 +25,16 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import utils.LoggingUtil
+import play.api.mvc.Request
 
 @Singleton
 class MinorEntityIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)
-                                      (implicit ec: ExecutionContext) {
+                                      (implicit ec: ExecutionContext) extends LoggingUtil {
 
-  def createJourney(journeyConfig: MinorEntityIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+  def createJourney(journeyConfig: MinorEntityIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     val url = partyType match {
       case UnincorpAssoc => config.startUnincorpAssocJourneyUrl
       case Trust => config.startTrustJourneyUrl
@@ -45,25 +46,34 @@ class MinorEntityIdConnector @Inject()(httpClient: HttpClientV2, config: Fronten
       .withBody(Json.toJson(journeyConfig))
       .execute.map {
         case response@HttpResponse(CREATED, _, _) =>
-          (response.json \ "journeyStartUrl").as[String]
+          val journeyStartUrl = (response.json \ "journeyStartUrl").as[String]
+          infoLog(s"Minor Entity ID journey created for party type: $partyType")
+          journeyStartUrl
         case response =>
-          throw new InternalServerException(s"[MinorEntityIdConnector] Invalid response from minor entity identification: Status: ${response.status} Body: ${response.body}")
+          val errorMessage = s"[MinorEntityIdConnector] Invalid response from minor entity identification: Status: ${response.status} Body: ${response.body}"
+          errorLog(errorMessage)
+          throw new InternalServerException(errorMessage)
       }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[MinorEntity] =
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[MinorEntity] =
     httpClient.get(url"${config.getMinorEntityIdDetailsUrl(journeyId)}")
       .execute
       .map { response =>
         response.status match {
           case OK => response.json.validate[MinorEntity](MinorEntity.apiFormat) match {
-            case JsSuccess(value, _) => value
+            case JsSuccess(value, _) =>
+              infoLog(s"Retrieved details for Minor Entity ID journey: $journeyId")
+              value
             case JsError(errors) =>
-              throw new InternalServerException(s"[MinorEntityIdConnector] Minor Entity ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+              val errorMessage = s"[MinorEntityIdConnector] Minor Entity ID returned invalid JSON ${errors.map(_._1).mkString(", ")}"
+              errorLog(errorMessage)
+              throw new InternalServerException(errorMessage)
           }
           case status =>
-            throw new InternalServerException(s"[MinorEntityIdConnector] Unexpected status returned from minor entity ID: $status")
+            val errorMessage = s"[MinorEntityIdConnector] Unexpected status returned from minor entity ID: $status"
+            errorLog(errorMessage)
+            throw new InternalServerException(errorMessage)
         }
       }
-
 }

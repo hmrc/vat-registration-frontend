@@ -7,9 +7,11 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
+import play.api.mvc.Request
 
 class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
+  implicit val req : Request[_] = this.request 
   val connector = app.injector.instanceOf[BankAccountReputationConnector]
 
   val stubbedBarsSuccessResponse = Json.obj(

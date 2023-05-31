@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class BankAccountReputationService @Inject()(val bankAccountReputationConnector: BankAccountReputationConnector,
@@ -34,7 +35,7 @@ class BankAccountReputationService @Inject()(val bankAccountReputationConnector:
                                              auditConnector: AuditConnector
                                             )(implicit ec: ExecutionContext) extends AuthorisedFunctions {
 
-  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
+  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier, request: Request[_]): Future[BankAccountDetailsStatus] = {
     bankAccountReputationConnector.validateBankDetails(account).flatMap {
       bankAccountValidationResponse =>
         authorised().retrieve(Retrievals.internalId) {

@@ -23,10 +23,12 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import utils.LoggingUtil
+import play.api.mvc.Request
 
 @Singleton
 class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
-                            (implicit ec: ExecutionContext) {
+                            (implicit ec: ExecutionContext) extends LoggingUtil {
 
   val baseUri: String = config.getConfString("industry-classification-lookup-frontend.uri",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.uri'"))
@@ -36,24 +38,28 @@ class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
 
   val IClInitialiseUrl: String = iclFEurl + initialiseJourney
 
-  def iclSetup(js: JsObject)(implicit hc: HeaderCarrier): Future[JsValue] = {
+  def iclSetup(js: JsObject)(implicit hc: HeaderCarrier, request: Request[_]): Future[JsValue] = {
+    infoLog("[iclSetup] Initializing a new ICL journey")
     http.post(url"$IClInitialiseUrl")
       .withBody(js)
       .execute[JsValue]
       .recover {
         case ex =>
-          logger.error(s"[ICLConnector] [ICLSetup] Threw an exception whilst Posting to initialise a new ICL journey with message: ${ex.getMessage}")
+          val errorMessage = s"[ICLConnector] [iclSetup] Threw an exception whilst Posting to initialise a new ICL journey with message: ${ex.getMessage}"
+          errorLog(errorMessage)
           throw ex
       }
   }
 
-  def iclGetResult(fetchResultsUrl: String)(implicit hc: HeaderCarrier): Future[JsValue] =
+  def iclGetResult(fetchResultsUrl: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[JsValue] = {
+    infoLog("[iclGetResult] Getting ICL journey results")
     http.get(url"${IClFEinternal + fetchResultsUrl}")
       .execute[JsValue]
       .recover {
         case ex =>
-          logger.error(s"[ICLConnector] [ICLGetResult] Threw an exception while getting ICL journey results with message: ${ex.getMessage}")
+          val errorMessage = s"[ICLConnector] [iclGetResult] Threw an exception while getting ICL journey results with message: ${ex.getMessage}"
+          errorLog(errorMessage)
           throw ex
       }
-
+  }
 }

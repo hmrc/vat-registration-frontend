@@ -22,10 +22,13 @@ import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HttpResponse, InternalServerException}
-
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import scala.concurrent.Future
 
 class UpscanServiceSpec extends VatRegSpec with MockUpscanConnector {
+
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   object TestService extends UpscanService(mockUpscanConnector)
 

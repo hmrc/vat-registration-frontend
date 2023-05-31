@@ -108,7 +108,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
       when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
 
-      when(mockFlatRateService.saveFlatRate(any[CategoryOfBusinessAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[CategoryOfBusinessAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(testFlatRate))
 
       submitAuthorised(controller.submit, request) { result =>

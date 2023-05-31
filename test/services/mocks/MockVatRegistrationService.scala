@@ -29,6 +29,7 @@ import services.VatRegistrationService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
+import play.api.mvc.Request
 
 trait MockVatRegistrationService extends MockitoSugar {
   self: Suite =>
@@ -38,13 +39,14 @@ trait MockVatRegistrationService extends MockitoSugar {
   def mockGetVatScheme(response: Future[VatScheme]): OngoingStubbing[Future[VatScheme]] =
     when(vatRegistrationServiceMock.getVatScheme(
       any[CurrentProfile],
-      any[HeaderCarrier]
+      any[HeaderCarrier],
+      ArgumentMatchers.any[Request[_]]
     )) thenReturn response
 
   def mockGetVatSchemeJson(regId: String)(response: Future[VatSchemeHeader]): OngoingStubbing[Future[VatSchemeHeader]] =
     when(vatRegistrationServiceMock.getVatSchemeHeader(
-      ArgumentMatchers.eq(regId)
-    )(any[HeaderCarrier])) thenReturn response
+      ArgumentMatchers.eq(regId),
+    )(any[HeaderCarrier], any[Request[_]])) thenReturn response
 
   def mockUpsertSection[T](regId: String, data: T)(response: Future[T]): OngoingStubbing[Future[T]] =
     when(vatRegistrationServiceMock.upsertSection(

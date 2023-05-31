@@ -33,6 +33,7 @@ import utils.MessageDateFormat
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
+import play.api.mvc.Request
 
 // scalastyle:off
 @Singleton
@@ -40,10 +41,11 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
                                                   flatRateService: FlatRateService,
                                                   govukSummaryList: GovukSummaryList)
                                                  (implicit appConfig: FrontendAppConfig) {
+                                                  
 
   val sectionId = "cya.registrationDetails"
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {
+  def build(vatScheme: VatScheme)(implicit messages: Messages, request: Request[_]): HtmlFormat.Appendable = {
     val vatApplication = vatScheme.vatApplication.getOrElse(throw new InternalServerException("[RegistrationDetailsBuilder] Missing Returns"))
     val eligibilityData = vatScheme.eligibilitySubmissionData.getOrElse(
       throw new InternalServerException(s"[RegistrationDetailsSummaryBuilder] Couldn't construct CYA due to missing section: 'Eligibility'")
@@ -78,7 +80,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     ))
   }
 
-  private def importsOrExports(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
+  private def importsOrExports(vatApplication: VatApplication)(implicit messages: Messages, request: Request[_]): Option[SummaryListRow] =
     optSummaryListRowBoolean(
       s"$sectionId.importsOrExports",
       vatApplication.tradeVatGoodsOutsideUk,
@@ -340,7 +342,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     ).flatten
   }
 
-  private def flatRateSchemeSection(vatScheme: VatScheme)(implicit messages: Messages): List[SummaryListRow] = {
+  private def flatRateSchemeSection(vatScheme: VatScheme)(implicit messages: Messages, request: Request[_]): List[SummaryListRow] = {
 
     val optFlatRateScheme: Option[FlatRateScheme] = vatScheme.flatRateScheme
     val isLimitedCostTrader: Boolean = optFlatRateScheme.exists(_.limitedCostTrader.contains(true))

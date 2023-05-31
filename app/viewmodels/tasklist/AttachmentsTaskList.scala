@@ -25,11 +25,12 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTaskList, attachmentsService: AttachmentsService) extends FeatureSwitching {
 
-  def attachmentsRequiredRow(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext): Future[Option[TaskListRowBuilder]] =
+  def attachmentsRequiredRow(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Future[Option[TaskListRowBuilder]] =
     for {
       attachments <- attachmentsService.getAttachmentList(profile.registrationId)
       incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)

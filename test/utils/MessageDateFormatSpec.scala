@@ -45,5 +45,12 @@ class MessageDateFormatSpec extends PlaySpec with GuiceOneAppPerSuite {
         })
       }
     }
+
+    "return numeric months" when {
+      "using formatNoText function" in {
+          val date = LocalDate.parse("2019-01-01")
+          MessageDateFormat.formatNoText(date) mustBe "01 01 2019"
+      }
+    }
   }
 }

@@ -25,10 +25,12 @@ import org.mockito.Mockito._
 import play.api.libs.json._
 import testHelpers.{VatRegSpec}
 import uk.gov.hmrc.http.HeaderCarrier
-
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import scala.concurrent.{ExecutionContext, Future}
 
 class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching {
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   class Setup {
     disable(StubBars)
@@ -45,7 +47,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching 
     "return ValidStatus when the json returns a true" in new Setup {
       val testUserId = "testUserId"
 
-      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(validBankCheckJsonResponse))
       mockAuthenticatedInternalId(Some(testUserId))
 
@@ -64,7 +66,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching 
     "return InvalidStatus when the json returns a false" in new Setup {
       val testUserId = "testUserId"
 
-      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(invalidBankCheckJsonResponse))
       mockAuthenticatedInternalId(Some(testUserId))
 
@@ -83,7 +85,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching 
     "return IndeterminateStatus when the json returns indeterminate" in new Setup {
       val testUserId = "testUserId"
 
-      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(indeterminateBankCheckJsonResponse))
       mockAuthenticatedInternalId(Some(testUserId))
 
@@ -101,7 +103,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching 
     "throw an exception if the response is invalid" in new Setup {
       val testUserId = "testUserId"
 
-      when(mockBankAccountReputationConnector.validateBankDetails(any())(any()))
+      when(mockBankAccountReputationConnector.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(Json.obj("accountNumberIsWellFormatted"-> "false")))
       mockAuthenticatedInternalId(Some(testUserId))
 

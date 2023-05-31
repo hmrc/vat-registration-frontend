@@ -87,7 +87,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
-      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -104,7 +104,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
       when(mockFlatRateService.getFlatRate(any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
-      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       private val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
