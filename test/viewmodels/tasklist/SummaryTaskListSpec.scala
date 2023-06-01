@@ -23,11 +23,14 @@ import models.{ConditionalValue, NIPTurnover, Voluntary}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
-
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import java.time.LocalDate
 import scala.concurrent.Future
 
 class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+  
+  implicit val fakeRequest: Request[_] = FakeRequest()
   val summaryTaskList: SummaryTaskList = app.injector.instanceOf[SummaryTaskList]
   val vatRegistrationTaskList: VatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
 
@@ -146,8 +149,8 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           attachments = Some(Attachments(Some(Attached)))
         )
 
-        when(mockAttachmentsService.getAttachmentList(anyString())(any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
-        when(mockAttachmentsService.getIncompleteAttachments(anyString())(any())).thenReturn(Future.successful(List.empty))
+        when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
+        when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
         val row = summaryTaskList.summaryRow(await(attachmentsTaskList.attachmentsRequiredRow)).build(scheme)
         row.status mustBe TLNotStarted

@@ -27,6 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
+import play.api.mvc.Request
 
 trait MockUpscanConnector extends MockitoSugar {
   self: Suite =>
@@ -42,7 +43,8 @@ trait MockUpscanConnector extends MockitoSugar {
       ArgumentMatchers.eq(reference),
       ArgumentMatchers.eq(attachmentType)
     )(
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[Request[_]]
     )).thenReturn(res)
 
   def mockFetchUpscanFileDetails(regId: String, reference: String)(res: Future[UpscanDetails]): OngoingStubbing[Future[UpscanDetails]] =
@@ -50,7 +52,8 @@ trait MockUpscanConnector extends MockitoSugar {
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(reference)
     )(
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[Request[_]]
     )).thenReturn(res)
 
   def mockDeleteUpscanDetails(regId: String, reference: String)(res: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
@@ -58,18 +61,21 @@ trait MockUpscanConnector extends MockitoSugar {
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(reference)
     )(
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[Request[_]]
     )).thenReturn(res)
 
   def mockDeleteAllUpscanDetails(regId: String)(res: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
     when(mockUpscanConnector.deleteAllUpscanDetails(
       ArgumentMatchers.eq(regId)
     )(
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[Request[_]]
     )).thenReturn(res)
 
   def mockFetchAllUpscanDetails(regId: String)(res: Future[Seq[UpscanDetails]]): OngoingStubbing[Future[Seq[UpscanDetails]]] =
     when(mockUpscanConnector.fetchAllUpscanDetails(ArgumentMatchers.eq(regId))(
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[Request[_]]
     )).thenReturn(res)
 }

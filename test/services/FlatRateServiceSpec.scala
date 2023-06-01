@@ -26,11 +26,14 @@ import org.mockito.Mockito._
 import services.FlatRateService.{CategoryOfBusinessAnswer, EstimateTotalSalesAnswer, JoinFrsAnswer, OverBusinessGoodsAnswer, OverBusinessGoodsPercentAnswer, UseThisRateAnswer}
 import testHelpers.VatSpec
 import uk.gov.hmrc.http.InternalServerException
-
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import java.time.LocalDate
 import scala.concurrent.Future
 
 class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
+
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   class Setup {
     val service = new FlatRateService(
@@ -181,7 +184,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
     "save UseThisRateAnswer and return scheme" when {
       "the answer is true" in new Setup {
         mockGetSection[FlatRateScheme](testRegId, Some(validFlatRate))
-        when(mockConfigConnector.getBusinessType(any()))
+        when(mockConfigConnector.getBusinessType(any())(any[Request[_]]))
           .thenReturn(testBusinessTypeDetails)
         mockReplaceSection[FlatRateScheme](testRegId, validFlatRate.copy(useThisRate = Some(true), percent = Some(testBusinessTypeDetails.percentage)))
 
@@ -206,7 +209,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "save CategoryOfBusinessAnswer and return scheme" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(validFlatRate))
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
       mockReplaceSection[FlatRateScheme](testRegId, validFlatRate.copy(categoryOfBusiness = Some(testBusinessCategory), percent = None, useThisRate = None))
 
@@ -219,9 +222,9 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(validBusiness))
-      when(mockConfigConnector.getSicCodeFRSCategory(any()))
+      when(mockConfigConnector.getSicCodeFRSCategory(any())(any()))
         .thenReturn(testBusinessCategory)
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
       mockReplaceSection[FlatRateScheme](testRegId, incompleteFlatRate.copy(useThisRate = Some(true), categoryOfBusiness = Some(testBusinessCategory), percent = Some(testBusinessTypeDetails.percentage)))
 
@@ -241,9 +244,9 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(validBusiness))
-      when(mockConfigConnector.getSicCodeFRSCategory(any()))
+      when(mockConfigConnector.getSicCodeFRSCategory(any())(any()))
         .thenReturn(testBusinessCategory)
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
       mockReplaceSection[FlatRateScheme](testRegId, incompleteFlatRate.copy(categoryOfBusiness = Some(testBusinessCategory)))
 
@@ -252,7 +255,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "store the sector and remove the percentage if there is a sector stored already" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(validFlatRate))
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
       mockReplaceSection[FlatRateScheme](testRegId, validFlatRate.copy(percent = None))
 
@@ -265,7 +268,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "retrieve a retrieveSectorPercent if one is saved" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(frs1KReg))
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
 
       await(service.retrieveBusinessTypeDetails) mustBe testBusinessTypeDetails
@@ -275,9 +278,9 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(validBusiness))
-      when(mockConfigConnector.getSicCodeFRSCategory(any()))
+      when(mockConfigConnector.getSicCodeFRSCategory(any())(any()))
         .thenReturn(testBusinessCategory)
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
 
       await(service.retrieveBusinessTypeDetails) mustBe testBusinessTypeDetails
@@ -287,7 +290,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(vatBusinessWithNoMainBusinessActivity))
-      when(mockConfigConnector.getBusinessType(any()))
+      when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
 
       intercept[MissingAnswerException](await(service.retrieveBusinessTypeDetails))

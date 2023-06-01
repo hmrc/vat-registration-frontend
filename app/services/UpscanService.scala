@@ -23,11 +23,12 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executionContext: ExecutionContext) {
 
-  def initiateUpscan(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
+  def initiateUpscan(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier, request: Request[_]): Future[UpscanResponse] = {
     logger.info(s"[UploadDocumentController][show] attempting to initiate upscan. regId $regId")
     upscanConnector.upscanInitiate().flatMap { response =>
       logger.info(s"[UpscanService][UpscanService] upscan upload initiated. regId $regId upscanRef ${response.reference}")
@@ -35,15 +36,15 @@ class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executi
     }
   }
 
-  def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[UpscanDetails] = {
+  def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[UpscanDetails] = {
     upscanConnector.fetchUpscanFileDetails(regId, reference)
   }
 
-  def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Boolean] = {
     upscanConnector.deleteUpscanDetails(regId, reference)
   }
 
-  def deleteUpscanDetailsByType(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[Seq[Boolean]] = {
+  def deleteUpscanDetailsByType(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier, request: Request[_]): Future[Seq[Boolean]] = {
     fetchAllUpscanDetails(regId)
       .flatMap { attachments =>
         Future.sequence(
@@ -58,11 +59,11 @@ class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executi
 
   }
 
-  def deleteAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def deleteAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Boolean] = {
     upscanConnector.deleteAllUpscanDetails(regId)
   }
 
-  def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Seq[UpscanDetails]] = {
+  def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Seq[UpscanDetails]] = {
     upscanConnector.fetchAllUpscanDetails(regId)
   }
 }

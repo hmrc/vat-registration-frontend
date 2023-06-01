@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnector,
                                    registrationApiConnector: RegistrationApiConnector
@@ -56,10 +57,10 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
 
   }
 
-  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
+  def getAttachmentList(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[List[AttachmentType]] =
     attachmentsConnector.getAttachmentList(regId)
 
-  def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier): Future[List[AttachmentType]] =
+  def getIncompleteAttachments(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[List[AttachmentType]] =
     attachmentsConnector.getIncompleteAttachments(regId)
 }
 

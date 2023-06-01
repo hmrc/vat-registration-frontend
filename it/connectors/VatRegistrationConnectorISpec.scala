@@ -28,6 +28,8 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
   with AppAndStubs
   with ITRegistrationFixtures {
 
+  implicit val req = this.request
+
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
   val testRegistrationsResponse = List(

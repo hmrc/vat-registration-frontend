@@ -25,11 +25,15 @@ import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 
 //connector returns an exception
 //exception when parsing the json
 
 class ICLServiceSpec extends VatRegSpec {
+
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   class Setup {
 
@@ -53,7 +57,7 @@ class ICLServiceSpec extends VatRegSpec {
     "return the ICL start url when neither VR or II are prepopped" in new Setup {
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
-      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
@@ -65,7 +69,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(
           validBusiness.copy(businessActivities = Some(List(SicCode("43220", "Plumbing", ""))))
         ))
-      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
@@ -75,7 +79,7 @@ class ICLServiceSpec extends VatRegSpec {
     "return the ICL start url when VR call fails" in new Setup {
       when(mockBusinessService.getBusiness(any(), any()))
         .thenReturn(Future.failed(new InternalServerException("VR call failed")))
-      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
@@ -83,19 +87,19 @@ class ICLServiceSpec extends VatRegSpec {
       res mustBe "example.url"
     }
     "return an exception when setting up ICL failed" in new Setup {
-      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](await(testService.journeySetup(customICLMessages, customICLMessagesCy)))
     }
     "return a exception when json was invalid" in new Setup {
-      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsInvalidResponse))
       intercept[Exception](await(testService.journeySetup(customICLMessages, customICLMessagesCy)))
     }
     "return an exception when keystore cache is not successful" in new Setup {
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.failed(new Exception))
-      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsResponse))
       intercept[Exception](await(testService.journeySetup(customICLMessages, customICLMessagesCy)))
     }
@@ -106,7 +110,7 @@ class ICLServiceSpec extends VatRegSpec {
       val listOfSicCodes = iclMultipleResultsSicCode1 :: iclMultipleResultsSicCode2 :: Nil
       val updaetdBusiness = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOfSicCodes))
 
-      when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(iclMultipleResults))
       when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))
@@ -120,7 +124,7 @@ class ICLServiceSpec extends VatRegSpec {
     "return list of sic code containing 1 sic code when a successful response is returned from the connector with only 1 SIC code and keystore returns a String" in new Setup {
       val listOf1SicCode = iclMultipleResultsSicCode1 :: Nil
       val updaetdBusiness = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOf1SicCode))
-      when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier]()))
+      when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(iclSingleResult))
       when(mockSessionService.fetchAndGet[String](any())(any(), any()))
         .thenReturn(Future.successful(Some("example.url")))

@@ -25,6 +25,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class ICLService @Inject()(val iclConnector: ICLConnector,
@@ -56,7 +57,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
   }
 
   def journeySetup(customICLMessages: CustomICLMessages, welshCustomICLMessages: CustomICLMessages)
-                  (implicit hc: HeaderCarrier, cp: CurrentProfile): Future[String] = {
+                  (implicit hc: HeaderCarrier, cp: CurrentProfile, request: Request[_]): Future[String] = {
 
     def extractFromJsonSetup(jsonSetup: JsValue, item: String) = {
       (jsonSetup \ item).validate[String].getOrElse {
@@ -88,7 +89,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
     )
   }
 
-  def getICLSICCodes()(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[List[SicCode]] = {
+  def getICLSICCodes()(implicit hc: HeaderCarrier, cp: CurrentProfile, request: Request[_]): Future[List[SicCode]] = {
     for {
       url <- keystore.fetchAndGet[String]("ICLFetchResultsUri").map(_.getOrElse(throw new Exception(s"[ICLService] [getICLCodes] No URL in keystore for key ICLFetchResultsUri for reg id ${cp.registrationId}")))
       js <- iclConnector.iclGetResult(url)

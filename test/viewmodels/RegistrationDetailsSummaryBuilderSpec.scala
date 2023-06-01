@@ -30,11 +30,14 @@ import services.FlatRateService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
-
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 
 class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
+
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   val testTurnoverEstimate = "£100.00"
   val testZeroTurnoverEstimate = "£0.00"
@@ -129,7 +132,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         optSummaryListRowString(questionId = TestContent.flatRateDate, optAnswer = Some(TestContent.flatRateRegDate), optUrl = Some(controllers.flatratescheme.routes.StartDateController.show.url))
       ).flatten)
 
-      when(mockConfigConnector.getBusinessType(any())).thenReturn(FrsBusinessType(testBusinessCategory, "Pubs", "Pubs", BigDecimal("6.5")))
+      when(mockConfigConnector.getBusinessType(any())(any())).thenReturn(FrsBusinessType(testBusinessCategory, "Pubs", "Pubs", BigDecimal("6.5")))
 
       Builder.build(testVatScheme) mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }

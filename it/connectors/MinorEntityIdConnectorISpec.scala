@@ -26,9 +26,11 @@ import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
+import play.api.mvc.Request
 
 class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
+  implicit val req : Request[_] = this.request 
   val testUnincorpAssocJourneyId = "1"
   val testTrustJourneyId = "2"
   val testNonUkCompanyJourneyId = "3"

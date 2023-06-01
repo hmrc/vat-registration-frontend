@@ -24,9 +24,11 @@ import models.api._
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
+import play.api.mvc.Request
 
 class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
+  implicit val req : Request[_] = this.request 
   val connector: AttachmentsConnector = app.injector.instanceOf[AttachmentsConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 

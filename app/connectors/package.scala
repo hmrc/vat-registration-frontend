@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-import config.Logging
 import play.api.http.Status
 import uk.gov.hmrc.http.{BadRequestException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
+import utils.LoggingUtil
+import play.api.mvc.Request
 
-package object connectors extends Logging {
-  def logResponse(e: Throwable, func: String): Throwable = {
+package object connectors extends LoggingUtil {
+  def logResponse(e: Throwable, func: String)(implicit request: Request[_]): Throwable = {
     e match {
-      case e: NotFoundException   => logger.warn(s"[$func] received NOT FOUND")
-      case e: BadRequestException => logger.warn(s"[$func] received BAD REQUEST")
+      case e: NotFoundException   =>
+        warnLog(s"[$func] received NOT FOUND")
+      case e: BadRequestException =>
+        warnLog(s"[$func] received BAD REQUEST")
       case e: Upstream4xxResponse => e.upstreamResponseCode match {
-        case Status.FORBIDDEN => logger.error(s"[$func] received FORBIDDEN")
-        case _                => logger.error(s"[$func] received Upstream 4xx: ${e.upstreamResponseCode}")
+        case Status.FORBIDDEN =>
+          errorLog(s"[$func] received FORBIDDEN")
+        case _ =>
+          errorLog(s"[$func] received Upstream 4xx: ${e.upstreamResponseCode}")
       }
-      case e: Upstream5xxResponse => logger.error(s"[$func] received Upstream 5xx: ${e.upstreamResponseCode}")
-      case e: Exception           => logger.error(s"[$func] received unexpected error")
+      case e: Upstream5xxResponse =>
+        errorLog(s"[$func] received Upstream 5xx: ${e.upstreamResponseCode}")
+      case e: Exception           =>
+        errorLog(s"[$func] received unexpected error")
     }
     e
   }

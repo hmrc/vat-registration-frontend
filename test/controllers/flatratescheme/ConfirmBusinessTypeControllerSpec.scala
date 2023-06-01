@@ -45,7 +45,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
 
   s"show" should {
     "return a 200 and render the page" in new Setup {
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
       callAuthorised(controller.show) { result =>
@@ -54,7 +54,7 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
     }
 
     "redirect to choose business type page if there's no match of the business type against main business activity" in new Setup {
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.failed(new MissingResourceException(s"Missing Business Type for id: testId", "ConfigConnector", "id")))
 
       callAuthorised(controller.show) { result =>
@@ -68,10 +68,10 @@ class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixt
     val fakeRequest = FakeRequest(controllers.flatratescheme.routes.ConfirmBusinessTypeController.submit)
 
     "works with Empty data" in new Setup {
-      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any()))
+      when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))
 
-      when(mockFlatRateService.saveConfirmSector(any(), any()))
+      when(mockFlatRateService.saveConfirmSector(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody()

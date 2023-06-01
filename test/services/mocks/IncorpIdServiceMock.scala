@@ -26,6 +26,7 @@ import services.IncorpIdService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
+import play.api.mvc.Request
 
 trait IncorpIdServiceMock {
   this: MockitoSugar =>
@@ -36,11 +37,11 @@ trait IncorpIdServiceMock {
     when(mockIncorpIdService.createJourney(
       ArgumentMatchers.eq(incorpIdJourneyConfig),
       ArgumentMatchers.eq(partyType)
-    )(ArgumentMatchers.any[HeaderCarrier]))
+    )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[_]]))
       .thenReturn(response)
 
   def mockGetDetails(journeyId: String)(response: Future[IncorporatedEntity]): Unit =
-    when(mockIncorpIdService.getDetails(ArgumentMatchers.eq(journeyId))(ArgumentMatchers.any[HeaderCarrier]))
+    when(mockIncorpIdService.getDetails(ArgumentMatchers.eq(journeyId))(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[_]]))
       .thenReturn(response)
 
 }

@@ -28,6 +28,7 @@ import java.time.LocalDate
 import javax.inject.Singleton
 import scala.concurrent.{ExecutionContext, Future}
 import scala.math.BigDecimal.RoundingMode
+import play.api.mvc.Request
 
 @Singleton
 class FlatRateService @Inject()(val businessService: BusinessService,
@@ -48,7 +49,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     }
   }
 
-  def saveFlatRate[T](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[FlatRateScheme] =
+  def saveFlatRate[T](data: T)(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[FlatRateScheme] =
     for {
       flatRateScheme <- getFlatRate
       updatedFlatRateScheme = updateModel(data, flatRateScheme)
@@ -56,7 +57,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     } yield result
 
   //scalastyle:off
-  private def updateModel[T](data: T, scheme: FlatRateScheme): FlatRateScheme =
+  private def updateModel[T](data: T, scheme: FlatRateScheme)(implicit request: Request[_]): FlatRateScheme =
     data match {
       case JoinFrsAnswer(answer) =>
         if (answer) {
@@ -135,7 +136,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     }
   //scalastyle:on
 
-  def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
+  def saveRegister(answer: Boolean)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[FlatRateScheme] = {
     if (answer) {
       retrieveBusinessTypeDetails.flatMap { businessType =>
         saveFlatRate { storedData: FlatRateScheme =>
@@ -151,7 +152,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     }
   }
 
-  def saveConfirmSector(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] =
+  def saveConfirmSector(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[FlatRateScheme] =
     retrieveBusinessTypeDetails.flatMap { businessType =>
       saveFlatRate { storedData: FlatRateScheme =>
         storedData.copy(
@@ -161,7 +162,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
       }
     }
 
-  def retrieveBusinessTypeDetails(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FrsBusinessType] = {
+  def retrieveBusinessTypeDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[FrsBusinessType] = {
     getFlatRate flatMap {
       case FlatRateScheme(_, _, _, _, _, _, Some(sector), _, _) if sector.nonEmpty =>
         val businessType = configConnector.getBusinessType(sector)
@@ -190,7 +191,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     } yield sicCode
   }
 
-  def saveStartDate(dateChoice: FRSDateChoice.Value, date: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
+  def saveStartDate(dateChoice: FRSDateChoice.Value, date: Option[LocalDate])(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[FlatRateScheme] = {
     (dateChoice, date) match {
       case (FRSDateChoice.VATDate, _) =>
         fetchVatStartDate.flatMap { vatStartDate =>

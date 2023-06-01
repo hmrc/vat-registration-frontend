@@ -16,35 +16,43 @@
 
 package connectors
 
-
 import config.FrontendAppConfig
 import models.BankAccountDetails
 import play.api.http.Status.OK
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, StringContextOps}
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import utils.LoggingUtil
 
 @Singleton
 class BankAccountReputationConnector @Inject()(val http: HttpClientV2,
                                                appConfig: FrontendAppConfig)
-                                              (implicit ec: ExecutionContext) {
+                                              (implicit ec: ExecutionContext) extends LoggingUtil {
 
-
-  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier): Future[JsValue] = {
+  def validateBankDetails(account: BankAccountDetails)(implicit hc: HeaderCarrier, request: Request[_]): Future[JsValue] = {
     http.post(url"${appConfig.validateBankDetailsUrl}")
       .withBody(Json.toJson(account))
       .execute
       .map { response =>
         response.status match {
-          case OK => response.json
-          case status => throw new InternalServerException(s"Unexpected status returned by Bank Account Reputation: $status")
+          case OK =>
+            infoLog("Bank account details validated successfully")
+            response.json
+          case status =>
+            val errorMessage = s"Unexpected status returned by Bank Account Reputation: $status"
+            errorLog(errorMessage)
+            throw new InternalServerException(errorMessage)
         }
       }.recover {
-        case ex => throw new InternalServerException(s"Something went wrong when calling bank account validation API: ${ex.getMessage}")
+        case ex =>
+          val errorMessage = s"Something went wrong when calling bank account validation API: ${ex.getMessage}"
+          errorLog(errorMessage)
+          throw new InternalServerException(errorMessage)
       }
   }
 }
+

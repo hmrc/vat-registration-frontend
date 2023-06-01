@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiConnector,
@@ -52,7 +53,7 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
   }
 
   def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)
-                                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Boolean] = {
+                                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[Boolean] = {
     bankAccountRepService.validateBankDetails(accountDetails).flatMap {
       case status@(ValidStatus | IndeterminateStatus) =>
         val bankAccount = BankAccount(

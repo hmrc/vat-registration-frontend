@@ -26,9 +26,11 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+import play.api.mvc.Request
 
 class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching with ITRegistrationFixtures {
 
+  implicit val req : Request[_] = this.request 
   lazy val connector: IncorpIdConnector = app.injector.instanceOf[IncorpIdConnector]
   val testIncorpId = "testIncorpId"
 
@@ -57,7 +59,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(UkCompany)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createJourney(testJourneyConfig, UkCompany)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+        val res = await(connector.createJourney(testJourneyConfig, UkCompany)(HeaderCarrier(sessionId = Some(SessionId(sessionId))), implicitly))
 
         res mustBe testJourneyStartUrl
       }
@@ -72,7 +74,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(RegSociety)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createJourney(testJourneyConfig, RegSociety)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+        val res = await(connector.createJourney(testJourneyConfig, RegSociety)(HeaderCarrier(sessionId = Some(SessionId(sessionId))), implicitly))
 
         res mustBe testJourneyStartUrl
       }
@@ -87,7 +89,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(CharitableOrg)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-        val res = await(connector.createJourney(testJourneyConfig, CharitableOrg)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+        val res = await(connector.createJourney(testJourneyConfig, CharitableOrg)(HeaderCarrier(sessionId = Some(SessionId(sessionId))), implicitly))
 
         res mustBe testJourneyStartUrl
       }
@@ -150,7 +152,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         val validResponse = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = false, FailedStatus, Some(BvFail), None)
         stubGet(s"/register-for-vat/test-only/api/incorp-id-journey/testIncorpId", CREATED, Json.toJson(validResponse)(IncorporatedEntity.apiFormat).toString)
 
-        val res = await(connector.getDetails(testIncorpId)(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+        val res = await(connector.getDetails(testIncorpId)(HeaderCarrier(sessionId = Some(SessionId(sessionId))), implicitly))
 
         res mustBe validResponse
       }

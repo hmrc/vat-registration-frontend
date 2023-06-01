@@ -25,14 +25,16 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import utils.LoggingUtil
+import play.api.mvc.Request
 
 @Singleton
-class PartnershipIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) {
+class PartnershipIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)
+                                      (implicit ec: ExecutionContext) extends LoggingUtil {
 
-  def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+  def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     val url = config.startPartnershipJourneyUrl(partyType)
 
     httpClient.post(url"$url")
@@ -40,25 +42,34 @@ class PartnershipIdConnector @Inject()(httpClient: HttpClientV2, config: Fronten
       .execute
       .map {
         case response@HttpResponse(CREATED, _, _) =>
-          (response.json \ "journeyStartUrl").as[String]
+          val journeyStartUrl = (response.json \ "journeyStartUrl").as[String]
+          infoLog(s"Partnership ID journey created for party type: $partyType")
+          journeyStartUrl
         case response =>
-          throw new InternalServerException(s"[PartnershipIdConnector] Invalid response from partnership identification: Status: ${response.status} Body: ${response.body}")
+          val errorMessage = s"[PartnershipIdConnector] Invalid response from partnership identification: Status: ${response.status} Body: ${response.body}"
+          errorLog(errorMessage)
+          throw new InternalServerException(errorMessage)
       }
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipIdEntity] =
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[PartnershipIdEntity] =
     httpClient.get(url"${config.getPartnershipIdDetailsUrl(journeyId)}")
       .execute
       .map { response =>
         response.status match {
           case OK => response.json.validate[PartnershipIdEntity](PartnershipIdEntity.apiFormat) match {
-            case JsSuccess(value, _) => value
+            case JsSuccess(value, _) =>
+              infoLog(s"Retrieved details for Partnership ID journey: $journeyId")
+              value
             case JsError(errors) =>
-              throw new InternalServerException(s"[PartnershipIdConnector] Partnership ID returned invalid JSON ${errors.map(_._1).mkString(", ")}")
+              val errorMessage = s"[PartnershipIdConnector] Partnership ID returned invalid JSON ${errors.map(_._1).mkString(", ")}"
+              errorLog(errorMessage)
+              throw new InternalServerException(errorMessage)
           }
           case status =>
-            throw new InternalServerException(s"[PartnershipIdConnector] Unexpected status returned from partnership id: $status")
+            val errorMessage = s"[PartnershipIdConnector] Unexpected status returned from partnership id: $status"
+            errorLog(errorMessage)
+            throw new InternalServerException(errorMessage)
         }
       }
-
 }

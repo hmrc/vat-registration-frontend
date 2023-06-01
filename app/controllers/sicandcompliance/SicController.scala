@@ -29,6 +29,7 @@ import views.html.sicandcompliance._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class SicController @Inject()(val authConnector: AuthClientConnector,
@@ -75,7 +76,7 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
         }
   }
 
-  private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[Result] = {
+  private def startSelectingNewSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, request: Request[_]): Future[Result] = {
     if (isEnabled(StubIcl)) {
       Future.successful(Redirect(controllers.test.routes.SicStubController.show))
     } else {

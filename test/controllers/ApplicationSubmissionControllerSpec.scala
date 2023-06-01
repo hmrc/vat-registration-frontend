@@ -54,7 +54,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
           .thenReturn(Future.successful("123412341234"))
 
-        when(mockAttachmentsService.getAttachmentList(any())(any()))
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List()))
 
         when(mockAttachmentsService.getAttachmentDetails(any())(any()))
@@ -75,7 +75,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         mockAuthenticatedBasic
         mockWithCurrentProfile(Some(profile))
 
-        when(mockAttachmentsService.getAttachmentList(any())(any()))
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
         when(mockAttachmentsService.getAttachmentDetails(any())(any()))
@@ -99,7 +99,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         mockAuthenticatedBasic
         mockWithCurrentProfile(Some(profile))
 
-        when(mockAttachmentsService.getAttachmentList(any())(any()))
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
         when(mockAttachmentsService.getAttachmentDetails(any())(any()))
@@ -123,7 +123,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         mockAuthenticatedBasic
         mockWithCurrentProfile(Some(profile))
 
-        when(mockAttachmentsService.getAttachmentList(any())(any()))
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
         when(mockAttachmentsService.getAttachmentDetails(any())(any()))
@@ -147,7 +147,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         mockAuthenticatedBasic
         mockWithCurrentProfile(Some(profile))
 
-        when(mockAttachmentsService.getAttachmentList(any())(any()))
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(VAT51)))
 
         when(mockAttachmentsService.getAttachmentDetails(any())(any()))

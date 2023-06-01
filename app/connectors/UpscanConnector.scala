@@ -30,6 +30,7 @@ import utils.SessionIdRequestHelper
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendAppConfig)
@@ -56,7 +57,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
     }
   }
 
-  def storeUpscanReference(regId: String, reference: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def storeUpscanReference(regId: String, reference: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier, request: Request[_]): Future[HttpResponse] = {
     logger.info(s"[UpscanConnector][storeUpscanReference] attempting to store upscan reference: $reference for regId $regId")
     lazy val url = appConfig.storeUpscanReferenceUrl(regId)
     httpClient.post(url"$url")
@@ -71,7 +72,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
       }
   }
 
-  def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[UpscanDetails] = {
+  def fetchUpscanFileDetails(regId: String, reference: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[UpscanDetails] = {
     logger.info(s"[UpscanConnector][fetchUpscanFileDetails] attempting to retrieve upscan file details. regId $regId reference $reference")
     lazy val url = appConfig.fetchUpscanFileDetails(regId, reference)
 
@@ -82,7 +83,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
       }
   }
 
-  def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def deleteUpscanDetails(regId: String, reference: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Boolean] = {
     lazy val url = appConfig.fetchUpscanFileDetails(regId, reference)
 
     httpClient.delete(url"$url")
@@ -95,7 +96,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
       }
   }
 
-  def deleteAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def deleteAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Boolean] = {
     lazy val url = appConfig.deleteAllUpscanDetails(regId)
 
     httpClient.delete(url"$url")
@@ -108,7 +109,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
       }
   }
 
-  def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier): Future[Seq[UpscanDetails]] = {
+  def fetchAllUpscanDetails(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Seq[UpscanDetails]] = {
     lazy val url = appConfig.fetchAllUpscanDetails(regId)
     httpClient.get(url"$url")
       .execute[Seq[UpscanDetails]]

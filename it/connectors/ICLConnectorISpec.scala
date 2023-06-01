@@ -8,9 +8,11 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import play.api.mvc.Request
 
 class ICLConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
+  implicit val req : Request[_] = this.request 
   val connector = app.injector.instanceOf[ICLConnector]
   val iclJourneySetupUrl = "/internal/initialise-journey"
   val iclGetResultUrl = "/test-url"

@@ -25,16 +25,17 @@ import viewmodels.SummaryCheckYourAnswersBuilder
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.mvc.Request
 
 @Singleton
 class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,
                                summaryCheckYourAnswersBuilder: SummaryCheckYourAnswersBuilder
                               )(implicit ec: ExecutionContext) {
 
-  def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages, frontendAppConfig: FrontendAppConfig): Future[Accordion] = {
+  def getSummaryData(implicit hc: HeaderCarrier, profile: CurrentProfile, messages: Messages, frontendAppConfig: FrontendAppConfig, request: Request[_]): Future[Accordion] = {
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme)(messages, frontendAppConfig)
+      accordion = summaryCheckYourAnswersBuilder.generateSummaryAccordion(vatScheme)(messages, frontendAppConfig, request)
     } yield accordion
   }
 

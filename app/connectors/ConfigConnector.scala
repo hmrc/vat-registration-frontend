@@ -25,10 +25,12 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import java.util.MissingResourceException
 import javax.inject.{Inject, Singleton}
 import scala.io.Source
+import utils.LoggingUtil
+import play.api.mvc.Request
 
 @Singleton
 class ConfigConnector @Inject()(val config: ServicesConfig,
-                                val environment: Environment) {
+                                val environment: Environment) extends LoggingUtil {
 
   private val sicCodePrefix = "sic.codes"
 
@@ -55,9 +57,13 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
     }.toSeq.sortBy(_.name)
   }
 
-  def getSicCodeFRSCategory(sicCode: String): String = config.getString(s"$sicCodePrefix.$sicCode")
+  def getSicCodeFRSCategory(sicCode: String)(implicit request: Request[_]): String = {
+    infoLog(s"Getting FRSCategory for SIC code: $sicCode")
+    config.getString(s"$sicCodePrefix.$sicCode")
+  }
 
-  def getBusinessType(frsId: String): FrsBusinessType = {
+  def getBusinessType(frsId: String)(implicit request: Request[_]): FrsBusinessType = {
+    infoLog(s"Getting Business Type for FRS ID: $frsId")
     val businessType = businessTypes.flatMap(_.categories).find(_.id.equals(frsId))
 
     businessType.getOrElse(throw new MissingResourceException(s"Missing Business Type for id: $frsId", "ConfigConnector", "id"))

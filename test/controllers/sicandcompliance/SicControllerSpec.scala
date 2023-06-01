@@ -64,7 +64,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
     "redirect to ICL if feature switch is false" in new Setup {
       disable(StubIcl)
-      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
+      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any(), any()))
         .thenReturn(Future.successful("/url"))
 
       callAuthorised(controller.startICLJourney) {
@@ -75,7 +75,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
     "return exception" in new Setup {
       enable(StubIcl)
-      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
+      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any() , any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.startICLJourney)(_ => 1 mustBe 2))
     }
@@ -86,7 +86,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       "returning from ICL with multiple codes" in new Setup {
         val codes = List(sicCode, sicCode)
 
-        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
         when(mockBusinessService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
@@ -102,7 +102,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       "returning from ICL with multiple codes including compliance" in new Setup {
         val codes = List(sicCode, sicCode.copy(code = "81222"))
 
-        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
         when(mockBusinessService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
@@ -118,7 +118,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       "returning from ICL with one code" in new Setup {
         val codes = List(sicCode)
 
-        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any())).thenReturn(Future.successful(codes))
+        when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
         when(mockBusinessService.submitSicCodes(any())(any(), any()))
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
@@ -149,7 +149,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     "take the user to ICL" when {
       "hitting change (for SIC codes) on the summary" in new Setup {
         disable(StubIcl)
-        when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
+        when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any(), any()))
           .thenReturn(Future.successful("/url"))
 
         callAuthorised(controller.startICLJourney) {
@@ -161,7 +161,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
     }
     "return exception" in new Setup {
       enable(StubIcl)
-      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any()))
+      when(mockICLService.journeySetup(any(), any())(any[HeaderCarrier](), any(), any()))
         .thenReturn(Future.failed(new Exception))
       intercept[Exception](callAuthorised(controller.startICLJourney)(_ => 1 mustBe 2))
     }

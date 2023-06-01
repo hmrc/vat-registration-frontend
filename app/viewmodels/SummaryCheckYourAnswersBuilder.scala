@@ -27,6 +27,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 
 import javax.inject.{Inject, Singleton}
 import scala.collection.immutable.ListMap
+import play.api.mvc.Request
 
 @Singleton
 class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: EligibilitySummaryBuilder,
@@ -37,7 +38,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: Eligib
                                                otherBusinessInvolvementSummaryBuilder: OtherBusinessInvolvementSummaryBuilder,
                                                registrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder) extends FeatureSwitching {
 
-  def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig): Accordion = {
+  def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig, request: Request[_]): Accordion = {
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
     val missingRegReasonSection = "tasklist.eligibilty.regReason"
 

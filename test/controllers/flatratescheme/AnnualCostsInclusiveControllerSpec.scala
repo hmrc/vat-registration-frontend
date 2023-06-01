@@ -76,7 +76,7 @@ class AnnualCostsInclusiveControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return 303 with Annual Costs Inclusive selected Yes" in new Setup {
-      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -90,7 +90,7 @@ class AnnualCostsInclusiveControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "redirect to 16.5% rate page if user selects No" in new Setup {
-      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any()))
+      when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsAnswer]())(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

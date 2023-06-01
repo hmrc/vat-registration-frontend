@@ -27,11 +27,14 @@ import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 
 class AddressLookupServiceSpec extends VatRegSpec {
 
   implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
   implicit val messagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val fakeRequest: Request[_] = FakeRequest()
 
   object Config extends AddressLookupConfiguration {
     override def apply(journeyId: AddressLookupJourneyIdentifier.Value, continueRoute: Call, useUkMode: Boolean, optName: Option[String] = None): AddressLookupConfigurationModel =
@@ -56,7 +59,7 @@ class AddressLookupServiceSpec extends VatRegSpec {
   "getJourneyUrl" should {
     "return a future call" when {
       "given a journey id and a call" in {
-        when(mockAddressLookupConnector.getOnRampUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        when(mockAddressLookupConnector.getOnRampUrl(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
           .thenReturn(Future.successful(Call("GET", "/test/uri/continue")))
 
         await(Service.getJourneyUrl(AddressLookupJourneyIdentifier.homeAddress, Call("", "/continue"))) mustBe Call("GET", "/test/uri/continue")

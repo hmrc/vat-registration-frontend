@@ -29,6 +29,8 @@ import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.{Accordion, Section}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 
 class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
 
@@ -36,6 +38,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+  implicit val request: Request[_] = FakeRequest()
 
   val mockEligibilitySummaryBuilder: EligibilitySummaryBuilder = mock[EligibilitySummaryBuilder]
   val mockGrsSummaryBuilder: GrsSummaryBuilder = mock[GrsSummaryBuilder]
@@ -97,7 +100,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
       when(mockOtherBusinessInvolvementSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.empty)
-      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages), ArgumentMatchers.any()))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 
       val expectedAccordion: Accordion = Accordion(
@@ -143,7 +146,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
       when(mockOtherBusinessInvolvementSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(otherBusinessId)))))
-      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages)))
+      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages), ArgumentMatchers.any()))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 
       val expectedAccordion: Accordion = Accordion(
@@ -198,7 +201,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(aboutBusinessId)))))
       when(mockOtherBusinessInvolvementSummaryBuilder.build(ArgumentMatchers.eq(testTransactorVatScheme))(ArgumentMatchers.eq(messages)))
         .thenReturn(HtmlFormat.empty)
-      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testTransactorVatScheme))(ArgumentMatchers.eq(messages)))
+      when(mockRegistrationDetailsSummaryBuilder.build(ArgumentMatchers.eq(testTransactorVatScheme))(ArgumentMatchers.eq(messages), ArgumentMatchers.any()))
         .thenReturn(HtmlFormat.fill(List(govukSummaryList(testSummaryList(vatRegDetailsId)))))
 
       val expectedAccordion: Accordion = Accordion(

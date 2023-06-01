@@ -24,15 +24,16 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
+import play.api.mvc.Request
 
 @Singleton
 class PartnershipIdService @Inject()(partnershipIdConnector: PartnershipIdConnector) {
 
-  def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier): Future[String] = {
+  def createJourney(journeyConfig: PartnershipIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     partnershipIdConnector.createJourney(journeyConfig, partyType)
   }
 
-  def getDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[PartnershipIdEntity] = {
+  def getDetails(journeyId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[PartnershipIdEntity] = {
     partnershipIdConnector.getDetails(journeyId)
   }
 

@@ -22,8 +22,11 @@ import services.AttachmentsService.{Supply1614AAnswer, Supply1614HAnswer, Supply
 import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 
 class AttachmentsServiceSpec extends VatRegSpec with MockAttachmentsConnector with MockRegistrationApiConnector {
+implicit val fakeRequest: Request[_] = FakeRequest()
 
   object Service extends AttachmentsService(mockAttachmentsConnector, mockRegistrationApiConnector)
 
