@@ -18,7 +18,7 @@ package connectors.test
 
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -29,9 +29,14 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
                                             (implicit ec: ExecutionContext) {
 
   val vatRegUrl: String = config.baseUrl("vat-registration")
+  val vatStubUrl: String = config.baseUrl("vat-registration-stub")
 
   def retrieveVatSubmission(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
+  }
+
+  def hitVatStub(userId: String, regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.GET(s"$vatStubUrl/vat-registration-stub/setup-data/${userId}/${regId}")
   }
 
   def deleteAllRegistrations(implicit hc: HeaderCarrier): Future[Boolean] =

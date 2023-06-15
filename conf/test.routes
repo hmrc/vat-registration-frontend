@@ -43,6 +43,10 @@ POST        /api/verify-passcode                              controllers.test.E
 
 GET         /submission-payload                               controllers.test.RetrieveVatSubmissionController.retrieveSubmissionJson
 
+
+GET         /vat-stub                                         controllers.test.RetrieveVatSubmissionController.showVatStubPage
+POST        /vat-stub                                         controllers.test.RetrieveVatSubmissionController.submitVatStubPage
+
 + nocsrf
 POST         /upscan/initiate                                 controllers.test.UpscanStubController.upscanInitiate
 
