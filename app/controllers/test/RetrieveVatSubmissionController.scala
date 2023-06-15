@@ -19,19 +19,21 @@ package controllers.test
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.test.TestVatRegistrationConnector
 import controllers.BaseController
+import forms.test.VatStubForm
 import play.api.libs.json.Json
 import play.api.mvc._
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import views.html.test.VatSubmissionJson
+import views.html.test.{VatStubPage, VatSubmissionJson}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class RetrieveVatSubmissionController @Inject()(val authConnector: AuthConnector,
                                                 val sessionService: SessionService,
                                                 testVatRegistrationConnector: TestVatRegistrationConnector,
-                                                view: VatSubmissionJson)
+                                                view: VatSubmissionJson,
+                                                vatStubView: VatStubPage)
                                                (implicit val executionContext: ExecutionContext,
                                                 bcc: BaseControllerComponents,
                                                 appConfig: FrontendAppConfig) extends BaseController with SessionProfile with AuthorisedFunctions {
@@ -41,4 +43,27 @@ class RetrieveVatSubmissionController @Inject()(val authConnector: AuthConnector
       implicit profile =>
         testVatRegistrationConnector.retrieveVatSubmission(profile.registrationId) map (json => Ok(view(Json.prettyPrint(json))))
   }
+
+def showVatStubPage: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
+  implicit request =>
+    _ =>
+      Future.successful(Ok(vatStubView(VatStubForm.form)))
+}
+
+  def submitVatStubPage: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
+    implicit request =>
+      implicit profile =>
+    VatStubForm.form.bindFromRequest.fold(
+      errors =>
+        Future.successful(BadRequest(vatStubView(errors))),
+      values =>
+        testVatRegistrationConnector.hitVatStub(values.stubUserId, profile.registrationId) map { res =>
+          res.status match {
+            case CREATED => Redirect(Call("GET", controllers.routes.ManageRegistrationsController.show.url))
+            case _ => Ok("Error")
+          }
+        }
+    )
+  }
+
 }
