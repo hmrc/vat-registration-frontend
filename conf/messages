@@ -1309,6 +1309,19 @@ attachments.multipleDocumentsRequired.VAT1614H.link                 = VAT1614H f
 attachments.multipleDocumentsRequired.VAT1614.para3                 = if you have decided to, or want to opt to tax land or buildings
 attachments.multipleDocumentsRequired.supportingDocs.para1          = any supporting documents
 
+# NEW ATTACHMENT JOURNEY
+attachments.vRSNewAttachmentJourney.title                       = You must send us additional documents so we can process your VAT application
+attachments.vRSNewAttachmentJourney.para                        = We need the following forms and documents from you (all links open a new tab):
+attachments.vRSNewAttachmentJourney.identityDocuments           = 3 documents to confirm your identity
+attachments.vRSNewAttachmentJourney.VAT51.link                  = VAT50/51
+attachments.vRSNewAttachmentJourney.VAT2.link                   = VAT2
+attachments.vRSNewAttachmentJourney.VAT1614H.link               = VAT1614H
+attachments.vRSNewAttachmentJourney.VAT1614.para2               = or a
+attachments.vRSNewAttachmentJourney.VAT1TR.link                 = VAT1TR
+attachments.vRSNewAttachmentJourney.VAT5L.link                  = VAT5L
+attachments.vRSNewAttachmentJourney.identityEvidence            = 3 documents to confirm your identity
+attachments.vRSNewAttachmentJourney.identityEvidence.name       = 3 documents to confirm {0}’s identity
+
 # IDENTITY EVIDENCE REQUIRED
 attachments.identityEvidenceRequired.title                      = You must send us three identity documents in order for us to process this VAT application
 attachments.identityEvidenceRequired.evidence.start             = We need

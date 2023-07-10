@@ -21,7 +21,7 @@ import helpers.A11ySpec
 import views.html.sicandcompliance.workers
 
 class WorkersA11ySpec extends A11ySpec {
-  val view: Workers = app.injector.instanceOf[workers]
+  val view: workers = app.injector.instanceOf[workers]
 
   "Workers page" when {
     "the page is rendered without errors when a number of workers is given" must {

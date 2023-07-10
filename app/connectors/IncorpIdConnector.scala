@@ -35,7 +35,7 @@ import play.api.mvc.Request
 
 @Singleton
 class IncorpIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig, sessionService: SessionService)
-                                 (implicit ec: ExecutionContext) extends FeatureSwitching with LoggingUtil {
+                                 (implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FeatureSwitching with LoggingUtil {
 
   def createJourney(journeyConfig: IncorpIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     val url = partyType match {

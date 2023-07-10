@@ -48,7 +48,7 @@ class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendApp
 
     val upscanRequest = SessionIdRequestHelper.conditionallyAddSessionIdHeader(
       baseRequest = httpClient.post(url"$url").withBody(body),
-      condition = isEnabled(StubUpscan)
+      condition = isEnabled(StubUpscan)(appConfig)
     )
 
     upscanRequest.execute.map {

@@ -16,6 +16,7 @@
 
 package featureswitch.core.config
 
+import config.FrontendAppConfig
 import featureswitch.core.models.FeatureSwitch
 
 trait FeatureSwitching {
@@ -23,8 +24,17 @@ trait FeatureSwitching {
   val FEATURE_SWITCH_ON = "true"
   val FEATURE_SWITCH_OFF = "false"
 
-  def isEnabled(featureSwitch: FeatureSwitch): Boolean =
-    sys.props get featureSwitch.configName contains FEATURE_SWITCH_ON
+
+  private def getValue(key: String)(implicit appConfig: FrontendAppConfig): String = {
+    sys.props.get(key).getOrElse(appConfig.servicesConfig.getConfString(key, FEATURE_SWITCH_OFF))
+  }
+
+  private def getValue(featureSwitch: FeatureSwitch)(implicit appConfig: FrontendAppConfig): String = {
+    getValue(featureSwitch.configName)
+  }
+  def isEnabled(featureSwitch: FeatureSwitch)(implicit appConfig: FrontendAppConfig): Boolean = {
+    getValue(featureSwitch).toBoolean
+  }
 
   def enable(featureSwitch: FeatureSwitch): Unit =
     sys.props += featureSwitch.configName -> FEATURE_SWITCH_ON
