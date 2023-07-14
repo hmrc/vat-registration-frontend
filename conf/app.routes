@@ -406,6 +406,9 @@ POST        /documents-required                                       controller
 ## Documents Post Page
 GET         /post-documents                                           controllers.attachments.DocumentsPostController.show
 
+## Documents Post Error
+GET         /post-documents-error                                     controllers.attachments.DocumentsPostErrorController.show
+
 ## Postal Cover Sheet Page
 GET         /postal-cover-sheet                                       controllers.attachments.PostalCoverSheetController.show
 

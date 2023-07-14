@@ -18,7 +18,7 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featuretoggle.FeatureSwitch.AdditionalDocumentsRequiredPage
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
 import play.api.mvc.{Action, AnyContent}
 import services._
@@ -59,7 +59,7 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
           }
         } yield {
           Ok(
-          if (isEnabled(AdditionalDocumentsRequiredPage)) { addtionalDocumentsPage(attachments, applicantName, transactorName) }
+          if (isEnabled(VrsNewAttachmentJourney)) { addtionalDocumentsPage(attachments, applicantName, transactorName) }
           else { multipleDocumentsRequiredPage(attachments, applicantName, transactorName) }
         )
         }
