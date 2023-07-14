@@ -31,8 +31,8 @@ import play.api.mvc.Request
 class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends LoggingUtil {
 
   def getAttachmentList(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[List[AttachmentType]] = {
-    implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
 
+    implicit val readRaw: HttpReads[HttpResponse] = HttpReads.Implicits.readRaw
     httpClient.get(url"${config.attachmentsApiUrl(regId)}")
       .execute
       .map { result =>

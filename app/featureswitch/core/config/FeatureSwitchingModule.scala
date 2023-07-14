@@ -34,7 +34,8 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
     StubUpscan,
     StubBars,
     StubPartnershipIdentification,
-    StubMinorEntityIdentification
+    StubMinorEntityIdentification,
+    AdditionalDocumentsRequiredPage
   )
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
@@ -87,4 +88,9 @@ case object StubPartnershipIdentification extends FeatureSwitch {
 case object StubMinorEntityIdentification extends FeatureSwitch {
   val configName = "feature-switch.minor-entity-identification"
   val displayName = "Stub Minor Entity Identification"
+}
+
+case object AdditionalDocumentsRequiredPage extends FeatureSwitch {
+  val configName = "feature-switch.vRSNewAttachmentJourney"
+  val displayName: String = "Multiple Documents Required Page"
 }

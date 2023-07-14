@@ -38,6 +38,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityHost: String = servicesConfig.baseUrl("vat-registration-eligibility-frontend")
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
+  implicit val appConfig: FrontendAppConfig = this
 
   def eligibilityStartUrl(regId: String): String = s"$eligibilityUrl/journey/$regId"
 

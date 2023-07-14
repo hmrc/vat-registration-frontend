@@ -18,9 +18,10 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featureswitch.core.config.{FeatureSwitching, AdditionalDocumentsRequiredPage}
 import play.api.mvc.{Action, AnyContent}
 import services._
-import views.html.attachments.MultipleDocumentsRequired
+import views.html.attachments.{AdditionalDocuments, MultipleDocumentsRequired}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,11 +33,12 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
                                                     vatRegistrationService: VatRegistrationService,
                                                     applicantDetailsService: ApplicantDetailsService,
                                                     transactorDetailsService: TransactorDetailsService,
-                                                    multipleDocumentsRequiredPage: MultipleDocumentsRequired)
+                                                    multipleDocumentsRequiredPage: MultipleDocumentsRequired,
+                                                    addtionalDocumentsPage: AdditionalDocuments)
                                                    (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureSwitching {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -54,7 +56,13 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
           } else {
             Future.successful(None)
           }
-        } yield Ok(multipleDocumentsRequiredPage(attachments, applicantName, transactorName))
+        } yield {
+          Ok(
+          if (isEnabled(AdditionalDocumentsRequiredPage)) { addtionalDocumentsPage(attachments, applicantName, transactorName) }
+          else { multipleDocumentsRequiredPage(attachments, applicantName, transactorName) }
+        )
+        }
+
   }
 
 }

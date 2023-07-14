@@ -1,0 +1,141 @@
+@*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import models.api._
+
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    p: components.p,
+    link: components.linkExternal,
+    bullets: components.bullets,
+    bulletsHtml: components.bulletsHtml,
+    details: components.details,
+    form: FormWithCSRF,
+    button: components.button,
+    strong: components.strong
+)
+
+@(attachments: List[AttachmentType], applicantName: Option[String], transactorName: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages("attachments.multipleDocumentsRequired.title")))) {
+
+    @h1("attachments.vRSNewAttachmentJourney.title")
+
+    @p { @messages("attachments.vRSNewAttachmentJourney.para") }
+
+    @bulletsHtml(
+        attachments.map {
+            case VAT2 => vat2Block
+            case VAT51 => vat51Block
+            case IdentityEvidence => Html(messages("attachments.vRSNewAttachmentJourney.identityEvidence"))
+            case TransactorIdentityEvidence => Html(transactorName.map(name => messages("attachments.vRSNewAttachmentJourney.identityEvidence.name", name)))
+            case VAT5L => vat5LBlock
+            case TaxRepresentativeAuthorisation => vat1TRBlock
+            case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
+        }
+        ::: attachments.map{
+            case VAT5L => vat1614Block
+            case _ => HtmlFormat.empty
+        }.filter(!_.equals(HtmlFormat.empty))
+        ::: attachments.map{
+            case VAT5L => supportingDocsBlock
+            case _ => HtmlFormat.empty
+        }.filter(!_.equals(HtmlFormat.empty)): _*
+    )
+
+    @if(attachments.contains(IdentityEvidence)) {
+    @details(messages("attachments.multipleDocumentsRequired.identityDetails"), identityDetailsBlock)
+    }
+
+    @form(controllers.attachments.routes.DocumentsRequiredController.submit) {
+    @button("app.common.continueNoSave", showSaveProgressButton = false)
+}
+
+}
+
+@identityDetailsBlock = {
+    @p {
+        @messages("attachments.identityEvidenceRequired.evidence.start")
+        @strong{ @messages("attachments.identityEvidenceRequired.evidence.bold") }
+        @messages(s"attachments.identityEvidenceRequired.evidence.end")
+    }
+    @bullets(
+        "attachments.identityEvidenceRequired.bullet1",
+        "attachments.identityEvidenceRequired.bullet2",
+        "attachments.identityEvidenceRequired.bullet3"
+    )
+
+    @p {
+        @messages("attachments.identityEvidenceRequired.additionalEvidence.start")
+        @strong { @messages("attachments.identityEvidenceRequired.additionalEvidence.bold") }
+        @messages("attachments.identityEvidenceRequired.additionalEvidence.end")
+    }
+    @bullets(
+        "attachments.identityEvidenceRequired.additionalBullet1",
+        "attachments.identityEvidenceRequired.additionalBullet2",
+        "attachments.identityEvidenceRequired.additionalBullet3",
+        "attachments.identityEvidenceRequired.additionalBullet4",
+        "attachments.identityEvidenceRequired.additionalBullet5",
+        "attachments.identityEvidenceRequired.additionalBullet6"
+    )
+}
+
+@vat2Block = {
+    @link(appConfig.vat2Link, "attachments.multipleDocumentsRequired.VAT2.link")
+    @messages("attachments.multipleDocumentsRequired.VAT2.end")
+}
+
+@vat51Block = {
+@link(
+link = appConfig.vat51Link,
+messageKey = messages("attachments.vRSNewAttachmentJourney.VAT51.link"),
+isButton = false
+)
+}
+
+@vat5LBlock = {
+    @link(
+        link = appConfig.vat5LLink,
+        messageKey = messages("attachments.vRSNewAttachmentJourney.VAT5L.link"),
+    )
+}
+
+@vat1614Block = {
+    @link(
+        link = appConfig.vat1614ALink,
+        messageKey = messages("attachments.multipleDocumentsRequired.VAT1614A.link"),
+    )
+    @messages("attachments.vRSNewAttachmentJourney.VAT1614.para2")
+    @link(
+        link = appConfig.vat1614HLink,
+        messageKey = messages("attachments.vRSNewAttachmentJourney.VAT1614H.link"),
+    )
+    @messages("attachments.multipleDocumentsRequired.VAT1614.para3")
+}
+
+@supportingDocsBlock = {
+@messages("attachments.multipleDocumentsRequired.supportingDocs.para1")
+}
+
+@vat1TRBlock = {
+@link(
+link = appConfig.vat1trLink,
+messageKey = messages("attachments.vRSNewAttachmentJourney.VAT1TR.link"),
+isButton = false
+)
+}
