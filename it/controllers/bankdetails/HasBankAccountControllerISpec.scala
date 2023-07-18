@@ -19,7 +19,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[BankAccount](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -34,7 +34,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       )))
         .registrationApi.getSection[BankAccount](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -49,7 +49,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       )))
         .registrationApi.getSection[BankAccount](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -61,7 +61,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.getSection[BankAccount](Some(BankAccount(true, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -74,7 +74,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.getSection[BankAccount](Some(emptyBankAccount))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -87,7 +87,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.getSection[BankAccount](Some(BankAccount(false, None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -100,7 +100,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.getSection[BankAccount](Some(bankAccountNotProvidedNoReason))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -117,7 +117,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[BankAccount](BankAccount(true, None, None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "true")))
 
@@ -131,7 +131,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[BankAccount](BankAccount(false, None, None))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "false")))
 
@@ -141,7 +141,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if has_bank_account option not selected" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       val res = await(buildClient(url).post(""))
 
       res.status mustBe BAD_REQUEST

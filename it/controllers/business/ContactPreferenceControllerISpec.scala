@@ -20,7 +20,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -34,7 +34,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(businessDetails.copy(contactPreference = Some(Email))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -48,7 +48,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(businessDetails.copy(contactPreference = Some(Letter))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -66,7 +66,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(contactPreference = Some(Letter)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(Map("value" -> ContactPreferenceForm.letter)))
 
@@ -76,7 +76,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if no option is selected" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(""))
 

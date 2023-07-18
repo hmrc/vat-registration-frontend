@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package featureswitch.frontend.config
+package featuretoggle.frontend.config
 
 import config.FrontendAppConfig
-import featureswitch.frontend.models.FeatureSwitchProvider
+import featuretoggle.frontend.models.FeatureSwitchProvider
 
 import javax.inject.{Inject, Singleton}
 

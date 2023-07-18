@@ -78,7 +78,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
@@ -92,7 +92,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
 
       "redirect to task list when attempting to update lead partner without partyType" in new Setup {
         given().user.isAuthorised()
-        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+        insertIntoDb(sessionString, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
         stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
@@ -109,7 +109,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None))))
 
-        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+        insertIntoDb(sessionString, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
         stubPost(scottishPartnershipJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
@@ -131,7 +131,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(Entity(Some(details), ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None), idx = Some(1))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -150,7 +150,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(entity.copy(details = Some(testPartnership)), idx = Some(1))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -170,7 +170,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(entity.copy(details = Some(testPartnership)), idx = Some(1))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -185,7 +185,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+      insertIntoDb(sessionString, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -204,7 +204,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(entity.copy(details = Some(testPartnership.copy(companyName = Some(testScottishName)))), idx = Some(2))
 
       stubGet(retrieveDetailsUrl, OK, testPartnershipResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl(2)).get()
 

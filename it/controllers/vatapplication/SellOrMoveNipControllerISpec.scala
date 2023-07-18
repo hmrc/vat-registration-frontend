@@ -19,7 +19,7 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/sell-or-move-nip").get()
       whenReady(response) { res =>
@@ -49,7 +49,7 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
             VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))))))
           )
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient("/sell-or-move-nip").post(Map("value" -> Seq("true"), "sellOrMoveNip" -> Seq("123456")))
         whenReady(response) { res =>
@@ -66,7 +66,7 @@ class SellOrMoveNipControllerISpec extends ControllerISpec {
             VatApplication(northernIrelandProtocol = Some(NIPTurnover(Some(ConditionalValue(true, Some(testAmount))))))
           )
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient("/sell-or-move-nip").post(Map.empty[String, String])
         whenReady(response) { res =>

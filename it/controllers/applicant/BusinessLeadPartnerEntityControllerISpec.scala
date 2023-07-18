@@ -23,7 +23,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -39,7 +39,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -55,7 +55,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(None, UkCompany, Some(true), None, None, None, None)), idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -77,7 +77,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
             .registrationApi.replaceSection(Entity(None, partyType, Some(true), None, None, None, None), idx = Some(1))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient("/business-type-in-partnership").post(Map("value" -> PartyType.stati(partyType))))
 
@@ -95,7 +95,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
             .registrationApi.replaceSection(Entity(None, partyType, Some(true), None, None, None, None), idx = Some(1))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient("/business-type-in-partnership").post(Map("value" -> PartyType.stati(partyType))))
 
@@ -112,7 +112,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.replaceSection(Entity(None, ScotPartnership, Some(true), None, None, None, None), idx = Some(1))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/business-type-in-partnership").post(Map("value" -> PartyType.stati(ScotPartnership))))
 
@@ -127,7 +127,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/business-type-in-partnership").post(Map("value" -> "")))
 
@@ -142,7 +142,7 @@ class BusinessLeadPartnerEntityControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NonUkNonEstablished)))
           .registrationApi.replaceSection(Entity(None, NonUkNonEstablished, Some(true), None, None, None, None), idx = Some(1))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/business-type-in-partnership").post(Map("value" -> "55")))
 

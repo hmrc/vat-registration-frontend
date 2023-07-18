@@ -109,7 +109,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -128,7 +128,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -151,7 +151,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -182,7 +182,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -212,7 +212,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -247,7 +247,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -288,7 +288,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -320,7 +320,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -350,7 +350,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -380,7 +380,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -410,7 +410,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -446,7 +446,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)
@@ -493,7 +493,7 @@ class TaskListControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
         .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
       implicit val doc = Jsoup.parse(res.body)

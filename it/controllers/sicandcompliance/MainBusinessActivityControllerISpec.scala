@@ -15,7 +15,7 @@ class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsF
     given()
       .user.isAuthorised()
 
-    insertIntoDb(sessionId, sicCodeMapping)
+    insertIntoDb(sessionString, sicCodeMapping)
 
     val response = buildClient(routes.MainBusinessActivityController.show.url).get()
     whenReady(response) { res =>
@@ -32,7 +32,7 @@ class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsF
       .registrationApi.replaceSection[Business](expectedUpdateToBusiness)
       .registrationApi.getSection[Business](Some(expectedUpdateToBusiness))
 
-    insertIntoDb(sessionId, sicCodeMapping)
+    insertIntoDb(sessionString, sicCodeMapping)
 
     val response = buildClient(routes.MainBusinessActivityController.submit.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>

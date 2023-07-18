@@ -16,7 +16,7 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, Contact}
@@ -40,7 +40,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.show.url).get)
 
@@ -54,7 +54,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = Contact())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.show.url).get)
       res.status mustBe INTERNAL_SERVER_ERROR
@@ -69,7 +69,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CREATED, Json.obj().toString)
 
@@ -86,7 +86,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = Contact(Some(testEmail), None, Some(true))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
 
@@ -105,7 +105,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = Contact(Some(testEmail), None, Some(true))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
 
@@ -122,7 +122,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(contact = Contact())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.requestNew.url).get())
       res.status mustBe INTERNAL_SERVER_ERROR
@@ -140,7 +140,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(contact = Contact(Some(testEmail), None, Some(true))))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 
@@ -158,7 +158,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
 
@@ -175,7 +175,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_NOT_FOUND").toString)
 
@@ -195,7 +195,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_PASSCODE_ATTEMPTS_EXCEEDED").toString)
 
@@ -214,7 +214,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
             .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
             .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
           val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> passcode)))
           res.status mustBe BAD_REQUEST
         }

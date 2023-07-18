@@ -38,7 +38,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-name").get()
       whenReady(response) { res =>
@@ -53,7 +53,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(companyName = None)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-name").get()
       whenReady(response) { res =>
@@ -71,7 +71,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(entity = Some(entityWithBusinessName)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient("/business-name").post(Map("businessName" -> Seq(businessName)))
         whenReady(response) { res =>
@@ -94,7 +94,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-name").post(Map("businessName" -> Seq(businessName)))
       whenReady(response) { res =>
@@ -104,7 +104,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for missing business name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-name").post("")
       whenReady(response) { res =>
@@ -114,7 +114,7 @@ class BusinessNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for invalid business name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-name").post(Map("businessName" -> "a" * 106))
       whenReady(response) { res =>

@@ -20,7 +20,7 @@ import builders.AuthBuilder
 import common.enums.VatRegStatus
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.mocks.AuthMock
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -37,7 +37,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.Future
 
 trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with AuthMock with AuthBuilder with BeforeAndAfterEach
-  with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames with VatMocks with FeatureSwitching {
+  with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames with VatMocks with FeatureToggleSupport {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]

@@ -23,7 +23,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[Business](None, testRegId)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -34,7 +34,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[Business](Some(businessDetails.copy(ppobAddress = Some(testForeignAddress))), testRegId)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -54,7 +54,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
             Some(businessDetails.copy(ppobAddress = Some(testForeignAddress)))
           )(Business.apiKey, Business.format)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -75,7 +75,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None, testRegId)
         .registrationApi.replaceSection[Business](Business(ppobAddress = Some(testShortForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "line1",
@@ -93,7 +93,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None, testRegId)
         .registrationApi.replaceSection[Business](Business(ppobAddress = Some(fullAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "line1",
@@ -113,7 +113,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line2" -> "testLine2",
@@ -131,7 +131,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -149,7 +149,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None, testRegId)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -172,7 +172,7 @@ class InternationalPpobAddressControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(emptyVatSchemeNetp)
           .registrationApi.getSection[Business](None, testRegId)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "line1" -> "testLine1",

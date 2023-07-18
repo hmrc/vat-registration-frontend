@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package featureswitch.frontend.connectors
+package featuretoggle.frontend.connectors
 
-import featureswitch.core.models.FeatureSwitchSetting
+import featuretoggle.core.models.FeatureSwitchSetting
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw

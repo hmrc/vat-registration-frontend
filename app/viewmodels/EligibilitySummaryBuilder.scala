@@ -17,7 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.view.EligibilityJsonParser
 import play.api.i18n.Messages
 import play.api.libs.json.JsValue
@@ -29,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class EligibilitySummaryBuilder @Inject()(govukSummaryList: GovukSummaryList)
-                                         (implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
+                                         (implicit appConfig: FrontendAppConfig) extends FeatureToggleSupport {
 
   private[viewmodels] def eligibilityCall(regId: String)(uri: String): String =
     s"${appConfig.eligibilityUrl}${appConfig.eligibilityQuestionUrl}?pageId=$uri&regId=$regId"

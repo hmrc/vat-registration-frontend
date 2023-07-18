@@ -16,7 +16,7 @@
 
 package viewmodels
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.Business
 import models.api.VatScheme
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowIndexed}
@@ -31,7 +31,7 @@ import javax.inject.Inject
 
 
 class OtherBusinessInvolvementSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList,
-                                                       h3: views.html.components.h3) extends FeatureSwitching {
+                                                       h3: views.html.components.h3) extends FeatureToggleSupport {
 
   private val extraBottomMarginClass = "govuk-!-margin-bottom-9"
   private val noExtraClasses = ""

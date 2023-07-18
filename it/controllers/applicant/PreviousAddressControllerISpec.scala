@@ -36,7 +36,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(currentAddress = None)), testRegId, None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(pageUrl).get())
 
@@ -52,7 +52,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(pageUrl).get())
 
@@ -68,7 +68,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(previousAddress = Some(address), noPreviousAddress = Some(false))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(pageUrl).get())
 
@@ -90,7 +90,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         fixedEstablishmentInManOrUk = false
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(pageUrl)
         .post(Map("value" -> Seq("false"))))
@@ -110,7 +110,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         fixedEstablishmentInManOrUk = false
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
 
@@ -126,7 +126,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testNetpSoleTrader)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
 
@@ -142,7 +142,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(previousAddress = None, noPreviousAddress = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(pageUrl).post(Map("value" -> Seq("true")))
       whenReady(response) { res =>
@@ -158,7 +158,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(currentAddress = None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(pageUrl).post(Map("value" -> ""))
 
@@ -174,7 +174,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .alfeJourney.initialisedSuccessfully()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(routes.PreviousAddressController.previousAddress.url).get()
 
@@ -190,7 +190,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .alfeJourney.initialisedSuccessfully()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(routes.PreviousAddressController.previousAddress.url).get()
 
@@ -208,7 +208,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(previousAddress = None, noPreviousAddress = Some(true)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(pageUrl).post(Map("value" -> ""))
 
@@ -245,7 +245,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](testApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(applicantRoutes.PreviousAddressController.addressLookupCallback(id = addressId).url).get()
 

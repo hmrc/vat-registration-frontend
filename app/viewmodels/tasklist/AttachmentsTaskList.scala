@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models._
 import models.api._
 import play.api.i18n.Messages
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.Request
 
 @Singleton
-class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTaskList, attachmentsService: AttachmentsService) extends FeatureSwitching {
+class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTaskList, attachmentsService: AttachmentsService) extends FeatureToggleSupport {
 
   def attachmentsRequiredRow(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Future[Option[TaskListRowBuilder]] =
     for {

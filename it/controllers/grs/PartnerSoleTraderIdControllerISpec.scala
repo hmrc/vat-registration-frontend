@@ -66,7 +66,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
           .registrationApi.getListSection(Some(List(Entity(None, Individual, Some(true), None, None, None, None))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
@@ -83,7 +83,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
           .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None, None, None, None))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
@@ -101,7 +101,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
           .registrationApi.getListSection[Entity](None)
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
-        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+        insertIntoDb(sessionString, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
         val res: Future[WSResponse] = buildClient(getUrl()).get()
 
@@ -117,7 +117,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
           .registrationApi.getListSection(Some(List(Entity(None, NETP, Some(true), None, None, None, None))))
 
-        insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+        insertIntoDb(sessionString, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
         val res: Future[WSResponse] = buildClient(getUrl(2)).get()
 
@@ -140,7 +140,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -160,7 +160,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -176,7 +176,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Partnership)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertIntoDb(sessionId, Map("CurrentProfile" -> Json.toJson(currentProfile)))
+      insertIntoDb(sessionString, Map("CurrentProfile" -> Json.toJson(currentProfile)))
 
       val res: Future[WSResponse] = buildClient(callbackUrl()).get()
 
@@ -193,7 +193,7 @@ class PartnerSoleTraderIdControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(Entity(Some(testSoleTrader), NETP, Some(true), None, None, None, None), idx = Some(2))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(callbackUrl(2)).get()
 

@@ -34,7 +34,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 
@@ -50,7 +50,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 
@@ -68,7 +68,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
         .registrationApi.getSection[ApplicantDetails](Some(applicantDetailsWithoutEmail))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 

@@ -58,7 +58,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[FlatRateScheme](Some(fullFrsData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -73,7 +73,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[FlatRateScheme](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -91,7 +91,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
         .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(estimateTotalSales = None)))
         .registrationApi.replaceSection[FlatRateScheme](frsData)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map("totalSalesEstimate" -> testTotalSales.toString))
 
@@ -105,7 +105,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val invalidEstimates = Seq("", "a", "0", "999999999999999")
 

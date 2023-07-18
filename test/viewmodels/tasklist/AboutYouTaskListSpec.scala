@@ -16,14 +16,14 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
 import models.external.Name
 import testHelpers.VatRegSpec
 
-class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
+class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureToggleSupport {
 
   val section: AboutYouTaskList = app.injector.instanceOf[AboutYouTaskList]
   implicit val profile: CurrentProfile = currentProfile

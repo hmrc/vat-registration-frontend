@@ -17,7 +17,7 @@
 package controllers
 
 import config.AuthClientConnector
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import services.{SessionProfile, SessionService}
@@ -25,7 +25,7 @@ import testHelpers.ControllerSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BaseControllerSpec extends ControllerSpec with FeatureSwitching {
+class BaseControllerSpec extends ControllerSpec with FeatureToggleSupport {
 
   implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 

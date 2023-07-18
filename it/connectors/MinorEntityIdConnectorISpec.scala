@@ -30,7 +30,6 @@ import play.api.mvc.Request
 
 class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
-  implicit val req : Request[_] = this.request 
   val testUnincorpAssocJourneyId = "1"
   val testTrustJourneyId = "2"
   val testNonUkCompanyJourneyId = "3"

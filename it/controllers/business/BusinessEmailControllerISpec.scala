@@ -26,7 +26,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](Some(businessDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url).get)
       response.status mustBe OK
@@ -38,7 +38,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(businessDetails.copy(email = Some(businessEmail))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -57,7 +57,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[Business](businessDetails.copy(email = Some(businessEmail)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(email = Some(businessEmail))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(businessEmail))))
 
@@ -69,7 +69,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url).post(Map("businessEmailAddress" -> Seq(invalidBusinessEmail))))
 

@@ -32,7 +32,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -47,7 +47,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -62,7 +62,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -80,7 +80,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true)))))
         .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(true))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -96,7 +96,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false)))))
         .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(usingWarehouse = Some(false))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> "false"))
 
@@ -110,7 +110,7 @@ class DispatchFromWarehouseControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> ""))
 

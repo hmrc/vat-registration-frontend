@@ -17,12 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, StubUpscan}
+import featuretoggle.FeatureSwitch.StubUpscan
+import featuretoggle.FeatureToggleSupport
 import models.api.AttachmentType
 import models.external.upscan.{UpscanDetails, UpscanResponse}
 import play.api.http.Status._
 import play.api.libs.json.Json
-import services.logger
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
@@ -30,11 +31,10 @@ import utils.SessionIdRequestHelper
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.mvc.Request
 
 @Singleton
 class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendAppConfig)
-                               (implicit executionContext: ExecutionContext) extends FeatureSwitching {
+                               (implicit executionContext: ExecutionContext) extends FeatureToggleSupport {
 
   def upscanInitiate()(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
     lazy val url = appConfig.setupUpscanJourneyUrl

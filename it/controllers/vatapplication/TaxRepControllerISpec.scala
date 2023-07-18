@@ -17,7 +17,7 @@ class TaxRepControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -29,7 +29,7 @@ class TaxRepControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(hasTaxRepresentative = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -44,7 +44,7 @@ class TaxRepControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(hasTaxRepresentative = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -62,7 +62,7 @@ class TaxRepControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "true")))
 
@@ -76,7 +76,7 @@ class TaxRepControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "false")))
 
@@ -88,7 +88,7 @@ class TaxRepControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(""))
 

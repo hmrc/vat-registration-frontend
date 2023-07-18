@@ -35,7 +35,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -49,7 +49,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -69,7 +69,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> "beingSetup"))
 
@@ -81,7 +81,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if no valid reason selected" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 

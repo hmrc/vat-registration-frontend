@@ -14,7 +14,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .alfeJourney.initialisedSuccessfully()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.business.routes.PpobAddressController.startJourney.url).get()
 
@@ -42,7 +42,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[Business](businessDetails, testRegId)(Business.apiKey, Business.format)
         .registrationApi.getSection[Business](Some(businessDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
@@ -58,7 +58,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None, testRegId)
         .registrationApi.replaceSection[Business](Business(ppobAddress = Some(addressWithCountry)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>

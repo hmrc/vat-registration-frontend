@@ -46,7 +46,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .alfeJourney.initialisedSuccessfully()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(routes.TransactorHomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
@@ -80,7 +80,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
         addressValidated = true
       ))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
 

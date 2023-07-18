@@ -16,7 +16,8 @@
 
 package connectors
 
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
+import featuretoggle.FeatureSwitch.StubEmailVerification
+import featuretoggle.FeatureToggleSupport
 import itutil.IntegrationSpecBase
 import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeMismatch, PasscodeNotFound}
 import play.api.libs.json.Json
@@ -24,7 +25,7 @@ import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
 
-class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching {
+class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureToggleSupport {
 
   lazy val connector: VerifyEmailVerificationPasscodeConnector = app.injector.instanceOf[VerifyEmailVerificationPasscodeConnector]
 

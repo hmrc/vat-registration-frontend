@@ -20,7 +20,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
         .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence, VAT2))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(showUrl).get()
 
@@ -40,7 +40,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(showUrl).get()
 

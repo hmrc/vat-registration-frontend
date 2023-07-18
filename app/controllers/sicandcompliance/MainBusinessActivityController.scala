@@ -18,7 +18,7 @@ package controllers.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import forms.MainBusinessActivityForm
 import models.api.SicCode.SIC_CODES_KEY
 import models.api.SicCode
@@ -38,7 +38,7 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
                                                val mainBusinessActivityPage: MainBusinessActivity)
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
-                                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
+                                               baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureToggleSupport {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

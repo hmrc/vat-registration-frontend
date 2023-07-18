@@ -17,7 +17,7 @@
 package controllers.grs
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.StubIncorpIdJourney
+import featuretoggle.FeatureSwitch.StubIncorpIdJourney
 import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api._
@@ -38,7 +38,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -58,7 +58,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -78,7 +78,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = CharitableOrg)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"

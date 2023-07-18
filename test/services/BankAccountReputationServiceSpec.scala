@@ -16,20 +16,22 @@
 
 package services
 
-import featureswitch.core.config.{FeatureSwitching, StubBars}
+import featuretoggle.FeatureSwitch.StubBars
+import featuretoggle.FeatureToggleSupport
 import models.BankAccountDetails
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json._
-import testHelpers.{VatRegSpec}
+import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+
 import scala.concurrent.{ExecutionContext, Future}
 
-class BankAccountReputationServiceSpec extends VatRegSpec with FeatureSwitching {
+class BankAccountReputationServiceSpec extends VatRegSpec with FeatureToggleSupport {
   implicit val fakeRequest: Request[_] = FakeRequest()
 
   class Setup {

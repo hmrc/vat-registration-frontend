@@ -67,7 +67,7 @@ class StartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
 
@@ -84,7 +84,7 @@ class StartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(frsStart = Some(vatStartDate))))
         .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
 
@@ -100,7 +100,7 @@ class StartDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[FlatRateScheme](Some(frsData.copy(frsStart = Some(LocalDate.now()))))
         .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
 
@@ -120,7 +120,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(testDate)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(testDate))
@@ -138,7 +138,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(vatStartDate)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(registrationDate)
@@ -154,7 +154,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[VatApplication](Some(vatApplicationWithStartDate))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(oneDayBeforeVatStartDate))
@@ -176,7 +176,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(testDate)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(testDate))
@@ -195,7 +195,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[FlatRateScheme](Some(frsData))
           .registrationApi.replaceSection[FlatRateScheme](frsData.copy(frsStart = Some(edrDate)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(registrationDate)
@@ -212,7 +212,7 @@ class StartDateControllerISpec extends ControllerISpec {
           .registrationApi.getSection[VatApplication](Some(vatApplication))
           .registrationApi.getSection[EligibilitySubmissionData](Some(eligibilityData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(oneDayBeforeEdrDate))

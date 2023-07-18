@@ -18,7 +18,7 @@ package viewmodels
 
 import controllers.applicant.{routes => applicantRoutes}
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.Entity.leadEntityIndex
 import models._
 import models.api._
@@ -35,7 +35,7 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
+class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureToggleSupport {
   val sectionId: String = "cya.applicantDetails"
 
   def build(vatScheme: VatScheme)(implicit messages: Messages): HtmlFormat.Appendable = {

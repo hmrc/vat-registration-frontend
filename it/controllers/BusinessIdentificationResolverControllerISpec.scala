@@ -3,7 +3,7 @@
 package controllers
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
@@ -13,7 +13,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class BusinessIdentificationResolverControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
+class BusinessIdentificationResolverControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureToggleSupport {
 
   val url: String = controllers.routes.BusinessIdentificationResolverController.resolve.url
 
@@ -24,7 +24,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
         whenReady(response) { res =>
@@ -40,7 +40,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
         whenReady(response) { res =>
@@ -56,7 +56,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = validPartyType)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
         whenReady(response) { res =>
@@ -71,7 +71,7 @@ class BusinessIdentificationResolverControllerISpec extends ControllerISpec with
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>

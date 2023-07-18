@@ -15,8 +15,8 @@
  *@
 
 @import config.FrontendAppConfig
-@import featureswitch.core.models.FeatureSwitchSetting
-@import featureswitch.frontend.models.FeatureSwitchProvider
+@import featuretoggle.core.models.FeatureSwitchSetting
+@import featuretoggle.frontend.models.FeatureSwitchProvider
 @import views.html.components.h1
 @import views.html.layouts.layout
 
@@ -49,9 +49,9 @@
                 items = featureSwitches._2.map {
                     featureSwitchSettings =>
                         CheckboxItem(
-                            id = Some(featureSwitchSettings.configName),
-                            name = Some(s"${featureSwitches._1.id}.${featureSwitchSettings.configName}"),
-                            content = Text(featureSwitchSettings.displayName),
+                            id = Some(featureSwitchSettings.name),
+                            name = Some(s"${featureSwitches._1.id}.${featureSwitchSettings.name}"),
+                            content = Text(featureSwitchSettings.displayText),
                             checked = featureSwitchSettings.isEnabled
                         )
                 }

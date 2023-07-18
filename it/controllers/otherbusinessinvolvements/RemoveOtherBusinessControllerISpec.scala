@@ -40,7 +40,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(idx1)).get()
 
@@ -53,7 +53,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(0)).get()
 
@@ -69,7 +69,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(businessName = None)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(idx1)).get()
 
@@ -85,7 +85,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(idx1)).get()
 
@@ -103,7 +103,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(idx2)).get()
 
@@ -120,7 +120,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .registrationApi.deleteSection[OtherBusinessInvolvement](optIdx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(idx1)).post(Map("value" -> Seq("true")))
 
@@ -136,7 +136,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
         .registrationApi.deleteSection[OtherBusinessInvolvement](optIdx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List.empty))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(idx1)).post(Map("value" -> Seq("true")))
 
@@ -150,7 +150,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(idx1)).post(Map("value" -> Seq("false")))
 
@@ -164,7 +164,7 @@ class RemoveOtherBusinessControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(idx1)).post(Map("value" -> Seq("")))
 

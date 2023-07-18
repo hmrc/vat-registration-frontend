@@ -33,7 +33,7 @@ class Vat1TRRequiredControllerISpec extends ControllerISpec {
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>

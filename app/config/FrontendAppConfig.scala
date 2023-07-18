@@ -17,7 +17,8 @@
 package config
 
 import controllers.callbacks.routes
-import featureswitch.core.config._
+import featuretoggle.FeatureSwitch._
+import featuretoggle.FeatureToggleSupport
 import models.api._
 import play.api.Configuration
 import uk.gov.hmrc.http.InternalServerException
@@ -27,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends FeatureSwitching {
+class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeConfiguration: Configuration) extends FeatureToggleSupport {
 
   private def loadConfig(key: String) = servicesConfig.getString(key)
 

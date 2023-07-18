@@ -15,7 +15,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/arrange-supply-of-workers").get()
 
@@ -34,7 +34,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](Some(expectedModel))
 
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       verifyRedirectForGivenPartyType(controllers.routes.TaskListController.show.url)
     }
@@ -51,7 +51,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[Business](expectedModel)
         .registrationApi.getSection[Business](Some(expectedModel))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       verifyRedirectForGivenPartyType(controllers.routes.TaskListController.show.url)
     }

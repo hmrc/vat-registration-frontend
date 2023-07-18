@@ -57,7 +57,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").get()
 
@@ -73,7 +73,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(vatApplication))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").get()
 
@@ -90,7 +90,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(vatApplicationWithBigTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").get()
 
@@ -109,7 +109,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         registrationReason = GroupRegistration
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").get()
 
@@ -126,7 +126,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(vatApplicationWithoutTurnover))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").get()
 
@@ -144,7 +144,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.replaceSection[FlatRateScheme](frsData.copy(joinFrs = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").post(Map("value" -> "true"))
 
@@ -160,7 +160,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[FlatRateScheme](Some(frsData))
         .registrationApi.replaceSection[FlatRateScheme](FlatRateScheme(Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").post(Map("value" -> "false"))
 
@@ -172,7 +172,7 @@ class JoinFlatRateSchemeControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if form binding fails due to missing flat rate condition" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/join-flat-rate").post("")
 

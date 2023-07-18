@@ -16,14 +16,14 @@
 
 package views.attachments
 
-import featureswitch.core.config._
+import featuretoggle.FeatureToggleSupport
 import forms.AttachmentMethodForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.ChooseAttachmentMethod
 
-class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureSwitching {
+class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureToggleSupport {
 
   object ExpectedMessages {
     val heading = "How would you like to send the additional documents?"

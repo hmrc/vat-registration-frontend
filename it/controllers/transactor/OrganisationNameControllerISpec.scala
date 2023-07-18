@@ -40,7 +40,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -53,7 +53,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -72,7 +72,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](testDetails)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map(organisationNameKey -> orgName))
 
@@ -84,7 +84,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for missing trading name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
       whenReady(response) { res =>
@@ -94,7 +94,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for invalid trading name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map(organisationNameKey -> "a" * 161))
       whenReady(response) { res =>

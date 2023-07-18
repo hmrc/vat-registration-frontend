@@ -32,12 +32,12 @@ class UploadDocumentControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return an OK when there's an incomplete attachment" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       verifyDocumentUploadPage(url)
     }
 
     "return an OK when there's an incomplete attachment and has an errorCode" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       verifyDocumentUploadPage(s"$url?errorCode=EntityTooLarge")
     }
 
@@ -48,7 +48,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .attachmentsApi.getIncompleteAttachments(List[AttachmentType]())
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 

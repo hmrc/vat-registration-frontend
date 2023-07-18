@@ -16,7 +16,7 @@
 
 package controllers.business
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.ContactPreference
 import org.mockito.ArgumentMatchers
@@ -27,7 +27,7 @@ import views.html.business.ContactPreferenceView
 
 import scala.concurrent.Future
 
-class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions with FeatureSwitching {
+class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions with FeatureToggleSupport {
 
   val view: ContactPreferenceView = app.injector.instanceOf[ContactPreferenceView]
 

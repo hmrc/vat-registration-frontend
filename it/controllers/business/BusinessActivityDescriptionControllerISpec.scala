@@ -13,7 +13,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.business.routes.BusinessActivityDescriptionController.show.url).get()
 
@@ -30,7 +30,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[Business](businessDetails.copy(businessDescription = Some("foo")))
         .registrationApi.getSection[Business](Some(businessDetails.copy(businessDescription = Some("foo"))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(controllers.business.routes.BusinessActivityDescriptionController.submit.url)
         .post(Map("description" -> Seq("foo")))

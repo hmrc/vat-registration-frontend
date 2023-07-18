@@ -49,7 +49,7 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -63,7 +63,7 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -81,7 +81,7 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment)))))
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> monthly))
 
@@ -98,7 +98,7 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](testFullVatApplication)
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> monthly))
 
@@ -112,7 +112,7 @@ class PaymentFrequencyControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> ""))
 

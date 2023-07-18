@@ -16,7 +16,7 @@
 
 package controllers.transactor
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import models.TransactorDetails
 import play.api.http.HeaderNames
@@ -38,7 +38,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get)
 
@@ -50,7 +50,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get())
 
@@ -65,7 +65,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CREATED, Json.obj().toString)
 
@@ -79,7 +79,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CREATED, Json.obj().toString)
 
@@ -95,7 +95,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
         .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
 
@@ -111,7 +111,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
         .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
 
@@ -132,7 +132,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
           .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 
@@ -150,7 +150,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
           .registrationApi.replaceSection[TransactorDetails](testTransactor.copy(emailVerified = Some(true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 
@@ -169,7 +169,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
 
@@ -185,7 +185,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
 
@@ -202,7 +202,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_NOT_FOUND").toString)
 
@@ -221,7 +221,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", FORBIDDEN, Json.obj("code" -> "MAX_PASSCODE_ATTEMPTS_EXCEEDED").toString)
 
@@ -238,7 +238,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> "p" * 10)))
 
@@ -252,7 +252,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(testTransactor.copy(email = None)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 

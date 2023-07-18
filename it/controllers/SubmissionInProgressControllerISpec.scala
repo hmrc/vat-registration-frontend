@@ -17,7 +17,7 @@
 package controllers
 
 import common.enums.VatRegStatus
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import play.api.http.HeaderNames
@@ -26,7 +26,7 @@ import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
 
-class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
+class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureToggleSupport {
 
   val url: String = controllers.routes.SubmissionInProgressController.show.url
 
@@ -37,7 +37,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -53,7 +53,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatRegStatus.submitted))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 
@@ -68,7 +68,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatRegStatus.locked))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 
@@ -83,7 +83,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatRegStatus.duplicateSubmission))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 
@@ -98,7 +98,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatRegStatus.failed))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 
@@ -113,7 +113,7 @@ class SubmissionInProgressControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatRegStatus.failedRetryable))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 

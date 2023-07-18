@@ -22,7 +22,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -35,7 +35,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(true))))
         .registrationApi.replaceSection[VatApplication](VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -51,7 +51,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(false))))
         .registrationApi.replaceSection[VatApplication](VatApplication(startDate = Some(regStartDate), currentlyTrading = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -67,7 +67,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = Some(regStartDateInFuture), currentlyTrading = Some(false))))
         .registrationApi.replaceSection[VatApplication](VatApplication(startDate = Some(regStartDateInFuture), currentlyTrading = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -82,7 +82,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(startDate = None, currentlyTrading = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -100,7 +100,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(true)))
         .registrationApi.getSection[VatApplication](Some(vatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "true")))
 
@@ -115,7 +115,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(startDate = None)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "true")))
 
@@ -131,7 +131,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(false)))
         .registrationApi.getSection[VatApplication](Some(vatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "false")))
 
@@ -147,7 +147,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(currentlyTrading = Some(false)))
         .registrationApi.getSection[VatApplication](Some(vatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "false")))
 
@@ -162,7 +162,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
         .isAuthorised()
         .registrationApi.getSection[VatApplication](Some(vatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(""))
 
@@ -174,7 +174,7 @@ class CurrentlyTradingControllerISpec extends ControllerISpec {
       given.user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(vatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(""))
 

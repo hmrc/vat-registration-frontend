@@ -16,7 +16,7 @@
 
 package viewmodels
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models._
 import models.api._
 import models.view.SummaryListRowUtils._
@@ -31,7 +31,7 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
+class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureToggleSupport {
 
   val sectionId: String = "cya.transactor"
 

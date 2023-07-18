@@ -53,7 +53,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -70,7 +70,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -88,7 +88,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(utr = None)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -106,7 +106,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
 
@@ -127,7 +127,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -145,7 +145,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
@@ -167,7 +167,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(utr = Some(testNewUtr)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureUtrForm.captureUtrKey -> Seq(testNewUtr)))
 
@@ -186,7 +186,7 @@ class CaptureUtrControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(CaptureUtrForm.captureUtrKey -> Seq(invalidUtr)))
 

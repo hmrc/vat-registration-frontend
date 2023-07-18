@@ -25,7 +25,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -43,7 +43,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -66,7 +66,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -88,7 +88,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(currentAddress = Some(testShortForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> testLine1,
@@ -108,7 +108,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(currentAddress = Some(testShortForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> testLine1,
@@ -128,7 +128,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(currentAddress = Some(testForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -149,7 +149,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line2" -> "testLine2",
@@ -168,7 +168,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -187,7 +187,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "line1" -> "testLine1",

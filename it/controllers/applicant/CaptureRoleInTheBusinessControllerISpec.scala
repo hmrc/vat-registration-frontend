@@ -1,7 +1,7 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, RegSociety, UkCompany}
 import models.{ApplicantDetails, OtherDeclarationCapacity}
@@ -26,7 +26,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -44,7 +44,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -65,7 +65,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
       )))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -86,7 +86,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient("/role-in-the-business").post(Map("value" -> "boardMember")))
 
@@ -104,7 +104,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
 
@@ -125,7 +125,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
       ))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = RegSociety)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient("/role-in-the-business").post(Map(
         "value" -> "other",

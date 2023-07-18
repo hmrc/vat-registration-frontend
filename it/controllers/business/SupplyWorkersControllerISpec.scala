@@ -15,7 +15,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/supply-of-workers").get()
       whenReady(response) { res =>
@@ -41,7 +41,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[Business](toBeUpdatedModel)
         .registrationApi.getSection[Business](Some(toBeUpdatedModel))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/supply-of-workers").post(Map("value" -> Seq("true")))
 

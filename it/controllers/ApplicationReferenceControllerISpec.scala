@@ -2,7 +2,7 @@
 package controllers
 
 import connectors.RegistrationApiConnector.applicationReferenceKey
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.ApiKey
@@ -15,7 +15,7 @@ import scala.concurrent.Future
 
 class ApplicationReferenceControllerISpec extends ControllerISpec
   with ITRegistrationFixtures
-  with FeatureSwitching {
+  with FeatureToggleSupport {
 
   val testAppRef = "testAppRef"
   val url = "/register-for-vat/application-reference"
@@ -29,7 +29,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
           .user.isAuthorised()
           .registrationApi.getSection(Some(testAppRef))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         whenReady(buildClient(url).get()) { res =>
           res.status mustBe OK
@@ -44,7 +44,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
           .user.isAuthorised()
           .registrationApi.getSection(None)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         whenReady(buildClient(url).get()) { res =>
           res.status mustBe OK
@@ -62,7 +62,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
           .user.isAuthorised()
           .registrationApi.replaceSection(testAppRef)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post(Map("value" -> testAppRef))
 
@@ -76,7 +76,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "submitted with valid a missing reference value" must {
       "return a BAD_REQUEST" in new Setup {
         given.user.isAuthorised()
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("")
 
@@ -89,7 +89,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "submitted with an invalid reference number, too long" must {
       "return a BAD_REQUEST" in new Setup {
         given.user.isAuthorised()
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("w" * 101)
 
@@ -102,7 +102,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "submitted with an invalid reference number, invalid characters" must {
       "return a BAD_REQUEST" in new Setup {
         given.user.isAuthorised()
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("«test»")
 

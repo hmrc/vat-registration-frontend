@@ -37,7 +37,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -53,7 +53,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(Business(otherBusinessInvolvement = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -73,7 +73,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .registrationApi.deleteSection[OtherBusinessInvolvement]()
         .registrationApi.replaceSection[Business](Business(otherBusinessInvolvement = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "false"))
 
@@ -90,7 +90,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[Business](Business(otherBusinessInvolvement = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "true"))
 
@@ -106,7 +106,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post("")
 

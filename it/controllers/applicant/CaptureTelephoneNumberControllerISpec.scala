@@ -16,7 +16,7 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, Contact}
@@ -42,7 +42,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).get)
 
@@ -57,7 +57,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = Contact(tel = Some(testPhoneNumber)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -80,7 +80,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
       ))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
@@ -95,7 +95,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(contact = Contact())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq())))
 

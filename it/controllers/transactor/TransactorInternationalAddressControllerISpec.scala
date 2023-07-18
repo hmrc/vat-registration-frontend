@@ -37,7 +37,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](None)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -51,7 +51,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](Some(trDetails))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -72,7 +72,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](TransactorDetails(address = Some(testShortForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> testLine1,
@@ -89,7 +89,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](TransactorDetails(address = Some(testForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -108,7 +108,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line2" -> "testLine2",
@@ -125,7 +125,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -142,7 +142,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",

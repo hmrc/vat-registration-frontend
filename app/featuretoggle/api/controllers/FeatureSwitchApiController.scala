@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package featureswitch.api.controllers
+package featuretoggle.api.controllers
 
-import featureswitch.api.services.FeatureSwitchService
-import featureswitch.core.config.FeatureSwitching
-import featureswitch.core.models.FeatureSwitchSetting
+import featuretoggle.FeatureToggleSupport
+import featuretoggle.api.services.FeatureSwitchService
+import featuretoggle.core.models.FeatureSwitchSetting
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}
@@ -28,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class FeatureSwitchApiController @Inject()(config: Configuration,
                                            featureSwitchService: FeatureSwitchService
-                                          ) extends InjectedController with FeatureSwitching {
+                                          ) extends InjectedController with FeatureToggleSupport {
   def getFeatureSwitches: Action[AnyContent] = Action {
     Ok(Json.toJson(featureSwitchService.getFeatureSwitches))
   }

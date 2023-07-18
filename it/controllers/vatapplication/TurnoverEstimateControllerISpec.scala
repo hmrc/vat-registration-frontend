@@ -34,7 +34,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -48,7 +48,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(turnoverEstimate = Some(testTurnover))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -67,7 +67,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.replaceSection[VatApplication](VatApplication(turnoverEstimate = Some(10000.53)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map(
         "turnoverEstimate" -> "10000.53"
@@ -83,7 +83,7 @@ class TurnoverEstimateControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map(
         "turnoverEstimate" -> "text"

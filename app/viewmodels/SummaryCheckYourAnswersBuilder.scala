@@ -17,7 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.api._
 import models.error.MissingAnswerException
 import play.api.i18n.Messages
@@ -36,7 +36,7 @@ class SummaryCheckYourAnswersBuilder @Inject()(eligibilitySummaryBuilder: Eligib
                                                applicantDetailsSummaryBuilder: ApplicantDetailsSummaryBuilder,
                                                aboutTheBusinessSummaryBuilder: AboutTheBusinessSummaryBuilder,
                                                otherBusinessInvolvementSummaryBuilder: OtherBusinessInvolvementSummaryBuilder,
-                                               registrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder) extends FeatureSwitching {
+                                               registrationDetailsSummaryBuilder: RegistrationDetailsSummaryBuilder) extends FeatureToggleSupport {
 
   def generateSummaryAccordion(vatScheme: VatScheme)(implicit messages: Messages, frontendAppConfig: FrontendAppConfig, request: Request[_]): Accordion = {
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)

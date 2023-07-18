@@ -34,7 +34,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -49,7 +49,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasLandAndProperty = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -67,7 +67,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasLandAndProperty = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "true"))
 
@@ -79,7 +79,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST when no option is selected" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post("")
 

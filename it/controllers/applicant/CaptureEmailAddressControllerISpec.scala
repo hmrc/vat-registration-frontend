@@ -16,7 +16,7 @@
 
 package controllers.applicant
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, Contact}
@@ -49,7 +49,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).get)
 
@@ -64,7 +64,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -86,7 +86,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
       )
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CREATED, Json.obj("email" -> testEmail, "serviceName" -> "VAT Registration").toString)
 
@@ -111,7 +111,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
       )
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
 
@@ -132,7 +132,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
       )
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
 
@@ -161,7 +161,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
         )
       ))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
 
@@ -177,7 +177,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         val res: WSResponse = await(buildClient("/email-address").post(Map("email-address" -> email)))
         res.status mustBe BAD_REQUEST
       }

@@ -43,7 +43,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(minPartnerIndex))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(minPartnerIndex - 1)).get()
 
@@ -61,7 +61,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(minPartnerIndex))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(minPartnerIndex)).get()
 
@@ -84,7 +84,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
           Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(minPartnerIndex)).get()
 
@@ -103,7 +103,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
           Entity(Some(testPartnership.copy(companyName = None)), ScotPartnership, Some(true), None, None, None, None),
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageGetUrl(minPartnerIndex)).get()
 
@@ -126,7 +126,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
           Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(minPartnerIndex)).post(Map("value" -> Seq("true")))
 
@@ -149,7 +149,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.deleteSection[Entity](optIdx = Some(minPartnerIndex))
         .registrationApi.replaceSection[Attachments](testAttachmentDetails.copy(additionalPartnersDocuments = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(minPartnerIndex)).post(Map("value" -> Seq("true")))
 
@@ -171,7 +171,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
           )
         ))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(minPartnerIndex)).post(Map("value" -> Seq("false")))
 
@@ -188,7 +188,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(partnerIndex)).post(Map("value" -> Seq("false")))
 
@@ -205,7 +205,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(partnerIndex)).post(Map("value" -> Seq("false")))
 
@@ -221,7 +221,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pagePostUrl(minPartnerIndex)).post(Map("value" -> Seq("")))
 

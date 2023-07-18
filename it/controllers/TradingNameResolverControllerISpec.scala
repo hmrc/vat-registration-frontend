@@ -40,7 +40,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
 
@@ -60,7 +60,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
 
@@ -84,7 +84,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           Some(testApplicantIncorpDetails.copy(companyName = Some(longCompanyName)))
         )))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
 
@@ -104,7 +104,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
 
@@ -123,7 +123,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = ScotLtdPartnership)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(companyName = None)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -142,7 +142,7 @@ class TradingNameResolverControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = partyType)))
           .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
 

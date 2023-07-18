@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.CurrentProfile
 import models.api._
 
@@ -24,7 +24,7 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
-                                 aboutYouTransactorTaskList: AboutYouTransactorTaskList) extends FeatureSwitching {
+                                 aboutYouTransactorTaskList: AboutYouTransactorTaskList) extends FeatureToggleSupport {
 
   private def buildMessageKey(suffix: String, vatScheme: VatScheme) = {
     if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) s"tasklist.aboutBusinessContact.$suffix" else s"tasklist.aboutYou.$suffix"

@@ -4,11 +4,11 @@ GET         /delete-registrations                             controllers.test.D
 GET         /sic-stub                                         controllers.test.SicStubController.show
 POST        /sic-stub                                         controllers.test.SicStubController.submit
 
-GET         /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
-POST        /feature-switches                                 featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
+GET         /feature-switches                                 featuretoggle.frontend.controllers.FeatureSwitchFrontendController.show
+POST        /feature-switches                                 featuretoggle.frontend.controllers.FeatureSwitchFrontendController.submit
 
-GET         /api/feature-switches                             featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
-POST        /api/feature-switches                             featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+GET         /api/feature-switches                             featuretoggle.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+POST        /api/feature-switches                             featuretoggle.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
 + nocsrf
 POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney(partyType: String)

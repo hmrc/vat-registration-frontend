@@ -24,7 +24,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](None, idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -40,7 +40,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[Entity](None, idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -56,7 +56,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)), idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -73,7 +73,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None)), idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -94,7 +94,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           .registrationApi.getSection[Entity](None, idx = Some(1))
           .registrationApi.replaceSection(Entity(None, Individual, Some(true), None, None, None, None), idx = Some(1))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(Individual))))
 
@@ -109,7 +109,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> PartyType.stati(BusinessEntity))))
 
@@ -124,7 +124,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "")))
 
@@ -136,7 +136,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "")))
 
@@ -150,7 +150,7 @@ class LeadPartnerEntityControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient("/lead-partner-entity").post(Map("value" -> "55")))
 

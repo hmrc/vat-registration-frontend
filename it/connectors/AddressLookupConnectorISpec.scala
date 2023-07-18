@@ -26,11 +26,9 @@ import play.api.test.Helpers._
 import services.AddressLookupService
 import support.AppAndStubs
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
-import play.api.mvc.Request
 
 class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
 
-  implicit val req : Request[_] = this.request 
   val alfConnector: AddressLookupConnector = app.injector.instanceOf[AddressLookupConnector]
   val addressLookupService: AddressLookupService = app.injector.instanceOf[AddressLookupService]
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

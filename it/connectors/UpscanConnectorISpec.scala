@@ -18,7 +18,8 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, StubUpscan}
+import featuretoggle.FeatureSwitch.StubUpscan
+import featuretoggle.FeatureToggleSupport
 import fixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{AttachmentType, PrimaryIdentityEvidence}
@@ -27,12 +28,10 @@ import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, SessionId, Upstream5xxResponse}
-import play.api.mvc.Request
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, Upstream5xxResponse, SessionId}
 
-class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures with FeatureSwitching {
+class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures with FeatureToggleSupport {
 
-  implicit val req : Request[_] = this.request
   val connector: UpscanConnector = app.injector.instanceOf[UpscanConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
@@ -79,7 +78,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
         "minimumFileSize" -> 1,
         "maximumFileSize" -> 10485760)
 
-      val response = await(connector.upscanInitiate()(HeaderCarrier(sessionId = Some(SessionId(sessionId)))))
+      val response = await(connector.upscanInitiate()(HeaderCarrier(sessionId = Some(SessionId(sessionString)))))
 
       verify(postRequestedFor(urlEqualTo("/register-for-vat/test-only/upscan/initiate")).withRequestBody(equalToJson(requestBody.toString)))
       response mustBe testUpscanResponse

@@ -49,7 +49,7 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
           fixedEstablishmentInManOrUk = false
         )))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-journey").get()
@@ -70,7 +70,7 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
           fixedEstablishmentInManOrUk = false
         )))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(soleTraderJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-journey").get()
@@ -99,7 +99,7 @@ class SoleTraderIdControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
         stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-callback?journeyId=$testJourneyId").get()
 

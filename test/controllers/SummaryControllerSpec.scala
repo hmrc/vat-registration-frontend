@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import connectors._
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
@@ -34,7 +34,7 @@ import views.html.Summary
 
 import scala.concurrent.Future
 
-class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with FeatureSwitching {
+class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with FeatureToggleSupport {
 
   trait Setup {
     val testSummaryController = new SummaryController(

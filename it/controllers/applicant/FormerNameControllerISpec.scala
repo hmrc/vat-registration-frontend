@@ -39,7 +39,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -54,7 +54,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -73,7 +73,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(changeOfName = FormerName(Some(true), None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/changed-name").post(Map("value" -> Seq("true")))
       whenReady(response) { res =>
@@ -89,7 +89,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(changeOfName = FormerName(Some(false), None, None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
       whenReady(response) { res =>
@@ -102,7 +102,7 @@ class FormerNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/changed-name").post(Map("value" -> Seq()))
 

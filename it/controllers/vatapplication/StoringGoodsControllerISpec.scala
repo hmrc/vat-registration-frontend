@@ -26,7 +26,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
         given()
           .user.isNotAuthorised
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(url).get())
 
@@ -40,7 +40,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
           given()
             .user.isAuthorised()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient(url).get())
 
@@ -56,7 +56,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
               overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk))))
             ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient(url).get())
 
@@ -72,7 +72,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas))))
           ))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(url).get())
 
@@ -93,7 +93,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
           )))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient(url).post(Map("value" -> "UK")))
 
@@ -113,7 +113,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringOverseas)))
           )))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient(url).post(Map("value" -> "OVERSEAS")))
 
@@ -130,7 +130,7 @@ class StoringGoodsControllerISpec extends ControllerISpec with ITRegistrationFix
             overseasCompliance = Some(testOverseasCompliance.copy(storingGoodsForDispatch = Some(StoringWithinUk)))
           ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient(url).post(""))
 

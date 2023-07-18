@@ -18,7 +18,7 @@ package viewmodels
 
 import connectors.ConfigConnector
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config._
+import featuretoggle.FeatureToggleSupport
 import models.api._
 import models.external._
 import models.external.soletraderid.OverseasIdentifierDetails
@@ -33,7 +33,7 @@ import javax.inject.{Inject, Singleton}
 
 // scalastyle:off
 @Singleton
-class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummaryList: GovukSummaryList) extends FeatureSwitching {
+class GrsSummaryBuilder @Inject()(configConnector: ConfigConnector, govukSummaryList: GovukSummaryList) extends FeatureToggleSupport {
 
   val sectionId: String = "cya.grsDetails"
 

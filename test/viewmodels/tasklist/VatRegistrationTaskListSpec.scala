@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
@@ -25,7 +25,7 @@ import testHelpers.VatRegSpec
 
 import java.time.LocalDate
 
-class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureSwitching {
+class VatRegistrationTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureToggleSupport {
   val section: VatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
 
   val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(

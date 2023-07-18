@@ -36,7 +36,7 @@ class UploadSupportingDocumentControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return an OK when there's fewer than 20 supporting attachments" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.upscanInitiate(testReference)
@@ -52,7 +52,7 @@ class UploadSupportingDocumentControllerISpec extends ControllerISpec {
     }
 
     "return an OK when there's an errorCode" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.upscanInitiate(testReference)
@@ -68,7 +68,7 @@ class UploadSupportingDocumentControllerISpec extends ControllerISpec {
     }
 
     "redirect to attachment summary page when there's 20 supporting attachments" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(List.fill(20)(supportingAttachmentDetails))
@@ -83,7 +83,7 @@ class UploadSupportingDocumentControllerISpec extends ControllerISpec {
     }
 
     "return an OK when the user hasn't answered the supporting documents question" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(Nil)

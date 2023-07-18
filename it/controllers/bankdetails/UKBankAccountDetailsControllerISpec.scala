@@ -19,7 +19,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -30,7 +30,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(bankAccount))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
       val doc = Jsoup.parse(res.body)
@@ -45,7 +45,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(bankAccount))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
       val doc = Jsoup.parse(res.body)
@@ -66,7 +66,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "accountName" -> testBankName,
@@ -86,7 +86,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         .registrationApi.replaceSection[BankAccount](bankAccount)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "accountName" -> testBankName,
@@ -105,7 +105,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
           .bankAccountReputation.fails
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "accountName" -> "",

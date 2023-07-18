@@ -17,7 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.api._
 import models.external.{BusinessEntity, MinorEntity, PartnershipIdEntity}
 import models.view.SummaryListRowUtils._
@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.InternalServerException
 import javax.inject.Inject
 
 // scalastyle:off
-class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureSwitching {
+class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryList) extends FeatureToggleSupport {
 
   val sectionId = "cya.aboutTheBusiness"
 

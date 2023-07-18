@@ -33,7 +33,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return an OK when the user tries to upload a 1614A form" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.upscanInitiate(testReference)
@@ -49,7 +49,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
     }
 
     "return an OK when the user tries to upload a 1614H form" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.upscanInitiate(testReference)
@@ -65,7 +65,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
     }
 
     "return an OK when the user tries to upload a 1614A form but there is already one uploaded" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       val testUpscanDetails: UpscanDetails = UpscanDetails(Attachment1614a, testReference, None, Ready, None, None)
       given()
         .user.isAuthorised()
@@ -83,7 +83,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
     }
 
     "return an OK when there's an errorCode" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.upscanInitiate(testReference)
@@ -99,7 +99,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
     }
 
     "redirect to attachment summary page when the user tries to upload after answering no on a previous form" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(false), Some(false), None)))
@@ -113,7 +113,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
     }
 
     "redirect to attachment summary page when the user hasn't answered the previous question" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), None, None, None)))

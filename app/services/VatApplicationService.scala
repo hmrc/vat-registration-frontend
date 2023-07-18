@@ -17,7 +17,7 @@
 package services
 
 import connectors.RegistrationApiConnector
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models._
 import models.api.vatapplication._
 import services.VatApplicationService._
@@ -33,7 +33,7 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
                                       val vatService: VatRegistrationService,
                                       applicantDetailsService: ApplicantDetailsService,
                                       timeService: TimeService
-                                     )(implicit executionContext: ExecutionContext) extends FeatureSwitching {
+                                     )(implicit executionContext: ExecutionContext) extends FeatureToggleSupport {
 
   def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
     registrationApiConnector.getSection[VatApplication](profile.registrationId).map {

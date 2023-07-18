@@ -44,7 +44,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -62,7 +62,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
 
@@ -80,7 +80,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -101,7 +101,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -119,7 +119,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
@@ -140,7 +140,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(stillTrading = Some(false)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(OtherBusinessActivelyTradingForm.yesNo -> Seq("false")))
 
@@ -152,7 +152,7 @@ class OtherBusinessActivelyTradingControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if submitted form doesn't have an option selected" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post("")
 

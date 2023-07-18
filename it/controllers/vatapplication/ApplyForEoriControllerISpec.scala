@@ -36,7 +36,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
@@ -56,7 +56,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       )))
         .registrationApi.getSection[VatApplication](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
@@ -73,7 +73,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(false), eoriRequested = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
@@ -88,7 +88,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(VatApplication(eoriRequested = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").get()
 
@@ -106,7 +106,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
 
@@ -121,7 +121,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/apply-for-eori").post("")
 

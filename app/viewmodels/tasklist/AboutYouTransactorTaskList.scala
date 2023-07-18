@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.CurrentProfile
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.InternalServerException
 
 import javax.inject.Inject
 
-class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) extends FeatureSwitching {
+class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) extends FeatureToggleSupport {
 
   def build(vatScheme: VatScheme)
            (implicit profile: CurrentProfile,

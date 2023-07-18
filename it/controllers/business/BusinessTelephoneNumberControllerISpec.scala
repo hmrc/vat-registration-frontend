@@ -32,7 +32,7 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-telephone-number").get()
       whenReady(response) { res =>
@@ -47,7 +47,7 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.replaceSection[Business](Business(telephoneNumber = Some("123456789")))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-telephone-number").post(Map("daytimePhone" -> Seq(businessTelephoneNumber)))
       whenReady(response) { res =>
@@ -60,7 +60,7 @@ class BusinessTelephoneNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/business-telephone-number").post(Map("" -> Seq("")))
       whenReady(response) { res =>

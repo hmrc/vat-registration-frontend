@@ -16,7 +16,7 @@
 
 package controllers.transactor
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import models.{AuthorisedEmployee, DeclarationCapacityAnswer, TransactorDetails}
 import org.jsoup.Jsoup
@@ -48,7 +48,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).get)
 
@@ -61,7 +61,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testTransactor))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -81,7 +81,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/request-passcode", CREATED, Json.obj("email" -> testEmail, "serviceName" -> "VAT Registration").toString)
 
@@ -100,7 +100,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(email = Some(testEmail))))
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail), emailVerified = Some(true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/request-passcode", CONFLICT, Json.obj().toString)
 
@@ -117,7 +117,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(email = Some(testEmail)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/request-passcode", FORBIDDEN, Json.obj().toString)
 
@@ -136,7 +136,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](Some(validTransactorDetails.copy(email = None)))
           .registrationApi.replaceSection[TransactorDetails](validTransactorDetails)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         stubPost("/email-verification/request-passcode", CREATED, Json.obj("email" -> testEmail, "serviceName" -> "VAT Registration").toString)
 
@@ -149,7 +149,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
       "return BAD_REQUEST if any of the validation fails for submitted email address" in new Setup {
         given().user.isAuthorised()
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient(url).post("")
         whenReady(res) { res =>
