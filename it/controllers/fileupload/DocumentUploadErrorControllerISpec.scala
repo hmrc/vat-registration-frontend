@@ -16,7 +16,7 @@ class DocumentUploadErrorControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(pageUrl).get)
 

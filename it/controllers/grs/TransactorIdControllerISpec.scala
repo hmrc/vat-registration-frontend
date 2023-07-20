@@ -59,7 +59,7 @@ class TransactorIdControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(individualJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-sti-transactor-journey").get()
@@ -80,7 +80,7 @@ class TransactorIdControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[TransactorDetails](TransactorDetails(personalDetails = Some(testPersonalDetails)))
 
       stubGet(retrieveDetailsUrl, OK, testSTIResponse.toString)
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(s"/register-for-vat/sti-transactor-callback?journeyId=$testJourneyId").get()
 

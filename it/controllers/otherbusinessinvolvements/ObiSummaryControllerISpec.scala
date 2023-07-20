@@ -32,7 +32,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl()).get)
 
@@ -49,7 +49,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl()).get)
 
@@ -66,7 +66,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl()).get)
         res.status mustBe OK
@@ -79,7 +79,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl()).get)
 
@@ -99,7 +99,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
 
@@ -116,7 +116,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
 
@@ -130,7 +130,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl()).post(Map("value" -> "")))
 
@@ -147,7 +147,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl()).post(Map("value" -> "true")))
 
@@ -163,7 +163,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl()).post(Map("value" -> "false")))
 
@@ -185,7 +185,7 @@ class ObiSummaryControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(continueUrl()).post(""))
 

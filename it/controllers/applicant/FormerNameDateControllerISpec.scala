@@ -48,7 +48,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -63,7 +63,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(changeOfName = testFormerName.copy(change = Some(testFormerNameDate)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -81,7 +81,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(personalDetails = None)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -98,7 +98,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(changeOfName = FormerName())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -115,7 +115,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -135,7 +135,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](testApplicant.copy(changeOfName = testFormerName.copy(change = Some(testFormerNameDate))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).post(Map(
         "formerNameDate.day" -> testFormerNameDate.getDayOfMonth.toString,
@@ -156,7 +156,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(changeOfName = FormerName())))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).post(Map(
         "formerNameDate.day" -> "",
@@ -177,7 +177,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant.copy(personalDetails = Some(testPersonalDetails.copy(dateOfBirth = None)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).post(Map(
         "formerNameDate.day" -> "",
@@ -198,7 +198,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).post(Map(
         "formerNameDate.day" -> "",

@@ -16,7 +16,7 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.api.SicCode.SIC_CODES_KEY
 import models.api.{SicCode, UkCompany}
@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class BusinessActivitiesResolverControllerSpec extends ControllerSpec with FutureAssertions with FeatureSwitching
+class BusinessActivitiesResolverControllerSpec extends ControllerSpec with FutureAssertions with FeatureToggleSupport
   with MockVatRegistrationService with VatRegistrationFixture {
 
   class Setup {

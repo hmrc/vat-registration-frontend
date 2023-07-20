@@ -43,7 +43,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -61,7 +61,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
 
@@ -79,7 +79,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(businessName = None)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -96,7 +96,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -117,7 +117,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
@@ -135,7 +135,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
@@ -157,7 +157,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(businessName = Some(testNewBusinessName)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(OtherBusinessNameForm.businessNameKey -> Seq(testNewBusinessName)))
 
@@ -169,7 +169,7 @@ class OtherBusinessNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if submitted form has invalid business name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(OtherBusinessNameForm.businessNameKey -> "b" * 106))
 

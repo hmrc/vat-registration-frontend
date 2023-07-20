@@ -32,7 +32,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -47,7 +47,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -66,7 +66,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true)))))
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(true))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -83,7 +83,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false)))))
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> "false"))
 
@@ -100,7 +100,7 @@ class SendEUGoodsControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false)))))
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(overseasCompliance = Some(testOverseasCompliance.copy(goodsToEu = Some(false))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> ""))
 

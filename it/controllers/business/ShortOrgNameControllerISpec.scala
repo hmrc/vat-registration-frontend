@@ -36,7 +36,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/short-organisation-name").get()
 
@@ -52,7 +52,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(businessDetails.copy(shortOrgName = Some(testShortOrgName))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/short-organisation-name").get()
 
@@ -71,7 +71,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(businessDetails.copy(shortOrgName = Some(testShortOrgName))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/short-organisation-name").post(Map(ShortOrgNameForm.shortOrgNameKey -> Seq(testShortOrgName)))
 
@@ -83,7 +83,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for missing trading name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/short-organisation-name").post("")
       whenReady(response) { res =>
@@ -93,7 +93,7 @@ class ShortOrgNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for invalid trading name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/short-organisation-name").post(Map(ShortOrgNameForm.shortOrgNameKey -> "a" * 161))
       whenReady(response) { res =>

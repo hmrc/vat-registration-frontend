@@ -15,7 +15,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).get()
       whenReady(response) { res =>
@@ -26,7 +26,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).get()
       whenReady(response) { res =>
@@ -37,7 +37,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(url).get()
       whenReady(response) { res =>
@@ -53,7 +53,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasWebsite = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "true")))
 
@@ -67,7 +67,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasWebsite = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map("value" -> "false")))
 
@@ -77,7 +77,7 @@ class HasWebsiteControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if no option is selected" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(""))
 

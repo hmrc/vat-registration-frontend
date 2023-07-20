@@ -20,7 +20,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -34,7 +34,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(Business(welshLanguage = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -48,7 +48,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(Business(welshLanguage = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -66,7 +66,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(welshLanguage = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(Map("value" -> VatCorrespondenceForm.welsh)))
 
@@ -76,7 +76,7 @@ class VatCorrespondenceControllerISpec extends ControllerISpec {
     
     "return BAD_REQUEST if no option is selected" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(""))
 

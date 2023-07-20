@@ -27,7 +27,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url).get)
       response.status mustBe OK
@@ -39,7 +39,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -60,7 +60,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(businessWebsiteAddress)))
           .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
 
@@ -77,7 +77,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(businessWebsiteAddress))))
 
@@ -93,7 +93,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(businessWebsiteAddress))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(invalidWebsiteAddress))))
 
@@ -109,7 +109,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
           .registrationApi.getSection[Business](Some(businessDetails.copy(website = Some(validWebsiteAddress))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(validWebsiteAddress))))
 
@@ -126,7 +126,7 @@ class BusinessWebsiteAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[Business](businessDetails.copy(website = Some(invalidUrl)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url).post(Map("businessWebsiteAddress" -> Seq(invalidUrl))))
 

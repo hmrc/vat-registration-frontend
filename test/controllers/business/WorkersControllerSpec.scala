@@ -16,7 +16,7 @@
 
 package controllers.business
 
-import featureswitch.core.models.FeatureSwitch
+import featuretoggle.FeatureSwitch.FeatureSwitch
 import fixtures.VatRegistrationFixture
 import models.api.{NonUkNonEstablished, UkCompany}
 import play.api.mvc.{AnyContentAsEmpty, Call}

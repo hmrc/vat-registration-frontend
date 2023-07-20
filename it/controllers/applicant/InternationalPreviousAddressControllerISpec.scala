@@ -25,7 +25,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -39,7 +39,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get())
 
@@ -61,7 +61,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(previousAddress = Some(testShortForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> testLine1,
@@ -81,7 +81,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[ApplicantDetails](ApplicantDetails(previousAddress = Some(testForeignAddress)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -101,7 +101,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line2" -> "testLine2",
@@ -119,7 +119,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
@@ -138,7 +138,7 @@ class InternationalPreviousAddressControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "line1" -> "testLine1",

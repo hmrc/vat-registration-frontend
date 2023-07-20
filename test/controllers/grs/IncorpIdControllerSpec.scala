@@ -17,7 +17,7 @@
 package controllers.grs
 
 import _root_.models._
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.api.{CharitableOrg, GovOrg, RegSociety, UkCompany}
 import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
@@ -35,7 +35,7 @@ class IncorpIdControllerSpec extends ControllerSpec
   with FutureAssertions
   with MockApplicantDetailsService
   with MockVatRegistrationService
-  with FeatureSwitching
+  with FeatureToggleSupport
   with MockEntityService {
 
   val testJourneyId = "testJourneyId"

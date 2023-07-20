@@ -41,7 +41,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
         .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), None, None, None, None))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -62,7 +62,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(partnerIndex)).get()
 
@@ -77,7 +77,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -97,7 +97,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
         Entity(None, UkCompany, Some(false), None, None, None, None)
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(1)).get()
       whenReady(response) { res =>
@@ -116,7 +116,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
         Entity(None, UkCompany, Some(false), None, None, None, None)
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(100)).get()
       whenReady(response) { res =>
@@ -135,7 +135,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(4)).get()
       whenReady(response) { res =>
@@ -159,7 +159,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
             .registrationApi.getListSection[Entity](Some(List(Entity(None, partyType, Some(true), None, None, None, None))))
             .registrationApi.replaceSection(Entity(None, partyType, Some(false), None, None, None, None), idx = Some(partnerIndex))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val formData: Map[String, String] = Map("value" -> PartyType.stati(partyType))
           val res: WSResponse = await(buildClient(s"/partner/$partnerIndex/business-type-in-partnership").post(formData))
@@ -181,7 +181,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
             .registrationApi.getListSection[Entity](Some(List(Entity(None, partyType, Some(true), None, None, None, None))))
             .registrationApi.replaceSection(Entity(None, partyType, Some(false), None, None, None, None), idx = Some(partnerIndex))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val formData: Map[String, String] = Map("value" -> PartyType.stati(partyType))
           val res: WSResponse = await(buildClient(s"/partner/$partnerIndex/business-type-in-partnership").post(formData))
@@ -202,7 +202,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
           .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), None, None, None, None))))
           .registrationApi.replaceSection(Entity(None, ScotPartnership, Some(false), None, None, None, None), idx = Some(partnerIndex))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val formData: Map[String, String] = Map("value" -> PartyType.stati(ScotPartnership))
         val res: WSResponse = await(buildClient(s"/partner/$partnerIndex/business-type-in-partnership").post(formData))
@@ -219,7 +219,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = await(buildClient(s"/partner/$requestedIndex/business-type-in-partnership").post(Map("value" -> "55")))
 
@@ -235,7 +235,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getListSection[Entity](Some(List(Entity(None, ScotPartnership, Some(true), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = await(buildClient(s"/partner/$requestedIndex/business-type-in-partnership").post(Map("value" -> "55")))
 
@@ -254,7 +254,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
           .registrationApi.getListSection[Entity](Some(List(Entity(None, Trust, Some(true), None, None, None, None))))
           .registrationApi.replaceSection(Entity(None, Trust, Some(false), None, None, None, None), idx = Some(partnerIndex))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(s"/partner/$partnerIndex/business-type-in-partnership").post(Map("value" -> "60")))
 
@@ -270,7 +270,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getListSection[Entity](Some(List(Entity(None, Trust, Some(true), None, None, None, None))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(s"/partner/$partnerIndex/business-type-in-partnership").post(Map("value" -> "")))
 

@@ -31,7 +31,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .user.isAuthorised()
 
 
-    insertIntoDb(sessionId, sicCodeMapping)
+    insertIntoDb(sessionString, sicCodeMapping)
 
     val response = buildClient("/choose-standard-industry-classification-codes").get()
     whenReady(response) { res =>
@@ -44,7 +44,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .user.isAuthorised()
       .icl.setup()
 
-    insertIntoDb(sessionId, sicCodeMapping)
+    insertIntoDb(sessionString, sicCodeMapping)
 
     val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
@@ -58,7 +58,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .user.isAuthorised()
       .icl.setup()
 
-    insertIntoDb(sessionId, sicCodeMapping)
+    insertIntoDb(sessionString, sicCodeMapping)
 
     val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
@@ -83,7 +83,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .registrationApi.getSection[Business](Some(expectedUpdateToBusiness))
       .icl.fetchResults(List(sicCode))
 
-    insertIntoDb(sessionId, iclSicCodeMapping)
+    insertIntoDb(sessionString, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -102,7 +102,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .registrationApi.replaceSection[Business](fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None))
       .registrationApi.getSection[Business](Some(fullModel.copy(businessActivities = Some(List(sicCode1, sicCode2)), mainBusinessActivity = None, labourCompliance = None)))
 
-    insertIntoDb(sessionId, iclSicCodeMapping)
+    insertIntoDb(sessionString, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -121,7 +121,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1, sicCode2))
 
-    insertIntoDb(sessionId, iclSicCodeMapping)
+    insertIntoDb(sessionString, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -139,7 +139,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .icl.fetchResults(List(sicCode1))
 
-    insertIntoDb(sessionId, iclSicCodeMapping)
+    insertIntoDb(sessionString, iclSicCodeMapping)
 
     val fetchResultsResponse = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
@@ -155,7 +155,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
       .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
       .registrationApi.getSection[Business](Some(fullModel))
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
+    insertCurrentProfileIntoDb(currentProfile, sessionString)
 
     val response = buildClient("/number-of-workers-supplied").get()
     whenReady(response) { res =>
@@ -169,7 +169,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
     given()
       .user.isAuthorised()
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
+    insertCurrentProfileIntoDb(currentProfile, sessionString)
 
     val response = buildClient("/tell-us-more-about-the-business").get()
     whenReady(response) { res =>
@@ -181,7 +181,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
     given()
       .user.isAuthorised()
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
+    insertCurrentProfileIntoDb(currentProfile, sessionString)
 
     val response = buildClient("/tell-us-more-about-the-business").post(Map("" -> Seq("")))
     whenReady(response) { res =>

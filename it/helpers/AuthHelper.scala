@@ -39,7 +39,7 @@ trait AuthHelper {
 
   private def cookieData(additionalData: Map[String, String], userId: String = defaultUser): Map[String, String] = {
     Map(
-      SessionKeys.sessionId -> sessionId,
+      SessionKeys.sessionId -> sessionString,
       tokenKey -> "token",
       userIdKey -> userId,
       authProviderKey -> "GGW",

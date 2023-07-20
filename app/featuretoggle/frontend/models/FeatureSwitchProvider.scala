@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package featureswitch.core.models
+package featuretoggle.frontend.models
 
-trait FeatureSwitch {
-  val configName: String
-  val displayName: String
-}
+case class FeatureSwitchProvider(id: String,
+                                 appName: String,
+                                 url: String)

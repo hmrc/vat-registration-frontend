@@ -17,25 +17,26 @@
 package connectors
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitching, StubIncorpIdJourney}
+import featuretoggle.FeatureSwitch.StubIncorpIdJourney
+import featuretoggle.FeatureToggleSupport
 import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
 import models.external.IncorporatedEntity
 import models.external.incorporatedentityid.IncorpIdJourneyConfig
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.mvc.Request
 import services.SessionService
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
-import utils.SessionIdRequestHelper
+import utils.{LoggingUtil, SessionIdRequestHelper}
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import utils.LoggingUtil
-import play.api.mvc.Request
 
 @Singleton
 class IncorpIdConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig, sessionService: SessionService)
-                                 (implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FeatureSwitching with LoggingUtil {
+                                 (implicit ec: ExecutionContext, appConfig: FrontendAppConfig) extends FeatureToggleSupport with LoggingUtil {
 
   def createJourney(journeyConfig: IncorpIdJourneyConfig, partyType: PartyType)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     val url = partyType match {

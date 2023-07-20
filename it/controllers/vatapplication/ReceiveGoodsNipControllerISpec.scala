@@ -34,7 +34,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/receive-goods-nip").get()
       whenReady(response) { res =>
@@ -66,7 +66,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       )))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
@@ -84,7 +84,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       )))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
@@ -99,7 +99,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
@@ -114,7 +114,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
@@ -129,7 +129,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/receive-goods-nip").post(Map.empty[String, String])
       whenReady(response) { res =>

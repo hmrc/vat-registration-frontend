@@ -18,7 +18,8 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{FeatureSwitching, AdditionalDocumentsRequiredPage}
+import featuretoggle.FeatureSwitch.AdditionalDocumentsRequiredPage
+import featuretoggle.FeatureToggleSupport
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.attachments.{AdditionalDocuments, MultipleDocumentsRequired}
@@ -38,7 +39,7 @@ class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClien
                                                    (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile with FeatureSwitching {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>

@@ -18,7 +18,7 @@ package controllers.attachments
 
 import common.enums.VatRegStatus
 import connectors.RegistrationApiConnector.acknowledgementReferenceKey
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
@@ -28,7 +28,7 @@ import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
 
-class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
+class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureToggleSupport {
 
   val url: String = controllers.attachments.routes.PostalCoverSheetController.show.url
 
@@ -45,7 +45,7 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection(Some(testAckRef))
 
-      insertCurrentProfileIntoDb(profile, sessionId)
+      insertCurrentProfileIntoDb(profile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -64,7 +64,7 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection(Some(testAckRef))
 
-      insertCurrentProfileIntoDb(profile, sessionId)
+      insertCurrentProfileIntoDb(profile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>

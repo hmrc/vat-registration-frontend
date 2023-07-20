@@ -40,7 +40,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -53,7 +53,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -72,7 +72,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](TransactorDetails(telephone = Some(cleanedPhoneNumber)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map(telephoneNumberKey -> testPhoneNumber))
 
@@ -84,7 +84,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if any of the validation fails for submitted telephone number" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post("")
       whenReady(res) { res =>

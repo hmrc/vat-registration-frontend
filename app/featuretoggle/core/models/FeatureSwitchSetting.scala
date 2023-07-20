@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-package featureswitch.frontend.models
+package featuretoggle.core.models
 
-case class FeatureSwitchProvider(id: String,
-                                 appName: String,
-                                 url: String)
+import play.api.libs.json.{Json, OFormat}
+
+
+case class FeatureSwitchSetting(name: String,
+                                displayText: String,
+                                isEnabled: Boolean)
+
+object FeatureSwitchSetting {
+
+  implicit val format: OFormat[FeatureSwitchSetting] = Json.format[FeatureSwitchSetting]
+
+}

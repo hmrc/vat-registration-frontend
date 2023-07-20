@@ -22,7 +22,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
             applicantDetails = Some(validFullApplicantDetails)
           ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url).get)
 
@@ -39,7 +39,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
             applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(dateOfIncorporation = None))))
           ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url).get)
 
@@ -56,7 +56,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
             applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testPartnership.copy(dateOfIncorporation = None))))
           ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url).get)
 
@@ -73,7 +73,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
             applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity)))
           ))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url).get)
 
@@ -91,7 +91,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           applicantDetails = Some(validFullApplicantDetails)
         ))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
 
@@ -108,7 +108,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
           applicantDetails = Some(validFullApplicantDetails)
         ))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
 
@@ -124,7 +124,7 @@ class VatRegStartDateResolverControllerISpec extends ControllerISpec {
             eligibilitySubmissionData = None
           ))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
 

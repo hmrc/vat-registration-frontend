@@ -20,7 +20,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getListSection[Entity](Some(Nil))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl).get)
 
@@ -35,7 +35,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getListSection[Entity](Some(List(Entity(Some(testPartnership), ScotPartnership, Some(true), Some(testCompanyName), None, None, None))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl).get)
 
@@ -53,7 +53,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails), UkCompany, Some(false), None, Some(address), Some(applicantEmail), Some(testApplicantPhone))
         )))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl).get)
 
@@ -75,7 +75,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails), UkCompany, Some(false), None, Some(address), Some(applicantEmail), Some(testApplicantPhone))
         ))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl).get)
 
@@ -96,7 +96,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
         "redirect to task list controller" in new Setup {
           given().user.isAuthorised()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl).post(Map("value" -> "")))
 
@@ -111,7 +111,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
             .user.isAuthorised()
             .registrationApi.getListSection[Entity](Some(entities))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl).post(Map("value" -> "")))
 
@@ -126,7 +126,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
             .user.isAuthorised()
             .registrationApi.getListSection[Entity](Some(entities))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl).post(Map("value" -> "true")))
 
@@ -145,7 +145,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
             .registrationApi.getSection[Attachments](Some(testAttachmentDetails))
             .registrationApi.replaceSection[Attachments](testAttachmentDetails.copy(additionalPartnersDocuments = Some(false)))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(pageUrl).post(Map("value" -> "false")))
 
@@ -169,7 +169,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
           .registrationApi.getSection[Attachments](Some(testAttachmentDetails))
           .registrationApi.replaceSection[Attachments](testAttachmentDetails.copy(additionalPartnersDocuments = Some(true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(pageUrl).post(Map("value" -> "true")))
 
@@ -184,7 +184,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(continueUrl).post(Map("" -> Seq(""))))
 

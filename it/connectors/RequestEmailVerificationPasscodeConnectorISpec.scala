@@ -16,13 +16,14 @@
 
 package connectors
 
-import featureswitch.core.config.{FeatureSwitching, StubEmailVerification}
+import featuretoggle.FeatureSwitch.StubEmailVerification
+import featuretoggle.FeatureToggleSupport
 import itutil.IntegrationSpecBase
 import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeSuccessful}
 import play.api.test.Helpers._
 import support.AppAndStubs
 
-class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureSwitching {
+class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureToggleSupport {
 
   lazy val connector: RequestEmailVerificationPasscodeConnector = app.injector.instanceOf[RequestEmailVerificationPasscodeConnector]
 

@@ -49,7 +49,7 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -63,7 +63,7 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -81,7 +81,7 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(staggerStart = Some(FebJanStagger)))
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(staggerStart = Some(FebJanStagger))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> januaryKey))
 
@@ -95,7 +95,7 @@ class LastMonthOfAccountingYearControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> ""))
 

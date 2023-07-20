@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package featureswitch.core.config
+package featuretoggle
 
-import featureswitch.core.models.FeatureSwitch
+object ConfigurableValue {
 
-trait FeatureSwitchRegistry {
+  val prefix = "feature-switch"
 
-  def switches: Seq[FeatureSwitch]
+  val configurableValues: Seq[ConfigurableValue] = Seq(
+  )
 
-  def apply(name: String): FeatureSwitch =
-    get(name) match {
-      case Some(switch) => switch
-      case None => throw new IllegalArgumentException("Invalid feature switch: " + name)
+  def apply(str: String): ConfigurableValue =
+    configurableValues find (_.name == str) match {
+      case Some(config) => config
+      case None => throw new IllegalArgumentException("Invalid configurable value: " + str)
     }
 
-  def get(name: String): Option[FeatureSwitch] = switches find (_.configName == name)
+  def get(string: String): Option[ConfigurableValue] = configurableValues find (_.name == string)
+
+  sealed trait ConfigurableValue {
+    val name: String
+    val displayText: String
+    val hint: Option[String] = None
+  }
+
 
 }

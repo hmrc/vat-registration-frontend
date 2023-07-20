@@ -19,7 +19,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -34,7 +34,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
           .user.isAuthorised()
           .registrationApi.getSection[Attachments](Some(fullAttachmentList))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -49,7 +49,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
           .user.isAuthorised()
           .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(Attached))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get())
 
@@ -68,7 +68,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
           .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
           .upscanApi.deleteAttachments()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "value" -> "2"
@@ -84,7 +84,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "value" -> "3"
@@ -99,7 +99,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         given
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(""))
 

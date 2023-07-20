@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package featureswitch.api.services
+package featuretoggle.api.services
 
 import config.FrontendAppConfig
-import featureswitch.core.config.{FeatureSwitchRegistry, FeatureSwitching}
-import featureswitch.core.models.FeatureSwitchSetting
+import featuretoggle.{FeatureSwitch, FeatureToggleSupport}
+import featuretoggle.core.models.FeatureSwitchSetting
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class FeatureSwitchService @Inject()(featureSwitchRegistry: FeatureSwitchRegistry)(implicit appConfig: FrontendAppConfig) extends FeatureSwitching {
+class FeatureSwitchService @Inject()()(implicit appConfig: FrontendAppConfig) extends FeatureToggleSupport {
 
   def getFeatureSwitches: Seq[FeatureSwitchSetting] =
-    featureSwitchRegistry.switches.map(
+    FeatureSwitch.featureSwitches.map(
       switch =>
         FeatureSwitchSetting(
-          switch.configName,
-          switch.displayName,
+          switch.name,
+          switch.displayText,
           isEnabled(switch)
         )
     )
@@ -38,7 +38,7 @@ class FeatureSwitchService @Inject()(featureSwitchRegistry: FeatureSwitchRegistr
   def updateFeatureSwitches(updatedFeatureSwitches: Seq[FeatureSwitchSetting]): Seq[FeatureSwitchSetting] = {
     updatedFeatureSwitches.foreach(
       featureSwitchSetting =>
-        featureSwitchRegistry.get(featureSwitchSetting.configName).collect {
+        FeatureSwitch.get(featureSwitchSetting.name).collect {
           case featureSwitch => if (featureSwitchSetting.isEnabled) enable(featureSwitch) else disable(featureSwitch)
         }
     )

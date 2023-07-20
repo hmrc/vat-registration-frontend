@@ -43,7 +43,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -61,7 +61,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx1))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(0)).get()
 
@@ -79,7 +79,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement.copy(hasVrn = None)), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -96,7 +96,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).get()
 
@@ -117,7 +117,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](Some(List(fullOtherBusinessInvolvement)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
@@ -135,7 +135,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](None, idx = Some(idx2))
         .registrationApi.getListSection[OtherBusinessInvolvement](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx2)).get()
 
@@ -156,7 +156,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq(testHasVrn.toString)))
 
@@ -175,7 +175,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement.copy(hasVrn = Some(false), vrn = None), idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("false")))
 
@@ -194,7 +194,7 @@ class HaveVatNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[OtherBusinessInvolvement](Some(fullOtherBusinessInvolvement), idx = Some(idx1))
         .registrationApi.replaceSection(fullOtherBusinessInvolvement, idx = Some(idx1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(pageUrl(idx1)).post(Map(HaveVatNumberForm.haveVatNumberKey -> Seq("")))
 

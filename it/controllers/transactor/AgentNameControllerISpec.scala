@@ -37,7 +37,7 @@ class AgentNameControllerISpec extends ControllerISpec {
         .user.isAuthorised(arn = Some(testArn))
         .registrationApi.getSection[TransactorDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
 
@@ -50,7 +50,7 @@ class AgentNameControllerISpec extends ControllerISpec {
         .user.isAuthorised(arn = Some(testArn))
         .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(personalDetails = Some(testPersonalDetails))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).get)
 
@@ -79,7 +79,7 @@ class AgentNameControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](Some(firstUpdateDetails))
           .registrationApi.replaceSection[TransactorDetails](secondUpdateDetails)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
 
@@ -93,7 +93,7 @@ class AgentNameControllerISpec extends ControllerISpec {
           .user.isAuthorised(arn = Some(testArn))
           .registrationApi.getSection[TransactorDetails](None)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(firstNameField -> "%%%", lastNameField -> testLastName)))
 

@@ -105,7 +105,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .registrationApi.getSection(Some(VatRegStatus.submitted))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(status = VatRegStatus.submitted)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
@@ -121,7 +121,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject]
           ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
@@ -139,7 +139,7 @@ class JourneyControllerISpec extends ControllerISpec {
         )).as[JsObject]
           ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
@@ -158,7 +158,7 @@ class JourneyControllerISpec extends ControllerISpec {
         )).as[JsObject]
           ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
@@ -177,7 +177,7 @@ class JourneyControllerISpec extends ControllerISpec {
         )).as[JsObject])
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
@@ -189,7 +189,7 @@ class JourneyControllerISpec extends ControllerISpec {
       "return INTERNAL_SERVER_ERROR" in new Setup {
         given().user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
         res.status mustBe INTERNAL_SERVER_ERROR
@@ -199,7 +199,7 @@ class JourneyControllerISpec extends ControllerISpec {
       "return BAD_REQUEST" in new Setup {
         given().user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(routes.JourneyController.continueJourney(None).url).get())
         res.status mustBe BAD_REQUEST
@@ -212,7 +212,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .registrationApi.getSection(Some(VatRegStatus.draft))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(continueJourneyUrl(testRegId)).get())
 
@@ -231,7 +231,7 @@ class JourneyControllerISpec extends ControllerISpec {
             .registrationApi.getSection(Some(VatRegStatus.draft))
             .registrationApi.getSection(Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 
@@ -245,7 +245,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[VatRegStatus.Value](None)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(initJourneyUrl(testRegId)).get())
 

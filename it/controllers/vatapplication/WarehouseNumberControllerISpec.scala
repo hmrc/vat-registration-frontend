@@ -32,7 +32,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -49,7 +49,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber)))
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -67,7 +67,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(valApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -88,7 +88,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](valApplication)
         .registrationApi.getSection[VatApplication](Some(valApplication))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseNumber" -> testWarehouseNumber))
 
@@ -102,7 +102,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseNumber" -> "1234567890123456789012345678901"))
 
@@ -116,7 +116,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseNumber" -> ""))
 
@@ -130,7 +130,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseNumber" -> "/"))
 

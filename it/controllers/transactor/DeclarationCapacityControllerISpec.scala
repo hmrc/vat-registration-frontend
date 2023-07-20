@@ -40,7 +40,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -56,7 +56,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(testDetails))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -76,7 +76,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
         .registrationApi.getSection[TransactorDetails](None)
         .registrationApi.replaceSection[TransactorDetails](testDetails)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(Map(
         declarationCapacity -> other,
@@ -91,7 +91,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(url).post(""))
 

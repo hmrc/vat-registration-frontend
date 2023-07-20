@@ -17,7 +17,7 @@
 package viewmodels
 
 import common.enums.VatRegStatus
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import models.api.VatSchemeHeader
 import play.api.i18n.Messages
 import play.twirl.api.{Html, HtmlFormat}
@@ -30,7 +30,7 @@ import utils.MessageDateFormat
 
 import javax.inject.Inject
 
-class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureSwitching {
+class ManageRegistrationsBuilder @Inject()(govukTag: GovukTag) extends FeatureToggleSupport {
 
   private final val GREY = "govuk-tag--grey"
   private final val YELLOW = "govuk-tag--yellow"

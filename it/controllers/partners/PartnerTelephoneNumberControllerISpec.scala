@@ -46,7 +46,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -64,7 +64,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone))
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -83,7 +83,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -98,7 +98,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -117,7 +117,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(1)).get()
       whenReady(response) { res =>
@@ -136,7 +136,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(100)).get()
       whenReady(response) { res =>
@@ -155,7 +155,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails.copy(companyName = None)), UkCompany, Some(false), None, None, None, Some(testTelephone))
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(4)).get()
       whenReady(response) { res =>
@@ -174,7 +174,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
         .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2))
         .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
@@ -193,7 +193,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
         .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(requestedIndex))
         .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
@@ -212,7 +212,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
         .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, Some(testTelephone)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(requestedIndex))
         .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> testTelephone))
@@ -230,7 +230,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).post("")
 
@@ -244,7 +244,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).post("")
 
@@ -258,7 +258,7 @@ class PartnerTelephoneNumberControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2))
         .post(Map(PartnerTelephoneForm.partnerTelephoneKey -> "a" * 106))

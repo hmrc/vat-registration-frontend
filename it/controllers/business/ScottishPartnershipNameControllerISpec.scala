@@ -24,7 +24,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/scottish-partnership-name").get()
       whenReady(response) { res =>
@@ -41,7 +41,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), ScotPartnership, Some(true), Some(scottishPartnershipName), None, None, None)), idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/scottish-partnership-name").get()
       whenReady(response) { res =>
@@ -62,7 +62,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(1))
         .registrationApi.replaceSection[Entity](Entity(None, ScotPartnership, Some(true), Some(testCompanyName), None, None, None), idx = Some(1))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient("/scottish-partnership-name").post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> testCompanyName)))
 
@@ -72,7 +72,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for missing partnership name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/scottish-partnership-name").post("")
       whenReady(response) { res =>
@@ -82,7 +82,7 @@ class ScottishPartnershipNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for invalid partnership name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/scottish-partnership-name").post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> "a" * 106))
       whenReady(response) { res =>

@@ -16,7 +16,7 @@
 
 package controllers.transactor
 
-import featureswitch.core.config.StubEmailVerification
+import featuretoggle.FeatureSwitch.StubEmailVerification
 import itutil.ControllerISpec
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -29,7 +29,7 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient("/your-email-address-verified").get)
 
@@ -44,7 +44,7 @@ class TransactorEmailAddressVerifiedControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient("/your-email-address-verified").post(""))
 

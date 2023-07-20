@@ -45,7 +45,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None),
         Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url(2)).get)
       response.status mustBe OK
@@ -59,7 +59,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None),
         Entity(Some(testSoleTrader), Individual, Some(false), None, None, Some(email), None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
       whenReady(response) { res =>
@@ -75,7 +75,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
           Entity(Some(testIncorpDetails), UkCompany, Some(true), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -93,7 +93,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
           Entity(None, Individual, Some(false), None, None, Some(email), None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -108,7 +108,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -127,7 +127,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(1)).get()
       whenReady(response) { res =>
@@ -146,7 +146,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(100)).get()
       whenReady(response) { res =>
@@ -165,7 +165,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(4)).get()
       whenReady(response) { res =>
@@ -184,7 +184,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
         .registrationApi.replaceSection[Entity](Entity(Some(testSoleTrader), Individual, Some(false), None, None, Some(email), None), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(email))))
 
@@ -199,7 +199,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url(requestedIndex)).post(Map("email-address" -> Seq(email))))
 
@@ -214,7 +214,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url(requestedIndex)).post(Map("email-address" -> Seq(email))))
 
@@ -227,7 +227,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Entity](Some(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None)), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(""))))
 
@@ -239,7 +239,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(List(Entity(Some(testSoleTrader), Individual, Some(false), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: WSResponse = await(buildClient(url(2)).post(Map("email-address" -> Seq(invalidEmail))))
 

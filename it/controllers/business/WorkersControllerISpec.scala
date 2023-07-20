@@ -1,7 +1,7 @@
 
 package controllers.business
 
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
 import models.{Business, LabourCompliance}
@@ -10,7 +10,7 @@ import play.api.http.HeaderNames
 import play.api.test.Helpers._
 import views.html.sicandcompliance.workers
 
-class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
+class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
   val view = app.injector.instanceOf[workers]
 
@@ -20,7 +20,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/number-of-workers-supplied").get()
 
@@ -36,7 +36,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(dataModel))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/number-of-workers-supplied").get()
 
@@ -57,7 +57,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
         .registrationApi.replaceSection[Business](expectedModel)
         .registrationApi.getSection[Business](Some(expectedModel))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
 
@@ -78,7 +78,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureSwitching {
       )))
         .registrationApi.replaceSection[Business](expectedModel)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> ""))
 

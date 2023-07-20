@@ -39,7 +39,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[TransactorDetails](transactorDetails)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).get()
 
@@ -56,7 +56,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](None)
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(isPartOfOrganisation = Some(true)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post(Map(yesNo -> Seq("true")))
 
@@ -72,7 +72,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
           .registrationApi.getSection[TransactorDetails](Some(TransactorDetails(isPartOfOrganisation = Some(true), organisationName = Some("test"))))
           .registrationApi.replaceSection[TransactorDetails](TransactorDetails(isPartOfOrganisation = Some(false)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post(Map(yesNo -> Seq("false")))
 
@@ -84,7 +84,7 @@ class PartOfOrganisationControllerISpec extends ControllerISpec {
 
       "return BAD_REQUEST if no option selected" in new Setup {
         given().user.isAuthorised()
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("")
 

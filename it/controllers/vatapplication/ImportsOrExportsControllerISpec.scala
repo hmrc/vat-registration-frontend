@@ -33,7 +33,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").get()
 
@@ -46,7 +46,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").get()
 
@@ -60,7 +60,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").get()
 
@@ -78,7 +78,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").post(Map("value" -> "true"))
 
@@ -94,7 +94,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").post(Map("value" -> "false"))
 
@@ -106,7 +106,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST if no option is selected" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").post("")
 

@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{BaseControllerComponents, FrontendAppConfig, Logging}
+import config.{BaseControllerComponents, FrontendAppConfig}
 import models.CurrentProfile
 import models.error.MissingAnswerException
 import play.api.i18n.{I18nSupport, Lang, Messages}
@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.authorise.CompositePredicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.LoggingUtil
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +38,7 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
                                         appConfig: FrontendAppConfig)
   extends FrontendController(bcc.messagesControllerComponents)
     with I18nSupport
-    with Logging
+    with LoggingUtil
     with AuthorisedFunctions
     with SessionProfile {
 

@@ -18,7 +18,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = None)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
 
       val res = buildClient(url).get()
@@ -34,7 +34,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -51,7 +51,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(true)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> "true"))
 
@@ -66,7 +66,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> "false"))
 
@@ -81,7 +81,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.replaceSection[VatApplication](VatApplication(overseasCompliance = Some(testOverseasCompliance.copy(goodsToOverseas = Some(false)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("value" -> ""))
 

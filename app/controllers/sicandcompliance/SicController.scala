@@ -18,7 +18,8 @@ package controllers.sicandcompliance
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featureswitch.core.config.{FeatureSwitching, StubIcl}
+import featuretoggle.FeatureSwitch.StubIcl
+import featuretoggle.FeatureToggleSupport
 import models.CurrentProfile
 import models.api.SicCode.SIC_CODES_KEY
 import play.api.i18n.Lang
@@ -40,7 +41,7 @@ class SicController @Inject()(val authConnector: AuthClientConnector,
                               val aboutToConfirmSicPage: AboutToConfirmSic)
                              (implicit appConfig: FrontendAppConfig,
                               val executionContext: ExecutionContext,
-                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureSwitching {
+                              baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureToggleSupport {
 
   val iclFEurlwww: String = appConfig.servicesConfig.getConfString("industry-classification-lookup-frontend.www.url",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.www.url'"))

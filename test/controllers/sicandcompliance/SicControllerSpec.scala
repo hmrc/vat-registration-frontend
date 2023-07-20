@@ -16,7 +16,8 @@
 
 package controllers.sicandcompliance
 
-import featureswitch.core.config.{FeatureSwitching, StubIcl}
+import featuretoggle.FeatureSwitch.StubIcl
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -27,7 +28,7 @@ import views.html.sicandcompliance._
 
 import scala.concurrent.Future
 
-class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureSwitching {
+class SicControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with FeatureToggleSupport {
 
   val mockAboutToConfirmSicView: AboutToConfirmSic = app.injector.instanceOf[AboutToConfirmSic]
 

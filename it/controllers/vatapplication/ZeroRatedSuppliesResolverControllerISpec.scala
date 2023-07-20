@@ -18,7 +18,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](VatApplication(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0)))
           .registrationApi.getSection[VatApplication](Some(VatApplication(turnoverEstimate = Some(0), zeroRatedSupplies = Some(0))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
 
@@ -32,7 +32,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[VatApplication](Some(fullVatApplication))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
 
@@ -45,7 +45,7 @@ class ZeroRatedSuppliesResolverControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
 

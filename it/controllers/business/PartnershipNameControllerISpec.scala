@@ -40,7 +40,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
         )
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient("/partnership-official-name").get()
         whenReady(response) { res =>
@@ -65,7 +65,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
         ))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionDataPartner))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/partnership-official-name").post(Map("partnershipName" -> Seq(partnershipName)))
       whenReady(response) { res =>
@@ -82,7 +82,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testMinorEntity))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/partnership-official-name").post(Map("partnershipName" -> Seq(partnershipName)))
       whenReady(response) { res =>
@@ -92,7 +92,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for missing partnership name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/partnership-official-name").post("")
       whenReady(response) { res =>
@@ -102,7 +102,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
 
     "return BAD_REQUEST for invalid partnership name" in new Setup {
       given().user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/partnership-official-name").post(Map("partnershipName" -> "a" * 106))
       whenReady(response) { res =>

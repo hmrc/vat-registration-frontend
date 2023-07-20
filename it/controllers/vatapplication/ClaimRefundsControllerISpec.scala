@@ -22,7 +22,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -36,7 +36,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient("/claim-vat-refunds").get()
 
@@ -56,7 +56,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
@@ -73,7 +73,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(turnoverEstimate = None, claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(turnoverEstimate = None, claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
 
@@ -88,7 +88,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(zeroRatedSupplies = None, claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(zeroRatedSupplies = None, claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
 
@@ -103,7 +103,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
@@ -124,7 +124,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
@@ -145,7 +145,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testLargeTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testLargeTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
@@ -164,7 +164,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testSmallTurnoverApplication.copy(claimVatRefunds = Some(true)))
           .registrationApi.getSection[VatApplication](Some(testSmallTurnoverApplication.copy(claimVatRefunds = Some(true))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
@@ -181,7 +181,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](testSmallTurnoverApplication.copy(claimVatRefunds = Some(false), appliedForExemption = None))
           .registrationApi.getSection[VatApplication](Some(testSmallTurnoverApplication.copy(claimVatRefunds = Some(false), appliedForExemption = None)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post(Map("value" -> "false"))
 
@@ -194,7 +194,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
       "return BAD_REQUEST if no option was selected" in new Setup {
         given().user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = buildClient("/claim-vat-refunds").post("")
 

@@ -35,7 +35,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
           .audit.writesAudit()
           .audit.writesAuditMerged()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url(testIndex1)).get)
 
@@ -52,7 +52,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url(testIndex2)).get)
 
@@ -68,7 +68,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url(testIndex1)).get)
 
@@ -86,7 +86,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url(testIndex3)).get)
 
@@ -101,7 +101,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url(testIndex4)).get)
 
@@ -129,7 +129,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url(testIndexOverMax)).get)
 
@@ -146,7 +146,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
             .audit.writesAudit()
             .audit.writesAuditMerged()
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url(testIndexBelow1)).get)
 
@@ -160,7 +160,7 @@ class OtherBusinessCheckAnswersControllerISpec extends ControllerISpec {
   "POST /other-business-involvements/check-answers" must {
     "redirect to the summary page" in new Setup {
       given.user.isAuthorised()
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = await(buildClient(routes.OtherBusinessCheckAnswersController.submit.url).post(""))
 

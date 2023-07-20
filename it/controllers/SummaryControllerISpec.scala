@@ -37,7 +37,7 @@ class SummaryControllerISpec extends ControllerISpec {
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
         .registrationApi.getRegistration(fullVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/check-confirm-answers").get()
       whenReady(response) { res =>
@@ -56,7 +56,7 @@ class SummaryControllerISpec extends ControllerISpec {
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
         .registrationApi.getRegistration(fullNetpVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient("/check-confirm-answers").get()
       whenReady(response) { res =>
@@ -76,7 +76,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", OK)
 
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
 
@@ -94,7 +94,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", CONFLICT)
 
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
 
@@ -112,7 +112,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", TOO_MANY_REQUESTS)
 
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
 
@@ -130,7 +130,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", BAD_REQUEST)
 
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
 
@@ -148,7 +148,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", INTERNAL_SERVER_ERROR)
 
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
 
@@ -166,7 +166,7 @@ class SummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
           .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", UNPROCESSABLE_ENTITY)
 
-        insertCurrentProfileIntoDb(currentProfileIncorp, sessionId)
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
         val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
 

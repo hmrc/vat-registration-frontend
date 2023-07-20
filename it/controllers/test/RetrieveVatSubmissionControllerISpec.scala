@@ -33,7 +33,7 @@ class RetrieveVatSubmissionControllerISpec extends ControllerISpec {
     "return OK with the submission Json" in new Setup {
       given().user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       stubGet(connectorUrl, OK, testJsonResponse.toString())
 
       val response: Future[WSResponse] = buildClient(url).get()

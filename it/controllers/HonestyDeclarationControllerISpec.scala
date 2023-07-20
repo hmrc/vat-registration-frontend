@@ -18,7 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.RegistrationApiConnector.honestyDeclarationKey
-import featureswitch.core.config.FeatureSwitching
+import featuretoggle.FeatureToggleSupport
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.ApiKey
@@ -29,7 +29,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureSwitching {
+class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrationFixtures with FeatureToggleSupport {
 
   val url: String = controllers.routes.HonestyDeclarationController.show.url
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
@@ -40,7 +40,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
       whenReady(response) { res =>
@@ -56,7 +56,7 @@ class HonestyDeclarationControllerISpec extends ControllerISpec with ITRegistrat
         .user.isAuthorised()
         .registrationApi.replaceSection(true, testRegId)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(""))
 

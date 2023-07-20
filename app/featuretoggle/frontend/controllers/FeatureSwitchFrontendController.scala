@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package featureswitch.frontend.controllers
+package featuretoggle.frontend.controllers
 
 import config.FrontendAppConfig
-import featureswitch.core.config.FeatureSwitching
-import featureswitch.frontend.services.FeatureSwitchRetrievalService
-import featureswitch.frontend.views.html.feature_switch
+import featuretoggle.FeatureToggleSupport
+import featuretoggle.frontend.services.FeatureSwitchRetrievalService
+import featuretoggle.frontend.views.html.feature_switch
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -32,7 +32,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
                                                 featureSwitchView: feature_switch,
                                                 mcc: MessagesControllerComponents
                                                )(implicit ec: ExecutionContext,
-                                                 config: FrontendAppConfig) extends FrontendController(mcc) with FeatureSwitching with I18nSupport {
+                                                 config: FrontendAppConfig) extends FrontendController(mcc) with FeatureToggleSupport with I18nSupport {
 
   def show: Action[AnyContent] = Action.async {
     implicit req =>

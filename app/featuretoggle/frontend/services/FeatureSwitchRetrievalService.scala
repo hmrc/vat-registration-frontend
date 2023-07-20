@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package featureswitch.frontend.services
+package featuretoggle.frontend.services
 
-import featureswitch.core.models.FeatureSwitchSetting
-import featureswitch.frontend.config.FeatureSwitchProviderConfig
-import featureswitch.frontend.connectors.FeatureSwitchApiConnector
-import featureswitch.frontend.models.FeatureSwitchProvider
+import featuretoggle.core.models.FeatureSwitchSetting
+import featuretoggle.frontend.config.FeatureSwitchProviderConfig
+import featuretoggle.frontend.connectors.FeatureSwitchApiConnector
+import featuretoggle.frontend.models.FeatureSwitchProvider
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -65,7 +65,7 @@ class FeatureSwitchRetrievalService @Inject()(featureSwitchConfig: FeatureSwitch
     for {
       (microservice, switchSettings) <- currentSettings
       updatedSettings = switchSettings.map(switch =>
-        switch.copy(isEnabled = switchesToEnable.exists(_ == s"${microservice.id}.${switch.configName}"))
+        switch.copy(isEnabled = switchesToEnable.exists(_ == s"${microservice.id}.${switch.name}"))
       )
     } yield (microservice, updatedSettings)
 

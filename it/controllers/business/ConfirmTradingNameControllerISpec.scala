@@ -40,7 +40,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -57,7 +57,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -75,7 +75,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(entity = Some(testApplicantIncorpDetails.copy(companyName = None)))))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -96,7 +96,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(false)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("false")))
 
@@ -115,7 +115,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("true")))
 
@@ -137,7 +137,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("true")))
 
@@ -156,7 +156,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> Seq("dfsdfsd")))
 
@@ -173,7 +173,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post("")
 

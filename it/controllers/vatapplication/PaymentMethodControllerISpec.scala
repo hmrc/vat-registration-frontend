@@ -51,7 +51,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -65,7 +65,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BankGIRO))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -80,7 +80,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection(Some(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -99,7 +99,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder)))))
         .registrationApi.getSection[VatApplication](Some(VatApplication(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(StandingOrder))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> standingOrder))
 
@@ -116,7 +116,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS)))))
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(CHAPS))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> chaps))
 
@@ -135,7 +135,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS)))))
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS))))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> bacs))
 
@@ -149,7 +149,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url).post(Map("value" -> ""))
 

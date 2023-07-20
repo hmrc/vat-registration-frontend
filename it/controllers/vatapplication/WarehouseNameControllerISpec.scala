@@ -32,7 +32,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -49,7 +49,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -66,7 +66,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).get()
 
@@ -88,7 +88,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
         Some(testOverseasCompliance.copy(fulfilmentWarehouseName = Some(testWarehouseName)))
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseName" -> testWarehouseName))
 
@@ -102,7 +102,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseName" -> ""))
 
@@ -116,7 +116,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res = buildClient(url).post(Map("warehouseName" -> "|"))
 

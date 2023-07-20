@@ -42,7 +42,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
         Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -61,7 +61,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
         Entity(Some(testSoleTrader), ScotPartnership, Some(false), Some(scottishPartnershipName), None, None, None)
       )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -76,7 +76,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](Some(Nil))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -91,7 +91,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2)).get()
 
@@ -110,7 +110,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(1)).get()
       whenReady(response) { res =>
@@ -129,7 +129,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(100)).get()
       whenReady(response) { res =>
@@ -148,7 +148,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
           Entity(None, UkCompany, Some(false), None, None, None, None)
         )))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(4)).get()
       whenReady(response) { res =>
@@ -166,7 +166,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(2))
         .registrationApi.replaceSection[Entity](Entity(None, ScotPartnership, Some(true), Some(testCompanyName), None, None, None), idx = Some(2))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2))
         .post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> testCompanyName))
@@ -184,7 +184,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
           .registrationApi.getSection[Entity](Some(Entity(None, ScotPartnership, Some(true), None, None, None, None)), idx = Some(2))
           .registrationApi.replaceSection[Entity](Entity(None, ScotPartnership, Some(true), Some(testCompanyName), None, None, None), idx = Some(2))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url(requestedIndex))
           .post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> testCompanyName))
@@ -203,7 +203,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2))
         .post("")
@@ -217,7 +217,7 @@ class PartnerScottishPartnershipNameControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(url(2))
         .post(Map(ScottishPartnershipNameForm.scottishPartnershipNameKey -> "a" * 106))

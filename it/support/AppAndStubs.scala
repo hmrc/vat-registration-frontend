@@ -67,11 +67,11 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
   implicit val portNum: Int = port
   implicit val requestHolder: RequestHolder = new RequestHolder(FakeRequest().withFormUrlEncodedBody())
 
-  val sessionId: String = "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1"
+  val sessionString: String = "session-ac4ed3e7-dbc3-4150-9574-40771c4285c1"
   val currentProfile: models.CurrentProfile = models.CurrentProfile("1", VatRegStatus.draft)
   val currentProfileIncorp: models.CurrentProfile = models.CurrentProfile("1", VatRegStatus.draft)
 
-  def request: FakeRequest[AnyContentAsFormUrlEncoded] = requestHolder.request
+  implicit val request: FakeRequest[AnyContentAsFormUrlEncoded] = requestHolder.request
 
   abstract override implicit val patienceConfig: PatienceConfig =
     PatienceConfig(

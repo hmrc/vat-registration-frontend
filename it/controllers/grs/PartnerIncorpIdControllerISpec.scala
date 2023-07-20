@@ -17,7 +17,7 @@
 package controllers.grs
 
 import controllers.grs.{routes => grsRoutes}
-import featureswitch.core.config.StubIncorpIdJourney
+import featuretoggle.FeatureSwitch.StubIncorpIdJourney
 import itutil.ControllerISpec
 import models.Entity
 import models.api._
@@ -40,7 +40,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection[Entity](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
 
@@ -55,7 +55,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(2).url).get)
 
@@ -69,7 +69,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection(Some(List(Entity(None, UkCompany, Some(true), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -89,7 +89,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection(Some(List(Entity(None, RegSociety, Some(true), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -109,7 +109,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getListSection(Some(List(Entity(None, CharitableOrg, Some(true), None, None, None, None))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val testJourneyStartUrl = "/test"
       val testDeskProServiceId = "vrs"
@@ -134,7 +134,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(1, "1").url).get()
 
@@ -152,7 +152,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
         stubGet("/incorporated-entity-identification/api/journey/1", OK, incorpDetailsJson.toString)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: Future[WSResponse] = buildClient(routes.PartnerIncorpIdController.callback(2, "1").url).get()
 

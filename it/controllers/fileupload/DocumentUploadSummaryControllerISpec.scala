@@ -44,7 +44,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
           .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
           .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(pageUrl).get)
 
@@ -58,7 +58,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
           .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
           .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(pageUrl).get)
 
@@ -75,7 +75,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .attachmentsApi.getIncompleteAttachments(List(VAT5L))
         .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(continueUrl).post(""))
 
@@ -90,7 +90,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
         .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(continueUrl).post(""))
 
@@ -105,7 +105,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
         .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(true), None, Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(continueUrl).post(""))
 
@@ -120,7 +120,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
         .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(false), Some(false), Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(continueUrl).post(""))
 
@@ -131,7 +131,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
   s"POST $pageUrl" must {
     "redirect to Upload Supporting Document page if Yes is selected" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given
         .user.isAuthorised()
 
@@ -142,7 +142,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
     }
 
     "redirect to Task list page if No is selected" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given
         .user.isAuthorised()
 
@@ -153,7 +153,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
     }
 
     "return a 400 if nothing is selected" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
       given
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails)

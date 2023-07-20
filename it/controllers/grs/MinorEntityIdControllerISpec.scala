@@ -147,7 +147,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(createTrustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
@@ -163,7 +163,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(createUnincorpAssocJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
@@ -182,7 +182,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           fixedEstablishmentInManOrUk = false
         )))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(createNonUkCompanyJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
@@ -198,7 +198,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = GovOrg)))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
         stubPost(createTrustJourneyUrl, CREATED, Json.obj("journeyStartUrl" -> testJourneyUrl).toString())
 
         val res: Future[WSResponse] = buildClient("/start-minor-entity-id-journey").get()
@@ -221,7 +221,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Trust)))
 
         stubGet(retrieveDetailsUrl(testTrustJourneyId), OK, testTrustResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testTrustJourneyId").get()
 
@@ -240,7 +240,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = UnincorpAssoc)))
 
         stubGet(retrieveDetailsUrl(testUnincorpAssocJourneyId), OK, testUnincorpAssocResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testUnincorpAssocJourneyId").get()
 
@@ -262,7 +262,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
         )))
 
         stubGet(retrieveDetailsUrl(testNonUkCompanyJourneyId), OK, testNonUkCompanyResponse.toString)
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: Future[WSResponse] = buildClient(s"/register-for-vat/minor-entity-id-callback?journeyId=$testNonUkCompanyJourneyId").get()
 

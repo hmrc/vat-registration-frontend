@@ -33,7 +33,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .alfeJourney.initialisedSuccessfully()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
@@ -48,7 +48,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .alfeJourney.initialisedSuccessfully()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
@@ -82,7 +82,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[ApplicantDetails](testApplicantDetails)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(applicantRoutes.HomeAddressController.addressLookupCallback(id = addressId).url).get()
 

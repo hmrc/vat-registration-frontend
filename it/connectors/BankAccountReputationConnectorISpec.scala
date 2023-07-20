@@ -11,7 +11,6 @@ import play.api.mvc.Request
 
 class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
-  implicit val req : Request[_] = this.request 
   val connector = app.injector.instanceOf[BankAccountReputationConnector]
 
   val stubbedBarsSuccessResponse = Json.obj(
@@ -26,7 +25,7 @@ class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAn
           .user.isAuthorised()
           .bankAccountReputation.passes
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(connector.validateBankDetails(testUkBankDetails))
 
@@ -39,7 +38,7 @@ class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAn
           .user.isAuthorised()
           .bankAccountReputation.isDown
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         intercept[InternalServerException] {
           await(connector.validateBankDetails(testUkBankDetails))

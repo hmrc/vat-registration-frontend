@@ -24,7 +24,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
             .user.isAuthorised()
             .registrationApi.getSection(Some(VatApplication(startDate = Some(testDate))))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url).get)
           val doc = Jsoup.parse(res.body)
@@ -41,7 +41,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
             .user.isAuthorised()
             .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(startDate = Some(testDate))))
 
-          insertCurrentProfileIntoDb(currentProfile, sessionId)
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
 
           val res = await(buildClient(url).get)
           val doc = Jsoup.parse(res.body)
@@ -59,7 +59,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection[VatApplication](None)
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).get)
         val doc = Jsoup.parse(res.body)
@@ -81,7 +81,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
           .registrationApi.replaceSection[VatApplication](vatApplication.copy(startDate = Some(testDate)))
           .registrationApi.getSection[VatApplication](Some(vatApplication.copy(startDate = Some(testDate))))
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "startDate.day" -> testDate.getDayOfMonth.toString,
@@ -98,7 +98,7 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
         given
           .user.isAuthorised()
 
-        insertCurrentProfileIntoDb(currentProfile, sessionId)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
           "startDate.day" -> "",

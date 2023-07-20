@@ -35,7 +35,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .registrationApi.getSection[VatApplication](Some(VatApplication(zeroRatedSupplies = Some(10000.53), appliedForExemption = None)))
         .registrationApi.getSection[VatApplication](Some(VatApplication(zeroRatedSupplies = Some(10000.53), turnoverEstimate = Some(10000.53))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -49,7 +49,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(zeroRatedSupplies = Some(10000.53), turnoverEstimate = Some(10000.53))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -63,7 +63,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(turnoverEstimate = Some(10000.53))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).get()
 
@@ -76,7 +76,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).get)
 
@@ -93,7 +93,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .registrationApi.replaceSection[VatApplication](vatApplication.copy(zeroRatedSupplies = Some(10000.53), appliedForExemption = None))
         .registrationApi.getSection[VatApplication](Some(vatApplication.copy(zeroRatedSupplies = Some(10000.53), appliedForExemption = None)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map(
         "zeroRatedSupplies" -> "10000.53"
@@ -110,7 +110,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(zeroRatedSupplies = Some(BigDecimal(10)))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map(
         "zeroRatedSupplies" -> "text"
@@ -125,7 +125,7 @@ class ZeroRatedSuppliesControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(Map("zeroRatedSupplies" -> "10,000.53")))
 

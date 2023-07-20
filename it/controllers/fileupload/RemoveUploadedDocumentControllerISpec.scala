@@ -32,7 +32,7 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails, reference = testReference)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(removeDocumentUrl(testReference)).get()
 
@@ -47,7 +47,7 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
         .audit.writesAuditMerged()
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(removeDocumentUrl(testReference)).get()
 
@@ -67,7 +67,7 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
         .upscanApi.deleteUpscanDetails()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails, reference = testReference)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val response: Future[WSResponse] = buildClient(removeDocumentUrl(testReference)).post(Map("value" -> Seq("true")))
 
@@ -85,7 +85,7 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
       .user.isAuthorised()
       .upscanApi.fetchUpscanFileDetails(testUpscanDetails, reference = testReference)
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
+    insertCurrentProfileIntoDb(currentProfile, sessionString)
 
     val response: Future[WSResponse] = buildClient(removeDocumentUrl(testReference)).post(Map("value" -> Seq("false")))
 
@@ -102,7 +102,7 @@ class RemoveUploadedDocumentControllerISpec extends ControllerISpec {
       .user.isAuthorised()
       .upscanApi.fetchUpscanFileDetails(testUpscanDetails, reference = testReference)
 
-    insertCurrentProfileIntoDb(currentProfile, sessionId)
+    insertCurrentProfileIntoDb(currentProfile, sessionString)
 
     val response: Future[WSResponse] = buildClient(removeDocumentUrl(testReference)).post(Map("value" -> Seq("")))
 

@@ -41,7 +41,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](None)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -53,7 +53,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplySupportingDocuments = Some(true))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -68,7 +68,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplySupportingDocuments = Some(false))))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe OK
@@ -86,7 +86,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false), supplySupportingDocuments = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(Map("value" -> "true")))
 
@@ -103,7 +103,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
         .upscanApi.deleteUpscanDetails(testRegId, testReference)
         .upscanApi.deleteUpscanDetails(testRegId, testReference2)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
@@ -115,7 +115,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
 
-      insertCurrentProfileIntoDb(currentProfile, sessionId)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(""))
 

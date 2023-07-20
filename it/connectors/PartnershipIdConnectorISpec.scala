@@ -29,7 +29,6 @@ import play.api.mvc.Request
 
 class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
-  implicit val req : Request[_] = this.request 
   val testPartnershipJourneyId = "1"
   val testJourneyUrl = "/test-journey-url"
   val createPartnershipJourneyUrl = "/partnership-identification/api/general-partnership-journey"
