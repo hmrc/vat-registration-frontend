@@ -37,7 +37,7 @@ trait LoggingUtil extends LoggerLike {
 
   def infoLog(message: => String)(implicit mc: MarkerContext, request: Request[_]): Unit = this.info(s"$message (${identifiers(request)})")
 
-  def infoConnectorLog(message: => String)(implicit mc: MarkerContext, httpResponse: HttpResponse): Unit = this.info(s"$message (${identifiersFromHttpResponse(httpResponse)})")
+  def infoConnectorLog(message: => String)(implicit httpResponse: HttpResponse): Unit = this.info(s"$message (${identifiersFromHttpResponse(httpResponse)})")
 
   def warnLog(message: => String)(implicit mc: MarkerContext, request: Request[_]): Unit = this.warn(s"$message (${identifiers(request)})")
 
@@ -49,7 +49,7 @@ trait LoggingUtil extends LoggerLike {
 
   def errorLog(message: => String, throwable: Throwable)(implicit mc: MarkerContext, request: Request[_]): Unit = this.error(s"$message (${identifiers(request)})", throwable)
 
-  def errorConnectorLog(message: => String)(implicit mc: MarkerContext, httpResponse: HttpResponse): Unit = this.error(s"$message (${identifiersFromHttpResponse(httpResponse)})")
+  def errorConnectorLog(message: => String)(implicit httpResponse: HttpResponse): Unit = this.error(s"$message (${identifiersFromHttpResponse(httpResponse)})")
 }
 
 object LinkLogger extends LoggingUtil
