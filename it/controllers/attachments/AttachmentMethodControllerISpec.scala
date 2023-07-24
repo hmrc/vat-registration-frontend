@@ -4,6 +4,7 @@ package controllers.attachments
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
+import models.external.upscan.{InProgress, UpscanDetails}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
@@ -78,12 +79,16 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.fileupload.routes.UploadDocumentController.show.url)
       }
     }
-    "Post is selected" must {
+    "Post is selected" when {
+      "no upscan details are present" must {
       "store the answer and redirect to the next page" in new Setup {
         given
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
-
+        given
+          .user.isAuthorised()
+          .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
+          .upscanApi.fetchAllUpscanDetails(List())
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res = await(buildClient(url).post(Map(
@@ -94,6 +99,26 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
       }
     }
+      "upscan is in progress" must {
+        "Redirect to the error page" in new Setup {
+          given
+            .user.isAuthorised()
+            .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
+          given
+            .user.isAuthorised()
+            .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
+            .upscanApi.fetchAllUpscanDetails(List(UpscanDetails(VAT51, "ref", None, InProgress, None)))
+          insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+          val res = await(buildClient(url).post(Map(
+            "value" -> "3"
+          )))
+
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostErrorController.show.url)
+        }
+      }
+  }
     "nothing is selected" must {
       "return BAD_REQUEST" in new Setup {
         given

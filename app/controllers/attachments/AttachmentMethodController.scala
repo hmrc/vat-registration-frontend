@@ -18,11 +18,15 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 import forms.AttachmentMethodForm
+import models.CurrentProfile
 import models.api._
-import play.api.mvc.{Action, AnyContent}
+import models.external.upscan.InProgress
+import play.api.mvc.{Action, AnyContent, Request}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
-import views.html.attachments.ChooseAttachmentMethod
+import views.html.attachments.{ChooseAttachmentMethod, ChooseAttachmentMethodNewJourney}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,12 +36,14 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
                                            attachmentsService: AttachmentsService,
                                            upscanService: UpscanService,
                                            form: AttachmentMethodForm,
-                                           view: ChooseAttachmentMethod)
+                                           viewOldJourney: ChooseAttachmentMethod,
+                                           viewNewAttachmentJourney: ChooseAttachmentMethodNewJourney)
                                           (implicit appConfig: FrontendAppConfig,
                                            val executionContext: ExecutionContext,
-                                           baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
+                                           baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile with FeatureToggleSupport {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    val view = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else viewOldJourney.apply _
     attachmentsService.getAttachmentDetails(profile.registrationId).map {
       case Some(Attachments(Some(method), _, _, _, _)) =>
         Ok(view(form().fill(method)))
@@ -47,24 +53,35 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    val isNewJourney = isEnabled(VrsNewAttachmentJourney)
+    val view = if (isNewJourney) viewNewAttachmentJourney.apply _ else viewOldJourney.apply _
     form().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors))),
       attachmentMethod => {
-        attachmentsService
-          .storeAttachmentDetails(profile.registrationId, attachmentMethod)
-          .flatMap { _ =>
-            attachmentMethod match {
-              case Attached =>
-                upscanService.deleteAllUpscanDetails(profile.registrationId).map { _ =>
-                  Redirect(controllers.fileupload.routes.UploadDocumentController.show)
-                }
-              case Post =>
-                Future.successful(Redirect(routes.DocumentsPostController.show))
-            }
+        if (isNewJourney  && attachmentMethod.equals(Post)) {
+          upscanService.fetchAllUpscanDetails(profile.registrationId).flatMap { details =>
+            if (details.exists(_.fileStatus.equals(InProgress))) { Future.successful(Redirect(routes.DocumentsPostErrorController.show)) }
+            else { storeAttachmentDetails(profile, attachmentMethod) }
           }
+        }
+        else  { storeAttachmentDetails(profile, attachmentMethod) }
       }
     )
   }
 
+  private def storeAttachmentDetails(profile: CurrentProfile, attachmentMethod: AttachmentMethod)(implicit request: Request[_]) = {
+    attachmentsService
+      .storeAttachmentDetails(profile.registrationId, attachmentMethod)
+      .flatMap { _ =>
+        attachmentMethod match {
+          case Attached =>
+            upscanService.deleteAllUpscanDetails(profile.registrationId).map { _ =>
+              Redirect(controllers.fileupload.routes.UploadDocumentController.show)
+            }
+          case Post =>
+            Future.successful(Redirect(routes.DocumentsPostController.show))
+        }
+      }
+  }
 }

@@ -30,7 +30,7 @@ object FeatureSwitch {
     StubBars,
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
-    AdditionalDocumentsRequiredPage
+    VrsNewAttachmentJourney
   )
 
   def apply(str: String): FeatureSwitch =
@@ -92,7 +92,7 @@ object FeatureSwitch {
     val displayText = "Stub Minor Entity Identification"
   }
 
-  case object AdditionalDocumentsRequiredPage extends FeatureSwitch {
+  case object VrsNewAttachmentJourney extends FeatureSwitch {
     val name = "feature-switch.vRSNewAttachmentJourney"
     val displayText: String = "VRS New Attachment Journey"
   }

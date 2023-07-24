@@ -1284,6 +1284,12 @@ attachmentMethod.options.upload                           = Upload the documents
 attachmentMethod.options.post                             = Post copies to HMRC
 attachmentMethod.error.missing                            = Select how you want to send copies of the documents to HMRC
 
+# ATTACHMENT METHOD (NEW JOURNEY)
+attachmentMethodNewJourney.title                                    = How would you like to send your documents?
+attachmentMethodNewJourney.options.upload                           = Upload documents
+attachmentMethodNewJourney.options.post                             = Post documents
+attachmentMethodNewJourney.error.missing                            = Select how you want to send copies of the documents to HMRC
+
 # MULTIPLE DOCUMENTS REQUIRED
 attachments.multipleDocumentsRequired.title                         = You must send us additional documents in order for us to process this VAT application
 attachments.multipleDocumentsRequired.para                          = To enable us to progress your application further, we need the following information and documents from you:
@@ -1321,6 +1327,7 @@ attachments.vRSNewAttachmentJourney.VAT1TR.link                 = VAT1TR
 attachments.vRSNewAttachmentJourney.VAT5L.link                  = VAT5L
 attachments.vRSNewAttachmentJourney.identityEvidence            = 3 documents to confirm your identity
 attachments.vRSNewAttachmentJourney.identityEvidence.name       = 3 documents to confirm {0}’s identity
+attachments.documentsPostError.title                            = Cannot post documents; upload journey in progress
 
 # IDENTITY EVIDENCE REQUIRED
 attachments.identityEvidenceRequired.title                      = You must send us three identity documents in order for us to process this VAT application
