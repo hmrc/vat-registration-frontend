@@ -23,6 +23,7 @@ import models.{ApplicantDetails, Contact}
 import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.InternalServerException
 
 
 class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
@@ -204,6 +205,25 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header("LOCATION") mustBe Some(controllers.errors.routes.EmailPasscodesMaxAttemptsExceededController.show.url)
       }
+
+      "Throw ISE if email-verification returns an UnknownResponse" in new Setup {
+        disable(StubEmailVerification)
+        implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
+        given()
+          .user.isAuthorised()
+          .registrationApi.getSection[ApplicantDetails](Some(testApplicant))
+          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        stubPost("/email-verification/verify-passcode", INTERNAL_SERVER_ERROR, Json.obj("code" -> "SOMETHING_HAS_GONE_WRONG").toString)
+
+        val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+        res.header("LOCATION") mustBe None
+      }
+
 
       List("", "e" * 7).foreach { passcode =>
         s"return BAD_REQUEST for invalid passcode: '$passcode'" in new Setup {
