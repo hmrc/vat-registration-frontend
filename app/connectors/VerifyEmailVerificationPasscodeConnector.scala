@@ -41,24 +41,17 @@ object VerifyEmailVerificationPasscodeParser {
 
       response.status match {
         case CREATED =>
-          infoConnectorLog("[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] email verified successfully")(response)
           EmailVerifiedSuccessfully
         case NO_CONTENT =>
-          infoConnectorLog("[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] email already verified")(response)
           EmailAlreadyVerified
         case NOT_FOUND if errorCode contains PasscodeMismatchKey =>
-          errorConnectorLog(s"[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] email not verified. NOT_FOUND $PasscodeMismatchKey ")(response)
           PasscodeMismatch
         case NOT_FOUND if errorCode contains PasscodeNotFoundKey =>
-          errorConnectorLog(s"[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] email not verified. NOT_FOUND $PasscodeNotFoundKey ")(response)
           PasscodeNotFound
         case FORBIDDEN if errorCode contains MaxAttemptsExceededKey =>
-          errorConnectorLog(s"[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] email not verified. FORBIDDEN $MaxAttemptsExceededKey ")(response)
           MaxAttemptsExceeded
         case status =>
-          val logMsg = s"Unexpected response returned from VerifyEmailPasscode endpoint - Status: $status, response: ${response.body}"
-          errorConnectorLog(s"[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] $logMsg")(response)
-          throw new InternalServerException(logMsg)
+          UnknownResponse(status, response.body)
       }
     }
   }

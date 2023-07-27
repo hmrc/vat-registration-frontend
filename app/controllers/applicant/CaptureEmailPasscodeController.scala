@@ -28,6 +28,7 @@ import services.ApplicantDetailsService.EmailVerified
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import utils.LoggingUtil
 import views.html.applicant.CaptureEmailPasscode
 
 import javax.inject.Inject
@@ -41,7 +42,7 @@ class CaptureEmailPasscodeController @Inject()(view: CaptureEmailPasscode,
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with LoggingUtil {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -79,22 +80,30 @@ class CaptureEmailPasscodeController @Inject()(view: CaptureEmailPasscode,
           emailPasscode =>
             getEmailAddress.flatMap { email =>
               emailVerificationService.verifyEmailVerificationPasscode(email, emailPasscode) flatMap {
-                case EmailAlreadyVerified | EmailVerifiedSuccessfully =>
+                case status@(EmailAlreadyVerified | EmailVerifiedSuccessfully) =>
+                  infoLog(s"[CaptureEmailPasscodeController][submit] email verification successful. Status: $status")
                   applicantDetailsService.saveApplicantDetails(EmailVerified(emailVerified = true)).map { _ =>
                     Redirect(routes.EmailAddressVerifiedController.show)
                   }
                 case PasscodeMismatch =>
+                  errorLog(s"[CaptureEmailPasscodeController][submit] email verification unsuccessful. Passcode mismatch.")
                   val incorrectPasscodeForm = EmailPasscodeForm.form.withError(
                     key = EmailPasscodeForm.passcodeKey,
                     message = Messages("capture-email-passcode.error.incorrect_passcode")
                   )
                   Future.successful(BadRequest(view(email, incorrectPasscodeForm, isTransactor = false, isNewPasscode = isNewPasscode)))
                 case PasscodeNotFound =>
+                  errorLog(s"[CaptureEmailPasscodeController][submit] email verification unsuccessful. PasscodeNotFound.")
                   Future.successful(Redirect(errorRoutes.EmailPasscodeNotFoundController.show(
                     controllers.applicant.routes.CaptureEmailAddressController.show.url
                   )))
                 case MaxAttemptsExceeded =>
+                  errorLog(s"[CaptureEmailPasscodeController][submit] email verification unsuccessful. MaxAttemptsExceeded.")
                   Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show))
+                case UnknownResponse(status, response) =>
+                  val logMsg = s"Unexpected response returned from VerifyEmailPasscode endpoint - Status: $status, response: $response"
+                  errorLog(s"[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] $logMsg")
+                  throw new InternalServerException(logMsg)
               }
             }
         )

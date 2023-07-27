@@ -19,7 +19,7 @@ package connectors
 import featuretoggle.FeatureSwitch.StubEmailVerification
 import featuretoggle.FeatureToggleSupport
 import itutil.IntegrationSpecBase
-import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeMismatch, PasscodeNotFound}
+import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeMismatch, PasscodeNotFound, UnknownResponse}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -109,11 +109,13 @@ class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase 
       "the feature switch is disabled and the email verification API returns InternalServerException" in {
         disable(StubEmailVerification)
 
-        stubPost("/email-verification/verify-passcode", INTERNAL_SERVER_ERROR, "")
+        val errorMsg = "Uh oh!!!"
 
-        intercept[InternalServerException] {
-          await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
-        }
+        stubPost("/email-verification/verify-passcode", INTERNAL_SERVER_ERROR, errorMsg)
+
+        val res = await(connector.verifyEmailVerificationPasscode(testEmail, testPasscode))
+
+        res mustBe UnknownResponse(INTERNAL_SERVER_ERROR, errorMsg)
       }
     }
   }

@@ -28,3 +28,5 @@ case object PasscodeMismatch extends VerifyEmailPasscodeResult
 
 case object MaxAttemptsExceeded extends VerifyEmailPasscodeResult
 
+case class UnknownResponse(status: Int, body: String) extends VerifyEmailPasscodeResult
+
