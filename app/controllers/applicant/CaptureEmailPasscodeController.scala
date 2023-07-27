@@ -100,8 +100,8 @@ class CaptureEmailPasscodeController @Inject()(view: CaptureEmailPasscode,
                 case MaxAttemptsExceeded =>
                   errorLog(s"[CaptureEmailPasscodeController][submit] email verification unsuccessful. MaxAttemptsExceeded.")
                   Future.successful(Redirect(errorRoutes.EmailPasscodesMaxAttemptsExceededController.show))
-                case UnknownResponse(status, response) =>
-                  val logMsg = s"Unexpected response returned from VerifyEmailPasscode endpoint - Status: $status, response: $response"
+                case status =>
+                  val logMsg = s"Unexpected response returned from VerifyEmailPasscode endpoint - $status"
                   errorLog(s"[VerifyEmailVerificationPasscodeParser][VerifyEmailVerificationPasscodeHttpReads] $logMsg")
                   throw new InternalServerException(logMsg)
               }
