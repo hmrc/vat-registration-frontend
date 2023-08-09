@@ -78,7 +78,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
 
     List(UkCompany, RegSociety, CharitableOrg, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership).foreach { partyType =>
       s"redirects to ${controllers.business.routes.ConfirmTradingNameController.show.url} for partyType ${partyType.toString} when business name is present" in new Setup {
-        when(mockApplicantDetailsService.getCompanyName(any(), any()))
+        when(mockApplicantDetailsService.getCompanyName(any(), any(), any()))
           .thenReturn(Future.successful(Some(testBusinessName)))
 
         mockPartyType(Future.successful(partyType))
@@ -90,7 +90,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
 
     List(Trust, UnincorpAssoc, NonUkNonEstablished).foreach { partyType =>
       s"redirects to ${controllers.business.routes.BusinessNameController.show.url} for partyType ${partyType.toString} when business name is missing" in new Setup {
-        when(mockApplicantDetailsService.getCompanyName(any(), any()))
+        when(mockApplicantDetailsService.getCompanyName(any(), any(), any()))
           .thenReturn(Future.successful(None))
 
         mockPartyType(Future.successful(partyType))

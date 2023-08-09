@@ -18,6 +18,8 @@ package services
 
 import connectors.mocks.MockRegistrationApiConnector
 import models.OtherBusinessInvolvement
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import services.OtherBusinessInvolvementsService._
 import testHelpers.VatRegSpec
 
@@ -44,6 +46,7 @@ class OtherBusinessInvolvementsServiceSpec extends VatRegSpec with MockRegistrat
   )
   val idx = 1
 
+  implicit val request: Request[_] = FakeRequest()
   object TestService extends OtherBusinessInvolvementsService(mockRegistrationApiConnector)
 
   "getOtherBusinessInvolvement" must {

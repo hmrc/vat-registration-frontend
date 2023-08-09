@@ -29,10 +29,10 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
                                    registrationApiConnector: RegistrationApiConnector
                                   )(implicit ec: ExecutionContext) {
 
-  def getAttachmentDetails(regId: String)(implicit hc: HeaderCarrier): Future[Option[Attachments]] =
+  def getAttachmentDetails(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[Option[Attachments]] =
     registrationApiConnector.getSection[Attachments](regId)
 
-  def storeAttachmentDetails[T](regId: String, data: T)(implicit hc: HeaderCarrier): Future[Attachments] = {
+  def storeAttachmentDetails[T](regId: String, data: T)(implicit hc: HeaderCarrier, request: Request[_]): Future[Attachments] = {
     getAttachmentDetails(regId).flatMap { attachmentDetails =>
       val presentAttachmentDetails = attachmentDetails.getOrElse(Attachments())
       val updatedAttachmentDetails = data match {

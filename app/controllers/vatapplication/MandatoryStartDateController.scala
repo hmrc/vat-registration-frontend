@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.MandatoryDateForm
 import models._
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MessageDateFormat
@@ -85,7 +85,7 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
         }
   }
 
-  private def handleMandatoryStartDate(startDate: LocalDate)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile) = {
+  private def handleMandatoryStartDate(startDate: LocalDate)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]) = {
     vatApplicationService.saveVatApplication(startDate).map(_ =>
       Redirect(controllers.routes.TaskListController.show.url)
     )

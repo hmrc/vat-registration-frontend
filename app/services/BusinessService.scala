@@ -19,6 +19,7 @@ package services
 import connectors.RegistrationApiConnector
 import models.api.{Address, SicCode}
 import models.{Business, ContactPreference, CurrentProfile, LabourCompliance}
+import play.api.mvc.Request
 import services.BusinessService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -28,21 +29,21 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BusinessService @Inject()(val registrationApiConnector: RegistrationApiConnector)(implicit ec: ExecutionContext) {
 
-  def getBusiness(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
+  def getBusiness(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Business] = {
     registrationApiConnector.getSection[Business](cp.registrationId).map {
       case Some(business) => business
       case None => Business()
     }
   }
 
-  def updateBusiness[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] =
+  def updateBusiness[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Business] =
     for {
       business <- getBusiness
       updatedBusiness = updateBusinessModel(data, business)
       _ <- registrationApiConnector.replaceSection[Business](cp.registrationId, updatedBusiness)
     } yield updatedBusiness
 
-  def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Business] = {
+  def submitSicCodes(sicCodes: List[SicCode])(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Business] = {
     getBusiness flatMap { sac =>
       val sacWithCodes = sac.copy(businessActivities = Some(sicCodes))
 

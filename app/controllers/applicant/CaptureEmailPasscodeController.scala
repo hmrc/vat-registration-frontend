@@ -23,7 +23,7 @@ import forms.EmailPasscodeForm
 import models.CurrentProfile
 import models.external._
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import services.ApplicantDetailsService.EmailVerified
 import services.{ApplicantDetailsService, EmailVerificationService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -110,11 +110,13 @@ class CaptureEmailPasscodeController @Inject()(view: CaptureEmailPasscode,
 
   }
 
-  private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[String] =
+  private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[String] =
     applicantDetailsService.getApplicantDetails.map {
       _.contact.email match {
         case Some(email) => email
-        case None => throw new InternalServerException("Failed to retrieve email address")
+        case None =>
+          warnLog(s"[CaptureEmailPasscodeController][getEmailAddress] Failed to retrieve email address")
+          throw new InternalServerException("Failed to retrieve email address")
       }
     }
 

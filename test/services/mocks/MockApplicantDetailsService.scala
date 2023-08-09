@@ -22,6 +22,7 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Request
 import services.ApplicantDetailsService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -35,7 +36,7 @@ trait MockApplicantDetailsService extends MockitoSugar {
   def mockGetApplicantDetails(profile: CurrentProfile)(response: ApplicantDetails): OngoingStubbing[Future[ApplicantDetails]] =
     when(mockApplicantDetailsService.getApplicantDetails(
       ArgumentMatchers.eq(profile),
-      ArgumentMatchers.any[HeaderCarrier])
+      ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[_]])
     ) thenReturn Future.successful(response)
 
   def mockSaveApplicantDetails[T](data: T)(response: ApplicantDetails) =
@@ -43,13 +44,13 @@ trait MockApplicantDetailsService extends MockitoSugar {
       ArgumentMatchers.eq(data)
     )(
       ArgumentMatchers.any[CurrentProfile],
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[_]]
     )) thenReturn Future.successful(response)
 
   def mockgetApplicantNameForTransactorFlow(profile: CurrentProfile)(response: Option[String]): OngoingStubbing[Future[Option[String]]] =
     when(mockApplicantDetailsService.getApplicantNameForTransactorFlow(
       ArgumentMatchers.eq(profile),
-      ArgumentMatchers.any[HeaderCarrier])
+      ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[_]])
     ) thenReturn Future.successful(response)
 
 }

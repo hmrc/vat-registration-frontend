@@ -18,8 +18,10 @@ package services.mocks
 
 import models.external.{RequestEmailPasscodeResult, VerifyEmailPasscodeResult}
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Request
 import services.EmailVerificationService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -31,7 +33,7 @@ trait EmailVerificationServiceMock {
   val mockEmailVerificationService: EmailVerificationService = mock[EmailVerificationService]
 
   def mockRequestEmailVerificationPasscode(email: String)(response: Future[RequestEmailPasscodeResult]): Unit =
-    when(mockEmailVerificationService.requestEmailVerificationPasscode(ArgumentMatchers.eq(email))(ArgumentMatchers.any[HeaderCarrier]))
+    when(mockEmailVerificationService.requestEmailVerificationPasscode(ArgumentMatchers.eq(email))(ArgumentMatchers.any[HeaderCarrier], any[Request[_]]))
       .thenReturn(response)
 
   def mockVerifyEmailVerificationPasscode(email: String, passcode: String)(response: Future[VerifyEmailPasscodeResult]): Unit =

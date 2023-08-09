@@ -16,14 +16,15 @@
 
 package services
 
-import config.Logging
 import connectors.RegistrationApiConnector
 import models._
 import models.api.Address
 import models.external.{BusinessEntity, Name, PartnershipIdEntity, SoleTraderIdEntity}
 import play.api.libs.json.Format
+import play.api.mvc.Request
 import services.ApplicantDetailsService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import utils.LoggingUtil
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -32,9 +33,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ApplicantDetailsService @Inject()(val registrationApiConnector: RegistrationApiConnector,
                                         val vatRegistrationService: VatRegistrationService
-                                       )(implicit ec: ExecutionContext) extends Logging {
+                                       )(implicit ec: ExecutionContext) extends LoggingUtil {
 
-  def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
+  def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[ApplicantDetails] = {
     vatRegistrationService.partyType.flatMap { partyType =>
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(partyType)
       registrationApiConnector.getSection[ApplicantDetails](cp.registrationId).flatMap {
@@ -44,23 +45,23 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
     }
   }
 
-  def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[LocalDate]] =
+  def getDateOfIncorporation(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Option[LocalDate]] =
     getApplicantDetails.map(_.entity.flatMap(_.dateOfIncorporation))
 
-  def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
+  def getCompanyName(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Option[String]] =
     for {
       applicant <- getApplicantDetails
     } yield {
       applicant.entity.flatMap(_.getBusinessName)
     }
 
-  def getApplicantNameForTransactorFlow(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Option[String]] =
+  def getApplicantNameForTransactorFlow(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Option[String]] =
     for {
       isTransactor <- vatRegistrationService.isTransactor
       optName <- if (isTransactor) getApplicantDetails.map(_.personalDetails.map(_.firstName)) else Future.successful(None)
     } yield optName
 
-  def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
+  def saveApplicantDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[ApplicantDetails] = {
     for {
       applicant <- getApplicantDetails
       updatedApplicant = updateModel(data, applicant)
@@ -73,7 +74,7 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
   }
 
   //scalastyle:off
-  private def updateModel[T](data: T, before: ApplicantDetails): ApplicantDetails = {
+  private def updateModel[T](data: T, before: ApplicantDetails)(implicit request: Request[_]): ApplicantDetails = {
     data match {
       case businessEntity: SoleTraderIdEntity =>
         before.copy(
@@ -135,6 +136,7 @@ class ApplicantDetailsService @Inject()(val registrationApiConnector: Registrati
           )
         }
       case _ =>
+        errorLog(s"[ApplicantDetailsService][updateModel] Attempting to store unsupported data")
         throw new InternalServerException("[ApplicantDetailsService] Attempting to store unsupported data")
     }
   }

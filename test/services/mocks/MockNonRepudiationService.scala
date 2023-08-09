@@ -17,10 +17,12 @@
 package services.mocks
 
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Request
 import play.twirl.api.Html
 import services.NonRepudiationService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,7 +40,7 @@ trait MockNonRepudiationService extends MockitoSugar {
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.any[Html]
     )(
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier], any[Request[_]]
     )).thenReturn(response)
 
 }

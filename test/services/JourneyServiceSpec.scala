@@ -21,6 +21,8 @@ import config.FrontendAppConfig
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -39,6 +41,7 @@ class JourneyServiceSpec extends VatRegSpec {
       frontendAppConfig
     )
   }
+  implicit val request: Request[_] = FakeRequest()
 
   val now = LocalDate.now()
 
@@ -52,7 +55,7 @@ class JourneyServiceSpec extends VatRegSpec {
       "the a CurrentProfile has been cached in Keystore" in new Setup {
         implicit val hc = HeaderCarrier()
 
-        when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier]()))
+        when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful(VatRegStatus.draft))
 
         when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))

@@ -20,8 +20,10 @@ import config.FrontendAppConfig
 import models.external.{AlreadyVerifiedEmailAddress, MaxEmailsExceeded, RequestEmailPasscodeResult, RequestEmailPasscodeSuccessful}
 import play.api.http.Status.{CONFLICT, CREATED, FORBIDDEN}
 import play.api.libs.json.Json
+import play.api.mvc.Request
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, Upstream4xxResponse}
+import utils.LoggingUtil
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,9 +31,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClientV2,
                                                           config: FrontendAppConfig
-                                                         )(implicit ec: ExecutionContext) {
+                                                         )(implicit ec: ExecutionContext) extends LoggingUtil {
 
-  def requestEmailVerificationPasscode(email: String)(implicit hc: HeaderCarrier): Future[RequestEmailPasscodeResult] = {
+  def requestEmailVerificationPasscode(email: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[RequestEmailPasscodeResult] = {
 
     val url = config.requestEmailVerificationPasscodeUrl()
 
@@ -43,8 +45,15 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
       .map {
         case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
       }.recover {
-        case Upstream4xxResponse(_, CONFLICT, _, _) => AlreadyVerifiedEmailAddress
-        case Upstream4xxResponse(_, FORBIDDEN, _, _) => MaxEmailsExceeded
+        case Upstream4xxResponse(_, CONFLICT, _, _) =>
+          infoLog(s"[RequestEmailVerificationPasscodeConnector][requestEmailVerificationPasscode] email already verified")
+          AlreadyVerifiedEmailAddress
+        case Upstream4xxResponse(_, FORBIDDEN, _, _) =>
+          warnLog(s"[RequestEmailVerificationPasscodeConnector][requestEmailVerificationPasscode] max emails exceeded")
+          MaxEmailsExceeded
+        case error =>
+          errorLog(s"[RequestEmailVerificationPasscodeConnector][requestEmailVerificationPasscode] unknown error. Msg: ${error.getMessage}")
+          throw error
       }
   }
 

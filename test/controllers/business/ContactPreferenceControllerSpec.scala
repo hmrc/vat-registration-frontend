@@ -20,6 +20,7 @@ import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.ContactPreference
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -43,10 +44,10 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
   }
 
   class SubmissionSetup extends Setup {
-    when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any(), any()))
       .thenReturn(Future(validBusiness))
 
-    when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), any()))
       .thenReturn(Future(validBusiness))
 
   }
@@ -60,7 +61,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
       }
 
       "contract preference is unavailable" in new Setup {
-        when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any(), any()))
           .thenReturn(Future(validBusiness.copy(contactPreference = None)))
 
         callAuthorised(controller.showContactPreference) {
@@ -71,7 +72,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
     "throw an exception" when {
       "getBusinessContact Fails" in new Setup {
-        when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockBusinessService.getBusiness(ArgumentMatchers.any(), ArgumentMatchers.any(), any()))
           .thenReturn(Future(throw exception))
 
         callAuthorised(controller.showContactPreference) {
@@ -116,7 +117,7 @@ class ContactPreferenceControllerSpec extends ControllerSpec with VatRegistratio
 
     "return an exception" when {
       "updateBusinessContact fails" in new SubmissionSetup {
-        when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        when(mockBusinessService.updateBusiness[ContactPreference](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), any()))
           .thenReturn(Future(throw exception))
 
         submitAuthorised(controller.submitContactPreference, fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> "email")) {

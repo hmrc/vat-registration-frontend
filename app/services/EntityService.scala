@@ -21,6 +21,7 @@ import models.{CurrentProfile, Entity}
 import models.Entity.leadEntityIndex
 import models.api._
 import models.external._
+import play.api.mvc.Request
 import services.EntityService._
 import uk.gov.hmrc.http._
 
@@ -35,13 +36,13 @@ class EntityService @Inject()(val sessionService: SessionService,
     registrationApiConnector.getListSection[Entity](regId)
   }
 
-  def getEntity(regId: String, idx: Int)(implicit hc: HeaderCarrier): Future[Option[Entity]] =
+  def getEntity(regId: String, idx: Int)(implicit hc: HeaderCarrier, request: Request[_]): Future[Option[Entity]] =
     registrationApiConnector.getSection[Entity](regId, Some(idx))
 
   def upsertEntityList(regId: String, data: List[Entity])(implicit hc: HeaderCarrier): Future[List[Entity]] =
     registrationApiConnector.replaceListSection(regId, data)
 
-  def upsertEntity[T](regId: String, index: Int, data: T)(implicit hc: HeaderCarrier): Future[Entity] = {
+  def upsertEntity[T](regId: String, index: Int, data: T)(implicit hc: HeaderCarrier, request: Request[_]): Future[Entity] = {
     for {
       entity <- getEntity(regId, index).map(_.getOrElse {
         data match {

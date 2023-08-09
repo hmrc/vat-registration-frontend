@@ -23,6 +23,8 @@ import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.libs.json.JsString
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import services.VatApplicationService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
@@ -73,6 +75,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
   val testOverseasCompliance: OverseasCompliance = OverseasCompliance(Some(true), Some(true), Some(StoringWithinUk), Some(true), Some(testWarehouseNumber), Some(testWarehouseName))
   val testOverseasVatApplication: VatApplication = validVatApplication.copy(overseasCompliance = Some(testOverseasCompliance))
   val emptyVatApplication: VatApplication = VatApplication()
+
+  implicit val request: Request[_] = FakeRequest()
 
   "getVatApplication" must {
     "return a full VatApplication view model from backend" in new Setup {
@@ -360,14 +364,14 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
 
   "retrieveCalculatedStartDate" must {
     "return the calculated date from EligibilitySubmissionData" in new Setup {
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = Some(testDate))))
 
       await(Service.retrieveCalculatedStartDate) mustBe testDate
     }
 
     "throw a InternalServerException when calculated date is missing" in new Setup {
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = None)))
 
       intercept[InternalServerException](await(Service.retrieveCalculatedStartDate)).message mustBe "[VatApplicationService] Missing calculated date"
@@ -380,7 +384,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
     "return a full MandatoryDateModel with a selection of calculated_date if the vatStartDate is present and is equal to the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 25)
 
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = Some(calculatedDate))))
       mockGetSection[VatApplication](testRegId, Some(validVatApplication.copy(startDate = Some(vatStartDate))))
 
@@ -390,7 +394,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
     "return a full MandatoryDateModel with a selection of specific_date if the vatStartDate does not equal the calculated date" in new Setup {
       val vatStartDate: LocalDate = LocalDate.of(2017, 12, 12)
 
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = Some(calculatedDate))))
       mockGetSection[VatApplication](testRegId, Some(validVatApplication.copy(startDate = Some(vatStartDate))))
 
@@ -400,7 +404,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
     "return a MandatoryDateModel with just a calculated date if the vatStartDate is not present" in new Setup {
       mockGetSection[VatApplication](testRegId, None)
 
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(calculatedDate = Some(calculatedDate))))
 
       await(Service.retrieveMandatoryDates) mustBe MandatoryDateModel(calculatedDate, None, None)
@@ -434,7 +438,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
 
   "isEligibleForAAS" must {
     "return false for a turnover that is above 1350000" in new Setup {
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
       mockGetSection[VatApplication](testRegId, None)
 
@@ -442,7 +446,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
     }
 
     "return false for a Groups Registration" in new Setup {
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(registrationReason = GroupRegistration)))
       mockGetSection[VatApplication](testRegId, None)
 
@@ -450,7 +454,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
     }
 
     "return true when the turnover estimate is valid for AAS" in new Setup {
-      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+      when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
       mockGetSection[VatApplication](testRegId, Some(validVatApplication))
 

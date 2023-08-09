@@ -46,7 +46,7 @@ class AnnualCostsInclusiveControllerSpec extends ControllerSpec with VatRegistra
 
   s"GET ${routes.AnnualCostsInclusiveController.show}" should {
     "return a 200 when a previously completed FlatRateScheme is returned" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       callAuthorised(controller.show) { result =>
@@ -55,7 +55,7 @@ class AnnualCostsInclusiveControllerSpec extends ControllerSpec with VatRegistra
     }
 
     "return a 200 when an empty FlatRateScheme is returned from the service" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(FlatRateScheme()))
 
       callAuthorised(controller.show) { result =>

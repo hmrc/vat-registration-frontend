@@ -20,6 +20,7 @@ import config.Logging
 import connectors.RegistrationApiConnector
 import models._
 import models.api.Address
+import play.api.mvc.Request
 import services.TransactorDetailsService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -30,14 +31,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class TransactorDetailsService @Inject()(registrationsApiConnector: RegistrationApiConnector)
                                         (implicit ec: ExecutionContext) extends Logging {
 
-  def getTransactorDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[TransactorDetails] = {
+  def getTransactorDetails(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[TransactorDetails] = {
     registrationsApiConnector.getSection[TransactorDetails](cp.registrationId).map {
       case Some(details) => details
       case None => TransactorDetails()
     }
   }
 
-  def saveTransactorDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[TransactorDetails] = {
+  def saveTransactorDetails[T](data: T)(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[TransactorDetails] = {
     for {
       transactorDetails <- getTransactorDetails
       updatedTransactorDetails = updateModel(data, transactorDetails)

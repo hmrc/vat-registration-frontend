@@ -47,7 +47,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
 
   s"show" should {
     "return OK and render the page" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(testFlatRate.copy(categoryOfBusiness = None)))
 
       when(mockConfigConnector.businessTypes).thenReturn(businessTypes)
@@ -60,7 +60,7 @@ class ChooseBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtu
     }
 
     "return OK and render the page with radio pre selected" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(testFlatRate))
 
       when(mockConfigConnector.businessTypes).thenReturn(businessTypes)

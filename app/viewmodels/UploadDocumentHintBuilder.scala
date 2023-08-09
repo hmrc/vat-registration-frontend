@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api._
 import play.api.i18n.Messages
+import play.api.mvc.Request
 import play.twirl.api.{Html, HtmlFormat}
 import services.{ApplicantDetailsService, TransactorDetailsService, VatRegistrationService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -37,7 +38,7 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
                                           link: views.html.components.link) {
 
   def build(attachmentType: AttachmentType)(
-    implicit appConfig: FrontendAppConfig, messages: Messages, hc: HeaderCarrier, cp: CurrentProfile, ec: ExecutionContext
+    implicit appConfig: FrontendAppConfig, messages: Messages, hc: HeaderCarrier, cp: CurrentProfile, ec: ExecutionContext, request: Request[_]
   ): Future[Html] = {
 
     def conditionalApplicantName: Future[Option[String]] =

@@ -19,6 +19,8 @@ package services
 import config.FrontendAppConfig
 import models.Entity
 import models.api.{Individual, ScotPartnership, UkCompany}
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import services.EntityService.ScottishPartnershipName
 import testHelpers.VatRegSpec
 
@@ -29,6 +31,7 @@ class EntityServiceSpec extends VatRegSpec {
     mockSessionService,
     mockRegistrationApiConnector
   )
+  implicit val request: Request[_] = FakeRequest()
 
   val testLeadPartner: Entity = Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None)
   val testPartner: Entity = Entity(Some(testLimitedCompany), UkCompany, Some(false), None, None, None, None)

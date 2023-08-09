@@ -19,6 +19,7 @@ package services
 import config.FrontendAppConfig
 import models.CurrentProfile
 import play.api.libs.json.Format
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +31,7 @@ class JourneyService @Inject()(val vatRegistrationService: VatRegistrationServic
                                val config: FrontendAppConfig
                               )(implicit ec: ExecutionContext) {
   
-  def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier, profileFormat: Format[CurrentProfile]): Future[CurrentProfile] =
+  def buildCurrentProfile(regId: String)(implicit hc: HeaderCarrier, profileFormat: Format[CurrentProfile], request: Request[_]): Future[CurrentProfile] =
     for {
       status <- vatRegistrationService.getStatus(regId)
       profile = CurrentProfile(

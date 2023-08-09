@@ -47,7 +47,7 @@ class YourFlatRateControllerSpec extends ControllerSpec with VatRegistrationFixt
   s"GET ${routes.YourFlatRateController.show}" should {
     "return a 200 and render the page" in new Setup {
 
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
       when(mockFlatRateService.retrieveBusinessTypeDetails(any(), any(), any()))
         .thenReturn(Future.successful(testBusinessTypeDetails))

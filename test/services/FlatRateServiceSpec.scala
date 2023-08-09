@@ -220,7 +220,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
   "saveRegister" must {
     "save answer and category with percentage if true" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(validBusiness))
       when(mockConfigConnector.getSicCodeFRSCategory(any())(any()))
         .thenReturn(testBusinessCategory)
@@ -242,7 +242,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
   "saveConfirmSector" must {
     "store the sector" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(validBusiness))
       when(mockConfigConnector.getSicCodeFRSCategory(any())(any()))
         .thenReturn(testBusinessCategory)
@@ -276,7 +276,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "determine a retrieveSectorPercent if none is saved but main business activity is known" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(validBusiness))
       when(mockConfigConnector.getSicCodeFRSCategory(any())(any()))
         .thenReturn(testBusinessCategory)
@@ -288,7 +288,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "fail if no retrieveSectorPercent is saved and main business activity is not known" in new Setup {
       mockGetSection[FlatRateScheme](testRegId, Some(incompleteFlatRate))
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(vatBusinessWithNoMainBusinessActivity))
       when(mockConfigConnector.getBusinessType(any())(any()))
         .thenReturn(testBusinessTypeDetails)
@@ -301,7 +301,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
     "reset Flat Rate Scheme if the Main Business Activity Sic Code has changed" in new Setup {
       val newSicCode: SicCode = SicCode("newId", "new Desc", "new Details")
 
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
       mockDeleteSection[FlatRateScheme](testRegId)
 
@@ -314,7 +314,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       val vatApplication: VatApplication = validVatApplication.copy(startDate = Some(LocalDate.now()))
 
       mockGetSection[FlatRateScheme](testRegId, Some(validFlatRate))
-      when(movkVatApplicationService.getVatApplication(any(), any()))
+      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
       mockReplaceSection[FlatRateScheme](testRegId, validFlatRate.copy(frsStart = Some(LocalDate.now())))
 
@@ -363,7 +363,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
   "fetchVatStartDate" must {
     "return vat start date when it exists" in new Setup() {
       val vatApplication: VatApplication = validVatApplication.copy(startDate = Some(LocalDate.now()))
-      when(movkVatApplicationService.getVatApplication(any(), any()))
+      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
 
       await(service.fetchVatStartDate) mustBe LocalDate.now()
@@ -371,18 +371,18 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "return edr when start date does not exist" in new Setup() {
       val vatApplication: VatApplication = validVatApplication.copy(startDate = None)
-      when(movkVatApplicationService.getVatApplication(any(), any()))
+      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
-      when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
+      when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any(), any()))
         .thenReturn(Future.successful(LocalDate.now()))
 
       await(service.fetchVatStartDate) mustBe LocalDate.now()
     }
 
     "return an exception when there is no start date or edr" in new Setup() {
-      when(movkVatApplicationService.getVatApplication(any(), any()))
+      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.failed(new Exception("")))
-      when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any()))
+      when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any(), any()))
         .thenReturn(Future.failed(new Exception("")))
 
       intercept[Exception](await(service.fetchVatStartDate))

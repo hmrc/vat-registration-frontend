@@ -43,7 +43,7 @@ class ICLService @Inject()(val iclConnector: ICLConnector,
 
   lazy val vatRedirectUrl: String = vatFeUrl + vatFeUri + iclReturnUrl
 
-  def prepopulateSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile): Future[List[String]] = {
+  def prepopulateSicCodes(implicit hc: HeaderCarrier, cp: CurrentProfile, request: Request[_]): Future[List[String]] = {
     businessService.getBusiness flatMap { businessDetails =>
       businessDetails.businessActivities match {
         case Some(sicCodes) => Future.successful(sicCodes map (_.code))

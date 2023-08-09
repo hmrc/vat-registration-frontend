@@ -49,10 +49,10 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
   def getAllRegistrations(implicit hc: HeaderCarrier, request: Request[_]): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations.map(_.filter(_.createdDate.isAfter(LocalDate.MIN.plusDays(1)))) //Sanity check to guard against broken schemes
 
-  def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[Option[T]] =
+  def getSection[T](regId: String)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T], request: Request[_]): Future[Option[T]] =
     registrationApiConnector.getSection[T](regId)
 
-  def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T]): Future[T] =
+  def upsertSection[T](regId: String, data: T)(implicit hc: HeaderCarrier, format: Format[T], apiKey: ApiKey[T], request: Request[_]): Future[T] =
     registrationApiConnector.replaceSection[T](regId, data)
 
   def getVatSchemeHeader(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[VatSchemeHeader] = {
@@ -60,7 +60,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     vatRegConnector.getRegistration[VatSchemeHeader](regId)
   }
 
-  def getAckRef(regId: String)(implicit hc: HeaderCarrier): Future[String] = {
+  def getAckRef(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     implicit val key: ApiKey[String] = acknowledgementReferenceKey
 
     getSection[String](regId).map(_.getOrElse(throw new InternalServerException("Missing Acknowledgement Reference")))
@@ -71,7 +71,7 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     vatRegConnector.createNewRegistration
   }
 
-  def getStatus(regId: String)(implicit hc: HeaderCarrier): Future[VatRegStatus.Value] = {
+  def getStatus(regId: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[VatRegStatus.Value] = {
     getSection[VatRegStatus.Value](regId).map(_.getOrElse(throw new InternalServerException("Missing Vat Registration Status")))
   }
 
@@ -84,14 +84,17 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
     vatRegConnector.submitRegistration(profile.registrationId, request.headers.toSimpleMap, lang)
   }
 
-  def getEligibilitySubmissionData(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[EligibilitySubmissionData] =
+  def getEligibilitySubmissionData(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[EligibilitySubmissionData] =
     registrationApiConnector.getSection[EligibilitySubmissionData](profile.registrationId).map(optData =>
-      optData.getOrElse(throw MissingAnswerException(missingRegReasonSection))
+      optData.getOrElse {
+        errorLog("[VatRegistrationService][getEligibilitySubmissionData] missiing registration reason section")
+        throw MissingAnswerException(missingRegReasonSection)
+      }
     )
 
-  def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[PartyType] =
+  def partyType(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[PartyType] =
     getEligibilitySubmissionData.map(_.partyType)
 
-  def isTransactor(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[Boolean] =
+  def isTransactor(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Boolean] =
     getEligibilitySubmissionData.map(_.isTransactor)
 }

@@ -40,7 +40,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
 
-    when(mockBusinessService.getBusiness(any(), any()))
+    when(mockBusinessService.getBusiness(any(), any(), any()))
       .thenReturn(Future(validBusiness))
   }
 
@@ -61,7 +61,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
         when(mockAddressLookupService.getAddressById(any())(any()))
           .thenReturn(Future(testAddress))
 
-        when(mockBusinessService.updateBusiness[Business](any())(any(), any()))
+        when(mockBusinessService.updateBusiness[Business](any())(any(), any(), any()))
           .thenReturn(Future(validBusiness))
 
         callAuthorised(testController.callback(testAddress.id)) { res =>
@@ -79,7 +79,7 @@ class PpobAddressControllerSpec extends ControllerSpec with VatRegistrationFixtu
       }
       "updateBusinessContact fails" in new Setup {
         when(mockAddressLookupService.getAddressById(any())(any())).thenReturn(Future(testAddress))
-        when(mockBusinessService.updateBusiness[Address](any())(any(), any())).thenReturn(Future(throw exception))
+        when(mockBusinessService.updateBusiness[Address](any())(any(), any(), any())).thenReturn(Future(throw exception))
 
         callAuthorised(testController.callback(testAddress.id)) {
           _ failedWith exception

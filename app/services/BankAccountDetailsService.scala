@@ -29,17 +29,17 @@ import play.api.mvc.Request
 class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiConnector,
                                           val bankAccountRepService: BankAccountReputationService) {
 
-  def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[BankAccount]] = {
+  def fetchBankAccountDetails(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] = {
     regApiConnector.getSection[BankAccount](profile.registrationId)
   }
 
   def saveBankAccountDetails(bankAccount: BankAccount)
-                            (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[BankAccount] = {
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
     regApiConnector.replaceSection[BankAccount](profile.registrationId, bankAccount)
   }
 
   def saveHasCompanyBankAccount(hasBankAccount: Boolean)
-                               (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[BankAccount] = {
+                               (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BankAccount] = {
     val bankAccount = fetchBankAccountDetails map {
       case Some(BankAccount(oldHasBankAccount, _, _)) if oldHasBankAccount != hasBankAccount =>
         BankAccount(hasBankAccount, None, None)
@@ -67,7 +67,7 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
   }
 
   def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
-                                (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[BankAccount] = {
+                                (implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
     val bankAccount = BankAccount(
       isProvided = false,
       details = None,

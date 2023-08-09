@@ -19,6 +19,7 @@ package services
 import connectors.RegistrationApiConnector
 import connectors.RegistrationApiConnector.nrsSubmissionPayloadKey
 import models.ApiKey
+import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Base64Util
@@ -30,7 +31,7 @@ import scala.concurrent.Future
 class NonRepudiationService @Inject()(base64Util: Base64Util,
                                       registrationApiConnector: RegistrationApiConnector) {
 
-  def storeEncodedUserAnswers(regId: String, html: Html)(implicit hc: HeaderCarrier): Future[String] = {
+  def storeEncodedUserAnswers(regId: String, html: Html)(implicit hc: HeaderCarrier, request: Request[_]): Future[String] = {
     implicit val key: ApiKey[String] = nrsSubmissionPayloadKey
     val encodedHtml = base64Util.encodeString(html.toString)
     registrationApiConnector.replaceSection(regId, encodedHtml)

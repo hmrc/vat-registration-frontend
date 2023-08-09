@@ -17,6 +17,8 @@
 package services
 
 import connectors.mocks.MockRegistrationApiConnector
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import play.twirl.api.Html
 import testHelpers.VatRegSpec
 import utils.MockBase64Util
@@ -28,6 +30,7 @@ class NonRepudiationServiceSpec extends VatRegSpec
   val testHtml: Html = Html("<html></html>")
   val testBase64 = "PGh0bWw+PC9odG1sPg=="
 
+  implicit val request: Request[_] = FakeRequest()
   object Service extends NonRepudiationService(mockBase64Util, mockRegistrationApiConnector)
 
   "storeEncodedUserAnswers" must {

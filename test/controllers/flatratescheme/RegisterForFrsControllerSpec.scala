@@ -46,7 +46,7 @@ class RegisterForFrsControllerSpec extends ControllerSpec with VatRegistrationFi
 
   s"GET ${routes.RegisterForFrsController.show}" should {
     "return a 200 and render the page" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate))
 
       callAuthorised(controller.show) { result =>

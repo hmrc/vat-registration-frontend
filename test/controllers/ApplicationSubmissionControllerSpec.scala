@@ -51,16 +51,16 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         mockAuthenticatedBasic
         mockWithCurrentProfile(Some(profile))
 
-        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any(), any()))
           .thenReturn(Future.successful("123412341234"))
 
         when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List()))
 
-        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        when(mockAttachmentsService.getAttachmentDetails(any())(any(), any()))
           .thenReturn(Future.successful(Some(Attachments(method = None))))
 
-        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(true))
@@ -78,13 +78,13 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
-        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        when(mockAttachmentsService.getAttachmentDetails(any())(any(), any()))
           .thenReturn(Future.successful(Some(Attachments(method = None))))
 
-        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any(), any()))
           .thenReturn(Future.successful("123412341234"))
 
-        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
@@ -102,13 +102,13 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
-        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        when(mockAttachmentsService.getAttachmentDetails(any())(any(), any()))
           .thenReturn(Future.successful(Some(Attachments(method = Some(Attached)))))
 
-        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any(), any()))
           .thenReturn(Future.successful("123412341234"))
 
-        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
@@ -126,13 +126,13 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
-        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        when(mockAttachmentsService.getAttachmentDetails(any())(any(), any()))
           .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
 
-        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any(), any()))
           .thenReturn(Future.successful("123412341234"))
 
-        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
@@ -150,13 +150,13 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
         when(mockAttachmentsService.getAttachmentList(any())(any(), any()))
           .thenReturn(Future.successful(List(VAT51)))
 
-        when(mockAttachmentsService.getAttachmentDetails(any())(any()))
+        when(mockAttachmentsService.getAttachmentDetails(any())(any(), any()))
           .thenReturn(Future.successful(Some(Attachments(method = Some(Post)))))
 
-        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any()))
+        when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any(), any()))
           .thenReturn(Future.successful("123412341234"))
 
-        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any()))
+        when(vatRegistrationServiceMock.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
         mockIsTransactor(Future.successful(false))
