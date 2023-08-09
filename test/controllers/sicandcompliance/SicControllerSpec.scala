@@ -88,7 +88,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         val codes = List(sicCode, sicCode)
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
-        when(mockBusinessService.submitSicCodes(any())(any(), any()))
+        when(mockBusinessService.submitSicCodes(any())(any(), any(), any()))
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
@@ -104,7 +104,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         val codes = List(sicCode, sicCode.copy(code = "81222"))
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
-        when(mockBusinessService.submitSicCodes(any())(any(), any()))
+        when(mockBusinessService.submitSicCodes(any())(any(), any(), any()))
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
@@ -120,7 +120,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
         val codes = List(sicCode)
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
-        when(mockBusinessService.submitSicCodes(any())(any(), any()))
+        when(mockBusinessService.submitSicCodes(any())(any(), any(), any()))
           .thenReturn(Future.successful(validBusiness))
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))

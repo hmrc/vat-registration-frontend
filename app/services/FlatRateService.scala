@@ -42,7 +42,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
 
   def applyPercentRoundUp(b: BigDecimal): BigDecimal = (b * relevantGoodsPercent).setScale(0, RoundingMode.CEILING)
 
-  def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[FlatRateScheme] = {
+  def getFlatRate(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[FlatRateScheme] = {
     registrationApiConnector.getSection[FlatRateScheme](profile.registrationId) map {
       case Some(flatRateScheme) => flatRateScheme
       case None => FlatRateScheme()
@@ -179,7 +179,7 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     }
   }
 
-  def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[SicCode] = {
+  def resetFRSForSAC(sicCode: SicCode)(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[SicCode] = {
     for {
       mainSic <- businessService.getBusiness.map(_.mainBusinessActivity)
       selectionChanged = mainSic.exists(_.code != sicCode.code)
@@ -204,14 +204,14 @@ class FlatRateService @Inject()(val businessService: BusinessService,
     }
   }
 
-  def getPrepopulatedStartDate(vatStartDate: LocalDate)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
+  def getPrepopulatedStartDate(vatStartDate: LocalDate)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[(Option[FRSDateChoice.Value], Option[LocalDate])] =
     getFlatRate map {
       case FlatRateScheme(_, _, _, _, _, Some(frd), _, _, _) if vatStartDate == frd => (Some(FRSDateChoice.VATDate), None)
       case FlatRateScheme(_, _, _, _, _, Some(frd), _, _, _) => (Some(FRSDateChoice.DifferentDate), Some(frd))
       case _ => (None, None)
     }
 
-  def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = {
+  def fetchVatStartDate(implicit headerCarrier: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]): Future[LocalDate] = {
     vatApplicationService.getVatApplication.map(_.startDate.getOrElse(
       throw MissingAnswerException(missingRegDateSection)
     )).recoverWith {

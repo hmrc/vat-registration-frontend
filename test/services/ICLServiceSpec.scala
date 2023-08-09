@@ -55,7 +55,7 @@ class ICLServiceSpec extends VatRegSpec {
 
   "journeySetup" should {
     "return the ICL start url when neither VR or II are prepopped" in new Setup {
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(validBusinessWithNoDescriptionAndLabour))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsResponse))
@@ -65,7 +65,7 @@ class ICLServiceSpec extends VatRegSpec {
       res mustBe "example.url"
     }
     "return the ICL start url when VR codes are prepopped" in new Setup {
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.successful(
           validBusiness.copy(businessActivities = Some(List(SicCode("43220", "Plumbing", ""))))
         ))
@@ -77,7 +77,7 @@ class ICLServiceSpec extends VatRegSpec {
       res mustBe "example.url"
     }
     "return the ICL start url when VR call fails" in new Setup {
-      when(mockBusinessService.getBusiness(any(), any()))
+      when(mockBusinessService.getBusiness(any(), any(), any()))
         .thenReturn(Future.failed(new InternalServerException("VR call failed")))
       when(mockICLConnector.iclSetup(any[JsObject]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(jsResponse))
@@ -116,7 +116,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some("example.url")))
 
       when(mockBusinessService.updateBusiness[BusinessActivities]
-        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(updaetdBusiness))
+        (any[BusinessActivities]())(any(), any(), any())).thenReturn(Future.successful(updaetdBusiness))
 
       val res = await(testService.getICLSICCodes())
       res mustBe listOfSicCodes
@@ -130,7 +130,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(Some("example.url")))
 
       when(mockBusinessService.updateBusiness[BusinessActivities]
-        (any[BusinessActivities]())(any(), any())).thenReturn(Future.successful(updaetdBusiness))
+        (any[BusinessActivities]())(any(), any(), any())).thenReturn(Future.successful(updaetdBusiness))
 
       val res = await(testService.getICLSICCodes())
       res mustBe listOf1SicCode

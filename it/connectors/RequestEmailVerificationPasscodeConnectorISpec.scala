@@ -22,6 +22,7 @@ import itutil.IntegrationSpecBase
 import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeSuccessful}
 import play.api.test.Helpers._
 import support.AppAndStubs
+import uk.gov.hmrc.http.{InternalServerException, Upstream5xxResponse}
 
 class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureToggleSupport {
 
@@ -54,6 +55,19 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
       }
     }
 
+    "return an unknown error response" when {
+      "the feature switch is enabled and the request email passcode API returns an unkniwn response" in {
+        enable(StubEmailVerification)
+
+        stubPost("/register-for-vat/test-only/api/request-passcode", INTERNAL_SERVER_ERROR, "")
+
+        intercept[Upstream5xxResponse] {
+          await(connector.requestEmailVerificationPasscode(testEmail))
+        }
+
+      }
+    }
+
     "return a success response" when {
       "the feature switch is disabled and the request email passcode API is successful" in {
         disable(StubEmailVerification)
@@ -75,6 +89,19 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
         val res = await(connector.requestEmailVerificationPasscode(testEmail))
 
         res mustBe AlreadyVerifiedEmailAddress
+      }
+    }
+
+    "return an unknown error response" when {
+      "the feature switch is disabled and the request email passcode API returns an unkniwn response" in {
+        disable(StubEmailVerification)
+
+        stubPost("/email-verification/request-passcode", INTERNAL_SERVER_ERROR, "")
+
+        intercept[Upstream5xxResponse] {
+          await(connector.requestEmailVerificationPasscode(testEmail))
+        }
+
       }
     }
   }

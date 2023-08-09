@@ -21,6 +21,8 @@ import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.Assertion
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import testHelpers.VatSpec
 
 class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConnector {
@@ -33,6 +35,8 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
       mockBankAccountRepService
     )
   }
+
+  implicit val request: Request[_] = FakeRequest()
 
   "fetchBankAccountDetails" should {
 
@@ -64,7 +68,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
       val result: BankAccount = await(service.saveBankAccountDetails(fullBankAccount))
       result mustBe fullBankAccount
 
-      verify(mockRegistrationApiConnector, times(1)).replaceSection[BankAccount](eqTo(currentProfile.registrationId), any[BankAccount](), any())(any(), any(), any())
+      verify(mockRegistrationApiConnector, times(1)).replaceSection[BankAccount](eqTo(currentProfile.registrationId), any[BankAccount](), any())(any(), any(), any(), any())
     }
   }
 

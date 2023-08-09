@@ -66,7 +66,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
 
   "Calling submitRegistration" should {
     "redirect to the confirmation page if the status of the document is in draft" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any()))
+      when(mockVatRegistrationService.getStatus(any())(any(), any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
@@ -83,7 +83,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     }
 
     "redirect to the Submission Failed Retryable page when Submission Fails but is Retryable" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any()))
+      when(mockVatRegistrationService.getStatus(any())(any(), any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
@@ -101,7 +101,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     }
 
     "redirect to the Submission Failed page when Submission Fails" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any()))
+      when(mockVatRegistrationService.getStatus(any())(any(), any()))
         .thenReturn(Future.successful(VatRegStatus.draft))
 
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))

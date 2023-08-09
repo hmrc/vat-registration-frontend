@@ -20,7 +20,7 @@ import fixtures.VatRegistrationFixture
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
 import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -72,7 +72,7 @@ class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrati
   "submit" must {
     "return 303 with a provided trading name" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
-      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier]))
+      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

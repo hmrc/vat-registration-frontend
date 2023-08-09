@@ -24,7 +24,7 @@ import models.CurrentProfile
 import models.error.MissingAnswerException
 import models.external._
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import services.TransactorDetailsService.TransactorEmailVerified
 import services.{EmailVerificationService, SessionProfile, SessionService, TransactorDetailsService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -104,7 +104,7 @@ class TransactorCaptureEmailPasscodeController @Inject()(view: CaptureEmailPassc
 
   }
 
-  private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[String] = {
+  private def getEmailAddress(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[String] = {
     val missingAnswerSection = "tasklist.aboutYou.contactDetails"
     transactorDetailsService.getTransactorDetails.map {
       _.email match {

@@ -20,7 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessWebsiteAddressForm
 import models.CurrentProfile
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.BusinessService.Website
 import services.{BusinessService, SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -71,7 +71,7 @@ class BusinessWebsiteAddressController @Inject()(val sessionService: SessionServ
         )
   }
 
-  private def formSuccess(businessWebsiteAddress: String)(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[Result] =
+  private def formSuccess(businessWebsiteAddress: String)(implicit cp: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Result] =
     businessService.updateBusiness(Website(businessWebsiteAddress)).map {
       _ =>
           Redirect(controllers.business.routes.VatCorrespondenceController.show)

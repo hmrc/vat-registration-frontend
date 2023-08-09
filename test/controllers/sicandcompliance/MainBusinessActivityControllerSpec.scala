@@ -88,8 +88,8 @@ class MainBusinessActivityControllerSpec extends ControllerSpec with FutureAsser
 
     "return 303 with selected sicCode" in new Setup {
       mockSessionFetchAndGet[List[SicCode]](SIC_CODES_KEY, Some(List(validLabourSicCode)))
-      when(mockBusinessService.updateBusiness(any())(any(), any())).thenReturn(Future.successful(validBusiness))
-      when(mockFlatRateService.resetFRSForSAC(any())(any(), any())).thenReturn(Future.successful(sicCode))
+      when(mockBusinessService.updateBusiness(any())(any(), any(), any())).thenReturn(Future.successful(validBusiness))
+      when(mockFlatRateService.resetFRSForSAC(any())(any(), any(), any())).thenReturn(Future.successful(sicCode))
 
       submitAuthorised(controller.submit,
         fakeRequest.withMethod("POST").withFormUrlEncodedBody("value" -> validLabourSicCode.code)

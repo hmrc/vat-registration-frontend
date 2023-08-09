@@ -20,6 +20,8 @@ import config.FrontendAppConfig
 import models.TransactorDetails
 import models.api._
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import play.twirl.api.{Html, HtmlFormat}
 import services.mocks.{MockApplicantDetailsService, MockTransactorDetailsService, MockVatRegistrationService}
 import testHelpers.VatRegSpec
@@ -47,6 +49,8 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
       link
     )
   }
+
+  implicit val request: Request[_] = FakeRequest()
 
   object ExpectedContent {
     val hintPrimary = "This must be a passport, photocard drivers licence or a national identity card. The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT."

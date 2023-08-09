@@ -24,6 +24,7 @@ import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json._
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -41,7 +42,7 @@ trait MockRegistrationApiConnector {
     )(
       any[ApiKey[T]],
       any[HeaderCarrier],
-      any[Format[T]]
+      any[Format[T]], ArgumentMatchers.any[Request[_]]
     )).thenReturn(Future.successful(section))
 
   def mockGetSection[T](regId: String, section: Option[T]): OngoingStubbing[Future[Option[T]]] =
@@ -51,7 +52,7 @@ trait MockRegistrationApiConnector {
     )(
       any[ApiKey[T]],
       any[HeaderCarrier],
-      any[Format[T]]
+      any[Format[T]], ArgumentMatchers.any[Request[_]]
     )).thenReturn(Future.successful(section))
 
   def mockGetListSection[T](regId: String, section: List[T]): OngoingStubbing[Future[List[T]]] =

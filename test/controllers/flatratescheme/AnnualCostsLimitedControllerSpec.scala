@@ -48,7 +48,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
 
   s"GET ${routes.AnnualCostsLimitedController.show}" should {
     "return a 200 and render Annual Costs Limited page when a FlatRateScheme is not found on the vat scheme" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(overBusinessGoodsPercent = None, estimateTotalSales = Some(1234L))))
       when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
@@ -58,7 +58,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "return a 200 and render Annual Costs Limited page when a FlatRateScheme is found on the vat scheme" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
       when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
@@ -72,7 +72,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
     val fakeRequest = FakeRequest(routes.AnnualCostsLimitedController.submit)
 
     "return a 400 when the request is empty" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
       when(mockFlatRateService.applyPercentRoundUp(any())).thenReturn(BigDecimal(0))
 
@@ -84,7 +84,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "redirect to confirm business sector when user selects Yes" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
       when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any(), any()))
@@ -101,7 +101,7 @@ class AnnualCostsLimitedControllerSpec extends ControllerSpec with VatRegistrati
     }
 
     "redirect to 16.5% rate page if user selects No" in new Setup {
-      when(mockFlatRateService.getFlatRate(any(), any()))
+      when(mockFlatRateService.getFlatRate(any(), any(), any()))
         .thenReturn(Future.successful(validFlatRate.copy(estimateTotalSales = Some(1234L))))
 
       when(mockFlatRateService.saveFlatRate(any[OverBusinessGoodsPercentAnswer]())(any(), any(), any()))

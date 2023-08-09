@@ -17,10 +17,12 @@
 package services.mocks
 
 import models.{Business, CurrentProfile}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.mockito.{ArgumentMatchers => Matchers}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Request
 import services.BusinessService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -32,11 +34,11 @@ trait BusinessServiceMock {
   lazy val mockBusinessService = mock[BusinessService]
 
   def mockGetBusiness(res: Future[Business]): OngoingStubbing[Future[Business]] = {
-    when(mockBusinessService.getBusiness(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])).thenReturn(res)
+    when(mockBusinessService.getBusiness(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier], any[Request[_]])).thenReturn(res)
   }
 
   def mockUpdateBusiness(res: Future[Business]): OngoingStubbing[Future[Business]] = {
-    when(mockBusinessService.updateBusiness(Matchers.any)(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier])).thenReturn(res)
+    when(mockBusinessService.updateBusiness(Matchers.any)(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier], any[Request[_]])).thenReturn(res)
   }
 
 }

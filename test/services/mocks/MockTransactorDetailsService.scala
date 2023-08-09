@@ -18,10 +18,12 @@ package services.mocks
 
 import models.{CurrentProfile, TransactorDetails}
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Request
 import services.TransactorDetailsService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -35,7 +37,7 @@ trait MockTransactorDetailsService extends MockitoSugar {
   def mockGetTransactorDetails(profile: CurrentProfile)(response: TransactorDetails): OngoingStubbing[Future[TransactorDetails]] =
     when(mockTransactorDetailsService.getTransactorDetails(
       ArgumentMatchers.eq(profile),
-      ArgumentMatchers.any[HeaderCarrier])
+      ArgumentMatchers.any[HeaderCarrier], any[Request[_]])
     ) thenReturn Future.successful(response)
 
   def mockSaveTransactorDetails[T](data: T)(response: TransactorDetails): OngoingStubbing[Future[TransactorDetails]] =
@@ -43,7 +45,7 @@ trait MockTransactorDetailsService extends MockitoSugar {
       ArgumentMatchers.eq(data)
     )(
       ArgumentMatchers.any[CurrentProfile],
-      ArgumentMatchers.any[HeaderCarrier]
+      ArgumentMatchers.any[HeaderCarrier], any[Request[_]]
     )) thenReturn Future.successful(response)
 
 }

@@ -22,6 +22,8 @@ import fixtures.ApplicantDetailsFixtures
 import models._
 import models.api.{Address, Individual, UkCompany}
 import models.external.Name
+import play.api.mvc.Request
+import play.api.test.FakeRequest
 import services.ApplicantDetailsService._
 import services.mocks.MockVatRegistrationService
 import testHelpers.VatRegSpec
@@ -43,6 +45,8 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
     )
   )
 
+  implicit val request: Request[_] = FakeRequest()
+
   class Setup(backendData: Option[ApplicantDetails] = None) {
     val service = new ApplicantDetailsService(
       mockRegistrationApiConnector,
@@ -57,7 +61,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       mockRegistrationApiConnector,
       vatRegistrationServiceMock
     ) {
-      override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier): Future[ApplicantDetails] = {
+      override def getApplicantDetails(implicit cp: CurrentProfile, hc: HeaderCarrier, req: Request[_]): Future[ApplicantDetails] = {
         Future.successful(applicantDetails)
       }
     }

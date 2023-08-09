@@ -20,6 +20,7 @@ import connectors.RegistrationApiConnector
 import featuretoggle.FeatureToggleSupport
 import models._
 import models.api.vatapplication._
+import play.api.mvc.Request
 import services.VatApplicationService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
@@ -35,14 +36,14 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
                                       timeService: TimeService
                                      )(implicit executionContext: ExecutionContext) extends FeatureToggleSupport {
 
-  def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
+  def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[VatApplication] = {
     registrationApiConnector.getSection[VatApplication](profile.registrationId).map {
       case Some(vatApplication) => vatApplication
       case None => VatApplication()
     }
   }
 
-  def saveVatApplication[T](data: T)(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] =
+  def saveVatApplication[T](data: T)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[VatApplication] =
     for {
       vatApplication <- getVatApplication
       updatedVatApplication = updateModel(data, vatApplication)
@@ -186,7 +187,7 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     }
   //scalastyle:on
 
-  def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[MandatoryDateModel] = {
+  def retrieveMandatoryDates(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[MandatoryDateModel] = {
     for {
       calcDate <- retrieveCalculatedStartDate
       optVatDate <- getVatApplication.map(_.startDate)
@@ -197,17 +198,17 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     }
   }
 
-  def retrieveCalculatedStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier): Future[LocalDate] = {
+  def retrieveCalculatedStartDate(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[LocalDate] = {
     vatService.getEligibilitySubmissionData.map(
       _.calculatedDate.getOrElse(throw new InternalServerException("[VatApplicationService] Missing calculated date"))
     )
   }
 
-  def getTurnover(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Option[BigDecimal]] = {
+  def getTurnover(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BigDecimal]] = {
     getVatApplication.map(_.turnoverEstimate)
   }
 
-  def isEligibleForAAS(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Boolean] = {
+  def isEligibleForAAS(implicit hc: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]): Future[Boolean] = {
     for {
       turnoverEstimates <- getTurnover
       isGroupRegistration <- vatService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
@@ -217,7 +218,7 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
   }
 
   def saveVoluntaryStartDate(dateChoice: DateSelection.Value, startDate: Option[LocalDate], incorpDate: LocalDate)
-                            (implicit hc: HeaderCarrier, profile: CurrentProfile): Future[VatApplication] = {
+                            (implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[VatApplication] = {
     val voluntaryDate = (dateChoice, startDate) match {
       case (DateSelection.company_registration_date, _) => incorpDate
       case (DateSelection.specific_date, Some(startDate)) => startDate
@@ -226,7 +227,7 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     saveVatApplication(voluntaryDate)
   }
 
-  def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[LocalDate] = for {
+  def calculateEarliestStartDate()(implicit hc: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]): Future[LocalDate] = for {
     isGroupRegistration <- vatService.getEligibilitySubmissionData.map(_.registrationReason.equals(GroupRegistration))
     dateOfIncorporationOption <-
       if (isGroupRegistration) {

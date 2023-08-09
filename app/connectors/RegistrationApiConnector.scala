@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import models._
 import play.api.http.Status._
 import play.api.libs.json._
+import play.api.mvc.Request
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -32,12 +33,14 @@ class RegistrationApiConnector @Inject()(val http: HttpClientV2,
                                          val config: FrontendAppConfig)
                                         (implicit ec: ExecutionContext) {
 
-  def getSection[T: ApiKey](regId: String, idx: Option[Int] = None)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
+  def getSection[T: ApiKey](regId: String, idx: Option[Int] = None)(implicit hc: HeaderCarrier, format: Format[T], request: Request[_]): Future[Option[T]] = {
     implicit object GetSectionHttpReads extends HttpReads[Option[T]] {
       override def read(method: String, url: String, response: HttpResponse): Option[T] = {
         response.status match {
           case OK => response.json.asOpt[T]
-          case NOT_FOUND => None
+          case NOT_FOUND =>
+            warnLog(s"[RegistrationApiConnector][getSection] Section ${ApiKey[T].key} not found")
+            None
           case _ => throw new InternalServerException(s"Unexpected response: ${response.body}")
         }
       }
@@ -62,12 +65,14 @@ class RegistrationApiConnector @Inject()(val http: HttpClientV2,
     http.get(url"${config.backendHost}/vatreg/registrations/$regId/sections/${ApiKey[T]}").execute
   }
 
-  def replaceSection[T: ApiKey](regId: String, section: T, idx: Option[Int] = None)(implicit hc: HeaderCarrier, format: Format[T]): Future[T] = {
+  def replaceSection[T: ApiKey](regId: String, section: T, idx: Option[Int] = None)(implicit hc: HeaderCarrier, format: Format[T], request: Request[_]): Future[T] = {
     implicit object ReplaceSectionHttpReads extends HttpReads[T] {
       override def read(method: String, url: String, response: HttpResponse): T = {
         response.status match {
           case OK => response.json.as[T]
-          case _ => throw new InternalServerException(s"Unexpected response: ${response.body}")
+          case _ =>
+            errorLog(s"[RegistrationApiConnector][replaceSection] failed to replace section ${ApiKey[T].key}")
+            throw new InternalServerException(s"Unexpected response: ${response.body}")
         }
       }
     }

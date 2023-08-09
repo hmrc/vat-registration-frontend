@@ -21,12 +21,15 @@ import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import models._
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 class BusinessServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
 
   val testService: BusinessService = new BusinessService(mockRegistrationApiConnector)
+
+  implicit val request = FakeRequest()
 
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 

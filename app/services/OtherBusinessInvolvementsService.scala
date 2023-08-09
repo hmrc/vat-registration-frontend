@@ -19,6 +19,7 @@ package services
 import config.Logging
 import connectors.RegistrationApiConnector
 import models.{CurrentProfile, OtherBusinessInvolvement}
+import play.api.mvc.Request
 import services.OtherBusinessInvolvementsService._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -29,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class OtherBusinessInvolvementsService @Inject()(registrationApiConnector: RegistrationApiConnector)
                                                 (implicit ec: ExecutionContext) extends Logging {
 
-  def getOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Option[OtherBusinessInvolvement]] =
+  def getOtherBusinessInvolvement(index: Int)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier, request: Request[_]): Future[Option[OtherBusinessInvolvement]] =
     registrationApiConnector.getSection[OtherBusinessInvolvement](profile.registrationId, Some(index))
 
   def getOtherBusinessInvolvements(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[List[OtherBusinessInvolvement]] =
@@ -38,7 +39,7 @@ class OtherBusinessInvolvementsService @Inject()(registrationApiConnector: Regis
   def getHighestValidIndex(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[Int] =
     getOtherBusinessInvolvements.map(_.length + 1)
 
-  def updateOtherBusinessInvolvement[T](index: Int, data: T)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier): Future[OtherBusinessInvolvement] = {
+  def updateOtherBusinessInvolvement[T](index: Int, data: T)(implicit profile: CurrentProfile, headerCarrier: HeaderCarrier, request: Request[_]): Future[OtherBusinessInvolvement] = {
     for {
       otherBusinessInvolvement <- getOtherBusinessInvolvement(index)
       updatedOtherBusinessInvolvement = updateModel(otherBusinessInvolvement.getOrElse(OtherBusinessInvolvement()), data)

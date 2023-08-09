@@ -55,18 +55,18 @@ trait MockVatRegistrationService extends MockitoSugar {
     )(
       any[HeaderCarrier],
       any[Format[T]],
-      any[ApiKey[T]]
+      any[ApiKey[T]], any[Request[_]]
     )) thenReturn response
 
   def mockPartyType(response: Future[PartyType]): OngoingStubbing[Future[PartyType]] =
     when(vatRegistrationServiceMock.partyType(
       any[CurrentProfile],
-      any[HeaderCarrier]
+      any[HeaderCarrier], any[Request[_]]
     )) thenReturn response
 
   def mockIsTransactor(response: Future[Boolean]): OngoingStubbing[Future[Boolean]] =
     when(vatRegistrationServiceMock.isTransactor(
       any[CurrentProfile],
-      any[HeaderCarrier]
+      any[HeaderCarrier], any[Request[_]]
     )) thenReturn response
 }

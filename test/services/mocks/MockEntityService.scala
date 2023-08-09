@@ -18,10 +18,12 @@ package services.mocks
 
 import models.Entity
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.Suite
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.Request
 import services.EntityService
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -36,7 +38,7 @@ trait MockEntityService extends MockitoSugar {
     when(mockEntityService.getEntity(
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(idx)
-    )(ArgumentMatchers.any[HeaderCarrier]
+    )(ArgumentMatchers.any[HeaderCarrier], any[Request[_]]
     )) thenReturn Future.successful(response)
   }
 
@@ -45,7 +47,7 @@ trait MockEntityService extends MockitoSugar {
       ArgumentMatchers.eq(regId),
       ArgumentMatchers.eq(index),
       ArgumentMatchers.eq(data)
-    )(ArgumentMatchers.any[HeaderCarrier]
+    )(ArgumentMatchers.any[HeaderCarrier], any[Request[_]]
     )) thenReturn Future.successful(response)
 
 }

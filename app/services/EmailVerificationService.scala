@@ -18,6 +18,7 @@ package services
 
 import connectors.{RequestEmailVerificationPasscodeConnector, VerifyEmailVerificationPasscodeConnector}
 import models.external.{RequestEmailPasscodeResult, VerifyEmailPasscodeResult}
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
@@ -27,7 +28,7 @@ import scala.concurrent.Future
 class EmailVerificationService @Inject()(requestPasscodeConnector: RequestEmailVerificationPasscodeConnector,
                                          verifyPasscodeConnector: VerifyEmailVerificationPasscodeConnector) {
 
-  def requestEmailVerificationPasscode(email: String)(implicit hc: HeaderCarrier): Future[RequestEmailPasscodeResult] =
+  def requestEmailVerificationPasscode(email: String)(implicit hc: HeaderCarrier, request: Request[_]): Future[RequestEmailPasscodeResult] =
     requestPasscodeConnector.requestEmailVerificationPasscode(email)
 
   def verifyEmailVerificationPasscode(email: String, passcode: String)(implicit hc: HeaderCarrier): Future[VerifyEmailPasscodeResult] =
