@@ -18,7 +18,7 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import models.api.{Attached, Attachments, LandPropertyOtherDocs}
+import models.api.{Upload, Attachments, LandPropertyOtherDocs}
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -40,7 +40,7 @@ class UploadSupportingDocumentController @Inject()(view: UploadDocument,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     attachmentsService.getAttachmentDetails(profile.registrationId).flatMap {
-      case Some(Attachments(Some(Attached), _, _, Some(true), _)) =>
+      case Some(Attachments(Some(Upload), _, _, Some(true), _, _)) =>
         upscanService.fetchAllUpscanDetails(profile.registrationId).flatMap {
           case list if list.count(_.attachmentType.equals(LandPropertyOtherDocs)) < 20 =>
             upscanService.initiateUpscan(profile.registrationId, LandPropertyOtherDocs).map { upscanResponse =>

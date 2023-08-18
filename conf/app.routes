@@ -403,6 +403,10 @@ GET         /multiple-documents-required                              controller
 GET         /vat1TR-required                                          controllers.attachments.Vat1TRRequiredController.show
 POST        /documents-required                                       controllers.attachments.DocumentsRequiredController.submit
 
+## Postal Confirmation Page
+GET         /postal-confirmation                                      controllers.attachments.PostalConfirmationController.show
+POST        /postal-confirmation                                      controllers.attachments.PostalConfirmationController.submit
+
 ## Documents Post Page
 GET         /post-documents                                           controllers.attachments.DocumentsPostController.show
 

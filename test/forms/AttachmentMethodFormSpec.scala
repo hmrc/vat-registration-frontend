@@ -27,7 +27,7 @@ class AttachmentMethodFormSpec extends VatRegSpec {
     "bind" when {
       "upload is selected" in {
         val res = form().bind(Map("value" -> "2"))
-        res.value mustBe Some(Attached)
+        res.value mustBe Some(Upload)
       }
       "post is selected" in {
         val res = form().bind(Map("value" -> "3"))

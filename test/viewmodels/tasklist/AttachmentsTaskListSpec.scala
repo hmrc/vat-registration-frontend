@@ -177,7 +177,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           startDate = Some(LocalDate.of(2017, 10, 10))
         )),
         flatRateScheme = Some(validFlatRate),
-        attachments = Some(Attachments(Some(Attached)))
+        attachments = Some(Attachments(Some(Upload)))
       )
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List(VAT2)))
@@ -200,7 +200,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           startDate = Some(LocalDate.of(2017, 10, 10))
         )),
         flatRateScheme = Some(validFlatRate),
-        attachments = Some(Attachments(Some(Attached)))
+        attachments = Some(Attachments(Some(Upload)))
       )
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))

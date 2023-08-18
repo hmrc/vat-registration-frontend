@@ -46,7 +46,7 @@ object AttachmentMethodForm {
   def formatter: Formatter[AttachmentMethod] = new Formatter[AttachmentMethod] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], AttachmentMethod] = {
       data.get(key) match {
-        case Some(Options.Upload) => Right(Attached)
+        case Some(Options.Upload) => Right(Upload)
         case Some(Options.Post) => Right(Post)
         case _ => Left(Seq(FormError(key, Messages.invalidSelection)))
       }
@@ -54,7 +54,7 @@ object AttachmentMethodForm {
 
     override def unbind(key: String, value: AttachmentMethod): Map[String, String] = {
       val selectedOption = value match {
-        case Attached => Options.Upload
+        case Upload => Options.Upload
         case Post => Options.Post
       }
       Map(key -> selectedOption)

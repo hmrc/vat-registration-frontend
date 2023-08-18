@@ -103,7 +103,7 @@ class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAsse
           .thenReturn(Future.successful(List(IdentityEvidence)))
 
         when(mockAttachmentsService.getAttachmentDetails(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Attachments(method = Some(Attached)))))
+          .thenReturn(Future.successful(Some(Attachments(method = Some(Upload)))))
 
         when(vatRegistrationServiceMock.getAckRef(ArgumentMatchers.eq(validVatScheme.registrationId))(any(), any()))
           .thenReturn(Future.successful("123412341234"))

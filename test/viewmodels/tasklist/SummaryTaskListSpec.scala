@@ -146,7 +146,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
             hasTaxRepresentative = Some(false),
             startDate = Some(LocalDate.of(2017, 10, 10))
           )),
-          attachments = Some(Attachments(Some(Attached)))
+          attachments = Some(Attachments(Some(Upload)))
         )
 
         when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))

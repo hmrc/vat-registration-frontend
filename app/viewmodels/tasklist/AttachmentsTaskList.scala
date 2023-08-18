@@ -84,7 +84,7 @@ class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTask
     val checkFailed = Seq(false)
     scheme.attachments.map {
       _.method match {
-        case Some(Attached) =>
+        case Some(Upload) =>
           incompleteAttachments match {
             case Nil => checkPassed
             case _ => checkPassed ++ checkFailed

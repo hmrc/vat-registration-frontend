@@ -48,7 +48,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "return OK and render the page with the Upload option selected" in new Setup {
         given
           .user.isAuthorised()
-          .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(Attached))))
+          .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(Upload))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -66,7 +66,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
       "store the answer and redirect to the next page" in new Setup {
         given
           .user.isAuthorised()
-          .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
           .upscanApi.deleteAttachments()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
@@ -87,7 +87,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
           .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
         given
           .user.isAuthorised()
-          .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
+          .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
           .upscanApi.fetchAllUpscanDetails(List())
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -96,7 +96,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.PostalConfirmationController.show.url)
       }
     }
       "upscan is in progress" must {
@@ -106,7 +106,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
             .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
           given
             .user.isAuthorised()
-            .registrationApi.replaceSection[Attachments](Attachments(Some(Attached)))
+            .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
             .upscanApi.fetchAllUpscanDetails(List(UpscanDetails(VAT51, "ref", None, InProgress, None)))
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 

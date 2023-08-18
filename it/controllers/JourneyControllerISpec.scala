@@ -19,7 +19,7 @@ package controllers
 import common.enums.VatRegStatus
 import config.FrontendAppConfig
 import itutil.ControllerISpec
-import models.api.{Attached, Attachments, EligibilitySubmissionData, VatSchemeHeader}
+import models.api.{Upload, Attachments, EligibilitySubmissionData, VatSchemeHeader}
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
@@ -119,7 +119,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .registrationApi.getSection(Some(VatRegStatus.draft))
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme).as[JsObject]
-          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
+          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Upload)))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -137,7 +137,7 @@ class JourneyControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(Json.toJson(emptyUkCompanyVatScheme.copy(
           applicationReference = Some("application reference")
         )).as[JsObject]
-          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
+          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Upload)))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -156,7 +156,7 @@ class JourneyControllerISpec extends ControllerISpec {
           applicationReference = Some("application reference"),
           confirmInformationDeclaration = Some(true)
         )).as[JsObject]
-          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Attached)))))
+          ++ Json.obj("attachments" -> Json.toJson(Attachments(Some(Upload)))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 

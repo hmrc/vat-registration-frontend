@@ -45,7 +45,7 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     val view = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else viewOldJourney.apply _
     attachmentsService.getAttachmentDetails(profile.registrationId).map {
-      case Some(Attachments(Some(method), _, _, _, _)) =>
+      case Some(Attachments(Some(method), _, _, _, _, _)) =>
         Ok(view(form().fill(method)))
       case _ =>
         Ok(view(form()))
@@ -71,16 +71,17 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
   }
 
   private def storeAttachmentDetails(profile: CurrentProfile, attachmentMethod: AttachmentMethod)(implicit request: Request[_]) = {
+    val isNewJourney = isEnabled(VrsNewAttachmentJourney)
     attachmentsService
       .storeAttachmentDetails(profile.registrationId, attachmentMethod)
       .flatMap { _ =>
         attachmentMethod match {
-          case Attached =>
+          case Upload =>
             upscanService.deleteAllUpscanDetails(profile.registrationId).map { _ =>
               Redirect(controllers.fileupload.routes.UploadDocumentController.show)
             }
           case Post =>
-            Future.successful(Redirect(routes.DocumentsPostController.show))
+            Future.successful(Redirect(if(isNewJourney) routes.PostalConfirmationController.show else routes.DocumentsPostController.show))
         }
       }
   }

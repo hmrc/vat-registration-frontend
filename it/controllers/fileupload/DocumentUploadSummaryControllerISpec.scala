@@ -42,7 +42,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
           .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-          .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
+          .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -56,7 +56,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
           .user.isAuthorised()
           .upscanApi.fetchAllUpscanDetails(testUpscanDetailsWithMissingUploadDetails)
           .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-          .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
+          .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -73,7 +73,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
         .attachmentsApi.getIncompleteAttachments(List(VAT5L))
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -88,7 +88,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L))
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached))))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -103,7 +103,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(Attachment1614a))
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(true), None, Some(true))))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(true), None, Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -118,7 +118,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(LandPropertyOtherDocs))
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(false), Some(false), Some(true))))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(false), Some(false), Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
