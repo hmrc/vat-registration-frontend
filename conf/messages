@@ -549,8 +549,8 @@ validation.turnoverEstimate.missing                         = Enter the VAT-taxa
 validation.turnoverEstimate.invalid                         = Enter the VAT-taxable turnover, expected for the next 12 months, in the correct format
 validation.turnoverEstimate.commasNotAllowed                = The VAT-taxable turnover, expected for the next 12 months, amount cannot include commas
 validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed   = The VAT-taxable turnover, expected for the next 12 months, can only include pounds and pence
-validation.turnoverEstimate.range.above                     = Give an estimate that is more than or equal to £{0}
-validation.turnoverEstimate.range.below                     = Give an estimate that is less than or equal to £{0}
+validation.turnoverEstimate.range.above                     = Give an estimate that is less than or equal to £{0}
+validation.turnoverEstimate.range.below                     = Give an estimate that is more than or equal to £{0}
 
 # Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
