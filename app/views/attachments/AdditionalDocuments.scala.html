@@ -32,21 +32,21 @@
 
 @(attachments: List[AttachmentType], applicantName: Option[String], transactorName: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm(messages("attachments.multipleDocumentsRequired.title")))) {
+@layout(pageTitle = Some(titleNoForm(messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.title")))) {
 
-    @h1("attachments.vRSNewAttachmentJourney.title")
+    @h1("vRSNewAttachmentsJourney.multipleDocumentsRequired.title")
 
-    @p { @messages("attachments.vRSNewAttachmentJourney.para") }
+    @p { @messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.para") }
 
     @bulletsHtml(
         attachments.map {
             case VAT2 => vat2Block
             case VAT51 => vat51Block
-            case IdentityEvidence => Html(messages("attachments.vRSNewAttachmentJourney.identityEvidence"))
-            case TransactorIdentityEvidence => Html(transactorName.map(name => messages("attachments.vRSNewAttachmentJourney.identityEvidence.name", name)))
+            case IdentityEvidence => Html(messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.identityEvidence"))
+            case TransactorIdentityEvidence => Html(transactorName.map(name => messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.identityEvidence.name", name)))
             case VAT5L => vat5LBlock
             case TaxRepresentativeAuthorisation => vat1TRBlock
-            case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
+            case attachment => Html(messages(s"vRSNewAttachmentsJourney.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
         }
         ::: attachments.map{
             case VAT5L => vat1614Block
@@ -96,14 +96,14 @@
 }
 
 @vat2Block = {
-    @link(appConfig.vat2Link, "attachments.multipleDocumentsRequired.VAT2.link")
+    @link(appConfig.vat2Link, "vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT2.link")
     @messages("attachments.multipleDocumentsRequired.VAT2.end")
 }
 
 @vat51Block = {
 @link(
 link = appConfig.vat51Link,
-messageKey = messages("attachments.vRSNewAttachmentJourney.VAT51.link"),
+messageKey = messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT51.link"),
 isButton = false
 )
 }
@@ -111,7 +111,7 @@ isButton = false
 @vat5LBlock = {
     @link(
         link = appConfig.vat5LLink,
-        messageKey = messages("attachments.vRSNewAttachmentJourney.VAT5L.link"),
+        messageKey = messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT5L.link"),
     )
 }
 
@@ -120,10 +120,10 @@ isButton = false
         link = appConfig.vat1614ALink,
         messageKey = messages("attachments.multipleDocumentsRequired.VAT1614A.link"),
     )
-    @messages("attachments.vRSNewAttachmentJourney.VAT1614.para2")
+    @messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT1614.para2")
     @link(
         link = appConfig.vat1614HLink,
-        messageKey = messages("attachments.vRSNewAttachmentJourney.VAT1614H.link"),
+        messageKey = messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT1614H.link"),
     )
     @messages("attachments.multipleDocumentsRequired.VAT1614.para3")
 }
@@ -135,7 +135,7 @@ isButton = false
 @vat1TRBlock = {
 @link(
 link = appConfig.vat1trLink,
-messageKey = messages("attachments.vRSNewAttachmentJourney.VAT1TR.link"),
+messageKey = messages("vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT1TR.link"),
 isButton = false
 )
 }

@@ -1315,19 +1315,29 @@ attachments.multipleDocumentsRequired.VAT1614H.link                 = VAT1614H f
 attachments.multipleDocumentsRequired.VAT1614.para3                 = if you have decided to, or want to opt to tax land or buildings
 attachments.multipleDocumentsRequired.supportingDocs.para1          = any supporting documents
 
-# NEW ATTACHMENT JOURNEY
-attachments.vRSNewAttachmentJourney.title                       = You must send us additional documents so we can process your VAT application
-attachments.vRSNewAttachmentJourney.para                        = We need the following forms and documents from you (all links open a new tab):
-attachments.vRSNewAttachmentJourney.identityDocuments           = 3 documents to confirm your identity
-attachments.vRSNewAttachmentJourney.VAT51.link                  = VAT50/51
-attachments.vRSNewAttachmentJourney.VAT2.link                   = VAT2
-attachments.vRSNewAttachmentJourney.VAT1614H.link               = VAT1614H
-attachments.vRSNewAttachmentJourney.VAT1614.para2               = or a
-attachments.vRSNewAttachmentJourney.VAT1TR.link                 = VAT1TR
-attachments.vRSNewAttachmentJourney.VAT5L.link                  = VAT5L
-attachments.vRSNewAttachmentJourney.identityEvidence            = 3 documents to confirm your identity
-attachments.vRSNewAttachmentJourney.identityEvidence.name       = 3 documents to confirm {0}’s identity
-attachments.documentsPostError.title                            = Cannot post documents; upload journey in progress
+# MULTIPLE DOCUMENTS NEW ATTACHMENT JOURNEY
+vRSNewAttachmentsJourney.multipleDocumentsRequired.title                       = You must send us additional documents so we can process your VAT application
+vRSNewAttachmentsJourney.multipleDocumentsRequired.para                        = We need the following forms and documents from you (all links open a new tab):
+vRSNewAttachmentsJourney.multipleDocumentsRequired.identityDocuments           = 3 documents to confirm your identity
+vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT51.link                  = VAT50/51
+vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT2.link                   = VAT2
+vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT1614H.link               = VAT1614H
+vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT1614.para2               = or a
+vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT1TR.link                 = VAT1TR
+vRSNewAttachmentsJourney.multipleDocumentsRequired.VAT5L.link                  = VAT5L
+vRSNewAttachmentsJourney.multipleDocumentsRequired.identityEvidence            = 3 documents to confirm your identity
+vRSNewAttachmentsJourney.multipleDocumentsRequired.identityEvidence.name       = 3 documents to confirm {0}’s identity
+
+# POSTAL CONFIRMATION
+attachments.postalConfirmation.title                              = Posting your additional forms and documents
+attachments.postalConfirmation.para                               = Uploading your forms and documents will usually mean we can process your application more quickly
+attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
+attachments.postalConfirmation.para1                              = If we do not receive your forms and documents within a reasonable period of time your application may become void and you will need to start your application again.
+attachments.postalConfirmation.para2                              = Do you still want to post your additional forms and documents?
+attachments.postalConfirmation.bullet1                            = Yes, I want to post them
+attachments.postalConfirmation.bullet2                            = No, I want to upload them
+attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
+attachments.postalConfirmation.noText                             = No, I want to upload them
 
 # IDENTITY EVIDENCE REQUIRED
 attachments.identityEvidenceRequired.title                      = You must send us three identity documents in order for us to process this VAT application

@@ -34,16 +34,8 @@ trait FeatureToggleSupport extends LoggingUtil {
     getValue(featureSwitch.name)
   }
 
-  def getValue(configurableValue: ConfigurableValue)(implicit appConfig: FrontendAppConfig): String = {
-    getValue(configurableValue.name)
-  }
-
   def isEnabled(featureSwitch: FeatureSwitch)(implicit appConfig: FrontendAppConfig): Boolean = {
     getValue(featureSwitch).toBoolean
-  }
-
-  def isDisabled(featureSwitch: FeatureSwitch)(implicit appConfig: FrontendAppConfig): Boolean = {
-    !getValue(featureSwitch).toBoolean
   }
 
   def setValue(key: String, value: String): SystemProperties = {
@@ -52,22 +44,6 @@ trait FeatureToggleSupport extends LoggingUtil {
 
   def setValue(featureSwitch: FeatureSwitch, value: String): SystemProperties = {
     setValue(featureSwitch.name, value)
-  }
-
-  def setValue(configurableValue: ConfigurableValue, value: String): SystemProperties = {
-    setValue(configurableValue.name, value)
-  }
-
-  def resetValue(key: String): SystemProperties = {
-    sys.props -= key
-  }
-
-  def resetValue(configurableValue: ConfigurableValue): SystemProperties = {
-    resetValue(configurableValue.name)
-  }
-
-  def resetValue(featureSwitch: FeatureSwitch): SystemProperties = {
-    resetValue(featureSwitch.name)
   }
 
   def enable(featureSwitch: FeatureSwitch): SystemProperties = {
@@ -80,9 +56,5 @@ trait FeatureToggleSupport extends LoggingUtil {
     setValue(featureSwitch, false.toString)
   }
 
-  def resetAll(): Unit = {
-    FeatureSwitch.featureSwitches.foreach(resetValue)
-    ConfigurableValue.configurableValues.foreach(resetValue)
-  }
 }
 object FeatureToggleSupport extends FeatureToggleSupport

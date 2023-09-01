@@ -24,7 +24,8 @@ case class Attachments(method: Option[AttachmentMethod] = None,
                        supplyVat1614a: Option[Boolean] = None,
                        supplyVat1614h: Option[Boolean] = None,
                        supplySupportingDocuments: Option[Boolean] = None,
-                       additionalPartnersDocuments: Option[Boolean] = None)
+                       additionalPartnersDocuments: Option[Boolean] = None,
+                       confirmPostDocuments: Option[Boolean] = None)
 
 object Attachments {
   implicit val apiKey: ApiKey[Attachments] = ApiKey("attachments")
@@ -33,13 +34,13 @@ object Attachments {
 
 sealed trait AttachmentMethod
 
-case object Attached extends AttachmentMethod
+case object Upload extends AttachmentMethod
 
 case object Post extends AttachmentMethod
 
 object AttachmentMethod {
   val map: Map[AttachmentMethod, String] = Map(
-    Attached -> "2",
+    Upload -> "2",
     Post -> "3"
   )
   val inverseMap: Map[String, AttachmentMethod] = map.map(_.swap)

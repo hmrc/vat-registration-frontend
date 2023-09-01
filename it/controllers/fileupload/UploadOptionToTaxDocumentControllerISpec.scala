@@ -39,7 +39,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
         .upscanApi.upscanInitiate(testReference)
         .upscanApi.storeUpscanReference(testReference, Attachment1614a)
         .upscanApi.fetchAllUpscanDetails(Nil)
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(true), None, None)))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(true), None, None)))
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -55,7 +55,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
         .upscanApi.upscanInitiate(testReference)
         .upscanApi.storeUpscanReference(testReference, Attachment1614h)
         .upscanApi.fetchAllUpscanDetails(Nil)
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(false), Some(true), None)))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(false), Some(true), None)))
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -73,7 +73,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
         .upscanApi.storeUpscanReference(testReference, Attachment1614a)
         .upscanApi.fetchAllUpscanDetails(List(testUpscanDetails))
         .upscanApi.deleteUpscanDetails(testRegId, testReference)
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(true), None, None)))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(true), None, None)))
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -89,7 +89,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
         .upscanApi.upscanInitiate(testReference)
         .upscanApi.storeUpscanReference(testReference, Attachment1614a)
         .upscanApi.fetchAllUpscanDetails(Nil)
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(true), None, None)))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(true), None, None)))
 
       val response: Future[WSResponse] = buildClient(s"$url?errorCode=EntityTooLarge").get()
 
@@ -102,7 +102,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), Some(false), Some(false), None)))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), Some(false), Some(false), None)))
 
       val response: Future[WSResponse] = buildClient(url).get()
 
@@ -116,7 +116,7 @@ class UploadOptionToTaxDocumentControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[Attachments](Some(Attachments(Some(Attached), None, None, None)))
+        .registrationApi.getSection[Attachments](Some(Attachments(Some(Upload), None, None, None)))
 
       val response: Future[WSResponse] = buildClient(url).get()
 

@@ -137,7 +137,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
       "the answer is 'No" must {
         "redirect to the task list page" in new Setup {
-          val testAttachmentDetails: Attachments = Attachments(Some(Attached), None, None, Some(true))
+          val testAttachmentDetails: Attachments = Attachments(Some(Upload), None, None, Some(true))
 
           given()
             .user.isAuthorised()
@@ -160,7 +160,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
       )
 
       "redirect to the additional partners controller" in new Setup {
-        val testAttachmentDetails: Attachments = Attachments(Some(Attached), None, None, Some(true))
+        val testAttachmentDetails: Attachments = Attachments(Some(Upload), None, None, Some(true))
 
         given()
           .user.isAuthorised()

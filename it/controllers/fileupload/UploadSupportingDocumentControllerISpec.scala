@@ -31,7 +31,7 @@ class UploadSupportingDocumentControllerISpec extends ControllerISpec {
 
   val testReference = "testReference"
 
-  val testAttachmentDetails: Attachments = Attachments(Some(Attached), None, None, Some(true))
+  val testAttachmentDetails: Attachments = Attachments(Some(Upload), None, None, Some(true))
   val supportingAttachmentDetails: UpscanDetails = UpscanDetails(LandPropertyOtherDocs, testReference, None, Ready, None, None)
 
   s"GET $url" must {

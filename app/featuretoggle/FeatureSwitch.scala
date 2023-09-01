@@ -18,8 +18,6 @@ package featuretoggle
 
 object FeatureSwitch {
 
-  val prefix = "feature-toggles"
-
   val featureSwitches: Seq[FeatureSwitch] = Seq(
     StubIncorpIdJourney,
     StubEmailVerification,

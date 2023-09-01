@@ -137,7 +137,7 @@ class RemovePartnerEntityControllerISpec extends ControllerISpec {
     }
 
     "return a redirect to partner summary page after deleting and no of partners are now under the max limit" in new Setup {
-      val testAttachmentDetails: Attachments = Attachments(Some(Attached), None, None, Some(true))
+      val testAttachmentDetails: Attachments = Attachments(Some(Upload), None, None, Some(true))
       val entities: List[Entity] = List.fill(10)(Entity(Some(testSoleTrader), Individual, Some(true), None, None, None, None))
 
       given()
