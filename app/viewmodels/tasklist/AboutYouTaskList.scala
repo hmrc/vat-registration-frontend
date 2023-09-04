@@ -41,7 +41,7 @@ object AboutYouTaskList {
   // scalastyle:off
   def personalDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = scheme => buildMessageKey("personalDetails", scheme),
-    url = scheme => {
+    url = scheme => _ => {
       if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
         controllers.applicant.routes.FormerNameController.show.url
       } else {
@@ -84,7 +84,7 @@ object AboutYouTaskList {
   def leadPartnerDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.leadPartnerDetails",
-      url = _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
+      url = _ => _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
       tagId = "leadPartnerDetailsRow",
       checks = scheme => Seq(
         scheme.entities.exists(_.nonEmpty),
@@ -97,7 +97,7 @@ object AboutYouTaskList {
   def addressDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = scheme => buildMessageKey("addressDetails", scheme),
-      url = vatScheme => resolveAddressRowUrl(vatScheme),
+      url = vatScheme => _ => resolveAddressRowUrl(vatScheme),
       tagId = "addressDetailsRow",
       checks = addressDetailsChecks,
       prerequisites = _ => Seq(personalDetailsRow)
@@ -107,7 +107,7 @@ object AboutYouTaskList {
   def contactDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = scheme => buildMessageKey("contactDetails", scheme),
-      url = _ => controllers.applicant.routes.CaptureEmailAddressController.show.url,
+      url = _ => _ => controllers.applicant.routes.CaptureEmailAddressController.show.url,
       tagId = "contactDetailsRow",
       checks = scheme => {
         Seq(

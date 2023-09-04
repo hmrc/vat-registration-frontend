@@ -23,6 +23,7 @@
 @import views.html.layouts.layout
 
 @this(
+        appConfig: FrontendAppConfig,
         layout: layout,
         h1: h1,
         p: p,
@@ -34,7 +35,7 @@
         panelIndent: panelIndent
 )
 
-@(upscanResponse: UpscanResponse, optHintHtml: Option[Html], attachmentType: AttachmentType, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(upscanResponse: UpscanResponse, optHintHtml: Option[Html], attachmentType: AttachmentType, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = Some(titleNoForm(heading))) {
 

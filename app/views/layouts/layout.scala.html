@@ -20,6 +20,7 @@
 @import views.html.helper.CSPNonce
 
 @this(
+    appConfig: FrontendAppConfig,
     govukBackLink: GovukBackLink,
     hmrcLayout: HmrcLayout,
     hmrcTimeoutDialog: HmrcTimeoutDialog,
@@ -33,7 +34,7 @@
         backLink: Boolean = true,
         signOutLink: Boolean = true,
         timeout: Boolean = true
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
 @head = {
     <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->

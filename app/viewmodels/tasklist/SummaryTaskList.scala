@@ -32,7 +32,7 @@ object SummaryTaskList {
 
     TaskListRowBuilder(
       messageKey = _ => "tasklist.vatRegistration.cya.submit",
-      url= _ => controllers.routes.SummaryController.show.url,
+      url= _ => _ => controllers.routes.SummaryController.show.url,
       tagId = "summaryRow",
       checks = _ => Seq(false),
       prerequisites = vatScheme => Seq(

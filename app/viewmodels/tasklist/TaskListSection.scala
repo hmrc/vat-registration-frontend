@@ -52,7 +52,8 @@ object TaskListSections {
 case class TaskListSectionRow(messageKey: String,
                               url: String,
                               tagId: String,
-                              status: TaskListState)
+                              status: TaskListState,
+                              canEdit: Boolean = false)
 
 sealed trait TaskListState
 
@@ -63,3 +64,5 @@ case object TLNotStarted extends TaskListState
 case object TLInProgress extends TaskListState
 
 case object TLCompleted extends TaskListState
+
+case object TLFailed extends TaskListState

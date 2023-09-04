@@ -53,17 +53,17 @@ def showVatStubPage: Action[AnyContent] = isAuthenticatedWithProfileNoStatusChec
   def submitVatStubPage: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-    VatStubForm.form.bindFromRequest.fold(
-      errors =>
-        Future.successful(BadRequest(vatStubView(errors))),
-      values =>
-        testVatRegistrationConnector.hitVatStub(values.stubUserId, profile.registrationId) map { res =>
-          res.status match {
-            case CREATED => Redirect(Call("GET", controllers.routes.ManageRegistrationsController.show.url))
-            case _ => Ok("Error")
-          }
-        }
-    )
+        VatStubForm.form.bindFromRequest.fold(
+          errors =>
+            Future.successful(BadRequest(vatStubView(errors))),
+          values =>
+            testVatRegistrationConnector.hitVatStub(values.stubUserId, profile.registrationId) map { res =>
+              res.status match {
+                case CREATED => Redirect(Call("GET", controllers.routes.ManageRegistrationsController.show.url))
+                case _ => Ok("Error")
+              }
+            }
+        )
   }
 
 }

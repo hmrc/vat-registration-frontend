@@ -46,7 +46,7 @@ object AboutYouTransactorTaskList {
 
   def transactorPersonalDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutYou.personalDetails",
-    url = _ => {
+    url = _ => _ => {
       if (profile.agentReferenceNumber.isDefined) {
         controllers.transactor.routes.AgentNameController.show.url
       } else {
@@ -81,7 +81,7 @@ object AboutYouTransactorTaskList {
   def transactorAddressDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.addressDetails",
-      url = vatScheme => resolveAddressRowUrl(vatScheme),
+      url = vatScheme => _ => resolveAddressRowUrl(vatScheme),
       tagId = "addressDetailsRow",
       checks = scheme => {
         if (scheme.transactorDetails.flatMap(_.personalDetails).exists(_.arn.isDefined)) {
@@ -97,7 +97,7 @@ object AboutYouTransactorTaskList {
   def transactorContactDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.contactDetails",
-      url = _ => controllers.transactor.routes.TelephoneNumberController.show.url,
+      url = _ => _ => controllers.transactor.routes.TelephoneNumberController.show.url,
       tagId = "contactDetailsRow",
       checks = scheme => {
         Seq(

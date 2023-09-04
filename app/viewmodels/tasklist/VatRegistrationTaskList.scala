@@ -42,7 +42,7 @@ object VatRegistrationTaskList {
 
   def goodsAndServicesRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
-    url = _ => controllers.vatapplication.routes.ImportsOrExportsController.show.url,
+    url = _ => _ => controllers.vatapplication.routes.ImportsOrExportsController.show.url,
     tagId = "goodsAndServicesRow",
     checks = scheme => {
       checkImportsAndExports(scheme).++ {
@@ -53,7 +53,7 @@ object VatRegistrationTaskList {
           scheme.vatApplication.exists(_.northernIrelandProtocol.exists(_.goodsFromEU.isDefined)),
           scheme.vatApplication.exists(_.claimVatRefunds.isDefined)
         )
-      }.++ {
+      } ++ {
         scheme.partyType match {
           case Some(NETP) | Some(NonUkNonEstablished) if scheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
             scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
@@ -67,7 +67,7 @@ object VatRegistrationTaskList {
 
   def bankAccountDetailsRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.bankAccountDetails",
-    url = _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
+    url = _ => _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
     tagId = "bankAccountDetailsRow",
     checks = scheme => {
       Seq(scheme.bankAccount.isDefined)
@@ -84,7 +84,7 @@ object VatRegistrationTaskList {
 
   def registrationDateRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.registrationDate",
-    url = _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
+    url = _ => _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
     tagId = "vatRegistrationDateRow",
     checks = scheme => {
       Seq(scheme.vatApplication.exists(_.startDate.isDefined))
@@ -101,7 +101,7 @@ object VatRegistrationTaskList {
 
   def vatReturnsRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
-    url = _ => controllers.vatapplication.routes.ReturnsFrequencyController.show.url,
+    url = _ => _ => controllers.vatapplication.routes.ReturnsFrequencyController.show.url,
     tagId = "vatReturnsRow",
     checks = scheme => scheme.vatApplication.fold(Seq(false))(vatAppl =>
       checkVatReturns(scheme.partyType, vatAppl, scheme.eligibilitySubmissionData.exists(_.fixedEstablishmentInManOrUk))
@@ -116,7 +116,7 @@ object VatRegistrationTaskList {
 
   def flatRateSchemeRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.flatRateScheme",
-    url = _ => controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url,
+    url = _ => _ => controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url,
     tagId = "flatRateScheme",
     checks = scheme => {
       scheme.flatRateScheme match {
