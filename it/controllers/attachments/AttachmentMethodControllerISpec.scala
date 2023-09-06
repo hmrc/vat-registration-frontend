@@ -1,6 +1,7 @@
 
 package controllers.attachments
 
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import fixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
@@ -64,6 +65,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
   "POST /register-for-vat/attachment-method" when {
     "Upload is selected" must {
       "store the answer and redirect to the next page" in new Setup {
+        enable(VrsNewAttachmentJourney)
         given
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
@@ -82,6 +84,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
     "Post is selected" when {
       "no upscan details are present" must {
       "store the answer and redirect to the next page" in new Setup {
+        enable(VrsNewAttachmentJourney)
         given
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
