@@ -549,8 +549,8 @@ validation.turnoverEstimate.missing                         = Nodwch y trosiant 
 validation.turnoverEstimate.invalid                         = Nodwch y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf, yn y fformat cywir
 validation.turnoverEstimate.commasNotAllowed                = Ni all y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf, gynnwys atalnodau
 validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed   = Gall y trosiant y gellir codi TAW arno, a ddisgwylir ar gyfer y 12 mis nesaf, gynnwys punnoedd a cheiniogau’n unig.
-validation.turnoverEstimate.range.above                     = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
-validation.turnoverEstimate.range.below                     = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
+validation.turnoverEstimate.range.above                     = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
+validation.turnoverEstimate.range.below                     = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
 
 # Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = Beth fydd gwerth nwyddau trethadwy cyfradd sero’r busnes dros y 12 mis nesaf?
