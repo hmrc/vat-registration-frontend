@@ -26,6 +26,7 @@ import views.html.attachments.{AdditionalDocuments, MultipleDocumentsRequired, P
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import models.api.{Post, Upload}
+import utils.LoggingUtil
 
 @Singleton
 class PostalConfirmationController @Inject()(val authConnector: AuthClientConnector,
@@ -36,7 +37,7 @@ class PostalConfirmationController @Inject()(val authConnector: AuthClientConnec
                                             (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile{
+  extends BaseController with SessionProfile with LoggingUtil {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -52,9 +53,11 @@ class PostalConfirmationController @Inject()(val authConnector: AuthClientConnec
         answer => {
           attachmentsService.storeAttachmentDetails(profile.registrationId, if(answer) Post else Upload)
           if (answer) {
+            logger.info("[PostalConfirmationController][submit] Yes selected; redirecting to Post Documents page")
             Future.successful(Redirect(routes.DocumentsPostController.show))
           }
           else {
+            logger.info("[PostalConfirmationController][submit] No selected; redirecting to Upload task list")
             Future.successful(Redirect(controllers.routes.TaskListController.show)) // TODO: placeholder; redirect to correct page when DL-10922 completed
           }
         }
