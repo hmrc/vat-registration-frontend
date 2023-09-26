@@ -74,6 +74,7 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
         case DeclarationCapacityAnswer(BoardMember, _) => Some("declarationCapacity.boardMember")
         case DeclarationCapacityAnswer(AuthorisedEmployee, _) => Some("declarationCapacity.authorisedEmployee")
         case DeclarationCapacityAnswer(OtherDeclarationCapacity, role) => role
+        case answer => throw new IllegalStateException("Invalid declaration capacity answer:" + answer)
       },
       Some(controllers.transactor.routes.DeclarationCapacityController.show.url)
     )
