@@ -49,10 +49,8 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
     val view = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else viewOldJourney.apply _
     attachmentsService.getAttachmentDetails(profile.registrationId).map {
       case Some(Attachments(Some(method), _, _, _, _, _)) =>
-        logger.info(s"[AttachmentMethodController][show] Loading form with $method method selected")
         Ok(view(form().fill(method)))
       case _ =>
-        logger.info("[AttachmentMethodController][show] Loading empty form")
         Ok(view(form()))
     }
   }
@@ -61,10 +59,8 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
     val isNewJourney = isEnabled(VrsNewAttachmentJourney)
     val view = if (isNewJourney) viewNewAttachmentJourney.apply _ else viewOldJourney.apply _
     form().bindFromRequest().fold(
-      formWithErrors => {
-        logger.warn("[AttachmentMethodController][submit] Loading form with errors")
-        Future.successful(BadRequest(view(formWithErrors)))
-      },
+      formWithErrors =>
+        Future.successful(BadRequest(view(formWithErrors))),
       attachmentMethod => {
         if (isNewJourney  && attachmentMethod.equals(Post)) {
           upscanService.fetchAllUpscanDetails(profile.registrationId).flatMap { details =>
@@ -88,12 +84,10 @@ class AttachmentMethodController @Inject()(val authConnector: AuthClientConnecto
       .flatMap { _ =>
         attachmentMethod match {
           case Upload =>
-            logger.info(s"[AttachmentMethodController][storeAttachmentDetails] Deleting upscan details for registration Id ${profile.registrationId}")
             upscanService.deleteAllUpscanDetails(profile.registrationId).map { _ =>
               Redirect(controllers.fileupload.routes.UploadDocumentController.show)
             }
           case Post =>
-            logger.info("[AttachmentMethodController][storeAttachmentDetails] Redirecting to postal page")
             Future.successful(Redirect(if(isNewJourney) routes.PostalConfirmationController.show else routes.DocumentsPostController.show))
         }
       }
