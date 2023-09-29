@@ -1339,6 +1339,9 @@ attachments.postalConfirmation.bullet2                            = No, I want t
 attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
 attachments.postalConfirmation.noText                             = No, I want to upload them
 
+# POSTAL ERROR
+attachments.documentsPostError.title                              = Upload is already in progress
+
 # IDENTITY EVIDENCE REQUIRED
 attachments.identityEvidenceRequired.title                      = You must send us three identity documents in order for us to process this VAT application
 attachments.identityEvidenceRequired.evidence.start             = We need
