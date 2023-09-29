@@ -16,11 +16,10 @@
 
 package forms
 
-import forms.TaxRepForm.requiredBoolean
 import play.api.data.Form
 import play.api.data.Forms.single
 
-class PostalConfirmationPageForm {
+object PostalConfirmationPageForm extends RequiredBooleanForm {
 
   def apply(): Form[Boolean] = Form[Boolean](
     single(

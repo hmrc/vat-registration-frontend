@@ -21,7 +21,7 @@ import controllers.BaseController
 import forms.PostalConfirmationPageForm
 import play.api.mvc.{Action, AnyContent}
 import services._
-import views.html.attachments.{AdditionalDocuments, MultipleDocumentsRequired, PostalConfirmation}
+import views.html.attachments.PostalConfirmation
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,8 +32,7 @@ import utils.LoggingUtil
 class PostalConfirmationController @Inject()(val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
                                              val attachmentsService: AttachmentsService,
-                                             postalConfirmationPage: PostalConfirmation,
-                                             form: PostalConfirmationPageForm)
+                                             postalConfirmationPage: PostalConfirmation)
                                             (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
@@ -42,13 +41,16 @@ class PostalConfirmationController @Inject()(val authConnector: AuthClientConnec
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       _ =>
-        Future.successful(Ok(postalConfirmationPage(form())))
+        logger.info("[PostalConfirmationController][show] Loading postal confirmation page")
+        Future.successful(Ok(postalConfirmationPage(PostalConfirmationPageForm())))
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile => {
-    form().bindFromRequest().fold(
-      formWithErrors =>
-        Future.successful(BadRequest(postalConfirmationPage(formWithErrors))),
+    PostalConfirmationPageForm().bindFromRequest().fold(
+      formWithErrors => {
+        logger.warn("[PostalConfirmationController][submit] No answer selected")
+        Future.successful(BadRequest(postalConfirmationPage(formWithErrors)))
+      },
       {
         answer => {
           attachmentsService.storeAttachmentDetails(profile.registrationId, if(answer) Post else Upload)
