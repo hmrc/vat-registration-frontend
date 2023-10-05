@@ -32,6 +32,7 @@ import utils.LoggingUtil
 class PostalConfirmationController @Inject()(val authConnector: AuthClientConnector,
                                              val sessionService: SessionService,
                                              val attachmentsService: AttachmentsService,
+                                             val upscanService: UpscanService,
                                              postalConfirmationPage: PostalConfirmation)
                                             (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
@@ -56,7 +57,9 @@ class PostalConfirmationController @Inject()(val authConnector: AuthClientConnec
           attachmentsService.storeAttachmentDetails(profile.registrationId, if(answer) Post else Upload)
           if (answer) {
             logger.info("[PostalConfirmationController][submit] Yes selected; redirecting to Post Documents page")
-            Future.successful(Redirect(routes.DocumentsPostController.show))
+            upscanService.deleteAllUpscanDetails(profile.registrationId)
+              .flatMap(_ => Future.successful(Redirect(routes.DocumentsPostController.show)))
+
           }
           else {
             logger.info("[PostalConfirmationController][submit] No selected; redirecting to Upload task list")

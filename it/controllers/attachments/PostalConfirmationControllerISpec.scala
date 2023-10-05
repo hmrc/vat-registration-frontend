@@ -2,18 +2,20 @@
 
 package controllers.attachments
 
-import com.github.tomakehurst.wiremock.client.WireMock.{getRequestedFor, urlEqualTo, verify}
+import com.github.tomakehurst.wiremock.client.WireMock.{deleteRequestedFor, getRequestedFor, urlEqualTo, verify}
 import itutil.ControllerISpec
 import models.ApiKey
 import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.http.Status.NO_CONTENT
 import play.api.test.Helpers._
 
 class PostalConfirmationControllerISpec extends ControllerISpec {
 
   val url = "/postal-confirmation"
   val fullAttachmentList = Attachments(Some(Post))
+  val deleteAllUpscanDetailsUrl = s"/vatreg/1/upscan-file-details"
 
   "GET /register-for-vat/postal-confirmation" when {
     "the backend contains no attachment information" must {
@@ -42,11 +44,14 @@ class PostalConfirmationControllerISpec extends ControllerISpec {
         given
           .registrationApi.getSection[Attachments](Some(fullAttachmentList), currentProfile.registrationId)
 
+        stubDelete(deleteAllUpscanDetailsUrl, NO_CONTENT, "true")
+
         val res = await(buildClient(url).post(Map(
           "value" -> "true"
         )))
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.DocumentsPostController.show.url)
+        verify(deleteRequestedFor(urlEqualTo(deleteAllUpscanDetailsUrl)))
         verify(getRequestedFor(urlEqualTo(s"/vatreg/registrations/${currentProfile.registrationId}/sections/${ApiKey[Attachments]}")))
       }
     }
