@@ -1,7 +1,7 @@
 
 package controllers.bankdetails
 
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{BankAccount, TransferOfAGoingConcern}

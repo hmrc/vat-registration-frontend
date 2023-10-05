@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{getRequestedFor, urlEqualTo, verify}
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.ApiKey
 import models.api.EligibilitySubmissionData
@@ -58,7 +58,8 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
       given()
         .registrationApi.getSectionFails[EligibilitySubmissionData](testRegId)
 
-      intercept[InternalServerException](await(connector.getSection[EligibilitySubmissionData](testRegId)))
+      val exception = intercept[InternalServerException](await(connector.getSection[EligibilitySubmissionData](testRegId)))
+      exception.getMessage must include("Unexpected response:")
     }
   }
 
@@ -82,7 +83,8 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
       given()
         .registrationApi.getSectionFails[EligibilitySubmissionData](testRegId)
 
-      intercept[InternalServerException](await(connector.getSection[EligibilitySubmissionData](testRegId)))
+      val exception = intercept[InternalServerException](await(connector.getListSection[EligibilitySubmissionData](testRegId)))
+      exception.getMessage must include("Unexpected response:")
     }
   }
 
@@ -106,7 +108,33 @@ class RegistrationApiConnectorISpec extends IntegrationSpecBase with AppAndStubs
       given()
         .registrationApi.replaceSectionFails[EligibilitySubmissionData](testRegId)
 
-      intercept[InternalServerException](await(connector.replaceSection[EligibilitySubmissionData](testRegId, testEligibilitySubmissionData)))
+      val exception = intercept[InternalServerException](await(connector.replaceSection[EligibilitySubmissionData](testRegId, testEligibilitySubmissionData)))
+      exception.getMessage must include("Unexpected response:")
+    }
+  }
+
+  "replaceListSection" should {
+    "return the stored model if the backend returns OK" in {
+      given()
+        .registrationApi.replaceListSection[EligibilitySubmissionData](List(testEligibilitySubmissionData), testRegId)
+
+      await(connector.replaceListSection[EligibilitySubmissionData](testRegId,List(testEligibilitySubmissionData))) mustBe List(testEligibilitySubmissionData)
+    }
+
+    "return the indexed stored model when index is passed" in {
+      val index = 1
+      given()
+        .registrationApi.replaceListSection[EligibilitySubmissionData](List(testEligibilitySubmissionData), testRegId)
+
+      await(connector.replaceListSection[EligibilitySubmissionData](testRegId, List(testEligibilitySubmissionData))) mustBe List(testEligibilitySubmissionData)
+    }
+
+    "throw an exception on an unexpected response" in {
+      given()
+        .registrationApi.replaceListSection[EligibilitySubmissionData](List(), testRegId)
+
+      val exception = intercept[InternalServerException](await(connector.replaceListSection[EligibilitySubmissionData](testRegId, List(testEligibilitySubmissionData))))
+      exception.getMessage must include("Unexpected response:")
     }
   }
 }

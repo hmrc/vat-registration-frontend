@@ -16,11 +16,11 @@
 
 package controllers
 
-import common.enums.VatRegStatus
 import connectors._
 import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
+import models.api.{Attachment1614a, Attachment1614h}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -30,6 +30,7 @@ import services.mocks.MockNonRepudiationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.cache.client.CacheMap
+import viewmodels.tasklist.{AttachmentsTaskList, TaskListSections}
 import views.html.Summary
 
 import scala.concurrent.Future
@@ -43,11 +44,15 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       mockVatRegistrationService,
       mockSummaryService,
       mockNonRepuidiationService,
-      app.injector.instanceOf[Summary]
+      app.injector.instanceOf[Summary],
+      mockBusinessService,
+      mockAttachmentsService
     )
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
+    val mockAttachmentTaskList = AttachmentsTaskList
+    val mockTaskListSections = TaskListSections
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.SummaryController.show)
@@ -55,19 +60,43 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
   "Calling summary to show the summary page" when {
     "the StoreAnswersForNrs feature switch is enabled" should {
       "return OK with a valid summary view" in new Setup {
-        when(mockSummaryService.getSummaryData(any(), any(), any(), any(), any()))
-          .thenReturn(Future.successful(Accordion()))
+        when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+        when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+        when(mockSummaryService.getSummaryData(any(), any(), any(), any(), any())).thenReturn(Future.successful(Accordion()))
+
         mockStoreEncodedUserAnswers(regId)(Future.successful(""))
 
         callAuthorised(testSummaryController.show)(status(_) mustBe OK)
+      }
+
+      "return SEE_OTHER" in new Setup{
+        when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(emptyVatScheme))
+
+        when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+        when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+        when(mockSummaryService.getSummaryData(any(), any(), any(), any(), any())).thenReturn(Future.successful(Accordion()))
+
+        mockStoreEncodedUserAnswers(regId)(Future.successful(""))
+
+        callAuthorised(testSummaryController.show)(status(_) mustBe SEE_OTHER)
       }
     }
   }
 
   "Calling submitRegistration" should {
-    "redirect to the confirmation page if the status of the document is in draft" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any(), any()))
-        .thenReturn(Future.successful(VatRegStatus.draft))
+
+    "redirect to the application progress page when the status of the application in not complete" in new Setup {
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(emptyVatScheme))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
 
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
         .thenReturn(Future.successful(Success))
@@ -75,16 +104,81 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = true) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+          result.redirectsTo(controllers.routes.TaskListController.show.url)
+      }
+    }
+
+    "redirect to the confirmation page if the status of the document is in draft" in new Setup {
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
+        .thenReturn(Future.successful(Success))
+
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result.redirectsTo(controllers.routes.ApplicationSubmissionController.show.url)
       }
     }
 
+    "redirect to the submission in progress page if the status of the document is in progress" in new Setup {
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
+        .thenReturn(Future.successful(SubmissionInProgress))
+
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+          result.redirectsTo(controllers.routes.SubmissionInProgressController.show.url)
+      }
+    }
+
+    "redirect to the Submission Failed page if a submission has already been made" in new Setup {
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
+        .thenReturn(Future.successful(AlreadySubmitted))
+
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+          result.redirectsTo(controllers.errors.routes.ErrorController.alreadySubmitted.url)
+      }
+    }
+
     "redirect to the Submission Failed Retryable page when Submission Fails but is Retryable" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any(), any()))
-        .thenReturn(Future.successful(VatRegStatus.draft))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
 
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
         .thenReturn(Future.successful(SubmissionFailedRetryable))
@@ -92,7 +186,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = true) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.submissionRetryable.url
@@ -101,8 +195,12 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     }
 
     "redirect to the Submission Failed page when Submission Fails" in new Setup {
-      when(mockVatRegistrationService.getStatus(any())(any(), any()))
-        .thenReturn(Future.successful(VatRegStatus.draft))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
 
       when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
         .thenReturn(Future.successful(SubmissionFailed))
@@ -110,10 +208,31 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = true) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.submissionFailed.url
+      }
+  }
+
+    "redirect to the contact page" in new Setup {
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
+        .thenReturn(Future.successful(Contact))
+
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+          result redirectsTo controllers.errors.routes.ErrorController.contact.url
       }
     }
   }

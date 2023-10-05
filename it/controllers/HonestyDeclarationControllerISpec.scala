@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import connectors.RegistrationApiConnector.honestyDeclarationKey
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.ApiKey
 import play.api.http.HeaderNames

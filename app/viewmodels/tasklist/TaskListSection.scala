@@ -16,10 +16,37 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
+import models.CurrentProfile
+import models.api.VatScheme
+import play.api.i18n.Messages
+import play.api.mvc.Request
+import services.BusinessService
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext
+
 case class TaskListSection(heading: String, rows: Seq[TaskListSectionRow]) {
 
   def isComplete: Boolean = rows.forall(_.status == TLCompleted)
 
+}
+
+object TaskListSections {
+
+
+  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])(implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]) = List(
+    Some(RegistrationReasonTaskList.build(vatScheme)),
+    if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(AboutYouTransactorTaskList.build(vatScheme)) else None,
+    Some(VerifyBusinessTaskList.build(vatScheme)),
+    Some(AboutYouTaskList.build(vatScheme)),
+    Some(AboutTheBusinessTaskList.build(vatScheme, businessService)),
+    Some(VatRegistrationTaskList.build(vatScheme, businessService)),
+    attachmentsRequiredRow.map(AttachmentsTaskList.build(vatScheme, _))
+  ).flatten
+  def allComplete(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])
+                 (implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Boolean =
+    sections(vatScheme, businessService, attachmentsRequiredRow).forall{x =>x.isComplete}
 }
 
 case class TaskListSectionRow(messageKey: String,

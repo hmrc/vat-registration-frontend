@@ -18,7 +18,7 @@ package controllers
 
 import common.enums.VatRegStatus
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import play.api.http.HeaderNames
 import play.api.http.Status._

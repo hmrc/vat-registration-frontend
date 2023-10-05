@@ -16,19 +16,20 @@
 
 package viewmodels.tasklist
 
-import featuretoggle.FeatureToggleSupport
+
+import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api.{NETP, NonUkNonEstablished, VatScheme}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.InternalServerException
 
-import javax.inject.Inject
 
-class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList) extends FeatureToggleSupport {
+object AboutYouTransactorTaskList {
 
   def build(vatScheme: VatScheme)
            (implicit profile: CurrentProfile,
-            messages: Messages): TaskListSection = {
+            messages: Messages,
+            appConfig: FrontendAppConfig): TaskListSection = {
 
     val isTransactor = vatScheme.eligibilitySubmissionData.exists(_.isTransactor)
     val isAgent = isTransactor && profile.agentReferenceNumber.nonEmpty
@@ -43,7 +44,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     )
   }
 
-  def transactorPersonalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def transactorPersonalDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutYou.personalDetails",
     url = _ => {
       if (profile.agentReferenceNumber.isDefined) {
@@ -74,10 +75,10 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
         )
       }
     },
-    prerequisites = scheme => Seq(registrationReasonTaskList.registrationReasonRow(scheme.registrationId))
+    prerequisites = scheme => Seq(RegistrationReasonTaskList.registrationReasonRow(scheme.registrationId))
   )
 
-  def transactorAddressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+  def transactorAddressDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.addressDetails",
       url = vatScheme => resolveAddressRowUrl(vatScheme),
@@ -93,7 +94,7 @@ class AboutYouTransactorTaskList @Inject()(registrationReasonTaskList: Registrat
     )
   }
 
-  def transactorContactDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+  def transactorContactDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.contactDetails",
       url = _ => controllers.transactor.routes.TelephoneNumberController.show.url,

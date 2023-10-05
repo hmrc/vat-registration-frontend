@@ -18,15 +18,15 @@ package connectors
 
 import featuretoggle.FeatureSwitch.StubIncorpIdJourney
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.api.{CharitableOrg, PartyType, RegSociety, UkCompany}
-import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
+import models.api._
 import models.external._
+import models.external.incorporatedentityid.{IncorpIdJourneyConfig, JourneyLabels, TranslationLabels}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, SessionId}
 
 
 class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureToggleSupport with ITRegistrationFixtures {
@@ -93,6 +93,21 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
 
         res mustBe testJourneyStartUrl
       }
+
+      "call the test only route to stub the journey for Individual" in {
+        given()
+
+        enable(StubIncorpIdJourney)
+
+        val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
+
+        stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(Individual)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+        val exception = intercept[InternalServerException](await(connector.createJourney(testJourneyConfig, Individual)(HeaderCarrier(sessionId = Some(SessionId(sessionString))), implicitly)))
+
+        exception.getMessage must include("Party type Individual is not a valid incorporated entity party type")
+      }
     }
 
     "the stub Incorp ID feature switch is disabled" should {
@@ -139,6 +154,36 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         val res = await(connector.createJourney(testJourneyConfig, CharitableOrg))
 
         res mustBe testJourneyStartUrl
+      }
+
+      "call the test only route to stub the journey for Individual" in {
+        given()
+
+        disable(StubIncorpIdJourney)
+
+        val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
+
+        stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(Individual)}", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+        val exception = intercept[InternalServerException](await(connector.createJourney(testJourneyConfig, Individual)(HeaderCarrier(sessionId = Some(SessionId(sessionString))), implicitly)))
+
+        exception.getMessage must include("Party type Individual is not a valid incorporated entity party type")
+      }
+
+      "call the test only route to stub the journey for CharitableOrg" in {
+        given()
+
+        disable(StubIncorpIdJourney)
+
+        val testJourneyStartUrl = "/test"
+        val testDeskProServiceId = "vrs"
+
+        stubPost(s"/register-for-vat/test-only/api/incorp-id-journey\\?partyType=${PartyType.stati(CharitableOrg)}", INTERNAL_SERVER_ERROR, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
+
+        val exception = intercept[InternalServerException](await(connector.createJourney(testJourneyConfig, CharitableOrg)(HeaderCarrier(sessionId = Some(SessionId(sessionString))), implicitly)))
+
+        exception.getMessage must include("Invalid response from incorporated entity identification for CharitableOrg: Status:")
       }
     }
   }
@@ -197,9 +242,10 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
         disable(StubIncorpIdJourney)
         given()
 
-        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, "")
+        stubGet(s"/incorporated-entity-identification/api/journey/$testIncorpId", CREATED, Json.toJson("").toString())
 
-        intercept[Exception](await(connector.getDetails(testIncorpId)))
+        val exception = intercept[Exception](await(connector.getDetails(testIncorpId)))
+        exception.getMessage must include("Incorp ID returned invalid JSON")
       }
     }
   }

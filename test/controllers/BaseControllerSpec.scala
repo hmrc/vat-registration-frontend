@@ -22,6 +22,7 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import services.{SessionProfile, SessionService}
 import testHelpers.ControllerSpec
+import uk.gov.hmrc.http.InternalServerException
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -85,6 +86,15 @@ class BaseControllerSpec extends ControllerSpec with FeatureToggleSupport {
       val result = TestController.callAuthenticated(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some("/register-for-vat/error/individual-affinity")
+    }
+
+    "throw an exception if user is Authenticated and has no affinity group" in {
+      mockAuthenticatedWithNoAffinityGroup()
+
+      val exception = intercept[InternalServerException]{
+        await(TestController.callAuthenticated(FakeRequest()))
+      }
+      exception.getMessage must include("User has no affinity group on their credential")
     }
 
     "return 303 to GG login if user has No Active Session" in {

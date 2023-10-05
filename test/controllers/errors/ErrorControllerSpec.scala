@@ -20,7 +20,7 @@ import fixtures.VatRegistrationFixture
 import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.errors.{AlreadySubmittedKickout, ContactView, MissingAnswer, SubmissionFailed, SubmissionRetryableView}
+import views.html.errors._
 
 class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
@@ -49,7 +49,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
 
   "ErrorController" should {
     "return the SubmissionFailed view" in new Setup {
-      callAuthorised(testErrorController.submissionFailed, useBasicAuth = true) {
+      callAuthorised(testErrorController.submissionFailed, useBasicAuth = false) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -57,7 +57,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the SubmissionRetryable view" in new Setup {
-      callAuthorised(testErrorController.submissionRetryable, useBasicAuth = true) {
+      callAuthorised(testErrorController.submissionRetryable, useBasicAuth = false) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -65,7 +65,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the AlreadySubmitted view" in new Setup {
-      callAuthorised(testErrorController.alreadySubmitted, useBasicAuth = true) {
+      callAuthorised(testErrorController.alreadySubmitted, useBasicAuth = false) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -73,14 +73,14 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
       }
     }
     "return the SignOut view" in new Setup {
-      callAuthorised(testErrorController.alreadySubmittedSignOut, useBasicAuth = true) {
+      callAuthorised(testErrorController.alreadySubmittedSignOut, useBasicAuth = false) {
         result =>
           status(result) mustBe SEE_OTHER
           header(LOCATION, result) mustBe Some(controllers.callbacks.routes.SignInOutController.signOut.url)
       }
     }
     "return the Contact view" in new Setup {
-      callAuthorised(testErrorController.contact, useBasicAuth = true) {
+      callAuthorised(testErrorController.contact, useBasicAuth = false) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")
@@ -91,7 +91,7 @@ class ErrorControllerSpec extends ControllerSpec with FutureAssertions with VatR
     "return the Missing Answer view" in new Setup {
       val answer = "test"
       mockSessionFetchAndGet("missingAnswer", Some(answer))
-      callAuthorised(testErrorController.missingAnswer, useBasicAuth = true) {
+      callAuthorised(testErrorController.missingAnswer, useBasicAuth = false) {
         result =>
           status(result) mustBe OK
           contentType(result) mustBe Some("text/html")

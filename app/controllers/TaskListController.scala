@@ -30,14 +30,8 @@ import scala.concurrent.ExecutionContext
 class TaskListController @Inject()(vatRegistrationService: VatRegistrationService,
                                    val authConnector: AuthConnector,
                                    val sessionService: SessionService,
-                                   registrationReasonSection: RegistrationReasonTaskList,
-                                   aboutYouTransactorTaskList: AboutYouTransactorTaskList,
-                                   verifyBusinessTaskList: VerifyBusinessTaskList,
-                                   aboutYouTaskList: AboutYouTaskList,
-                                   aboutTheBusinessTaskList: AboutTheBusinessTaskList,
-                                   vatRegistrationTaskList: VatRegistrationTaskList,
-                                   attachmentsTaskList: AttachmentsTaskList,
-                                   summaryTaskList: SummaryTaskList,
+                                   attachmentsService: AttachmentsService,
+                                   businessService: BusinessService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -47,7 +41,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
   def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      attachmentsTaskListRow <- attachmentsTaskList.attachmentsRequiredRow
+      attachmentsTaskListRow <- AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService)
       redirect = vatScheme match {
         case scheme if scheme.applicationReference.isEmpty =>
           Redirect(routes.ApplicationReferenceController.show)
@@ -55,14 +49,14 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
           Redirect(routes.HonestyDeclarationController.show)
         case _ =>
           val sections = List(
-            Some(registrationReasonSection.build(vatScheme)),
-            if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.build(vatScheme)) else None,
-            Some(verifyBusinessTaskList.build(vatScheme)),
-            Some(aboutYouTaskList.build(vatScheme)),
-            Some(aboutTheBusinessTaskList.build(vatScheme)),
-            Some(vatRegistrationTaskList.build(vatScheme)),
-            attachmentsTaskListRow.map(attachmentsTaskList.build(vatScheme, _)),
-            Some(summaryTaskList.build(vatScheme, attachmentsTaskListRow))
+            Some(RegistrationReasonTaskList.build(vatScheme)),
+            if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(AboutYouTransactorTaskList.build(vatScheme)) else None,
+            Some(VerifyBusinessTaskList.build(vatScheme)),
+            Some(AboutYouTaskList.build(vatScheme)),
+            Some(AboutTheBusinessTaskList.build(vatScheme, businessService)),
+            Some(VatRegistrationTaskList.build(vatScheme, businessService)),
+            attachmentsTaskListRow.map(AttachmentsTaskList.build(vatScheme, _)),
+            Some(SummaryTaskList.build(vatScheme, attachmentsTaskListRow, businessService))
           ).flatten
           Ok(view(sections: _*))
       }

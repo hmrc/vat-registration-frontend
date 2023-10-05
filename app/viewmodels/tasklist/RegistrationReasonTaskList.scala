@@ -20,12 +20,12 @@ import config.FrontendAppConfig
 import models.api.VatScheme
 import play.api.i18n.Messages
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 
 @Singleton
-class RegistrationReasonTaskList @Inject()(appConfig: FrontendAppConfig) {
+object RegistrationReasonTaskList {
 
-  val registrationReasonRow = (regId: String) => TaskListRowBuilder(
+  def registrationReasonRow(regId: String)(implicit appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.eligibilty.regReason",
     url = _ => appConfig.eligibilityStartUrl(regId),
     tagId = "regReasonRow",
@@ -35,7 +35,7 @@ class RegistrationReasonTaskList @Inject()(appConfig: FrontendAppConfig) {
     prerequisites = _ => Seq()
   )
 
-  def build(vatScheme: VatScheme)(implicit messages: Messages): TaskListSection =
+  def build(vatScheme: VatScheme)(implicit messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.eligibility.heading"),
       rows = Seq(registrationReasonRow(vatScheme.registrationId).build(vatScheme))

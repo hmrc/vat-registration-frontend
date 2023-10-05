@@ -1,7 +1,6 @@
 package helpers
 
 import config.FrontendAppConfig
-import fixtures.BaseA11yFixtures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite

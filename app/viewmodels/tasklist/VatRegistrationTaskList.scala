@@ -16,29 +16,31 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
 import play.api.i18n.Messages
+import services.BusinessService
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusinessTaskList) {
+object VatRegistrationTaskList {
 
-  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages): TaskListSection =
+  def build(vatScheme: VatScheme, businessService: BusinessService)(implicit profile: CurrentProfile, messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
-        Some(goodsAndServicesRow.build(vatScheme)),
-        resolveBankDetailsRow(vatScheme).map(_.build(vatScheme)),
-        resolveVATRegistrationDateRow(vatScheme).map(_.build(vatScheme)),
-        Some(vatReturnsRow.build(vatScheme)),
-        resolveFlatRateSchemeRow(vatScheme).map(_.build(vatScheme))
+        Some(goodsAndServicesRow(businessService).build(vatScheme)),
+        resolveBankDetailsRow(vatScheme, businessService).map(_.build(vatScheme)),
+        resolveVATRegistrationDateRow(vatScheme, businessService).map(_.build(vatScheme)),
+        Some(vatReturnsRow(businessService).build(vatScheme)),
+        resolveFlatRateSchemeRow(vatScheme, businessService).map(_.build(vatScheme))
       ).flatten
     )
 
-  def goodsAndServicesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def goodsAndServicesRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.goodsAndServices",
     url = _ => controllers.vatapplication.routes.ImportsOrExportsController.show.url,
     tagId = "goodsAndServicesRow",
@@ -60,10 +62,10 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
       }
     },
     prerequisites = _ =>
-      Seq(aboutTheBusinessTaskList.otherBusinessInvolvementsRow)
+      Seq(AboutTheBusinessTaskList.otherBusinessInvolvementsRow(businessService))
   )
 
-  def bankAccountDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def bankAccountDetailsRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.bankAccountDetails",
     url = _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
     tagId = "bankAccountDetailsRow",
@@ -77,10 +79,10 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
           }
         }
     },
-    prerequisites = _ => Seq(goodsAndServicesRow)
+    prerequisites = _ => Seq(goodsAndServicesRow(businessService))
   )
 
-  def registrationDateRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def registrationDateRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.registrationDate",
     url = _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
     tagId = "vatRegistrationDateRow",
@@ -94,10 +96,10 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
           }
         }
     },
-    prerequisites = _ => Seq(bankAccountDetailsRow)
+    prerequisites = _ => Seq(bankAccountDetailsRow(businessService))
   )
 
-  def vatReturnsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def vatReturnsRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
     url = _ => controllers.vatapplication.routes.ReturnsFrequencyController.show.url,
     tagId = "vatReturnsRow",
@@ -106,13 +108,13 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     ),
     prerequisites = scheme => Seq(
       List(
-        resolveVATRegistrationDateRow(scheme),
-        resolveBankDetailsRow(scheme)
-      ).flatten.headOption.getOrElse(goodsAndServicesRow)
+        resolveVATRegistrationDateRow(scheme, businessService),
+        resolveBankDetailsRow(scheme, businessService)
+      ).flatten.headOption.getOrElse(goodsAndServicesRow(businessService))
     )
   )
 
-  def flatRateSchemeRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def flatRateSchemeRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.flatRateScheme",
     url = _ => controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url,
     tagId = "flatRateScheme",
@@ -127,7 +129,7 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
         case _ => List(false)
       }
     },
-    prerequisites = _ => Seq(vatReturnsRow)
+    prerequisites = _ => Seq(vatReturnsRow(businessService))
   )
 
   private def checkImportsAndExports(vatScheme: VatScheme) = {
@@ -142,28 +144,28 @@ class VatRegistrationTaskList @Inject()(aboutTheBusinessTaskList: AboutTheBusine
     }
   }
 
-  private def resolveBankDetailsRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+  private def resolveBankDetailsRow(vatScheme: VatScheme, businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig) = {
     if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains) && vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk)) {
       None
     } else {
-      Some(bankAccountDetailsRow)
+      Some(bankAccountDetailsRow(businessService))
     }
   }
 
-  private[tasklist] def resolveFlatRateSchemeRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+  private[tasklist] def resolveFlatRateSchemeRow(vatScheme: VatScheme, businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig) = {
     if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).exists(_ > 150000L) ||
       vatScheme.eligibilitySubmissionData.map(_.registrationReason).exists(GroupRegistration.equals)
     ) {
       None
     } else {
-      Some(flatRateSchemeRow)
+      Some(flatRateSchemeRow(businessService))
     }
   }
 
-  private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme)(implicit profile: CurrentProfile) = {
+  private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme, businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig) = {
     vatScheme.registrationReason match {
       case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) | Some(SuppliesOutsideUk) =>
-        Some(registrationDateRow)
+        Some(registrationDateRow(businessService))
       case _ =>
         None
     }

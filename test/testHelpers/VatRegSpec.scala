@@ -31,13 +31,14 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc._
 import play.api.test.FakeRequest
+import services.mocks.BusinessServiceMock
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Awaitable, Future}
 
 class VatRegSpec extends PlaySpec with GuiceOneAppPerSuite with AuthMock with AuthBuilder
-  with MockitoSugar with VatMocks with LoginFixture with Inside with Inspectors
+  with MockitoSugar with VatMocks with BusinessServiceMock with LoginFixture with Inside with Inspectors
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
   implicit val hc = HeaderCarrier()

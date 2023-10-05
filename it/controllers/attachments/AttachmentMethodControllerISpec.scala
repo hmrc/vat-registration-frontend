@@ -2,7 +2,7 @@
 package controllers.attachments
 
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import models.external.upscan.{InProgress, UpscanDetails}

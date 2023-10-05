@@ -16,16 +16,17 @@
 
 package viewmodels.tasklist
 
-import featuretoggle.FeatureToggleSupport
+
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
 import models.external.Name
 import testHelpers.VatRegSpec
 
-class AboutYouTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureToggleSupport {
+class AboutYouTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section: AboutYouTaskList = app.injector.instanceOf[AboutYouTaskList]
+  val section = AboutYouTaskList
   implicit val profile: CurrentProfile = currentProfile
 
   "the personal details row" when {

@@ -4,7 +4,7 @@ package controllers
 
 import controllers.grs.{routes => grsRoutes}
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import play.api.http.HeaderNames

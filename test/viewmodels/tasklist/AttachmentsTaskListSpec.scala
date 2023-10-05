@@ -16,6 +16,7 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
@@ -25,14 +26,17 @@ import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
   implicit val fakeRequest: Request[_] = FakeRequest()
 
-  val vatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
+  val vatRegistrationTaskList = VatRegistrationTaskList
+  val businessService = mockBusinessService
+  val attatchmentService = mockAttachmentsService
 
   val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
     overseasCompliance = Some(OverseasCompliance(
@@ -47,7 +51,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
   )
 
   trait Setup {
-    val section: AttachmentsTaskList = new AttachmentsTaskList(vatRegistrationTaskList, mockAttachmentsService)
+    val section = AttachmentsTaskList
   }
 
   "The attachments row" must {
@@ -57,7 +61,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCannotStart
@@ -68,7 +72,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
 
       rowBuilder mustBe None
     }
@@ -89,7 +93,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCannotStart
@@ -112,7 +116,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLNotStarted
@@ -135,7 +139,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLNotStarted
@@ -159,7 +163,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCannotStart
@@ -182,7 +186,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List(VAT2)))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLInProgress
@@ -205,7 +209,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted
@@ -228,7 +232,7 @@ class AttachmentsTaskListSpec extends VatRegSpec with VatRegistrationFixture {
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder = await(section.attachmentsRequiredRow)
+      val rowBuilder = await(section.attachmentsRequiredRow(attatchmentService,businessService))
       val row = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted

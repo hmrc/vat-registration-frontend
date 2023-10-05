@@ -16,21 +16,20 @@
 
 package viewmodels.tasklist
 
-import featuretoggle.FeatureToggleSupport
+import config.FrontendAppConfig
 import models._
 import models.api._
 import play.api.i18n.Messages
-import services.AttachmentsService
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 import play.api.mvc.Request
+import services.{AttachmentsService, BusinessService}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import javax.inject.Singleton
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTaskList, attachmentsService: AttachmentsService) extends FeatureToggleSupport {
+object AttachmentsTaskList {
 
-  def attachmentsRequiredRow(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Future[Option[TaskListRowBuilder]] =
+  def attachmentsRequiredRow(attachmentsService: AttachmentsService, businessService: BusinessService)(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_], appConfig: FrontendAppConfig): Future[Option[TaskListRowBuilder]] =
     for {
       attachments <- attachmentsService.getAttachmentList(profile.registrationId)
       incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
@@ -42,8 +41,8 @@ class AttachmentsTaskList @Inject()(vatRegistrationTaskList: VatRegistrationTask
           tagId = "attachmentsRequiredRow",
           checks = scheme => checks(scheme, incompleteAttachments),
           prerequisites = vatScheme => Seq(
-            vatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme).getOrElse(
-              vatRegistrationTaskList.vatReturnsRow
+            VatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme, businessService).getOrElse(
+              VatRegistrationTaskList.vatReturnsRow(businessService)
             )
           )
         )

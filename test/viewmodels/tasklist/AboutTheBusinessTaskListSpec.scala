@@ -16,15 +16,17 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import controllers.partners.PartnerIndexValidation
 import fixtures.VatRegistrationFixture
 import models.api.{Attachments, Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
 import testHelpers.VatRegSpec
 
-class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class AboutTheBusinessTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section: AboutTheBusinessTaskList = app.injector.instanceOf[AboutTheBusinessTaskList]
+  val section = AboutTheBusinessTaskList
+  val businessService = mockBusinessService
 
   "Additional partners row" must {
     val expectedRowUrl = controllers.partners.routes.PartnerEntityTypeController.showPartnerType(PartnerIndexValidation.minPartnerIndex).url
@@ -182,7 +184,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
     "business details not available" must {
       "return TLCannotStart" in {
-        val sectionRow = section.businessActivitiesRow.build(emptyVatScheme)
+        val sectionRow = section.businessActivitiesRow(businessService).build(emptyVatScheme)
         sectionRow.status mustBe TLCannotStart
       }
     }
@@ -192,7 +194,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         val schema = validVatScheme.copy(business = Some(validBusiness.copy(
           mainBusinessActivity = None, businessDescription = None
         )))
-        val sectionRow = section.businessActivitiesRow.build(schema)
+        val sectionRow = section.businessActivitiesRow(businessService).build(schema)
         sectionRow.status mustBe TLNotStarted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
       }
@@ -205,7 +207,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
             hasLandAndProperty = Some(true), mainBusinessActivity = None, businessDescription = None
           ))
         )
-        val sectionRow = section.businessActivitiesRow.build(schema)
+        val sectionRow = section.businessActivitiesRow(businessService).build(schema)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
       }
@@ -218,7 +220,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
             businessActivities = Some(List(complianceSicCode))
           ))
         )
-        val sectionRow = section.businessActivitiesRow.build(schema)
+        val sectionRow = section.businessActivitiesRow(businessService).build(schema)
         sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
       }
@@ -233,7 +235,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
             businessActivities = Some(List(nonComplianceSicCode))
           ))
         )
-        val sectionRow = section.businessActivitiesRow.build(schema)
+        val sectionRow = section.businessActivitiesRow(businessService).build(schema)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
       }
@@ -247,7 +249,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
             labourCompliance = Some(complianceWithLabour)
           ))
         )
-        val sectionRow = section.businessActivitiesRow.build(schema)
+        val sectionRow = section.businessActivitiesRow(businessService).build(schema)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.business.routes.LandAndPropertyController.show.url
       }
@@ -256,7 +258,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
 
   "The other business involvements row" must {
     "be cannot start if the prerequisites are not complete" in {
-      val row = section.otherBusinessInvolvementsRow.build(emptyVatScheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(emptyVatScheme)
 
       row.status mustBe TLCannotStart
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
@@ -271,7 +273,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         ))
       )
 
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(scheme)
 
       row.status mustBe TLNotStarted
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
@@ -286,7 +288,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         ))
       )
 
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(scheme)
 
       row.status mustBe TLCompleted
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
@@ -302,7 +304,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         otherBusinessInvolvements = Some(List.empty)
       )
 
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(scheme)
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
@@ -318,7 +320,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         otherBusinessInvolvements = None
       )
 
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(scheme)
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
@@ -338,7 +340,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         ))
       )
 
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(scheme)
 
       row.status mustBe TLInProgress
       row.url mustBe controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url
@@ -359,7 +361,7 @@ class AboutTheBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixtur
         ))
       )
 
-      val row = section.otherBusinessInvolvementsRow.build(scheme)
+      val row = section.otherBusinessInvolvementsRow(businessService).build(scheme)
 
       row.status mustBe TLCompleted
       row.url mustBe controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url

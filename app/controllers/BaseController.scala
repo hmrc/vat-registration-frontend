@@ -19,7 +19,7 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import models.CurrentProfile
 import models.error.MissingAnswerException
-import play.api.i18n.{I18nSupport, Lang, Messages}
+import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc._
 import services.SessionProfile
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
@@ -95,9 +95,9 @@ abstract class BaseController @Inject()(implicit ec: ExecutionContext,
 
   def isAuthenticatedWithProfileNoStatusCheck(f: Request[AnyContent] => CurrentProfile => Future[Result]): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised(authPredicate) {
+      authorised(authPredicate).retrieve(allEnrolments) { enrolments =>
         withCurrentProfile(checkStatus = false) { profile =>
-          f(request)(profile)
+          f(request)(profile.copy(agentReferenceNumber = enrolments.agentReferenceNumber))
         }
       }.handleErrorResult
   }

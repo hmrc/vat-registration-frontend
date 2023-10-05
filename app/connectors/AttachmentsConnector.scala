@@ -19,13 +19,13 @@ package connectors
 import config.FrontendAppConfig
 import models.api.AttachmentType
 import play.api.http.Status._
+import play.api.mvc.Request
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
+import utils.LoggingUtil
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import utils.LoggingUtil
-import play.api.mvc.Request
 
 @Singleton
 class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendAppConfig)(implicit ec: ExecutionContext) extends LoggingUtil {

@@ -339,9 +339,15 @@ class TaskListControllerISpec extends ControllerISpec {
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
         business = Some(businessDetails.copy(
-          hasWebsite = Some(true), businessActivities = None, mainBusinessActivity = None, businessDescription = None
+          hasWebsite = Some(true),
+          businessActivities = None,
+          mainBusinessActivity = None,
+          businessDescription = None,
+          otherBusinessInvolvement = None,
+          hasLandAndProperty = None,
         )),
-        transactorDetails = Some(validTransactorDetails)
+        transactorDetails = Some(validTransactorDetails),
+        entities = Some(validEntities)
       )
       given
         .user.isAuthorised()
@@ -369,7 +375,9 @@ class TaskListControllerISpec extends ControllerISpec {
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
         business = Some(businessDetails.copy(
-          hasWebsite = Some(true), hasLandAndProperty = Some(false)
+          hasWebsite = Some(true),
+          hasLandAndProperty = Some(false),
+          otherBusinessInvolvement = None,
         )),
         transactorDetails = Some(validTransactorDetails)
       )

@@ -16,12 +16,15 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import testHelpers.VatRegSpec
 
-class VerifyBusinessTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class VerifyBusinessTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = app.injector.instanceOf[VerifyBusinessTaskList]
+  val section = VerifyBusinessTaskList
+
+
 
   "The checks for the business info row" when {
     "the Applicant block is undefined" must {

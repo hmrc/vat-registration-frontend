@@ -20,7 +20,6 @@ import builders.AuthBuilder
 import common.enums.VatRegStatus
 import config.{BaseControllerComponents, FrontendAppConfig}
 import connectors.mocks.AuthMock
-import featuretoggle.FeatureToggleSupport
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -31,13 +30,14 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.{HeaderNames, Status}
 import play.api.mvc._
-import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits, ResultExtractors}
+import play.api.test._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite with AuthMock with AuthBuilder with BeforeAndAfterEach
-  with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames with VatMocks with FeatureToggleSupport {
+
+  with Status with FutureAwaits with DefaultAwaitTimeout with ResultExtractors with HeaderNames with VatMocks with Injecting {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]

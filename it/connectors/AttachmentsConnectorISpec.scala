@@ -18,12 +18,13 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api._
 import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
+import uk.gov.hmrc.http.InternalServerException
 
 class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -35,6 +36,7 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
   val testEmptyAttachmentsList: List[AttachmentType] = List[AttachmentType]()
 
   val attachmentUrl = "/vatreg/1/attachments"
+  val incompleteAttachmentsApiUrl = "/vatreg/1/incomplete-attachments"
 
   val testStoreAttachmentsAttachedResponseJson: JsObject = Json.obj(
     "method" -> Some(Upload).toString,
@@ -60,6 +62,40 @@ class AttachmentsConnectorISpec extends IntegrationSpecBase with AppAndStubs wit
 
       verify(getRequestedFor(urlEqualTo(attachmentUrl)))
       response mustBe testEmptyAttachmentsList
+    }
+
+    "return an exception" in {
+      stubGet(attachmentUrl, INTERNAL_SERVER_ERROR, Json.toJson(testEmptyAttachmentsList).toString())
+
+      val exception = intercept[InternalServerException](await(connector.getAttachmentList(testRegId)))
+      exception.getMessage must include("[AttachmentsConnector][getAttachmentList] unexpected status from backend:")
+    }
+  }
+
+  "getIncompleteAttachments" must {
+    "an attachment list" in {
+      stubGet(incompleteAttachmentsApiUrl, OK, Json.toJson(testAttachmentsList).toString())
+
+      val response = await(connector.getIncompleteAttachments(testRegId))
+
+      verify(getRequestedFor(urlEqualTo(incompleteAttachmentsApiUrl)))
+      response mustBe testAttachmentsList
+    }
+
+    "return an empty attachment list" in {
+      stubGet(incompleteAttachmentsApiUrl, OK, Json.toJson(testEmptyAttachmentsList).toString())
+
+      val response = await(connector.getIncompleteAttachments(testRegId))
+
+      verify(getRequestedFor(urlEqualTo(incompleteAttachmentsApiUrl)))
+      response mustBe testEmptyAttachmentsList
+    }
+
+    "return an exception" in {
+      stubGet(incompleteAttachmentsApiUrl, INTERNAL_SERVER_ERROR, Json.toJson(testEmptyAttachmentsList).toString())
+
+      val exception = intercept[InternalServerException](await(connector.getIncompleteAttachments(testRegId)))
+      exception.getMessage must include("[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend:")
     }
   }
 }

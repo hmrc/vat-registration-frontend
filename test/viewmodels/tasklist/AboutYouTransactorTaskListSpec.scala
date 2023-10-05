@@ -16,16 +16,16 @@
 
 package viewmodels.tasklist
 
-import featuretoggle.FeatureToggleSupport
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models._
 import models.api._
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
 
-class AboutYouTransactorTaskListSpec extends VatRegSpec with VatRegistrationFixture with FeatureToggleSupport {
+class AboutYouTransactorTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section: AboutYouTransactorTaskList = app.injector.instanceOf[AboutYouTransactorTaskList]
+  val section = AboutYouTransactorTaskList
   val testArn = "testArn"
 
   "the user has logged in as an Agent" must {
