@@ -16,12 +16,13 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import testHelpers.VatRegSpec
 
-class RegistrationReasonTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class RegistrationReasonTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = app.injector.instanceOf[RegistrationReasonTaskList]
+  val section = RegistrationReasonTaskList
 
   "registrationReasonRow checks" when {
     "the eligibility block is undefined" must {

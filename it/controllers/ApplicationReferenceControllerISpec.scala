@@ -3,7 +3,7 @@ package controllers
 
 import connectors.RegistrationApiConnector.applicationReferenceKey
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.ApiKey
 import org.jsoup.Jsoup

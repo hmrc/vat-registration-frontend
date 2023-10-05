@@ -16,16 +16,19 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
+import services.BusinessService
 
 import javax.inject.Inject
 
-class SummaryTaskList @Inject() (vatRegistrationTaskList: VatRegistrationTaskList) {
+object SummaryTaskList {
 
-  def summaryRow(attachmentsTaskListRowBuilder: Option[TaskListRowBuilder])
-                (implicit profile: CurrentProfile): TaskListRowBuilder = {
+  def summaryRow(attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService)
+                (implicit profile: CurrentProfile,
+                 appConfig: FrontendAppConfig): TaskListRowBuilder = {
 
     TaskListRowBuilder(
       messageKey = _ => "tasklist.vatRegistration.cya.submit",
@@ -34,18 +37,18 @@ class SummaryTaskList @Inject() (vatRegistrationTaskList: VatRegistrationTaskLis
       checks = _ => Seq(false),
       prerequisites = vatScheme => Seq(
         attachmentsTaskListRowBuilder.getOrElse(
-          vatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme).getOrElse(
-            vatRegistrationTaskList.vatReturnsRow
+          VatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme, businessService).getOrElse(
+            VatRegistrationTaskList.vatReturnsRow(businessService)
           )
         )
       )
     )
   }
 
-  def build(vatScheme: VatScheme, attachmentsTaskListRowBuilder: Option[TaskListRowBuilder])
-           (implicit profile: CurrentProfile, messages: Messages): TaskListSection =
+  def build(vatScheme: VatScheme, attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService)
+           (implicit profile: CurrentProfile, messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.cya.heading"),
-      rows = Seq(summaryRow(attachmentsTaskListRowBuilder).build(vatScheme))
+      rows = Seq(summaryRow(attachmentsTaskListRowBuilder, businessService).build(vatScheme))
     )
 }

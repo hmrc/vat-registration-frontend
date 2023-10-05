@@ -30,29 +30,29 @@ import java.time.LocalDate
 
 trait BaseFixture {
   //Test variables
-  val testDate = LocalDate.of(2017, 3, 21)
+  val testDate: LocalDate = LocalDate.of(2017, 3, 21)
   val testTradingName = "ACME INC"
   val testSortCode = "12-34-56"
   val testAccountNumber = "12345678"
   val validLabourSicCode: SicCode = SicCode("81221001", "BarFoo", "BarFoo")
   val validNoCompliance: SicCode = SicCode("12345678", "fooBar", "FooBar")
-  val validExpectedOverTrue = Some(testDate)
+  val validExpectedOverTrue: Option[LocalDate] = Some(testDate)
 
   def generateThreshold(mandatory: Boolean = false,
                         thresholdPreviousThirtyDays: Option[LocalDate] = None,
-                        thresholdInTwelveMonths: Option[LocalDate] = None) =
+                        thresholdInTwelveMonths: Option[LocalDate] = None): Threshold =
     (mandatory, thresholdPreviousThirtyDays, thresholdInTwelveMonths) match {
       case (false, None, None) => Threshold(false)
       case (_, ptd, itm) if List(ptd, itm).flatten.nonEmpty => Threshold(true, ptd, itm)
       case _ => Threshold(false)
     }
 
-  val validVoluntaryRegistration = generateThreshold()
-  val validMandatoryRegistrationThirtyDays = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
-  val validMandatoryRegistrationBothDates = generateThreshold(thresholdPreviousThirtyDays = Some(testDate), thresholdInTwelveMonths = Some(testDate))
-  val validMandatoryRegistrationTwelve = generateThreshold(thresholdInTwelveMonths = Some(testDate))
-  val optVoluntaryRegistration = Some(validVoluntaryRegistration)
-  val optMandatoryRegistrationThirtyDays = Some(validMandatoryRegistrationThirtyDays)
+  val validVoluntaryRegistration: Threshold = generateThreshold()
+  val validMandatoryRegistrationThirtyDays: Threshold = generateThreshold(thresholdPreviousThirtyDays = Some(testDate))
+  val validMandatoryRegistrationBothDates: Threshold = generateThreshold(thresholdPreviousThirtyDays = Some(testDate), thresholdInTwelveMonths = Some(testDate))
+  val validMandatoryRegistrationTwelve: Threshold = generateThreshold(thresholdInTwelveMonths = Some(testDate))
+  val optVoluntaryRegistration: Option[Threshold] = Some(validVoluntaryRegistration)
+  val optMandatoryRegistrationThirtyDays: Option[Threshold] = Some(validMandatoryRegistrationThirtyDays)
   val optMandatoryRegistrationBothDates = Some(validMandatoryRegistrationBothDates)
   val optMandatoryRegistrationTwelve = Some(validMandatoryRegistrationTwelve)
 }
@@ -390,6 +390,95 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
       "optionalData" -> "2017-07-16"
     ),
     "vatRegistrationException" -> false
+  )
+
+  val testBankName = "testName"
+
+  val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
+
+  val bankAccount: BankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
+
+  val flatRateScheme: FlatRateScheme = FlatRateScheme(joinFrs = Some(false))
+
+  val testCreatedDate: LocalDate = LocalDate.of(2021, 1, 1)
+
+  val addressWithCountry: Address = Address(testLine1, Some(testLine2), None, None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
+
+  val testCalculatedDate: LocalDate = LocalDate.now()
+
+  val threshold: Threshold = Threshold(
+    mandatoryRegistration = true,
+    thresholdPreviousThirtyDays = None,
+    thresholdInTwelveMonths = Some(LocalDate.of(2018, 5, 30))
+  )
+
+  val fullVatApplication: VatApplication = VatApplication(
+    tradeVatGoodsOutsideUk = Some(false),
+    eoriRequested = Some(false),
+    turnoverEstimate = Some(testTurnover),
+    zeroRatedSupplies = Some(1234),
+    northernIrelandProtocol = Some(NIPTurnover(goodsToEU = Some(ConditionalValue(answer = false, None)), goodsFromEU = Some(ConditionalValue(answer = false, None)))),
+    claimVatRefunds = Some(true),
+    appliedForExemption = None,
+    overseasCompliance = None,
+    startDate = Some(LocalDate.of(2020, 1, 1)),
+    returnsFrequency = Some(Quarterly),
+    staggerStart = Some(JanuaryStagger),
+    annualAccountingDetails = Some(AASDetails(paymentFrequency = Some(QuarterlyPayment), paymentMethod = Some(StandingOrder))),
+    hasTaxRepresentative = None
+  )
+
+  val testEligibilitySubmissionDataPartnership: EligibilitySubmissionData = EligibilitySubmissionData(
+    threshold = threshold,
+    partyType = Partnership,
+    isTransactor = false,
+    appliedForException = Some(false),
+    registrationReason = ForwardLook,
+    calculatedDate = Some(testCalculatedDate),
+    fixedEstablishmentInManOrUk = true
+  )
+
+  val businessDetails: Business = Business(
+    otherBusinessInvolvement = Some(false),
+    hasLandAndProperty = Some(false),
+    hasWebsite = Some(true),
+    hasTradingName = Some(true),
+    email = Some("test@foo.com"),
+    telephoneNumber = Some("987654"),
+    website = Some("/test/url"),
+    ppobAddress = Some(addressWithCountry),
+    contactPreference = Some(Email),
+    welshLanguage = Some(false),
+    businessDescription = Some("test company desc"),
+    mainBusinessActivity = Some(SicCode("AB123", "super business", "super business by super people")),
+    businessActivities = Some(List(SicCode("AB123", "super business", "super business by super people")))
+  )
+
+  val otherBusinessInvolvement1: List[OtherBusinessInvolvement] = List(OtherBusinessInvolvement(
+    businessName = Some("test business name"),
+    hasVrn = Some(true),
+    vrn = Some("test vrn"),
+    hasUtr = None,
+    utr = None,
+    stillTrading = Some(true)
+  ))
+
+  val fullVatSchemeAttachment: VatScheme = VatScheme(
+    registrationId = "1",
+    createdDate = testCreatedDate,
+    status = VatRegStatus.submitted,
+    attachments = Some(Attachments(
+      method = Some(Upload),
+      supplyVat1614a = Some(true), supplyVat1614h = Some(true), supplySupportingDocuments = Some(true), additionalPartnersDocuments = Some(false))),
+    applicantDetails = Some(validFullApplicantDetailsPartnership),
+    business = Some(businessDetails),
+    flatRateScheme = Some(flatRateScheme),
+    bankAccount = Some(bankAccount),
+    vatApplication = Some(fullVatApplication),
+    eligibilitySubmissionData = Some(testEligibilitySubmissionDataPartnership),
+    entities = Some(validEntities),
+    transactorDetails = Some(validTransactorDetails),
+    otherBusinessInvolvements = Some(otherBusinessInvolvement1)
   )
 
 }

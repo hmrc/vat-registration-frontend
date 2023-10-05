@@ -19,7 +19,7 @@ package controllers.attachments
 import common.enums.VatRegStatus
 import connectors.RegistrationApiConnector.acknowledgementReferenceKey
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import models.{ApiKey, ApplicantDetails, CurrentProfile, TransactorDetails}

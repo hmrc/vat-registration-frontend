@@ -17,7 +17,7 @@
 package connectors
 
 import common.enums.VatRegStatus
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{VatScheme, VatSchemeHeader}
 import play.api.test.Helpers._

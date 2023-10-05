@@ -16,13 +16,13 @@
 
 package connectors
 
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api._
 import models.external.partnershipid.{JourneyLabels, PartnershipIdJourneyConfig, TranslationLabels}
 import models.external.{BusinessRegistrationStatus, BusinessVerificationStatus, BvPass, PartnershipIdEntity}
 import play.api.libs.json.{JsObject, JsResultException, Json}
-import play.api.test.Helpers.{CREATED, IM_A_TEAPOT, OK, UNAUTHORIZED, _}
+import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
 import play.api.mvc.Request

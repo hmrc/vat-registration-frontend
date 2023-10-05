@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
 import featuretoggle.FeatureSwitch.StubUpscan
 import featuretoggle.FeatureToggleSupport
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{AttachmentType, PrimaryIdentityEvidence}
 import models.external.upscan.{InProgress, UpscanDetails, UpscanResponse}
@@ -28,7 +28,7 @@ import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, Upstream5xxResponse, SessionId}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, SessionId, Upstream5xxResponse}
 
 class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures with FeatureToggleSupport {
 

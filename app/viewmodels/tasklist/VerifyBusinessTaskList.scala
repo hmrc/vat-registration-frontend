@@ -16,17 +16,17 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api.VatScheme
 import play.api.i18n.Messages
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 
 @Singleton
-class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationReasonTaskList,
-                                       aboutYouTransactorTaskList: AboutYouTransactorTaskList) {
+object VerifyBusinessTaskList {
 
-  def businessInfoRow(implicit profile: CurrentProfile) = TaskListRowBuilder(
+  def businessInfoRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig) = TaskListRowBuilder(
     messageKey = _ => "tasklist.verifyBusiness.businessInfo",
     url =
       _ => controllers.routes.BusinessIdentificationResolverController.resolve.url,
@@ -35,13 +35,13 @@ class VerifyBusinessTaskList @Inject()(registrationReasonTaskList: RegistrationR
       scheme => Seq(scheme.applicantDetails.exists(_.entity.isDefined)),
     prerequisites = scheme =>
       if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) {
-        Seq(aboutYouTransactorTaskList.transactorContactDetailsRow)
+        Seq(AboutYouTransactorTaskList.transactorContactDetailsRow)
       } else {
-        Seq(registrationReasonTaskList.registrationReasonRow(scheme.registrationId))
+        Seq(RegistrationReasonTaskList.registrationReasonRow(scheme.registrationId))
       }
   )
 
-  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages): TaskListSection =
+  def build(vatScheme: VatScheme)(implicit profile: CurrentProfile, messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.verifyBusiness.heading"),
       rows = Seq(businessInfoRow.build(vatScheme))

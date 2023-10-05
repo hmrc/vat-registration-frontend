@@ -19,6 +19,7 @@ package controllers
 import connectors.RegistrationApiConnector.nrsSubmissionPayloadKey
 import itutil.ControllerISpec
 import models.ApiKey
+import models.api.{Attachment1614a, Attachment1614h, ExtraIdentityEvidence, ExtraTransactorIdentityEvidence, IdentityEvidence, LandPropertyOtherDocs, LetterOfAuthority, OtherAttachments, PrimaryIdentityEvidence, PrimaryTransactorIdentityEvidence, TaxAgentAuthorisation, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -35,7 +36,12 @@ class SummaryControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
-        .registrationApi.getRegistration(fullVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson)))
+        .registrationApi.getRegistration(fullVatSchemeAttachment)
+        .attachmentsApi.getAttachments(attachments = List(
+          Attachment1614a,
+          Attachment1614h
+        ))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -54,7 +60,12 @@ class SummaryControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.replaceSectionWithoutCheckingData(nrsSubmissionPayload)
-        .registrationApi.getRegistration(fullNetpVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson)))
+        .registrationApi.getRegistration(fullVatSchemeAttachmentNETP)
+        .attachmentsApi.getAttachments(attachments = List(
+          Attachment1614a,
+          Attachment1614h
+        ))
+        .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -73,8 +84,13 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission succeeds" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", OK)
+          .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", OK)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
@@ -91,8 +107,13 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission is already submitted" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", CONFLICT)
+          .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", CONFLICT)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
@@ -109,8 +130,13 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission is already in progress" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", TOO_MANY_REQUESTS)
+          .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", TOO_MANY_REQUESTS)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
@@ -127,8 +153,13 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission failed with a bad request" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", BAD_REQUEST)
+          .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", BAD_REQUEST)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
@@ -145,8 +176,13 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission fails with a 500 series status" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", INTERNAL_SERVER_ERROR)
+          .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", INTERNAL_SERVER_ERROR)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 
@@ -163,8 +199,13 @@ class SummaryControllerISpec extends ControllerISpec {
       "the submission fails with a 500 series status" in new Setup {
         given()
           .user.isAuthorised()
-          .registrationApi.getRegistration(fullVatScheme)
-          .vatRegistration.submit(s"/vatreg/${fullVatScheme.registrationId}/submit-registration", UNPROCESSABLE_ENTITY)
+          .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", UNPROCESSABLE_ENTITY)
 
         insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
 

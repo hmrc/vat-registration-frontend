@@ -1,7 +1,7 @@
 
 package controllers.vatapplication
 
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup

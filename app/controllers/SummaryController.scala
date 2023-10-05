@@ -24,6 +24,7 @@ import models.CurrentProfile
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
+import viewmodels.tasklist.{AttachmentsTaskList, TaskListSections}
 import views.html.Summary
 
 import javax.inject.{Inject, Singleton}
@@ -35,29 +36,50 @@ class SummaryController @Inject()(val sessionService: SessionService,
                                   val vrs: VatRegistrationService,
                                   val summaryService: SummaryService,
                                   val nonRepudiationService: NonRepudiationService,
-                                  val summaryPage: Summary)
+                                  val summaryPage: Summary,
+                                  businessService: BusinessService,
+                                  attachmentsService: AttachmentsService
+                                 )
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with ApplicativeSyntax {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    for {
-      accordion <- summaryService.getSummaryData
-      html = summaryPage(accordion)
-      _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
-    } yield Ok(html)
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
+    implicit profile =>
+      vrs.getVatScheme.flatMap { vatScheme =>
+        AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService).flatMap { attachmentsRequiredRow =>
+        if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow)) {
+          for {
+            accordion <- summaryService.getSummaryData
+            html = summaryPage(accordion)
+            _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
+          } yield Ok(html)
+        } else {
+          Future.successful(Redirect(controllers.routes.TaskListController.show))
+        }
+      }
+      }
   }
+
 
   def submitRegistration: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        for {
-          _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-          response <- vrs.submitRegistration
-          result <- submissionRedirectLocation(response)
-        } yield {
-          result
+        vrs.getVatScheme.flatMap { vatScheme =>
+          AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService).flatMap { attachmentsRequiredRow =>
+          if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow)) {
+            for {
+              _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+              response <- vrs.submitRegistration
+              result <- submissionRedirectLocation(response)
+            } yield {
+              result
+            }
+          } else {
+            Future.successful(Redirect(controllers.routes.TaskListController.show))
+          }
+        }
         }
   }
 

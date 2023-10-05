@@ -16,6 +16,7 @@
 
 package viewmodels.tasklist
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
@@ -25,19 +26,22 @@ import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
+class SummaryTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
   
   implicit val fakeRequest: Request[_] = FakeRequest()
-  val summaryTaskList: SummaryTaskList = app.injector.instanceOf[SummaryTaskList]
-  val vatRegistrationTaskList: VatRegistrationTaskList = app.injector.instanceOf[VatRegistrationTaskList]
+  val summaryTaskList = SummaryTaskList
+  val vatRegistrationTaskList = VatRegistrationTaskList
+  val businessService = mockBusinessService
+  val attachmentsService = mockAttachmentsService
 
   "check for summary task list row" when {
     "prerequisites are not complete" must {
       "return TLCannotStart" in {
-        val row = summaryTaskList.summaryRow(None).build(emptyVatScheme.copy(
+        val row = summaryTaskList.summaryRow(None, businessService).build(emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(registrationReason = Voluntary))
         ))
         row.status mustBe TLCannotStart
@@ -76,7 +80,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           flatRateScheme = None
         )
 
-        val row = summaryTaskList.summaryRow(None).build(scheme)
+        val row = summaryTaskList.summaryRow(None, businessService).build(scheme)
         row.status mustBe TLNotStarted
       }
     }
@@ -111,14 +115,14 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
           ))
         )
 
-        val row = summaryTaskList.summaryRow(None).build(scheme)
+        val row = summaryTaskList.summaryRow(None, businessService).build(scheme)
         row.status mustBe TLNotStarted
       }
     }
 
     "digital attachments prerequisites are met when digital attachments tasklist available" must {
       "return TLNotStarted" in {
-        val attachmentsTaskList: AttachmentsTaskList = new AttachmentsTaskList(vatRegistrationTaskList, mockAttachmentsService)
+        val attachmentsTaskList = AttachmentsTaskList
 
         val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
           overseasCompliance = Some(OverseasCompliance(
@@ -152,7 +156,7 @@ class SummaryTaskListSpec extends VatRegSpec with VatRegistrationFixture {
         when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
         when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-        val row = summaryTaskList.summaryRow(await(attachmentsTaskList.attachmentsRequiredRow)).build(scheme)
+        val row = summaryTaskList.summaryRow(await(attachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService)),businessService).build(scheme)
         row.status mustBe TLNotStarted
       }
     }

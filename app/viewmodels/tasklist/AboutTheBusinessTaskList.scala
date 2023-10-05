@@ -27,23 +27,24 @@ import services.BusinessService
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, businessService: BusinessService, appConfig: FrontendAppConfig) {
+object AboutTheBusinessTaskList {
 
-  def build(vatScheme: VatScheme)
+  def build(vatScheme: VatScheme, businessService: BusinessService)
            (implicit profile: CurrentProfile,
-            messages: Messages): TaskListSection =
+            messages: Messages,
+            appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.aboutTheBusiness.heading"),
       rows = Seq(
         buildPartnersDetailRow(vatScheme).map(_.build(vatScheme)),
         Some(businessDetailsRow.build(vatScheme)),
-        Some(businessActivitiesRow.build(vatScheme)),
-        Some(otherBusinessInvolvementsRow.build(vatScheme))
+        Some(businessActivitiesRow(businessService).build(vatScheme)),
+        Some(otherBusinessInvolvementsRow(businessService).build(vatScheme))
       ).flatten
     )
 
   //scalastyle:off
-  def buildPartnersDetailRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListRowBuilder] = {
+  def buildPartnersDetailRow(vatScheme: VatScheme)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): Option[TaskListRowBuilder] = {
     vatScheme.partyType match {
       case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) =>
         Some(
@@ -62,7 +63,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
               (scheme.attachments.exists(_.additionalPartnersDocuments.contains(true)) && scheme.entities.exists(_.size == appConfig.maxPartnerCount))
                 || (scheme.attachments.exists(_.additionalPartnersDocuments.contains(false)) && scheme.entities.exists(_.size > 1))
             ),
-            prerequisites = _ => Seq(aboutYouTaskList.contactDetailsRow)
+            prerequisites = _ => Seq(AboutYouTaskList.contactDetailsRow)
           )
         )
       case _ =>
@@ -70,7 +71,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
     }
   }
 
-  def businessDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def businessDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
     url = _ => controllers.routes.TradingNameResolverController.resolve.url,
     tagId = "businessDetailsRow",
@@ -107,11 +108,11 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
       }
     },
     prerequisites = vatScheme => {
-      Seq(buildPartnersDetailRow(vatScheme).getOrElse(aboutYouTaskList.contactDetailsRow))
+      Seq(buildPartnersDetailRow(vatScheme).getOrElse(AboutYouTaskList.contactDetailsRow))
     }
   )
 
-  def businessActivitiesRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def businessActivitiesRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessActivities",
     url = _ => controllers.business.routes.LandAndPropertyController.show.url,
     tagId = "businessActivitiesRow",
@@ -132,7 +133,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
     prerequisites = _ => Seq(businessDetailsRow)
   )
 
-  def otherBusinessInvolvementsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def otherBusinessInvolvementsRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.otherBusinessInvolvements",
     url = scheme => scheme.otherBusinessInvolvements match {
       case Some(obiList) if obiList.exists(_.isModelComplete) => controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url
@@ -150,7 +151,7 @@ class AboutTheBusinessTaskList @Inject()(aboutYouTaskList: AboutYouTaskList, bus
         Seq(scheme.business.exists(_.otherBusinessInvolvement.isDefined))
       }
     },
-    prerequisites = _ => Seq(businessActivitiesRow)
+    prerequisites = _ => Seq(businessActivitiesRow(businessService))
   )
 
 }

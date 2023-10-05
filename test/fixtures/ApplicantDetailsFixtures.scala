@@ -241,4 +241,40 @@ trait ApplicantDetailsFixtures {
     businessVerification = Some(BvPass),
     bpSafeId = Some(testSafeId)
   )
+
+  val testApplicantPhone = "1234"
+  val testFormerFirstName = "New"
+  val testFormerMiddleName = "Name"
+  val testFormerLastName = "Cosmo"
+
+  val testPartnerShipEntity: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = Some("1234567890"),
+    companyNumber = Some("123456789"),
+    companyName = Some("testCompanyName"),
+    dateOfIncorporation = Some(LocalDate.of(2020, 1, 1)),
+    postCode = Some("AA11AA"),
+    registration = RegisteredStatus,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some("testBpId"),
+    identifiersMatch = true
+  )
+
+  val validFullApplicantDetailsPartnership: ApplicantDetails = ApplicantDetails(
+    personalDetails = Some(testPersonalDetails),
+    entity = Some(testPartnerShipEntity),
+    currentAddress = Some(validCurrentAddress),
+    noPreviousAddress = Some(false),
+    previousAddress = Some(validPrevAddress),
+    contact = Contact(
+      email = Some("test@t.test"),
+      tel = Some(testApplicantPhone),
+      emailVerified = Some(true)
+    ),
+    changeOfName = FormerName(
+      hasFormerName = Some(true),
+      name = Some(Name(Some(testFormerFirstName), Some(testFormerMiddleName), testFormerLastName)),
+      change = Some(LocalDate.of(2000, 7, 12))
+    ),
+    roleInTheBusiness = Some(Director)
+  )
 }

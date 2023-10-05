@@ -1,7 +1,7 @@
 
 package connectors
 
-import fixtures.ITRegistrationFixtures
+import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.SicCode
 import play.api.libs.json.Json

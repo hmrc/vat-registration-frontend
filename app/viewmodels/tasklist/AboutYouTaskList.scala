@@ -16,15 +16,15 @@
 
 package viewmodels.tasklist
 
-import featuretoggle.FeatureToggleSupport
+
+import config.FrontendAppConfig
 import models.CurrentProfile
 import models.api._
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 
 @Singleton
-class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
-                                 aboutYouTransactorTaskList: AboutYouTransactorTaskList) extends FeatureToggleSupport {
+object AboutYouTaskList {
 
   private def buildMessageKey(suffix: String, vatScheme: VatScheme) = {
     if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) s"tasklist.aboutBusinessContact.$suffix" else s"tasklist.aboutYou.$suffix"
@@ -39,7 +39,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
         .exists(partner => partner.partyType == Individual || partner.partyType == NETP))
 
   // scalastyle:off
-  def personalDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = TaskListRowBuilder(
+  def personalDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = scheme => buildMessageKey("personalDetails", scheme),
     url = scheme => {
       if (isIndividualType(scheme) || isPartnershipWithIndLeadPartner(scheme)) {
@@ -75,13 +75,13 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
         }
     },
     prerequisites = scheme => Seq(
-      if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(aboutYouTransactorTaskList.transactorPersonalDetailsRow) else None,
+      if (scheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(AboutYouTransactorTaskList.transactorPersonalDetailsRow) else None,
       if (Seq(Partnership, LtdPartnership, ScotLtdPartnership, ScotPartnership).exists(scheme.partyType.contains)) Some(leadPartnerDetailsRow) else None,
-      Some(verifyBusinessTaskList.businessInfoRow)
+      Some(VerifyBusinessTaskList.businessInfoRow)
     ).flatten
   )
 
-  def leadPartnerDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+  def leadPartnerDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = _ => "tasklist.aboutYou.leadPartnerDetails",
       url = _ => controllers.applicant.routes.LeadPartnerEntityController.showLeadPartnerEntityType.url,
@@ -90,11 +90,11 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
         scheme.entities.exists(_.nonEmpty),
         scheme.entities.exists(_.headOption.exists(_.isModelComplete(isLeadPartner = true)))
       ),
-      prerequisites = _ => Seq(verifyBusinessTaskList.businessInfoRow)
+      prerequisites = _ => Seq(VerifyBusinessTaskList.businessInfoRow)
     )
   }
 
-  def addressDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+  def addressDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = scheme => buildMessageKey("addressDetails", scheme),
       url = vatScheme => resolveAddressRowUrl(vatScheme),
@@ -104,7 +104,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
     )
   }
 
-  def contactDetailsRow(implicit profile: CurrentProfile): TaskListRowBuilder = {
+  def contactDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = {
     TaskListRowBuilder(
       messageKey = scheme => buildMessageKey("contactDetails", scheme),
       url = _ => controllers.applicant.routes.CaptureEmailAddressController.show.url,
@@ -125,7 +125,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
     )
   }
 
-  def buildLeadPartnerRow(vatScheme: VatScheme)(implicit profile: CurrentProfile): Option[TaskListSectionRow] = {
+  def buildLeadPartnerRow(vatScheme: VatScheme)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): Option[TaskListSectionRow] = {
     vatScheme.partyType match {
       case Some(Partnership) | Some(LtdPartnership) | Some(ScotPartnership) | Some(ScotLtdPartnership) =>
         Some(leadPartnerDetailsRow.build(vatScheme))
@@ -155,7 +155,7 @@ class AboutYouTaskList @Inject()(verifyBusinessTaskList: VerifyBusinessTaskList,
   }
 
   def build(vatScheme: VatScheme)
-           (implicit profile: CurrentProfile): TaskListSection =
+           (implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = buildMessageKey("heading", vatScheme),
       rows = Seq(

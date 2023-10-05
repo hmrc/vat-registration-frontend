@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fixtures
+package itFixtures
 
 import common.enums.VatRegStatus
 import models._
@@ -22,6 +22,7 @@ import models.api.SicCode.SIC_CODES_KEY
 import models.api._
 import models.api.vatapplication._
 import models.external._
+import models.external.soletraderid.OverseasIdentifierDetails
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 
 import java.time.LocalDate
@@ -41,12 +42,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     thresholdInTwelveMonths = Some(LocalDate.of(2018, 5, 30))
   )
 
-  val flatRateScheme = FlatRateScheme(joinFrs = Some(false))
+  val flatRateScheme: FlatRateScheme = FlatRateScheme(joinFrs = Some(false))
   val testBankName = "testName"
   val testSortCode = "123456"
   val testAccountNumber = "12345678"
-  val testUkBankDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
-  val bankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
+  val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
+  val bankAccount: BankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
   val emptyBankAccount = BankAccount(isProvided = true, None, None)
   val bankAccountNotProvidedNoReason = BankAccount(isProvided = false, None, None)
   val bankAccountNotProvided = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
@@ -56,14 +57,14 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     eoriRequested = Some(false),
     turnoverEstimate = Some(testTurnover),
     zeroRatedSupplies = Some(1234),
-    northernIrelandProtocol = None,
+    northernIrelandProtocol = Some(NIPTurnover(goodsToEU = Some(ConditionalValue(answer = false, None)), goodsFromEU = Some(ConditionalValue(answer = false, None)))),
     claimVatRefunds = Some(true),
     appliedForExemption = None,
     overseasCompliance = None,
-    startDate = None,
+    startDate = Some(LocalDate.of(2020,1,1)),
     returnsFrequency = Some(Quarterly),
     staggerStart = Some(JanuaryStagger),
-    annualAccountingDetails = None,
+    annualAccountingDetails = Some(AASDetails(paymentFrequency = Some(QuarterlyPayment), paymentMethod = Some(StandingOrder))),
     hasTaxRepresentative = None
   )
   val testCalculatedDate: LocalDate = LocalDate.now()
@@ -94,6 +95,26 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     fixedEstablishmentInManOrUk = true
   )
 
+  val testEligibilitySubmissionDataPartnership: EligibilitySubmissionData = EligibilitySubmissionData(
+    threshold = threshold,
+    partyType = Partnership,
+    isTransactor = false,
+    appliedForException = Some(false),
+    registrationReason = ForwardLook,
+    calculatedDate = Some(testCalculatedDate),
+    fixedEstablishmentInManOrUk = true
+  )
+
+  val testEligibilitySubmissionDataNETP: EligibilitySubmissionData = EligibilitySubmissionData(
+    threshold = threshold,
+    partyType = NETP,
+    isTransactor = false,
+    appliedForException = Some(false),
+    registrationReason = ForwardLook,
+    calculatedDate = Some(testCalculatedDate),
+    fixedEstablishmentInManOrUk = true
+  )
+
   val testEligibilitySubmissionDataPartner: EligibilitySubmissionData = EligibilitySubmissionData(
     threshold,
     Partnership,
@@ -104,6 +125,9 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   val businessDetails: Business = Business(
+    otherBusinessInvolvement = Some(false),
+    hasLandAndProperty = Some(false),
+    hasWebsite = Some(true),
     hasTradingName = Some(true),
     email = Some("test@foo.com"),
     telephoneNumber = Some("987654"),
@@ -157,6 +181,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
       registrationReason = NonUk
     ))
   )
+
+  val testPostcode = "AA11AA"
+  val testLine3 = "line3"
+  val testLine4 = "line4"
+  val testLine5 = "line5"
+  val testAddress: Address = Address(testLine1, Some(testLine2), None, None, None, Some(testPostcode), Some(testCountry), addressValidated = true)
 
   val emptyVatSchemeNonUkCompany: VatScheme = VatScheme(
     testRegId,
@@ -260,7 +290,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   )
 
   lazy val validTransactorDetails: TransactorDetails = TransactorDetails(
-    personalDetails = Some(testPersonalDetails),
+    personalDetails = Some(testPersonalDetailsArn),
     isPartOfOrganisation = Some(true),
     organisationName = Some("testCompanyName"),
     telephone = Some("1234"),
@@ -286,6 +316,119 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val sicCodeDesc = "test2 desc"
   val sicCodeDescCy = "test2 desc cy"
   val businessActivityDescription = "test business desc"
+
+  val validPartnershipIdEntity: PartnershipIdEntity = PartnershipIdEntity(
+    sautr = Some(testSautr),
+    companyName = Some(testCompanyName),
+    postCode = Some(testPostcode),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    identifiersMatch = true
+  )
+
+  val validSoleTraderIdEntity: SoleTraderIdEntity = SoleTraderIdEntity(
+    firstName = testFirstName,
+    lastName = testLastName,
+    dateOfBirth = testApplicantDob,
+    nino = Some(testApplicantNino),
+    sautr = Some(testSautr),
+    trn = Some(testTrn),
+    registration = testRegistration,
+    businessVerification = Some(BvPass),
+    bpSafeId = Some(testBpSafeId),
+    overseas = Some(OverseasIdentifierDetails("1234567890", "UK"))
+  )
+
+  val validEntities: List[Entity] = List[Entity](
+    Entity(
+      details = Some(validPartnershipIdEntity),
+      partyType = LtdLiabilityPartnership,
+      isLeadPartner = Some(true),
+      optScottishPartnershipName = None,
+      address = Some(testAddress),
+      email = Some("test@foo.com"),
+      telephoneNumber = Some("1234567890")
+    ),
+    Entity(
+      details = Some(validPartnershipIdEntity),
+      partyType = LtdLiabilityPartnership,
+      isLeadPartner = Some(false),
+      optScottishPartnershipName = None,
+      address = Some(testAddress),
+      email = Some("test@foo.com"),
+      telephoneNumber = Some("1234567890")
+    )
+  )
+
+  val validEntitiesNETP: List[Entity] = List[Entity](
+    Entity(
+      details = Some(validSoleTraderIdEntity),
+      partyType = NETP,
+      isLeadPartner = Some(true),
+      optScottishPartnershipName = None,
+      address = Some(testAddress),
+      email = Some("test@foo.com"),
+      telephoneNumber = Some("1234567890")
+    ),
+    Entity(
+      details = Some(validSoleTraderIdEntity),
+      partyType = NETP,
+      isLeadPartner = Some(false),
+      optScottishPartnershipName = None,
+      address = Some(testAddress),
+      email = Some("test@foo.com"),
+      telephoneNumber = Some("1234567890")
+    )
+  )
+
+  val otherBusinessInvolvement1 = List(OtherBusinessInvolvement(
+    businessName = Some("test business name"),
+    hasVrn = Some(true),
+    vrn = Some("test vrn"),
+    hasUtr = None,
+    utr = None,
+    stillTrading = Some(true)
+  ))
+
+  val fullVatSchemeAttachment: VatScheme = VatScheme(
+    registrationId = "1",
+    createdDate = testCreatedDate,
+    status = VatRegStatus.submitted,
+    attachments = Some(Attachments(
+      method = Some(Upload),
+      supplyVat1614a = Some(true),
+      supplyVat1614h = Some(true),
+      supplySupportingDocuments = Some(true),
+      additionalPartnersDocuments = Some(false)
+    )),
+    applicantDetails = Some(validFullApplicantDetailsPartnership),
+    business = Some(businessDetails),
+    flatRateScheme = Some(flatRateScheme),
+    bankAccount = Some(bankAccount),
+    vatApplication = Some(fullVatApplication),
+    eligibilitySubmissionData = Some(testEligibilitySubmissionDataPartnership),
+    entities = Some(validEntities),
+    transactorDetails = Some(validTransactorDetails),
+    otherBusinessInvolvements = Some(otherBusinessInvolvement1),
+    eligibilityJson = Some(fullEligibilityDataJson)
+  )
+
+  val fullVatSchemeAttachmentNETP: VatScheme = fullVatSchemeAttachment.copy(
+    eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
+      partyType = NETP,
+      fixedEstablishmentInManOrUk = false,
+      registrationReason = NonUk
+    )),
+    applicantDetails = Some(validFullApplicantDetails.copy(entity = Some(testNetpSoleTrader), personalDetails = Some(testNetpPersonalDetails))),
+    business = Some(businessDetails.copy(tradingName = Some(testCompanyName))),
+    vatApplication = Some(fullVatApplication.copy(
+      overseasCompliance = Some(testFullOverseasCompliance),
+      staggerStart = Some(JanDecStagger),
+      hasTaxRepresentative = Some(false)
+    )),
+    bankAccount = None,
+    entities = Some(validEntitiesNETP),
+  )
 
   val jsonListSicCode =
     s"""
