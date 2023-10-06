@@ -50,12 +50,14 @@ class SummaryController @Inject()(val sessionService: SessionService,
       vrs.getVatScheme.flatMap { vatScheme =>
         AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService).flatMap { attachmentsRequiredRow =>
         if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow)) {
+          infoLog(s"[SummaryController][show] - The TaskListSections are all complete, loading the summary page")
           for {
             accordion <- summaryService.getSummaryData
             html = summaryPage(accordion)
             _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
           } yield Ok(html)
         } else {
+          infoLog(s"[SummaryController][show] - The TaskListSections are not all complete, redirecting to the application progress page")
           Future.successful(Redirect(controllers.routes.TaskListController.show))
         }
       }
@@ -69,6 +71,7 @@ class SummaryController @Inject()(val sessionService: SessionService,
         vrs.getVatScheme.flatMap { vatScheme =>
           AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService).flatMap { attachmentsRequiredRow =>
           if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow)) {
+            infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are all complete")
             for {
               _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
               response <- vrs.submitRegistration
@@ -77,37 +80,50 @@ class SummaryController @Inject()(val sessionService: SessionService,
               result
             }
           } else {
+            infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are not all complete, redirecting to the application progress page")
             Future.successful(Redirect(controllers.routes.TaskListController.show))
           }
         }
         }
   }
 
-  private def submissionRedirectLocation(response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile): Future[Result] = {
+  private def submissionRedirectLocation(response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]): Future[Result] = {
     response match {
       case Success =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)).map {
-          _ => Redirect(controllers.routes.ApplicationSubmissionController.show)
+          _ =>
+            infoLog(s"[SummaryController][submissionRedirectLocation][Success] - The application was successfully submitted, redirecting to the application submitted page")
+            Redirect(controllers.routes.ApplicationSubmissionController.show)
         }
       case SubmissionInProgress =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.locked)).map {
-          _ => Redirect(controllers.routes.SubmissionInProgressController.show)
+          _ =>
+            infoLog(s"[SummaryController][submissionRedirectLocation][SubmissionInProgress] - The application submission is in progress")
+            Redirect(controllers.routes.SubmissionInProgressController.show)
         }
       case AlreadySubmitted =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.duplicateSubmission)).map {
-          _ => Redirect(controllers.errors.routes.ErrorController.alreadySubmitted)
+          _ =>
+            infoLog(s"[SummaryController][submissionRedirectLocation][AlreadySubmitted] - The application has already been submitted")
+            Redirect(controllers.errors.routes.ErrorController.alreadySubmitted)
         }
       case SubmissionFailed =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failed)).map {
-          _ => Redirect(controllers.errors.routes.ErrorController.submissionFailed)
+          _ =>
+            infoLog(s"[SummaryController][submissionRedirectLocation][SubmissionFailed] - The application submission has failed")
+            Redirect(controllers.errors.routes.ErrorController.submissionFailed)
         }
       case SubmissionFailedRetryable =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.failedRetryable)).map {
-          _ => Redirect(controllers.errors.routes.ErrorController.submissionRetryable)
+          _ =>
+            infoLog(s"[SummaryController][submissionRedirectLocation][SubmissionFailedRetryable] - The application submission has failed, redirecting to the retry-submission page")
+            Redirect(controllers.errors.routes.ErrorController.submissionRetryable)
         }
       case Contact =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.contact)).map {
-          _ => Redirect(controllers.errors.routes.ErrorController.contact)
+          _ =>
+            infoLog(s"[SummaryController][submissionRedirectLocation][Contact] - The application submission has failed, redirecting to the contact page")
+            Redirect(controllers.errors.routes.ErrorController.contact)
         }
     }
   }
