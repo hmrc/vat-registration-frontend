@@ -31,6 +31,18 @@ $hmrc-assets-path: "/register-for-vat/assets/lib/hmrc-frontend/hmrc/";
    animation: spin 2s linear infinite;
  }
 
+ .app-task-list__name {
+    width: 100%;
+ }
+
+ .app-task-list__row {
+    width:100%;
+ }
+
+ .no-wrap {
+    white-space: nowrap;
+ }
+
 @-webkit-keyframes spin {
   0% {
     -webkit-transform: rotate(0deg);

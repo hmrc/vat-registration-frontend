@@ -37,7 +37,7 @@ object AttachmentsTaskList {
       Some(
         TaskListRowBuilder(
           messageKey = _ => resolveMessageKey(attachments),
-          url = _ => controllers.attachments.routes.DocumentsRequiredController.resolve.url,
+          url = _ => _ => controllers.attachments.routes.DocumentsRequiredController.resolve.url,
           tagId = "attachmentsRequiredRow",
           checks = scheme => checks(scheme, incompleteAttachments),
           prerequisites = vatScheme => Seq(

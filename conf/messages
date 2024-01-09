@@ -34,6 +34,7 @@ tasklist.complete                                   = Completed
 tasklist.notStarted                                 = Not started
 tasklist.cannotStartYet                             = Cannot start yet
 tasklist.inProgress                                 = In progress
+tasklist.failed                                     = Failed
 tasklist.eligibility.heading                        = Check before you start
 tasklist.eligibilty.regReason                       = Registration reason
 tasklist.verifyBusiness.heading                     = Verify the business
@@ -1380,6 +1381,17 @@ attachments.uploadingDocument.heading.vat1tr                 = Uploading the VAT
 attachments.uploadingDocument.heading.supportingDocuments    = Uploading the supporting document
 attachments.uploadingDocument.heading.VAT1614A               = Uploading the VAT1614A
 attachments.uploadingDocument.heading.VAT1614H               = Uploading the VAT1614H
+
+# UPLOAD DOCUMENTS SUMMARY
+fileUpload.summary.heading                                      = Upload your documents
+fileUpload.summary.para                                         = These are the documents you need to complete your VAT registration. You have 7 days to upload them.
+fileUpload.summary.TransactorIdentityEvidence                   = Transactor Identity Evidence
+fileUpload.summary.IdentityEvidence                             = Identity Evidence
+fileUpload.summary.VAT2                                         = VAT2
+fileUpload.summary.VAT51                                        = VAT51
+fileUpload.summary.TaxRepresentativeAuthorisation               = Tax Representative Authorisation
+fileUpload.summary.VAT5L                                        = VAT5L
+fileUpload.summary.edit                                         = Edit
 
 # POSTAL COVER SHEET MESSAGES
 pages.PostalCoverSheet.heading                           = Print cover letter for documents

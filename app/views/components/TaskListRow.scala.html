@@ -15,37 +15,52 @@
  *@
 
 @import config.FrontendAppConfig
-@import viewmodels.tasklist.{TLCannotStart, TLCompleted, TLInProgress, TLNotStarted, TaskListState}
+@import viewmodels.tasklist.{TLCannotStart, TLCompleted, TLInProgress, TLNotStarted, TLFailed, TaskListState}
 @import views.html.components.link
 
 @this(
+        appConfig: FrontendAppConfig,
         link: link,
         govukTag: GovukTag
 )
 
-@(message: String, url: String, tagId: String, status: TaskListState)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(message: String, url: String, tagId: String, status: TaskListState, canEdit: Boolean = false)(implicit request: Request[_], messages: Messages)
 
 <li class="app-task-list__item">
-    <span class="app-task-list__task-name">
-        @{
-            status match {
-                case TLCannotStart => <span>{message}</span>
-                case _ => link(url, message, attributes = Map("aria-describedby" -> tagId))
-            }
-        }
-    </span>
+    <table class="app-task-list__row">
+        <tr>
+            <td class='app-task-list__name'>
+                <span class="app-task-list__task-name">
+                    @{
+                        (status, canEdit) match {
+                            case (TLCannotStart, _) => <span>{message}</span>
+                            case (_, true) => <span>{message}</span>
+                            case _ => link(url, message, attributes = Map("aria-describedby" -> tagId))
+                        }
+                    }
+                </span>
+            </td>
 
-    @{
-        status match {
-            case TLCannotStart =>
-                govukTag(Tag(Text(messages("tasklist.cannotStartYet")), classes = "app-task-list__task-completed govuk-tag--grey", attributes = Map("id" -> tagId)))
-            case TLNotStarted =>
-                govukTag(Tag(Text(messages("tasklist.notStarted")), classes = "app-task-list__task-completed govuk-tag--grey", attributes = Map("id" -> tagId)))
-            case TLInProgress =>
-                govukTag(Tag(Text(messages("tasklist.inProgress")), classes = "app-task-list__task-completed govuk-tag--blue", attributes = Map("id" -> tagId)))
-            case TLCompleted =>
-                govukTag(Tag(Text(messages("tasklist.complete")), classes = "app-task-list__task-completed", attributes = Map("id" -> tagId)))
-        }
-    }
+            @if(canEdit) {
+                <td>@link(url, messages("fileUpload.summary.edit"), attributes = Map("aria-describedby" -> tagId))</td>
+                }
 
+            <td>
+                @{
+                    status match {
+                        case TLCannotStart =>
+                            govukTag(Tag(Text(messages("tasklist.cannotStartYet")), classes = "app-task-list__task-completed govuk-tag--grey no-wrap", attributes = Map("id" -> tagId)))
+                        case TLNotStarted =>
+                            govukTag(Tag(Text(messages("tasklist.notStarted")), classes = "app-task-list__task-completed govuk-tag--grey no-wrap", attributes = Map("id" -> tagId)))
+                        case TLInProgress =>
+                            govukTag(Tag(Text(messages("tasklist.inProgress")), classes = "app-task-list__task-completed govuk-tag--blue no-wrap", attributes = Map("id" -> tagId)))
+                        case TLCompleted =>
+                            govukTag(Tag(Text(messages("tasklist.complete")), classes = "app-task-list__task-completed no-wrap", attributes = Map("id" -> tagId)))
+                        case `TLFailed` =>
+                            govukTag(Tag(Text(messages("tasklist.failed")), classes = "app-task-list__task-completed govuk-tag--red no-wrap", attributes = Map("id" -> tagId)))
+                    }
+                }
+            </td>
+        </tr>
+    </table>
 </li>

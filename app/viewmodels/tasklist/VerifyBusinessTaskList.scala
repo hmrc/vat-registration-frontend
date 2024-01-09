@@ -29,7 +29,7 @@ object VerifyBusinessTaskList {
   def businessInfoRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig) = TaskListRowBuilder(
     messageKey = _ => "tasklist.verifyBusiness.businessInfo",
     url =
-      _ => controllers.routes.BusinessIdentificationResolverController.resolve.url,
+      _ => _ => controllers.routes.BusinessIdentificationResolverController.resolve.url,
     tagId = "verifyBusinessRow",
     checks =
       scheme => Seq(scheme.applicantDetails.exists(_.entity.isDefined)),

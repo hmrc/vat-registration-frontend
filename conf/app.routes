@@ -413,6 +413,15 @@ GET         /post-documents                                           controller
 ## Documents Post Error
 GET         /post-documents-error                                     controllers.attachments.DocumentsPostErrorController.show
 
+## Upload Summary Page
+GET         /upload-summary                                           controllers.fileupload.UploadSummaryController.show
+
+## View Attachment Page
+GET        /attachment-details                                        controllers.fileupload.ViewAttachmentController.show
+
+## Attachment Error Page
+GET       /attachment-error/:attachmentType                           controllers.fileupload.UploadErrorController.show(attachmentType: String)
+
 ## Postal Cover Sheet Page
 GET         /postal-cover-sheet                                       controllers.attachments.PostalCoverSheetController.show
 

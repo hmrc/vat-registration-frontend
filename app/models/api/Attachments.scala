@@ -24,8 +24,8 @@ case class Attachments(method: Option[AttachmentMethod] = None,
                        supplyVat1614a: Option[Boolean] = None,
                        supplyVat1614h: Option[Boolean] = None,
                        supplySupportingDocuments: Option[Boolean] = None,
-                       additionalPartnersDocuments: Option[Boolean] = None,
-                       confirmPostDocuments: Option[Boolean] = None)
+                       additionalPartnersDocuments: Option[Boolean] = None
+                      )
 
 object Attachments {
   implicit val apiKey: ApiKey[Attachments] = ApiKey("attachments")

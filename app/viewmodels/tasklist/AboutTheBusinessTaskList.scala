@@ -50,7 +50,7 @@ object AboutTheBusinessTaskList {
         Some(
           TaskListRowBuilder(
             messageKey = _ => "tasklist.aboutTheBusiness.partnersDetail",
-            url = _ => {
+            url = _ => _ => {
               if (vatScheme.entities.exists(_.size < minPartnerIndex))
                 controllers.partners.routes.PartnerEntityTypeController.showPartnerType(minPartnerIndex).url
               else
@@ -73,7 +73,7 @@ object AboutTheBusinessTaskList {
 
   def businessDetailsRow(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessDetails",
-    url = _ => controllers.routes.TradingNameResolverController.resolve.url,
+    url = _ => _ => controllers.routes.TradingNameResolverController.resolve.url,
     tagId = "businessDetailsRow",
     checks = scheme => {
       Seq(
@@ -114,7 +114,7 @@ object AboutTheBusinessTaskList {
 
   def businessActivitiesRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.businessActivities",
-    url = _ => controllers.business.routes.LandAndPropertyController.show.url,
+    url = _ => _ => controllers.business.routes.LandAndPropertyController.show.url,
     tagId = "businessActivitiesRow",
     checks = scheme => Seq(
       scheme.business.exists(_.businessDescription.isDefined),
@@ -135,7 +135,7 @@ object AboutTheBusinessTaskList {
 
   def otherBusinessInvolvementsRow(businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.aboutTheBusiness.otherBusinessInvolvements",
-    url = scheme => scheme.otherBusinessInvolvements match {
+    url = scheme => _ => scheme.otherBusinessInvolvements match {
       case Some(obiList) if obiList.exists(_.isModelComplete) => controllers.otherbusinessinvolvements.routes.ObiSummaryController.show.url
       case _ => controllers.otherbusinessinvolvements.routes.OtherBusinessInvolvementController.show.url
     },

@@ -40,7 +40,7 @@ class UploadSupportingDocumentController @Inject()(view: UploadDocument,
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     attachmentsService.getAttachmentDetails(profile.registrationId).flatMap {
-      case Some(Attachments(Some(Upload), _, _, Some(true), _, _)) =>
+      case Some(Attachments(Some(Upload), _, _, Some(true), _)) =>
         upscanService.fetchAllUpscanDetails(profile.registrationId).flatMap {
           case list if list.count(_.attachmentType.equals(LandPropertyOtherDocs)) < 20 =>
             upscanService.initiateUpscan(profile.registrationId, LandPropertyOtherDocs).map { upscanResponse =>

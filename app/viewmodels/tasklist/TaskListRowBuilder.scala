@@ -21,10 +21,12 @@ import models.api.VatScheme
 import scala.annotation.tailrec
 
 case class TaskListRowBuilder(messageKey: VatScheme => String,
-                              url: VatScheme => String,
+                              url: VatScheme => TaskListState => String,
                               tagId: String,
                               checks: VatScheme => Seq[Boolean],
-                              prerequisites: VatScheme => Seq[TaskListRowBuilder]) {
+                              prerequisites: VatScheme => Seq[TaskListRowBuilder],
+                              error: VatScheme => Boolean = _ => false,
+                              canEdit: TaskListState => Boolean = _ => false) {
 
   def isComplete(vatScheme: VatScheme): Boolean = checks(vatScheme).forall(_ == true)
 
@@ -41,22 +43,20 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
   }
 
   def build(vatScheme: VatScheme): TaskListSectionRow = {
-    def partiallyCompleted: Boolean = !isComplete(vatScheme) && checks(vatScheme).contains(true)
-
     val status = if (prerequisitesMet(vatScheme)) {
-      if (isComplete(vatScheme)) {
+      if(error(vatScheme)) {
+        TLFailed
+      } else if (isComplete(vatScheme)) {
         TLCompleted
-      } else {
-        if (partiallyCompleted) {
+      } else  if (checks(vatScheme).contains(true)) {
           TLInProgress
         } else {
           TLNotStarted
         }
-      }
     } else {
       TLCannotStart
     }
 
-    TaskListSectionRow(messageKey(vatScheme), url(vatScheme), tagId, status)
+    TaskListSectionRow(messageKey(vatScheme), url(vatScheme)(status), tagId, status, canEdit(status))
   }
 }

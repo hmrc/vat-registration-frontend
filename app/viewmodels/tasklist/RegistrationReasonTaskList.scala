@@ -27,7 +27,7 @@ object RegistrationReasonTaskList {
 
   def registrationReasonRow(regId: String)(implicit appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.eligibilty.regReason",
-    url = _ => appConfig.eligibilityStartUrl(regId),
+    url = _ => _ => appConfig.eligibilityStartUrl(regId),
     tagId = "regReasonRow",
     checks = scheme => Seq(
       scheme.eligibilitySubmissionData.isDefined

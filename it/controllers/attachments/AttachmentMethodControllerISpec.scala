@@ -2,7 +2,6 @@
 package controllers.attachments
 
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
-import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.api._
 import models.external.upscan.{InProgress, UpscanDetails}
@@ -10,15 +9,15 @@ import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
-class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistrationFixtures {
+class AttachmentMethodControllerISpec extends ControllerISpec {
 
   val url = "/attachment-method"
-  val fullAttachmentList = Attachments(Some(Post))
+  val fullAttachmentList: Attachments = Attachments(Some(Post))
 
   "GET /register-for-vat/attachment-method" when {
     "the backend contains no attachment information" must {
       "return OK and render the page with a blank form" in new Setup {
-        given
+        given()
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
@@ -78,7 +77,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec with ITRegistratio
         )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.fileupload.routes.UploadDocumentController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.fileupload.routes.UploadSummaryController.show.url)
       }
     }
     "Post is selected" when {
