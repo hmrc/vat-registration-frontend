@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ object EmailAddressConstraints {
 
   def emailAddressFormat(message: String = "capture-email-address.error.incorrect_format"): Constraint[String] = Constraint("email_address.incorrect_format")(
     emailAddress => validateNot(
-      constraint = emailAddress matches emailRegex,
+      constraint = emailAddress.trim matches emailRegex,
       errMsg = message
     )
   )
