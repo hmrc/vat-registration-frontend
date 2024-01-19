@@ -33,7 +33,7 @@ object EmailAddressConstraints {
 
   def emailAddressFormat(message: String = "capture-email-address.error.incorrect_format"): Constraint[String] = Constraint("email_address.incorrect_format")(
     emailAddress => validateNot(
-      constraint = emailAddress matches emailRegex,
+      constraint = emailAddress.trim matches emailRegex,
       errMsg = message
     )
   )

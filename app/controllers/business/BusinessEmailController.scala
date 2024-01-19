@@ -52,7 +52,7 @@ class BusinessEmailController @Inject()(val sessionService: SessionService,
         BusinessEmailAddressForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(routes.BusinessEmailController.submit, badForm))),
           businessEmail =>
-            businessService.updateBusiness(Email(businessEmail)).map {
+            businessService.updateBusiness(Email(businessEmail.trim)).map {
               _ => Redirect(controllers.business.routes.BusinessTelephoneNumberController.show)
             }
 
