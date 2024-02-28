@@ -31,7 +31,7 @@ private object CompileDependencies {
   private val catsVersion = "1.0.0"
   private val playJsonJodaVersion = "2.9.3"
 
-  private val playHmrcFrontendVersion = "6.2.0-play-28"
+  private val playHmrcFrontendVersion = "8.5.0"
 
   private val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
@@ -43,7 +43,7 @@ private object CompileDependencies {
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % formMappingVersion,
     "org.typelevel" %% "cats-core" % catsVersion,
     "com.typesafe.play" %% "play-json-joda" % playJsonJodaVersion,
-    "uk.gov.hmrc" %% "play-frontend-hmrc" % playHmrcFrontendVersion
+    "uk.gov.hmrc" %% "play-frontend-hmrc-play-28" % playHmrcFrontendVersion
   )
 
   def apply(): Seq[ModuleID] = compileDependencies
