@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,20 @@
 
 package models.view
 
+import config.FrontendAppConfig
+import models.VatThreshold
 import models.api._
-import models.view.EligibilityJsonParser.EligibilityPageIds._
 import play.api.i18n.Messages
 import play.api.libs.json.Reads._
 import play.api.libs.json._
+import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
+import services.ThresholdService
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import utils.MessageDateFormat
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 
 object SummaryListRowUtils {
@@ -119,10 +122,10 @@ object SummaryListRowUtils {
     }
 }
 
-object EligibilityJsonParser {
+object EligibilityJsonParser extends ThresholdService {
 
   //scalastyle:off
-  def reads(changeUrl: String => String)(implicit messages: Messages): Reads[SummaryList] = Reads { json =>
+  def reads(changeUrl: String => String)(implicit messages: Messages, appConfig: FrontendAppConfig): Reads[SummaryList] = Reads { json =>
     val answerMap = json.validate[Map[String, JsValue]]
 
     def isOptDate(js: JsValue) = (js \ "value").asOpt[JsValue].isDefined
@@ -130,7 +133,7 @@ object EligibilityJsonParser {
     def isDate(js: JsValue) = (js \ "date").asOpt[JsValue].isDefined
 
     answerMap.map { answers =>
-      val regReason = answers(registrationReason).as[String]
+      val regReason = answers(EligibilityPageIds.registrationReason).as[String]
 
       SummaryList(reorder(answers).flatMap {
         case (questionId, answerJson) if isOptDate(answerJson) =>
@@ -150,11 +153,11 @@ object EligibilityJsonParser {
           val dateAnswer = MessageDateFormat.format(LocalDate.parse((answerJson \ "date").as[String], DateTimeFormatter.ISO_LOCAL_DATE))
 
           Seq(eligibilitySummaryRow(changeUrl, questionId, question, dateAnswer))
-        case (questionId, answerJson) if questionId == businessEntity =>
+        case (questionId, answerJson) if questionId == EligibilityPageIds.businessEntity =>
           val isPartnership = Seq(Partnership, LtdPartnership, ScotPartnership, ScotLtdPartnership, LtdLiabilityPartnership)
             .contains(answerJson.as[PartyType])
           val optPartnershipAnswer = if (isPartnership) {
-            Seq(eligibilitySummaryRow(changeUrl, businessEntityPartnership, lookupQuestion(businessEntityPartnership, regReason), lookupAnswer(businessEntityPartnership, answerJson)))
+            Seq(eligibilitySummaryRow(changeUrl, EligibilityPageIds.businessEntityPartnership, lookupQuestion(EligibilityPageIds.businessEntityPartnership, regReason), lookupAnswer(EligibilityPageIds.businessEntityPartnership, answerJson)))
           } else {
             Nil
           }
@@ -173,9 +176,16 @@ object EligibilityJsonParser {
   }
   //scalastyle:on
 
-  private def lookupQuestion(questionId: String, regReason: String)(implicit messages: Messages): String = {
-    val togcColeSuffix = if (togcColeQuestionIds.contains(questionId)) s".$regReason" else ""
-    messages(s"eligibility.question.$questionId" + togcColeSuffix)
+  private def lookupQuestion(questionId: String, regReason: String)(implicit messages: Messages, appConfig: FrontendAppConfig): String = {
+
+    questionId match {
+      case "thresholdInTwelveMonths" | "thresholdNextThirtyDays" | "thresholdPreviousThirtyDays" => {
+        messages(s"eligibility.question.$questionId", formattedVatThreshold())
+      }
+      case _ =>
+        val togcColeSuffix = if (EligibilityPageIds.togcColeQuestionIds.contains(questionId)) s".$regReason" else ""
+        messages(s"eligibility.question.$questionId" + togcColeSuffix)
+    }
   }
 
   private def lookupAnswer(questionId: String, json: JsValue)(implicit messages: Messages): String =
@@ -205,27 +215,27 @@ object EligibilityJsonParser {
 
   private def reorder(answers: Map[String, JsValue]): List[(String, JsValue)] =
     List(
-      (fixedEstablishment, answers.get(fixedEstablishment)),
-      (businessEntity, answers.get(businessEntity)),
-      (agriculturalFlatRateScheme, answers.get(agriculturalFlatRateScheme)),
-      (internationalActivities, answers.get(internationalActivities)),
-      (registeringBusiness, answers.get(registeringBusiness)),
-      (registrationReason, answers.get(registrationReason)),
-      (dateOfBusinessTransfer, answers.get(dateOfBusinessTransfer)),
-      (previousBusinessName, answers.get(previousBusinessName)),
-      (vatNumber, answers.get(vatNumber)),
-      (keepOldVrn, answers.get(keepOldVrn)),
-      (termsAndConditions, answers.get(termsAndConditions)),
-      (thresholdInTwelveMonths, answers.get(thresholdInTwelveMonths)),
-      (thresholdNextThirtyDays, answers.get(thresholdNextThirtyDays)),
-      (thresholdPreviousThirtyDays, answers.get(thresholdPreviousThirtyDays)),
-      (vatRegistrationException, answers.get(vatRegistrationException)),
-      (voluntaryRegistration, answers.get(voluntaryRegistration)),
-      (taxableSuppliesInUk, answers.get(taxableSuppliesInUk)),
-      (thresholdTaxableSupplies, answers.get(thresholdTaxableSupplies))
+      (EligibilityPageIds.fixedEstablishment, answers.get(EligibilityPageIds.fixedEstablishment)),
+      (EligibilityPageIds.businessEntity, answers.get(EligibilityPageIds.businessEntity)),
+      (EligibilityPageIds.agriculturalFlatRateScheme, answers.get(EligibilityPageIds.agriculturalFlatRateScheme)),
+      (EligibilityPageIds.internationalActivities, answers.get(EligibilityPageIds.internationalActivities)),
+      (EligibilityPageIds.registeringBusiness, answers.get(EligibilityPageIds.registeringBusiness)),
+      (EligibilityPageIds.registrationReason, answers.get(EligibilityPageIds.registrationReason)),
+      (EligibilityPageIds.dateOfBusinessTransfer, answers.get(EligibilityPageIds.dateOfBusinessTransfer)),
+      (EligibilityPageIds.previousBusinessName, answers.get(EligibilityPageIds.previousBusinessName)),
+      (EligibilityPageIds.vatNumber, answers.get(EligibilityPageIds.vatNumber)),
+      (EligibilityPageIds.keepOldVrn, answers.get(EligibilityPageIds.keepOldVrn)),
+      (EligibilityPageIds.termsAndConditions, answers.get(EligibilityPageIds.termsAndConditions)),
+      (EligibilityPageIds.thresholdInTwelveMonths, answers.get(EligibilityPageIds.thresholdInTwelveMonths)),
+      (EligibilityPageIds.thresholdNextThirtyDays, answers.get(EligibilityPageIds.thresholdNextThirtyDays)),
+      (EligibilityPageIds.thresholdPreviousThirtyDays, answers.get(EligibilityPageIds.thresholdPreviousThirtyDays)),
+      (EligibilityPageIds.vatRegistrationException, answers.get(EligibilityPageIds.vatRegistrationException)),
+      (EligibilityPageIds.voluntaryRegistration, answers.get(EligibilityPageIds.voluntaryRegistration)),
+      (EligibilityPageIds.taxableSuppliesInUk, answers.get(EligibilityPageIds.taxableSuppliesInUk)),
+      (EligibilityPageIds.thresholdTaxableSupplies, answers.get(EligibilityPageIds.thresholdTaxableSupplies))
     ).collect { case (id, Some(value)) => (id, value) }
 
-  object EligibilityPageIds {
+  object EligibilityPageIds extends ThresholdService {
     val thresholdInTwelveMonths = "thresholdInTwelveMonths"
     val thresholdNextThirtyDays = "thresholdNextThirtyDays"
     val thresholdPreviousThirtyDays = "thresholdPreviousThirtyDays"
@@ -246,6 +256,6 @@ object EligibilityJsonParser {
     val registrationReason = "registrationReason"
     val taxableSuppliesInUk = "taxableSuppliesInUk"
 
-    val togcColeQuestionIds = Seq(dateOfBusinessTransfer, previousBusinessName, vatNumber, keepOldVrn, termsAndConditions)
+    val togcColeQuestionIds: Seq[String] = Seq(dateOfBusinessTransfer, previousBusinessName, vatNumber, keepOldVrn, termsAndConditions)
   }
 }

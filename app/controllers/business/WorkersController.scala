@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import forms.WorkersForm
 import models.LabourCompliance
 import play.api.mvc.{Action, AnyContent}
 import services.{BusinessService, SessionProfile, SessionService, VatRegistrationService}
-import views.html.sicandcompliance.workers
+import views.html.sicandcompliance.Workers
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +31,7 @@ class WorkersController @Inject()(val authConnector: AuthClientConnector,
                                   val sessionService: SessionService,
                                   val businessService: BusinessService,
                                   val vatRegistrationService: VatRegistrationService,
-                                  view: workers)
+                                  view: Workers)
                                  (implicit val appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
                                   baseControllerComponents: BaseControllerComponents) extends BaseController with SessionProfile {
