@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package models.view
 
+import config.FrontendAppConfig
 import fixtures.VatRegistrationFixture
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.Json
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
-class SummaryFromQuestionAnswerJsonSpec extends VatRegSpec with VatRegistrationFixture {
+class SummaryFromQuestionAnswerJsonSpec(implicit appConfig:FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
   def eligibilityCall(uri: String): String = s"http://vatRegEFEUrl/question?pageId=$uri"
 

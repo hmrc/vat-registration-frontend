@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.mocks.{BusinessServiceMock, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.sicandcompliance.workers
+import views.html.sicandcompliance.Workers
 
 import scala.concurrent.Future
 
@@ -31,7 +31,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   with VatRegistrationFixture with BusinessServiceMock with MockVatRegistrationService {
 
   trait Setup {
-    val view = app.injector.instanceOf[workers]
+    val view = app.injector.instanceOf[Workers]
     val controller: WorkersController = new WorkersController(
       mockAuthClientConnector,
       mockSessionService,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package config
 
+import com.typesafe.config.{ConfigList, ConfigRenderOptions}
 import controllers.callbacks.routes
 import featuretoggle.FeatureSwitch._
 import featuretoggle.FeatureToggleSupport
+import models.VatThreshold
 import models.api._
 import play.api.Configuration
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -40,6 +43,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
   implicit val appConfig: FrontendAppConfig = this
+
+  lazy val thresholdString: String = runModeConfiguration.get[ConfigList]("vat-threshold").render(ConfigRenderOptions.concise())
+  lazy val thresholds: Seq[VatThreshold] = Json.parse(thresholdString).as[List[VatThreshold]]
 
   def eligibilityStartUrl(regId: String): String = s"$eligibilityUrl/journey/$regId"
 

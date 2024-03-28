@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
+import models.view.EligibilityJsonParser.formattedVatThreshold
 import models.view.SummaryListRowUtils.optSummaryListRowString
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.Json
@@ -55,8 +56,8 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString("Activities over the next 12 months", Some("No"), Some(url("internationalActivities"))),
             optSummaryListRowString("Whose business to register", Some("Your own"), Some(url("registeringBusiness"))),
             optSummaryListRowString("VAT registration reason", Some("It’s selling goods or services and needs or wants to charge VAT to customers"), Some(url("registrationReason"))),
-            optSummaryListRowString("Taxable turnover over £85,000 in 12 months", Some("Yes - on 16 July 2017"), Some(url("thresholdInTwelveMonths"))),
-            optSummaryListRowString("Expect taxable turnover over £85,000 in 30 days past", Some("Yes - on 23 May 2017"), Some(url("thresholdPreviousThirtyDays"))),
+            optSummaryListRowString(s"Taxable turnover over ${formattedVatThreshold()} in 12 months", Some("Yes - on 16 July 2017"), Some(url("thresholdInTwelveMonths"))),
+            optSummaryListRowString(s"Expect taxable turnover over ${formattedVatThreshold()} in 30 days past", Some("Yes - on 23 May 2017"), Some(url("thresholdPreviousThirtyDays"))),
             optSummaryListRowString("VAT registration exception", Some("No"), Some(url("vatRegistrationException")))
           ).flatten))
         )
@@ -77,8 +78,8 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec {
             optSummaryListRowString("Gweithgareddau dros y 12 mis nesaf", Some("Na"), Some(url("internationalActivities"))),
             optSummaryListRowString("Busnes pwy sy’n cael ei gofrestru", Some("Eich un chi"), Some(url("registeringBusiness"))),
             optSummaryListRowString("Y rheswm dros gofrestru ar gyfer TAW", Some("Mae’n gwerthu nwyddau neu wasanaethau, ac mae angen neu eisiau codi TAW ar gwsmeriaid"), Some(url("registrationReason"))),
-            optSummaryListRowString("Trosiant trethadwy dros £85,000 yn ystod 12 mis", Some("Iawn - ar 16 Gorffennaf 2017"), Some(url("thresholdInTwelveMonths"))),
-            optSummaryListRowString("Yn disgwyl i drosiant trethadwy fod dros £85,000 yn y 30 diwrnod diwethaf", Some("Iawn - ar 23 Mai 2017"), Some(url("thresholdPreviousThirtyDays"))),
+            optSummaryListRowString(s"Trosiant trethadwy dros ${formattedVatThreshold()} yn ystod 12 mis", Some("Iawn - ar 16 Gorffennaf 2017"), Some(url("thresholdInTwelveMonths"))),
+            optSummaryListRowString(s"Yn disgwyl i drosiant trethadwy fod dros ${formattedVatThreshold()} yn y 30 diwrnod diwethaf", Some("Iawn - ar 23 Mai 2017"), Some(url("thresholdPreviousThirtyDays"))),
             optSummaryListRowString("Eithriad rhag cofrestru ar gyfer TAW", Some("Na"), Some(url("vatRegistrationException")))
           ).flatten))
         )
