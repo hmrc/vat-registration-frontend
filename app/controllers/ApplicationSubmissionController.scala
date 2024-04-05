@@ -21,6 +21,7 @@ import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.InternalServerException
 import views.html.ApplicationSubmissionConfirmation
+import controllers.BaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
