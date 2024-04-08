@@ -110,12 +110,12 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
             content = HtmlContent(govukSummaryList(testSummaryList(eligibilityId)))
           ),
           Section(
-            headingContent = Text("Verify your business"),
-            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
-          ),
-          Section(
             headingContent = Text("About you"),
             content = HtmlContent(govukSummaryList(testSummaryList(applicantId)))
+          ),
+          Section(
+            headingContent = Text("Verify your business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
           ),
           Section(
             headingContent = Text("About the business"),
@@ -156,12 +156,12 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
             content = HtmlContent(govukSummaryList(testSummaryList(eligibilityId)))
           ),
           Section(
-            headingContent = Text("Verify your business"),
-            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
-          ),
-          Section(
             headingContent = Text("About you"),
             content = HtmlContent(govukSummaryList(testSummaryList(applicantId)))
+          ),
+          Section(
+            headingContent = Text("Verify your business"),
+            content = HtmlContent(govukSummaryList(testSummaryList(verifyBusinessId)))
           ),
           Section(
             headingContent = Text("About the business"),
