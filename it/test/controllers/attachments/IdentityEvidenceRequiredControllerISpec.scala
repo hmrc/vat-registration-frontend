@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-package utils
+package controllers.attachments
 
+import itutil.ControllerISpec
+import play.api.test.Helpers._
 
-import java.time._
+class IdentityEvidenceRequiredControllerISpec extends ControllerISpec {
 
+  val showUrl: String = routes.IdentityEvidenceRequiredController.show.url
 
-trait DateTimeUtils {
+  s"GET $showUrl" must {
+    "return OK" in {
+      given()
+        .user.isAuthorised()
+        .audit.writesAudit()
+        .audit.writesAuditMerged()
 
-  def now: LocalDateTime = LocalDateTime.ofInstant(
-    Clock.systemUTC().instant,
-    ZoneId.of("Europe/London")
-  ).truncatedTo(java.time.temporal.ChronoUnit.MILLIS)
+      val res = buildClient(showUrl).get()
 
-  def isEqualOrAfter(date: LocalDate, laterDate: LocalDate): Boolean = date.isEqual(laterDate) || date.isBefore(laterDate)
+      whenReady(res) { result =>
+        result.status mustBe OK
+      }
+    }
+  }
 
 }
-
-object DateTimeUtils extends DateTimeUtils

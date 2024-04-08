@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package utils
+package controllers.attachments
 
+import controllers.BaseControllerISpec
+import play.api.http.Status.OK
+import play.api.test.Helpers._
 
-import java.time._
+class ViewAttachmentControllerISpec extends BaseControllerISpec {
+  val url: String = controllers.fileupload.routes.ViewAttachmentController.show.url
 
+  "GET /attachment-details must" must {
+    "display the attachment details page" in {
 
-trait DateTimeUtils {
+      given().user.isAuthorised()
+      val res = await(buildClient(url).get())
 
-  def now: LocalDateTime = LocalDateTime.ofInstant(
-    Clock.systemUTC().instant,
-    ZoneId.of("Europe/London")
-  ).truncatedTo(java.time.temporal.ChronoUnit.MILLIS)
-
-  def isEqualOrAfter(date: LocalDate, laterDate: LocalDate): Boolean = date.isEqual(laterDate) || date.isBefore(laterDate)
+      res.status mustBe OK
+    }
+  }
 
 }
-
-object DateTimeUtils extends DateTimeUtils

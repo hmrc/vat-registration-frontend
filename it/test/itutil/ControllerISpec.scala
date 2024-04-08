@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package utils
+package itutil
 
+import featuretoggle.FeatureToggleSupport
+import helpers.RequestsFinder
+import itFixtures.ITRegistrationFixtures
+import org.scalatest.TestSuite
+import org.scalatest.concurrent.ScalaFutures
+import support.AppAndStubs
 
-import java.time._
-
-
-trait DateTimeUtils {
-
-  def now: LocalDateTime = LocalDateTime.ofInstant(
-    Clock.systemUTC().instant,
-    ZoneId.of("Europe/London")
-  ).truncatedTo(java.time.temporal.ChronoUnit.MILLIS)
-
-  def isEqualOrAfter(date: LocalDate, laterDate: LocalDate): Boolean = date.isEqual(laterDate) || date.isBefore(laterDate)
+trait ControllerISpec extends IntegrationSpecBase with TestSuite
+  with AppAndStubs
+  with ScalaFutures
+  with RequestsFinder
+  with ITRegistrationFixtures
+  with FeatureToggleSupport {
 
 }
-
-object DateTimeUtils extends DateTimeUtils
