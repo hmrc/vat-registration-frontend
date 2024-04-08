@@ -50,13 +50,3 @@ object AppDependencies {
 
   def apply(): Seq[ModuleID] = compileDependencies ++ testDependencies
 }
-
-
-
-
-
-
-
-
-
-
