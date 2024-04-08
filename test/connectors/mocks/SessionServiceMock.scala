@@ -31,14 +31,14 @@ import scala.concurrent.Future
 trait SessionServiceMock {
   this: MockitoSugar =>
 
-  lazy val mockSessionService = mock[SessionService]
+  lazy val mockSessionService: SessionService = mock[SessionService]
 
   import cats.syntax.applicative._
 
   def mockSessionFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
-    when(mockSessionService.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model.pure))
+    when(mockSessionService.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model))
 
-  def mockSessionCache(key: String, value: String)(response: Future[CacheMap]) =
+  def mockSessionCache(key: String, value: String)(response: Future[CacheMap]): OngoingStubbing[Future[CacheMap]] =
     when(mockSessionService.cache[String](
       ArgumentMatchers.eq(key),
       ArgumentMatchers.eq(value))(
@@ -49,6 +49,6 @@ trait SessionServiceMock {
   def mockSessionClear(): OngoingStubbing[Future[Boolean]] = when(mockSessionService.remove(any())) thenReturn Future.successful(true)
 
   def mockFetchRegId(regID: String = "12345"): OngoingStubbing[Future[Option[String]]] =
-    when(mockSessionService.fetchAndGet[String](any())(any(), any())).thenReturn(Future.successful(Some(regID).pure))
+    when(mockSessionService.fetchAndGet[String](any())(any(), any())).thenReturn(Future.successful(Some(regID)))
 
 }

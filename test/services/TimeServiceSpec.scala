@@ -25,8 +25,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import play.api.cache.SyncCacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
-
+import utils.workingdays._
 import java.time.{LocalDate, LocalDateTime}
 import java.util.concurrent.TimeoutException
 import scala.concurrent.Future

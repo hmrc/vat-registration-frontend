@@ -20,13 +20,10 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.stubbing.OngoingStubbing
 import services.TimeService
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
-
+import utils.workingdays._
 import java.time.{LocalDate, LocalDateTime}
 
 trait TimeServiceMock {
-
-  import org.joda.time.{LocalDate => JodaLocalDate}
 
   val mockTimeService: TimeService
 
@@ -48,14 +45,14 @@ trait TimeServiceMock {
       .thenReturn(LocalDate.parse(ld.minusYears(4).toString))
     when(mockTimeService.bankHolidays)
       .thenReturn(BankHolidaySet("england-and-wales", List(
-        BankHoliday(title = "Good Friday", date = new JodaLocalDate(2017, 4, 14)),
-        BankHoliday(title = "Easter Monday", date = new JodaLocalDate(2017, 4, 17)),
-        BankHoliday(title = "Early May bank holiday", date = new JodaLocalDate(2017, 5, 1)),
-        BankHoliday(title = "Spring bank holiday", date = new JodaLocalDate(2017, 5, 29)),
-        BankHoliday(title = "Summer bank holiday", date = new JodaLocalDate(2017, 8, 28)),
-        BankHoliday(title = "Christmas Day", date = new JodaLocalDate(2017, 12, 25)),
-        BankHoliday(title = "Boxing Day", date = new JodaLocalDate(2017, 12, 26)),
-        BankHoliday(title = "New Year's Day", date = new JodaLocalDate(2018, 1, 1))
+        BankHoliday(title = "Good Friday", date = LocalDate.of(2017,4,14)),
+        BankHoliday(title = "Easter Monday", date = LocalDate.of(2017, 4, 17)),
+        BankHoliday(title = "Early May bank holiday", date =LocalDate.of(2017, 5, 1)),
+        BankHoliday(title = "Spring bank holiday", date = LocalDate.of(2017, 5, 29)),
+        BankHoliday(title = "Summer bank holiday", date = LocalDate.of(2017, 8, 28)),
+        BankHoliday(title = "Christmas Day", date = LocalDate.of(2017, 12, 25)),
+        BankHoliday(title = "Boxing Day", date = LocalDate.of(2017, 12, 26)),
+        BankHoliday(title = "New Year's Day", date = LocalDate.of(2018, 1, 1))
       )))
   }
 

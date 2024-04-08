@@ -18,11 +18,12 @@ package forms.vatapplication
 
 import models.DateSelection
 import models.DateSelection._
-import org.joda.time.{LocalDate => JodaLocalDate}
+import java.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
+import utils.workingdays._
+
 
 import java.time.LocalDate
 
@@ -33,15 +34,15 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
   val incorpDate: LocalDate = LocalDate.of(2021, 1, 1)
 
   implicit val bhs: BankHolidaySet = BankHolidaySet("england-and-wales", List(
-    BankHoliday(title = "Good Friday",            date = new JodaLocalDate(2022, 4, 15)),
-    BankHoliday(title = "Easter Monday",          date = new JodaLocalDate(2022, 4, 18)),
-    BankHoliday(title = "Early May bank holiday", date = new JodaLocalDate(2022, 5, 2)),
-    BankHoliday(title = "Spring bank holiday",    date = new JodaLocalDate(2022, 6, 2)),
-    BankHoliday(title = "Platinum Jubilee bank holiday",    date = new JodaLocalDate(2022, 6, 3)),
-    BankHoliday(title = "Summer bank holiday",    date = new JodaLocalDate(2022, 8, 29)),
-    BankHoliday(title = "Christmas Day",          date = new JodaLocalDate(2022, 12, 26)),
-    BankHoliday(title = "Boxing Day",             date = new JodaLocalDate(2022, 12, 27)),
-    BankHoliday(title = "New Year's Day",         date = new JodaLocalDate(2023, 1, 2))
+    BankHoliday(title = "Good Friday",            date = LocalDate.of(2022, 4, 15)),
+    BankHoliday(title = "Easter Monday",          date = LocalDate.of(2022, 4, 18)),
+    BankHoliday(title = "Early May bank holiday", date = LocalDate.of(2022, 5, 2)),
+    BankHoliday(title = "Spring bank holiday",    date = LocalDate.of(2022, 6, 2)),
+    BankHoliday(title = "Platinum Jubilee bank holiday",    date = LocalDate.of(2022, 6, 3)),
+    BankHoliday(title = "Summer bank holiday",    date = LocalDate.of(2022, 8, 29)),
+    BankHoliday(title = "Christmas Day",          date = LocalDate.of(2022, 12, 26)),
+    BankHoliday(title = "Boxing Day",             date = LocalDate.of(2022, 12, 27)),
+    BankHoliday(title = "New Year's Day",         date = LocalDate.of(2023, 1, 2))
   ))
 
   val form: Form[(DateSelection.Value, Option[LocalDate])] = VoluntaryDateFormIncorp.form(incorpDate)

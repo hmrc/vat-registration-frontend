@@ -26,7 +26,7 @@ object AppDependencies {
   private val formMappingVersion = "2.0.0"
   private val catsVersion = "2.10.0"
   private val playJsonJodaVersion = "3.0.2"
-  private val playHmrcFrontendVersion = "8.5.0"
+  private val playHmrcFrontendVersion = "8.4.0"
   val scalaTestPlusPlayVersion = "7.0.1"
   val pegdownVersion = "1.6.0"
   val jsoupVersion = "1.17.2"
@@ -52,12 +52,13 @@ object AppDependencies {
     "org.pegdown" % "pegdown" % pegdownVersion,
     "org.jsoup" % "jsoup" % jsoupVersion,
     "org.mockito" % "mockito-core" % mockitoVersion,
-    //"org.scalamock" %% "scalamock-scalatest-support" % scalaMockVersion % scope,
     "com.vladsch.flexmark" % "flexmark-all" % "0.64.8",
-    "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0",
+    "org.scalatestplus" %% "mockito-5-10" % "3.2.18.0",
     "com.github.tomakehurst" % "wiremock-jre8" % wireMockVersion,
     "org.jsoup" % "jsoup" % jsoupVersion,
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoVersion
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
+    "org.scalamock" %% "scalamock" % "6.0.0"
+
   ).map(_ % Test)
 
   def apply(): Seq[ModuleID] = compileDependencies ++ testDependencies
