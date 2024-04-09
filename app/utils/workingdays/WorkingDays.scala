@@ -34,7 +34,9 @@ object WorkingDays {
      */
     def plusWorkingDays(days: Int): LocalDate = {
       implicit def nextDateFunction(date: LocalDate, days: Int): LocalDate = date.plusDays(days)
+
       implicit def negativeDaysFunction(date: LocalDate, days: Int): LocalDate = date.minusWorkingDays(days)
+
       calculateWorkingDays(days)(nextDateFunction, negativeDaysFunction)
     }
 
@@ -47,7 +49,9 @@ object WorkingDays {
      */
     def minusWorkingDays(days: Int): LocalDate = {
       implicit def nextDateFunction(date: LocalDate, days: Int): LocalDate = date.minusDays(days)
+
       implicit def negativeDaysFunction(date: LocalDate, days: Int): LocalDate = date.plusWorkingDays(days)
+
       calculateWorkingDays(days)(nextDateFunction, negativeDaysFunction)
     }
 
@@ -58,6 +62,7 @@ object WorkingDays {
      */
     def rollBackWorkingDay: LocalDate = {
       implicit def rollingFunction(date: LocalDate, step: Int): LocalDate = date.minusDays(step)
+
       rollToWorkingDay(wrapped)
     }
 
@@ -68,6 +73,7 @@ object WorkingDays {
      */
     def rollForwardWorkingDay: LocalDate = {
       implicit def rollingFunction(date: LocalDate, step: Int): LocalDate = date.plusDays(step)
+
       rollToWorkingDay(wrapped)
     }
 
@@ -100,10 +106,10 @@ object WorkingDays {
         if (previousDate.isWorkingDay) previousDate
         else helper(previousDate)
       }
+
       helper(wrapped)
     }
 
   }
-
 
 }
