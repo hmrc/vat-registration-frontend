@@ -49,7 +49,7 @@ lazy val microservice = Project(appName, file("."))
     Test / logBuffered                            := false,
   )
   .settings(
-    libraryDependencies ++= AppDependencies.compileDependencies ++ AppDependencies.testDependencies,
+    libraryDependencies ++= AppDependencies.apply(),
     PlayKeys.playDefaultPort := 9895,
     retrieveManaged := true,
     TwirlKeys.templateImports ++= Seq(
