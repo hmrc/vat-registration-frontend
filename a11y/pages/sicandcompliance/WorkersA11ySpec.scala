@@ -18,10 +18,10 @@ package pages.sicandcompliance
 
 import forms.WorkersForm
 import helpers.A11ySpec
-import views.html.sicandcompliance.workers
+import views.html.sicandcompliance.Workers
 
 class WorkersA11ySpec extends A11ySpec {
-  val view: workers = app.injector.instanceOf[workers]
+  val view: Workers = app.injector.instanceOf[Workers]
 
   "Workers page" when {
     "the page is rendered without errors when a number of workers is given" must {
