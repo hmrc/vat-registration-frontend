@@ -64,7 +64,7 @@ To view the json payload from a submission, on the final Check Your Answers page
 To run the unit and integration tests, you can either use ```sbt test it/test``` or ```sbt clean coverage test it/test scalastyle coverageReport```.
 
 ### Accessibility tests
-To run the accessibility tests, use ```sbt a11y:test```. 
+To run the accessibility tests, use ```sbt A11y/test```. 
 
 You will need to have `Node.js` and `npm` installed to run the accessibility tests. 
 
