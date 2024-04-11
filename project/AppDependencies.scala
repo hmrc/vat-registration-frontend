@@ -18,74 +18,35 @@ import play.sbt.PlayImport._
 import sbt._
 
 object AppDependencies {
-  def apply(): Seq[ModuleID] = CompileDependencies() ++ UnitTestDependencies() ++ IntegrationTestDependencies()
-}
 
-private object CompileDependencies {
-  private val hmrcMongoVersion = "0.74.0"
-  private val bootstrapVersion = "7.12.0"
-  private val timeVersion = "3.25.0"
-  private val partialsVersion = "8.3.0-play-28"
-  private val cachingClientVersion = "10.0.0-play-28"
-  private val formMappingVersion = "1.12.0-play-28"
-  private val catsVersion = "1.0.0"
-  private val playJsonJodaVersion = "2.9.3"
-
+  private val hmrcMongoVersion = "1.8.0"
+  private val bootstrapVersion = "8.5.0"
+  private val partialsVersion = "9.1.0"
+  private val cachingClientVersion = "11.1.0"
+  private val formMappingVersion = "2.0.0"
+  private val catsVersion = "2.10.0"
+  private val playJsonJodaVersion = "3.0.2"
   private val playHmrcFrontendVersion = "8.5.0"
 
-  private val compileDependencies: Seq[ModuleID] = Seq(
+
+  val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
-    "uk.gov.hmrc" %% "time" % timeVersion,
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % hmrcMongoVersion,
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % bootstrapVersion,
-    "uk.gov.hmrc" %% "play-partials" % partialsVersion,
-    "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
-    "uk.gov.hmrc" %% "play-conditional-form-mapping" % formMappingVersion,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30" % hmrcMongoVersion,
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-30" % bootstrapVersion,
+    "uk.gov.hmrc" %% "play-partials-play-30" % partialsVersion,
+    "uk.gov.hmrc" %% "http-caching-client-play-30" % cachingClientVersion,
+    "uk.gov.hmrc" %% "play-conditional-form-mapping-play-30" % formMappingVersion,
     "org.typelevel" %% "cats-core" % catsVersion,
-    "com.typesafe.play" %% "play-json-joda" % playJsonJodaVersion,
-    "uk.gov.hmrc" %% "play-frontend-hmrc-play-28" % playHmrcFrontendVersion
+    "org.playframework" %% "play-json-joda" % playJsonJodaVersion,
+    "uk.gov.hmrc" %% "play-frontend-hmrc-play-30" % playHmrcFrontendVersion
   )
 
-  def apply(): Seq[ModuleID] = compileDependencies
-}
+  val testDependencies: Seq[ModuleID] = Seq(
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
+    "org.scalamock" %% "scalamock" % "6.0.0",
+    "com.vladsch.flexmark" % "flexmark-all" % "0.64.8",
+    "uk.gov.hmrc" %% "bootstrap-test-play-30" % bootstrapVersion,
+  ).map(_ % Test)
 
-private trait TestDependencies {
-  val scalaTestPlusPlayVersion = "5.1.0"
-  val pegdownVersion = "1.6.0"
-  val jsoupVersion = "1.15.3"
-  val mockitoVersion = "4.8.1"
-  val scalaMockVersion = "3.6.0"
-  val wireMockVersion = "2.27.2"
-  val hmrcMongoTestVersion = "0.74.0"
-
-  val scope: Configuration
-  val testDependencies: Seq[ModuleID]
-}
-
-private object UnitTestDependencies extends TestDependencies {
-  override val scope: Configuration = Test
-  override val testDependencies: Seq[ModuleID] = Seq(
-    "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
-    "org.pegdown" % "pegdown" % pegdownVersion % scope,
-    "org.jsoup" % "jsoup" % jsoupVersion % scope,
-    "org.mockito" % "mockito-core" % mockitoVersion % scope,
-    "org.scalamock" %% "scalamock-scalatest-support" % scalaMockVersion % scope,
-    "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % scope,
-    "org.scalatestplus" %% "mockito-3-4" % "3.2.9.0" % "test"
-  )
-
-  def apply(): Seq[ModuleID] = testDependencies
-}
-
-private object IntegrationTestDependencies extends TestDependencies {
-  override val scope: Configuration = IntegrationTest
-  override val testDependencies: Seq[ModuleID] = Seq(
-    "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
-    "com.github.tomakehurst" % "wiremock-jre8" % wireMockVersion % scope,
-    "org.jsoup" % "jsoup" % jsoupVersion % scope,
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % hmrcMongoTestVersion % scope,
-    "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % scope
-  )
-
-  def apply(): Seq[ModuleID] = testDependencies
+  def apply(): Seq[ModuleID] = compileDependencies ++ testDependencies
 }

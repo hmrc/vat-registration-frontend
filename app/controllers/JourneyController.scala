@@ -21,6 +21,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import models.api.EligibilitySubmissionData
 import play.api.mvc._
 import services._
+import controllers.BaseController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

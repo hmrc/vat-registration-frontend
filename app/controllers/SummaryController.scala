@@ -26,7 +26,7 @@ import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.tasklist.{AttachmentsTaskList, TaskListSections}
 import views.html.Summary
-
+import controllers.BaseController
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 

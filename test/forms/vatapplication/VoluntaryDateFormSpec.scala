@@ -21,8 +21,7 @@ import models.DateSelection.{business_start_date, company_registration_date, spe
 import play.api.data.Form
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
-
+import utils.workingdays._
 import java.time.LocalDate
 
 class VoluntaryDateFormSpec extends VatRegSpec {
@@ -36,17 +35,16 @@ class VoluntaryDateFormSpec extends VatRegSpec {
   val upperLimitDate: LocalDate = now.plusMonths(3)
 
   implicit val bhs: BankHolidaySet = {
-    import org.joda.time.{LocalDate => JodaLocalDate}
 
     BankHolidaySet("england-and-wales", List(
-      BankHoliday(title = "Good Friday",            date = new JodaLocalDate(2017, 4, 14)),
-      BankHoliday(title = "Easter Monday",          date = new JodaLocalDate(2017, 4, 17)),
-      BankHoliday(title = "Early May bank holiday", date = new JodaLocalDate(2017, 5, 1)),
-      BankHoliday(title = "Spring bank holiday",    date = new JodaLocalDate(2017, 5, 29)),
-      BankHoliday(title = "Summer bank holiday",    date = new JodaLocalDate(2017, 8, 28)),
-      BankHoliday(title = "Christmas Day",          date = new JodaLocalDate(2017, 12, 25)),
-      BankHoliday(title = "Boxing Day",             date = new JodaLocalDate(2017, 12, 26)),
-      BankHoliday(title = "New Year's Day",         date = new JodaLocalDate(2018, 1, 1))
+      BankHoliday(title = "Good Friday",            date = LocalDate.of(2017, 4, 14)),
+      BankHoliday(title = "Easter Monday",          date = LocalDate.of(2017, 4, 17)),
+      BankHoliday(title = "Early May bank holiday", date = LocalDate.of(2017, 5, 1)),
+      BankHoliday(title = "Spring bank holiday",    date = LocalDate.of(2017, 5, 29)),
+      BankHoliday(title = "Summer bank holiday",    date = LocalDate.of(2017, 8, 28)),
+      BankHoliday(title = "Christmas Day",          date = LocalDate.of(2017, 12, 25)),
+      BankHoliday(title = "Boxing Day",             date = LocalDate.of(2017, 12, 26)),
+      BankHoliday(title = "New Year's Day",         date = LocalDate.of(2018, 1, 1))
     ))
   }
 

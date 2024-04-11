@@ -23,8 +23,7 @@ import play.api.libs.json.{Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
-import uk.gov.hmrc.time.workingdays.{BankHoliday, BankHolidaySet}
-
+import utils.workingdays._
 import java.io.InputStream
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

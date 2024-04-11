@@ -21,9 +21,11 @@ import connectors.BankHolidaysConnector
 import play.api.cache.SyncCacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.time.DateTimeUtils._
-import uk.gov.hmrc.time.workingdays._
 import utils.SystemDate
+import utils.workingdays._
+import utils.workingdays.WorkingDays._
+import utils.DateTimeUtils._
+
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
@@ -53,7 +55,8 @@ class TimeService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
   def addWorkingDays(date: LocalDate, days: Int): LocalDate = {
     implicit val holidaySet: BankHolidaySet = bankHolidays
 
-    javaToJoda(date).plusWorkingDays(days)
+    date.plusWorkingDays(days)
+
   }
 
   lazy val dayEndHour: Int = servicesConfig.getInt("time-service.day-end-hour")
