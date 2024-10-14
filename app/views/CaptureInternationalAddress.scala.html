@@ -22,6 +22,7 @@
     layout: layouts.layout,
     autocomplete: components.autocomplete,
     h1: components.h1,
+    p: components.p,
     form: FormWithCSRF,
     inputText: components.inputText,
     inputTextHintNonBold: components.inputTextHintNonBold,
@@ -43,6 +44,15 @@
 
     @h1(name.fold(messages(headingKey))(name => messages(headingKey, name)))
 
+    @if(isPpob) {
+        @p{ @messages("internationalAddress.ppob.para1") }
+        @p{ @messages("internationalAddress.ppob.para2")
+           <a class="govuk-body govuk-link" id="fixed-establishment"
+               href="@appConfig.fixedEstablishmentUrl">
+                @messages("internationalAddress.ppob.para2.link").
+            </a>
+        }
+    }
     @form(action = submitAction) {
         @inputText(
             form = internationalAddressForm,
@@ -120,7 +130,7 @@
         form = internationalAddressForm,
         name = "postcode",
         id = "postcode",
-        label = messages("internationalAddress.postcode"),
+        label = messages("internationalAddress.postcode.optional"),
         classes = Some("govuk-input--width-10, govuk-heading-m"),
         autocomplete = Some("postal-code"),
         isPageHeading = false,

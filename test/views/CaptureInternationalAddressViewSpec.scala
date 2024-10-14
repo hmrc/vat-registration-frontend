@@ -18,6 +18,7 @@ package views
 
 import forms.InternationalAddressForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.mvc.Call
 import views.html.CaptureInternationalAddress
 
@@ -38,8 +39,11 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     val line4 = "Address line 4 (optional)"
     val line5 = "Address line 5 (optional)"
     val postcode = "Postcode"
+    val postcodeOptional = "Postcode (optional)"
+    val ppobHeading = "Enter the primary place of business address"
     val postcodeHint = "You only need to enter a postcode if the address is in the United Kingdom, Guernsey, Jersey or the Isle of Man"
     val ppobHint = "You only need to enter a postcode if the address is in Guernsey, Jersey or the Isle of Man"
+    val ppobPara = "This is for non-UK addresses, as you told us your business has no fixed establishments in the UK or Isle of Man."
     val country = "Country"
     val saveAndContinue = "Save and continue"
   }
@@ -81,9 +85,18 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     "have the correct hint text" in new ViewSetup {
       doc.hintText mustBe Some(ExpectedMessages.postcodeHint)
     }
-    "have the correct hint text when on the ppob page" in new ViewSetup {
-      val ppobDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.3pt.heading", name = testTransactorName, isPpob = true).body)
+    "have the correct heading and hint text when on the ppob page" in new ViewSetup {
+      val ppobDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.ppob.heading", name = testTransactorName, isPpob = true).body)
+      ppobDoc.heading mustBe Some(ExpectedMessages.ppobHeading)
       ppobDoc.hintText mustBe Some(ExpectedMessages.ppobHint)
+    }
+    "have the correct paragraph on the ppob page" in new ViewSetup {
+      val ppobDoc: Document = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.ppob.heading", name = testTransactorName, isPpob = true).body)
+      ppobDoc.para(1) mustBe Some(ExpectedMessages.ppobPara)
+    }
+    "have a field for postcode (optional) on the ppob page" in new ViewSetup {
+      val ppobDoc: Document = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.ppob.heading", name = testTransactorName, isPpob = true).body)
+      ppobDoc.textBox("postcode") mustBe Some(ExpectedMessages.postcodeOptional)
     }
     "have a submit button" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedMessages.saveAndContinue)
