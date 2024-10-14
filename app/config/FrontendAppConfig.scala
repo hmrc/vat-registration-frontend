@@ -106,7 +106,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     else s"$bankAccountReputationHost/validate/bank-details"
 
   def fixedEstablishmentUrl: String =
-    s"$eligibilityHost/check-if-you-can-register-for-vat/fixed-establishment"
+    s"$eligibilityUrl/fixed-establishment"
 
   // Incorporated Entity Identification Section
 
