@@ -105,6 +105,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/validate-bank-details"
     else s"$bankAccountReputationHost/validate/bank-details"
 
+  def fixedEstablishmentUrl: String =
+    s"$eligibilityHost/check-if-you-can-register-for-vat/fixed-establishment"
+
   // Incorporated Entity Identification Section
 
   lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
