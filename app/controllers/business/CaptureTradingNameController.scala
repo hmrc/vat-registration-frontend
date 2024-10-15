@@ -34,7 +34,6 @@ class CaptureTradingNameController @Inject()(val sessionService: SessionService,
                                              val authConnector: AuthConnector,
                                              val applicantDetailsService: ApplicantDetailsService,
                                              val businessService: BusinessService,
-                                             val vatRegistrationService: VatRegistrationService,
                                              view: CaptureTradingNameView
                                             )(implicit val appConfig: FrontendAppConfig,
                                               val executionContext: ExecutionContext,
@@ -56,11 +55,8 @@ class CaptureTradingNameController @Inject()(val sessionService: SessionService,
           errors =>
             Future.successful(BadRequest(view(errors))),
           success => {
-            businessService.updateBusiness(TradingName(success)).flatMap { _ =>
-              vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).map {
-                case (NETP | NonUkNonEstablished, false) => Redirect(controllers.business.routes.InternationalPpobAddressController.show)
-                case _ => Redirect(controllers.business.routes.PpobAddressController.startJourney)
-              }
+            businessService.updateBusiness(TradingName(success)).map { _ =>
+              Redirect(controllers.business.routes.AddressCharacterLimitGuideController.show)
             }
           }
         )

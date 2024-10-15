@@ -526,6 +526,32 @@ validation.captureTradingName.invalid           = Enter a valid trading name
 validation.captureTradingName.maxlen            = Enter a trading name using 160 characters or less
 validation.captureTradingName.missing           = Enter a trading name
 
+# Address Character Limit Guide Page
+addressCharacterLimitGuide.title=Important information about your primary place of business
+addressCharacterLimitGuide.heading=Important information about your primary place of business
+addressCharacterLimitGuide.p1=On the next page we will ask you where the business does most of its work. This is known as its primary place of business (PPOB).
+addressCharacterLimitGuide.p2=It is usually the place where:
+addressCharacterLimitGuide.bullet1=orders are received and dealt with
+addressCharacterLimitGuide.bullet2=the day to day running of the business takes place
+addressCharacterLimitGuide.p3=If this is in different locations, use the address where the business records are kept. This could be a home address.
+addressCharacterLimitGuide.p4=If you''re a Limited Company, your PPOB could be different from your registered office address.
+addressCharacterLimitGuide.subheading1=You should also be aware of the following when adding the address:
+addressCharacterLimitGuide.subheading2=There is a 35-character limit for each line of address
+addressCharacterLimitGuide.p5=On the next page, the ‘address look-up’ will automatically shorten any address line that exceeds 35 characters. 
+addressCharacterLimitGuide.p6=This is due to system limitations and will not affect your registration or HMRC''s ability to write to you.
+addressCharacterLimitGuide.warning=Warning
+addressCharacterLimitGuide.warningText1=If you still wish to manually edit the address back to the address in full you should use another address line to split up the part of the address that exceeds 35 characters.
+addressCharacterLimitGuide.warningText2=If any single address line exceeds 35 characters your registration will not be accepted when you submit it and you will have to start again.
+addressCharacterLimitGuide.subheading3=Invalid addresses
+addressCharacterLimitGuide.p7=Do not use:
+addressCharacterLimitGuide.bullet3=the address of a third-party accountant or tax agent
+addressCharacterLimitGuide.bullet4=a PO box address
+addressCharacterLimitGuide.bullet5=a ‘care of’ or other third-party address, including virtual or serviced offices or mail forwarding and mailbox services
+addressCharacterLimitGuide.subheading4=Use English characters
+addressCharacterLimitGuide.p8=Only enter English characters, even if the address is not in the UK.
+addressCharacterLimitGuide.insetText=If you are registered for VAT, your primary place of business will be visible on the {0}.
+addressCharacterLimitGuide.linkText=Check a UK VAT Number service (opens in new tab).
+
 # Mandatory Start Date No Choice page
 pages.start.date.no.choice.heading                              = VAT registration start date
 pages.start.date.no.choice.para1                                = The business’s expected VAT registration start date is {0}.

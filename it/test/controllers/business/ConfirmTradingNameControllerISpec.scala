@@ -121,19 +121,15 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.PpobAddressController.startJourney.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.AddressCharacterLimitGuideController.show.url)
       }
     }
 
-    "return SEE_OTHER with redirect to International PPOB for non UK registrations" in new Setup {
+    "return SEE_OTHER with redirect to Address Character Limit Guide" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-        partyType = NonUkNonEstablished,
-        fixedEstablishmentInManOrUk = false
-      )))
         .registrationApi.replaceSection(businessDetails.copy(hasTradingName = Some(true)))
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasTradingName = Some(true))))
 
@@ -143,7 +139,7 @@ class ConfirmTradingNameControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPpobAddressController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.AddressCharacterLimitGuideController.show.url)
       }
     }
 

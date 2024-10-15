@@ -310,6 +310,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val VATRateDifferentGoodsURL = "https://www.gov.uk/guidance/rates-of-vat-on-different-goods-and-services"
   lazy val vat1trLink = "https://www.gov.uk/government/publications/vat-appointment-of-tax-representative-vat1tr"
 
+  lazy val checkVatNumberUrl = "https://www.gov.uk/check-uk-vat-number"
+
   lazy val maxPartnerCount: Int = servicesConfig.getInt("indexedSection.max.partner")
   lazy val maxObiLimit: Int = servicesConfig.getInt("obiMaxLimit")
 }
