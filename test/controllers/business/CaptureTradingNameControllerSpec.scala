@@ -39,7 +39,6 @@ class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrati
       mockAuthClientConnector,
       mockApplicantDetailsServiceOld,
       mockBusinessService,
-      mockVatRegistrationService,
       view
     )
 
@@ -72,8 +71,6 @@ class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrati
   "submit" must {
     "return 303 with a provided trading name" in new Setup {
       mockUpdateBusiness(Future.successful(validBusiness.copy(tradingName = Some(testTradingName))))
-      when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
-        .thenReturn(Future.successful(validEligibilitySubmissionData))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "captureTradingName" -> testTradingName
@@ -81,7 +78,7 @@ class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrati
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe 303
-        redirectLocation(result) mustBe Some(controllers.business.routes.PpobAddressController.startJourney.url)
+        redirectLocation(result) mustBe Some(controllers.business.routes.AddressCharacterLimitGuideController.show.url)
       }
     }
 

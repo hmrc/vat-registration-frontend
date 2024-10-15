@@ -1,0 +1,88 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+@import views.html.layouts.layout
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.warningtext.WarningText
+
+@this(
+        layout: layout,
+        h1: components.h1,
+        h2: h2,
+        p: p,
+        link: link,
+        button: button,
+        formWithCSRF: FormWithCSRF
+)
+
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages("addressCharacterLimitGuide.title"))), backLink = true) {
+    <h1 class="govuk-heading-l">
+        @messages("addressCharacterLimitGuide.heading")
+    </h1>
+    @p(Html(messages("addressCharacterLimitGuide.p1")))
+    @p(Html(messages("addressCharacterLimitGuide.p2")))
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@Html(messages("addressCharacterLimitGuide.bullet1"))</li>
+        <li>@Html(messages("addressCharacterLimitGuide.bullet2"))</li>
+    </ul>
+
+    @p(Html(messages("addressCharacterLimitGuide.p3")))
+    @p(Html(messages("addressCharacterLimitGuide.p4")))
+
+    <br>
+    <div>
+        @h2(messages("addressCharacterLimitGuide.subheading1"))
+
+        <h2 class="govuk-heading-s">
+            @messages("addressCharacterLimitGuide.subheading2")
+        </h2>
+        @p(Html(messages("addressCharacterLimitGuide.p5")))
+        @p(Html(messages("addressCharacterLimitGuide.p6")))
+        <div class="govuk-warning-text">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">@messages("addressCharacterLimitGuide.warning")</span>
+                @Html(messages("addressCharacterLimitGuide.warningText1"))
+                <br>@Html(messages("addressCharacterLimitGuide.warningText2"))
+            </strong>
+        </div>
+
+        <h2 class="govuk-heading-s">@messages("addressCharacterLimitGuide.subheading3")</h2>
+        @p(Html(messages("addressCharacterLimitGuide.p7")))
+        <ul class="govuk-list govuk-list--bullet">
+            <li>@Html(messages("addressCharacterLimitGuide.bullet3"))</li>
+            <li>@Html(messages("addressCharacterLimitGuide.bullet4"))</li>
+            <li>@Html(messages("addressCharacterLimitGuide.bullet5"))</li>
+        </ul>
+    </div>
+
+    <br>
+    <h2 class="govuk-heading-s">@messages("addressCharacterLimitGuide.subheading4")</h2>
+    @p(Html(messages("addressCharacterLimitGuide.p8")))
+
+    <div class="govuk-inset-text">
+        @Html(messages("addressCharacterLimitGuide.insetText", s"""<a href="${appConfig.checkVatNumberUrl}" class="govuk-body govuk-link" target="_blank">${messages("addressCharacterLimitGuide.linkText")}</a>"""))
+    </div>
+    <br>
+
+    @formWithCSRF(action = controllers.business.routes.AddressCharacterLimitGuideController.submit) {
+        @button("app.common.continueNoSave", showSaveProgressButton = false)
+    }
+}

@@ -162,6 +162,10 @@ POST        /number-of-workers-supplied                               controller
 GET         /arrange-supply-of-workers                                controllers.business.SupplyWorkersIntermediaryController.show
 POST        /arrange-supply-of-workers                                controllers.business.SupplyWorkersIntermediaryController.submit
 
+## Address Character Limit Guide
+GET         /35-character-limit                                        controllers.business.AddressCharacterLimitGuideController.show
+POST        /35-character-limit                                        controllers.business.AddressCharacterLimitGuideController.submit
+
 ## PPOB ADDRESS
 GET         /principal-place-business                                 controllers.business.PpobAddressController.startJourney
 GET         /principal-place-business/acceptFromTxm                   controllers.business.PpobAddressController.callback(id: String ?= "")
