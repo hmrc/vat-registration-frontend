@@ -33,7 +33,6 @@ class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
                                              val authConnector: AuthClientConnector,
                                              val applicantDetailsService: ApplicantDetailsService,
                                              val businessService: BusinessService,
-                                             val vatRegistrationService: VatRegistrationService,
                                              view: ConfirmTradingNameView)
                                             (implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
@@ -58,29 +57,18 @@ class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
     implicit request =>
       implicit profile =>
         ConfirmTradingNameForm.form.bindFromRequest.fold(
-          errors =>
-            for {
-              companyName <- applicantDetailsService.getCompanyName.map(_.getOrElse(
-                throw MissingAnswerException(missingDataSection)
-              ))
-            } yield BadRequest(view(errors, companyName)),
-          confirmTradingName => {
-            for {
-              _ <- businessService.updateBusiness(ConfirmTradingName(confirmTradingName))
-              eligibilityData <- vatRegistrationService.getEligibilitySubmissionData
-            } yield {
-              if (confirmTradingName) {
-                eligibilityData.partyType match {
-                  case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
-                    Redirect(routes.InternationalPpobAddressController.show)
-                  case _ =>
-                    Redirect(routes.PpobAddressController.startJourney)
-                }
+          formWithErrors => 
+            applicantDetailsService.getCompanyName.map(_.getOrElse(
+              throw MissingAnswerException(missingDataSection)
+            )).map(companyName => BadRequest(view(formWithErrors, companyName))),
+          confirmTradingName => 
+            businessService.updateBusiness(ConfirmTradingName(confirmTradingName)).map(_ =>
+              Redirect(if (confirmTradingName) {
+                routes.AddressCharacterLimitGuideController.show
               } else {
-                Redirect(routes.CaptureTradingNameController.show)
-              }
-            }
-          }
+                routes.CaptureTradingNameController.show
+              })
+            )
         )
   }
 

@@ -525,6 +525,33 @@ validation.captureTradingName.invalid           = Nodwch enw masnachu dilys
 validation.captureTradingName.maxlen            = Nodwch enw masnachu gan ddefnyddio 160 o gymeriadau neu lai
 validation.captureTradingName.missing           = Nodwch enw masnachu
 
+# Address Character Limit Guide Page
+
+addressCharacterLimitGuide.title=Gwybodaeth bwysig am brif gyfeiriad masnachu''r busnes
+addressCharacterLimitGuide.heading=Gwybodaeth bwysig am brif gyfeiriad masnachu''r busnes
+addressCharacterLimitGuide.p1=Ar y dudalen nesaf, byddwn yn gofyn ble mae’r busnes yn cyflawni y rhan fwyaf o’i gwaith. Gelwir hyn yn brif leoliad y busnes (PPOB).
+addressCharacterLimitGuide.p2=Fel arfer, dyma’r lle y bydd:
+addressCharacterLimitGuide.bullet1=archebion yn dod i law ac yn cael eu trin
+addressCharacterLimitGuide.bullet2=rhedeg y busnes o ddydd i ddydd yn digwydd
+addressCharacterLimitGuide.p3=Os yw hyn mewn gwahanol leoliadau, defnyddiwch y cyfeiriad lle y mae’r cofnodion busnes wedi’u cadw. Gallai hyn fod yn gyfeiriad cartref.
+addressCharacterLimitGuide.p4=Os ydych yn gwmni cyfyngedig, gallai eich prif leoliad busnes fod yn wahanol i’ch cyfeiriad swyddfa gofrestredig. 
+addressCharacterLimitGuide.subheading1=Dylech hefyd fod yn ymwybodol o’r canlynol wrth ychwanegu’r cyfeiriad:
+addressCharacterLimitGuide.subheading2=Dim ond hyd at 35 o gymeriadau y gallwch gael ar gyfer pob llinell gyfeiriad
+addressCharacterLimitGuide.p5=Ar y dudalen nesaf, bydd y cyfleuster ‘dod o hyd i gyfeiriad’ yn byrhau’n awtomatig unrhyw linell gyfeiriad sy’n fwy na 35 o gymeriadau.
+addressCharacterLimitGuide.p6=Mae hyn oherwydd cyfyngiadau’r system ac ni fydd yn effeithio ar eich cofrestriad nac yn effeithio ar allu CThEF i ysgrifennu atoch.
+addressCharacterLimitGuide.warning=Rhybudd
+addressCharacterLimitGuide.warningText1=Os byddwch yn dal i fod eisiau golygu’r cyfeiriad yn ôl i’r cyfeiriad llawn, dylech ddefnyddio llinell gyfeiriad arall i rannu’r rhan o’r cyfeiriad sy’n fwy na 35 o gymeriadau.
+addressCharacterLimitGuide.warningText2=Os bydd unrhyw linell gyfeiriad unigol yn fwy na 35 o gymeriadau, ni dderbynnir eich cofrestriad pan fyddwch yn ei gyflwyno a bydd yn rhaid i chi ddechrau eto.
+addressCharacterLimitGuide.subheading3=Cyfeiriadau annilys
+addressCharacterLimitGuide.p7=Peidiwch â defnyddio:
+addressCharacterLimitGuide.bullet3=cyfeiriad cyfrifydd neu asiant treth trydydd parti
+addressCharacterLimitGuide.bullet4=cyfeiriad blwch Swyddfa’r Post
+addressCharacterLimitGuide.bullet5=cyfeiriad ‘gofal’ neu gyfeiriad trydydd parti arall, gan gynnwys swyddfeydd rhithwir neu swyddfeydd â gwasanaeth neu anfon post ymlaen a gwasanaethau blychau post
+addressCharacterLimitGuide.subheading4=Defnyddiwch gymeriadau plaen
+addressCharacterLimitGuide.p8=Nodwch gymeriadau plaen yn unig, hyd yn oed os nad yw’r cyfeiriad yn y DU.
+addressCharacterLimitGuide.insetText=Os ydych wedi cofrestru ar gyfer TAW, bydd eich prif leoliad busnes i’w weld ar y
+addressCharacterLimitGuide.linkText=Gwasanaeth Gwirio Rhif TAW yn y DU (yn agor tab newydd).
+
 # Mandatory Start Date No Choice page
 pages.start.date.no.choice.heading                              = Dyddiad dechrau cofrestru ar gyfer TAW
 pages.start.date.no.choice.para1                                = Dyddiad dechrau cofrestru ar gyfer TAW disgwyliedig y busnes yw {0}.
