@@ -550,7 +550,7 @@ addressCharacterLimitGuide.bullet5=a ‘care of’ or other third-party address,
 addressCharacterLimitGuide.subheading4=Use English characters
 addressCharacterLimitGuide.p8=Only enter English characters, even if the address is not in the UK.
 addressCharacterLimitGuide.insetText=If you are registered for VAT, your primary place of business will be visible on the {0}.
-addressCharacterLimitGuide.linkText=Check a UK VAT Number service (opens in new tab).
+addressCharacterLimitGuide.linkText=Check a UK VAT Number service (opens in new tab)
 
 # Mandatory Start Date No Choice page
 pages.start.date.no.choice.heading                              = VAT registration start date
