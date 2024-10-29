@@ -44,7 +44,7 @@ class AddressCharacterLimitGuideViewSpec extends VatRegViewSpec {
     val englishCharacters = "Use English characters"
     val onlyEnglish = "Only enter English characters, even if the address is not in the UK."
     val insetText = "If you are registered for VAT, your primary place of business will be visible on the"
-    val linkText = "Check a UK VAT Number service (opens in new tab)."
+    val linkText = "Check a UK VAT Number service (opens in new tab)"
     val continueButton = "Continue"
   }
 

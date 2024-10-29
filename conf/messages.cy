@@ -549,8 +549,8 @@ addressCharacterLimitGuide.bullet4=cyfeiriad blwch Swyddfa’r Post
 addressCharacterLimitGuide.bullet5=cyfeiriad ‘gofal’ neu gyfeiriad trydydd parti arall, gan gynnwys swyddfeydd rhithwir neu swyddfeydd â gwasanaeth neu anfon post ymlaen a gwasanaethau blychau post
 addressCharacterLimitGuide.subheading4=Defnyddiwch gymeriadau plaen
 addressCharacterLimitGuide.p8=Nodwch gymeriadau plaen yn unig, hyd yn oed os nad yw’r cyfeiriad yn y DU.
-addressCharacterLimitGuide.insetText=Os ydych wedi cofrestru ar gyfer TAW, bydd eich prif leoliad busnes i’w weld ar y
-addressCharacterLimitGuide.linkText=Gwasanaeth Gwirio Rhif TAW yn y DU (yn agor tab newydd).
+addressCharacterLimitGuide.insetText=Os ydych wedi cofrestru ar gyfer TAW, bydd eich prif leoliad busnes i’w weld ar y {0}.
+addressCharacterLimitGuide.linkText=Gwasanaeth Gwirio Rhif TAW yn y DU (yn agor tab newydd)
 
 # Mandatory Start Date No Choice page
 pages.start.date.no.choice.heading                              = Dyddiad dechrau cofrestru ar gyfer TAW
