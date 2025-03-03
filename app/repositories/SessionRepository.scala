@@ -46,12 +46,6 @@ class SessionRepository @Inject()(config: Configuration,
         IndexOptions()
           .name("userAnswersExpiry")
           .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
-      ),
-      model.IndexModel(
-        ascending("id"),
-        IndexOptions()
-          .name("id_Index")
-          .unique(true)
       )
     )
   ) {
