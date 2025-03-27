@@ -95,9 +95,9 @@ object FeatureSwitch {
     val name = "feature-switch.vRSNewAttachmentJourney"
     val displayText: String = "VRS New Attachment Journey"
   }
-
   case object TaxableTurnoverJourney extends FeatureSwitch {
     val name = "feature-switch.taxableTurnoverJourney"
-    override val displayText: String = "Taxable Turnover Journey"
+    val displayText: String = "Taxable Turnover Journey"
   }
+
 }

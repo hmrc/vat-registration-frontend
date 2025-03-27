@@ -33,21 +33,21 @@
 @(formAction: Call, form: Form[BigDecimal])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @detailsBlock = {
-    @p{ @messages("pages.zeroRatedSupplies.tt.details") }
+    @p{ @messages("pages.zeroRatedSupplies.newJourney.details") }
 }
 
-@layout(pageTitle = Some(title(form, "pages.zeroRatedSupplies.tt.heading")), backLink = true) {
+@layout(pageTitle = Some(title(form, "pages.zeroRatedSupplies.newJourney.heading")), backLink = true) {
 
     @errorSummary(form.errors)
 
-    @h1("pages.zeroRatedSupplies.tt.heading")
+    @h1("pages.zeroRatedSupplies.newJourney.heading")
 
-    @p{ @messages("pages.zeroRatedSupplies.tt.text") }
+    @p{ @messages("pages.zeroRatedSupplies.newJourney.text") }
 
-    @p{ @link(appConfig.vatRatesUrl, "pages.zeroRatedSupplies.tt.link", isExternal = true) }
+    @p{ @link(appConfig.vatRatesUrl, "pages.zeroRatedSupplies.newJourney.link", isExternal = true) }
 
     @details(
-        summary = messages("pages.zeroRatedSupplies.tt.summary"),
+        summary = messages("pages.zeroRatedSupplies.newJourney.summary"),
         content = detailsBlock
     )
 
@@ -58,9 +58,9 @@
             name = "zeroRatedSupplies",
             classes = Some("govuk-input--width-10"),
             isPageHeading = false,
-            label = Some(messages("pages.zeroRatedSupplies.tt.heading")),
+            label = Some(messages("pages.zeroRatedSupplies.newJourney.heading")),
             labelClasses = Some("govuk-visually-hidden"),
-            hint = Some(Html(messages("pages.zeroRatedSupplies.tt.hint")))
+            hint = Some(Html(messages("pages.zeroRatedSupplies.newJourney.hint")))
         )
 
         @button("app.common.continue")

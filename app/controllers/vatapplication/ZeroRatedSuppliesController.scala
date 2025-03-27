@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import featuretoggle.FeatureToggleSupport
-import forms.ZeroRatedSuppliesForm
+import forms.{ZeroRatedSuppliesForm, ZeroRatedSuppliesNewJourneyForm}
 import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ZeroRated
@@ -48,16 +48,17 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
       implicit profile =>
         vatApplicationService.getVatApplication.map { vatApplication => {
           val view = if(isEnabled(TaxableTurnoverJourney)) zeroRatesSuppliesNewView.apply _ else zeroRatesSuppliesOldView.apply _
+          val form = if(isEnabled(TaxableTurnoverJourney)) ZeroRatedSuppliesNewJourneyForm.form _ else ZeroRatedSuppliesForm.form _
           (vatApplication.zeroRatedSupplies, vatApplication.turnoverEstimate) match {
             case (Some(zeroRatedSupplies), Some(estimates)) =>
               Ok(view(
                 routes.ZeroRatedSuppliesController.submit,
-                ZeroRatedSuppliesForm.form(estimates).fill(zeroRatedSupplies)
+                form(estimates).fill(zeroRatedSupplies)
               ))
             case (None, Some(estimates)) =>
               Ok(view(
                 routes.ZeroRatedSuppliesController.submit,
-                ZeroRatedSuppliesForm.form(estimates)
+                form(estimates)
               ))
             case (_, None) => throw MissingAnswerException(missingDataSection)
           }
@@ -67,9 +68,10 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile => {
-        val view = if (isEnabled(TaxableTurnoverJourney)) zeroRatesSuppliesNewView.apply _ else zeroRatesSuppliesOldView.apply _
+        val view = if(isEnabled(TaxableTurnoverJourney)) zeroRatesSuppliesNewView.apply _ else zeroRatesSuppliesOldView.apply _
+        val form = if(isEnabled(TaxableTurnoverJourney)) ZeroRatedSuppliesNewJourneyForm.form _ else ZeroRatedSuppliesForm.form _
         vatApplicationService.getTurnover.flatMap {
-          case Some(estimates) => ZeroRatedSuppliesForm.form(estimates).bindFromRequest.fold(
+          case Some(estimates) => form(estimates).bindFromRequest.fold(
             errors => Future.successful(
               BadRequest(view(
                 routes.ZeroRatedSuppliesController.submit,
