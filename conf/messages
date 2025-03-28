@@ -629,12 +629,17 @@ validation.standardRateSupplies.range.below                    = Give an estimat
 
 
 # Zero Rated TT Journey Page
-pages.zeroRatedSupplies.tt.heading                          = What do you think the business’s zero rate (0%) VAT Taxable Turnover will be for the next 12 months?
-pages.zeroRatedSupplies.tt.text                             = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
-pages.zeroRatedSupplies.tt.summary                          = What are zero-rated taxable goods and services?
-pages.zeroRatedSupplies.tt.details                          = Zero-rated goods and services are those which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return.
-pages.zeroRatedSupplies.tt.link                             = Find out about VAT rates on different goods and services
-pages.zeroRatedSupplies.tt.hint                             = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
+pages.zeroRatedSupplies.newJourney.heading                  = What do you think the business’s zero rate (0%) VAT Taxable Turnover will be for the next 12 months?
+pages.zeroRatedSupplies.newJourney.text                     = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
+pages.zeroRatedSupplies.newJourney.summary                  = What are zero-rated taxable goods and services?
+pages.zeroRatedSupplies.newJourney.details                  = Zero-rated goods and services are those which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return.
+pages.zeroRatedSupplies.newJourney.link                     = Find out about VAT rates on different goods and services
+pages.zeroRatedSupplies.newJourney.hint                     = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
+validation.zeroRatedSupplies.newJourney.missing             = Enter your zero rate (0%) VAT taxable turnover estimate
+validation.zeroRatedSupplies.newJourney.invalid             = Amount can only include numbers
+validation.zeroRatedSupplies.newJourney.decimalsNotAllowed  = Amount must not include pence
+validation.zeroRatedSupplies.newJourney.range.above         = Give an estimate that is less than or equal to £{0}
+validation.zeroRatedSupplies.newJourney.range.below         = Give an estimate that is less than or equal to £{0}
 
 # Vat Charge Expectancy Page
 pages.vat.charge.expectancy.heading                         = Does the business expect to regularly claim VAT refunds from HMRC?
