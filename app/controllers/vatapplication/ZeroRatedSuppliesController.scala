@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.ZeroRatedSuppliesForm
+import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
+import featuretoggle.FeatureToggleSupport
+import forms.{ZeroRatedSuppliesForm, ZeroRatedSuppliesNewJourneyForm}
 import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.ZeroRated
 import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.vatapplication.ZeroRatedSupplies
+import views.html.vatapplication.{ZeroRatedSupplies, ZeroRatedSuppliesNewJourney}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,41 +34,46 @@ import scala.concurrent.{ExecutionContext, Future}
 class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                                             val authConnector: AuthClientConnector,
                                             vatApplicationService: VatApplicationService,
-                                            zeroRatesSuppliesView: ZeroRatedSupplies
+                                            zeroRatesSuppliesOldView: ZeroRatedSupplies,
+                                            zeroRatesSuppliesNewView: ZeroRatedSuppliesNewJourney
                                            )(implicit val executionContext: ExecutionContext,
                                              appConfig: FrontendAppConfig,
                                              baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
 
   val missingDataSection = "tasklist.vatRegistration.goodsAndServices"
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatApplicationService.getVatApplication.map { vatApplication =>
+        vatApplicationService.getVatApplication.map { vatApplication => {
+          val view = if(isEnabled(TaxableTurnoverJourney)) zeroRatesSuppliesNewView.apply _ else zeroRatesSuppliesOldView.apply _
+          val form = if(isEnabled(TaxableTurnoverJourney)) ZeroRatedSuppliesNewJourneyForm.form _ else ZeroRatedSuppliesForm.form _
           (vatApplication.zeroRatedSupplies, vatApplication.turnoverEstimate) match {
             case (Some(zeroRatedSupplies), Some(estimates)) =>
-              Ok(zeroRatesSuppliesView(
+              Ok(view(
                 routes.ZeroRatedSuppliesController.submit,
-                ZeroRatedSuppliesForm.form(estimates).fill(zeroRatedSupplies)
+                form(estimates).fill(zeroRatedSupplies)
               ))
             case (None, Some(estimates)) =>
-              Ok(zeroRatesSuppliesView(
+              Ok(view(
                 routes.ZeroRatedSuppliesController.submit,
-                ZeroRatedSuppliesForm.form(estimates)
+                form(estimates)
               ))
             case (_, None) => throw MissingAnswerException(missingDataSection)
           }
-        }
+        }}
   }
 
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
-      implicit profile =>
+      implicit profile => {
+        val view = if(isEnabled(TaxableTurnoverJourney)) zeroRatesSuppliesNewView.apply _ else zeroRatesSuppliesOldView.apply _
+        val form = if(isEnabled(TaxableTurnoverJourney)) ZeroRatedSuppliesNewJourneyForm.form _ else ZeroRatedSuppliesForm.form _
         vatApplicationService.getTurnover.flatMap {
-          case Some(estimates) => ZeroRatedSuppliesForm.form(estimates).bindFromRequest.fold(
+          case Some(estimates) => form(estimates).bindFromRequest.fold(
             errors => Future.successful(
-              BadRequest(zeroRatesSuppliesView(
+              BadRequest(view(
                 routes.ZeroRatedSuppliesController.submit,
                 errors
               ))),
@@ -76,6 +83,6 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
           )
           case None => throw MissingAnswerException(missingDataSection)
         }
+      }
   }
-
 }
