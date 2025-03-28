@@ -88,7 +88,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to Turnover when no is selected" in new Setup {
+    "redirect to FiveRated Turnover when no is selected" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
@@ -100,7 +100,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
+        result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.FiveRatedTurnoverController.show.url)
       }
     }
 

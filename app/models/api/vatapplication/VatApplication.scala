@@ -23,6 +23,7 @@ import java.time.LocalDate
 
 case class VatApplication(tradeVatGoodsOutsideUk: Option[Boolean] = None,
                           eoriRequested: Option[Boolean] = None,
+                          fiveRatedTurnover: Option[BigDecimal] = None,
                           turnoverEstimate: Option[BigDecimal] = None,
                           zeroRatedSupplies: Option[BigDecimal] = None,
                           northernIrelandProtocol: Option[NIPTurnover] = None,

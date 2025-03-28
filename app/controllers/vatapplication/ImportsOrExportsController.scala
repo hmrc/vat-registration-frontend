@@ -55,7 +55,7 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
             if (success) {
               Redirect(controllers.vatapplication.routes.ApplyForEoriController.show)
             } else {
-              Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+              Redirect(controllers.vatapplication.routes.FiveRatedTurnoverController.show)
             }
           }
         )
