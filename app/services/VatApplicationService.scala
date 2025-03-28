@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,8 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
         )
       case EoriRequested(answer) =>
         before.copy(eoriRequested = Some(answer))
+      case TwentyRated(answer) =>
+        before.copy(twentyRatedSupplies = Some(answer))
       case Turnover(answer) =>
         val ineligibleForFrs = answer > 150000
         val ineligibleForAas = answer > 1350000
@@ -257,6 +259,8 @@ object VatApplicationService {
   case class Turnover(answer: BigDecimal)
 
   case class ZeroRated(answer: BigDecimal)
+
+  case class TwentyRated(answer: BigDecimal)
 
   case class TurnoverToEu(answer: ConditionalValue) extends NipAnswer
 
