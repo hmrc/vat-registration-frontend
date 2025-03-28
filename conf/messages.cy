@@ -602,9 +602,9 @@ pages.zeroRatedSupplies.newJourney.link                     = Dysgwch ragor am g
 pages.zeroRatedSupplies.newJourney.hint                     = Nodwch swm mewn punnoedd, er enghraifft £600 neu £90000. Peidiwch â chynnwys ceiniogau.
 validation.zeroRatedSupplies.newJourney.missing             = Nodwch amcangyfrif o’ch trosiant sy’n agored i TAW ar y gyfradd sero (0%)
 validation.zeroRatedSupplies.newJourney.invalid             = Gall y swm ddim ond cynnwys rhifau
-validation.zeroRatedSupplies.newJourney.decimalsNotAllowed  = AMae’n rhaid i’r swm beidio â chynnwys ceiniogau
-validation.zeroRatedSupplies.newJourney.range.above         = Mae’n rhaid i werth y trosiant trethadwy sydd ar gyfradd sero fod yn llai na neu’n hafal i gyfanswm y trosiant trethadwy
-validation.zeroRatedSupplies.newJourney.range.below         = Peidiwch â defnyddio rhifau negyddol, megis -1200
+validation.zeroRatedSupplies.newJourney.decimalsNotAllowed  = Mae’n rhaid i’r swm beidio â chynnwys ceiniogau
+validation.zeroRatedSupplies.newJourney.range.above         = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
+validation.zeroRatedSupplies.newJourney.range.below         = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
 
 
 # Vat Charge Expectancy Page

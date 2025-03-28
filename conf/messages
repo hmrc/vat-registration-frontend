@@ -603,8 +603,8 @@ pages.zeroRatedSupplies.newJourney.hint                     = Enter an amount in
 validation.zeroRatedSupplies.newJourney.missing             = Enter your zero rate (0%) VAT taxable turnover estimate
 validation.zeroRatedSupplies.newJourney.invalid             = Amount can only include numbers
 validation.zeroRatedSupplies.newJourney.decimalsNotAllowed  = Amount must not include pence
-validation.zeroRatedSupplies.newJourney.range.above         = The value of taxable turnover that is zero-rated must be less than or equal to the total value of the taxable turnover
-validation.zeroRatedSupplies.newJourney.range.below         = Do not use negative numbers like -1200
+validation.zeroRatedSupplies.newJourney.range.above         = Give an estimate that is less than or equal to £{0}
+validation.zeroRatedSupplies.newJourney.range.below         = Give an estimate that is less than or equal to £{0}
 
 # Vat Charge Expectancy Page
 pages.vat.charge.expectancy.heading                         = Does the business expect to regularly claim VAT refunds from HMRC?
