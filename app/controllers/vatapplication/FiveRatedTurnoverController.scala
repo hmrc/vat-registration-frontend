@@ -16,48 +16,52 @@
 
 package controllers.vatapplication
 
+import javax.inject.Inject
+import play.api.mvc._
+
+import scala.concurrent.{ExecutionContext, Future}
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.TwentyRatedSuppliesForm
-import play.api.mvc.{Action, AnyContent}
-import services.VatApplicationService.TwentyRated
+import forms.FiveRatedTurnoverForm
+import services.VatApplicationService.FiveRated
 import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.vatapplication.TwentyRatedSupplies
+import views.html.vatapplication.FiveRatedTurnover
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TwentyRatedSuppliesController @Inject()(val sessionService: SessionService,
-                                              val authConnector: AuthClientConnector,
-                                              vatApplicationService: VatApplicationService,
-                                              twentyRatesSuppliesView: TwentyRatedSupplies
+class FiveRatedTurnoverController @Inject()(
+                                             val sessionService: SessionService,
+                                             val authConnector: AuthClientConnector,
+                                             vatApplicationService: VatApplicationService,
+                                             fiveRatedTurnoverView: FiveRatedTurnover
                                            )(implicit val executionContext: ExecutionContext,
                                              appConfig: FrontendAppConfig,
                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
-  val show: Action[AnyContent] = isAuthenticatedWithProfile {
+  def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatApplicationService.getVatApplication.map { vatApplication =>
-          val form = vatApplication.twentyRatedSupplies.fold(TwentyRatedSuppliesForm.form)(TwentyRatedSuppliesForm.form.fill)
-          Ok(twentyRatesSuppliesView(routes.TwentyRatedSuppliesController.submit,form))
-        }
+        for {
+          optFiveRatedEstimate <- vatApplicationService.getFiveRated
+          form = optFiveRatedEstimate.fold(FiveRatedTurnoverForm.form)(FiveRatedTurnoverForm.form.fill)
+          page = Ok(fiveRatedTurnoverView(form))
+        } yield page
   }
 
-  val submit: Action[AnyContent] = isAuthenticatedWithProfile {
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        TwentyRatedSuppliesForm.form.bindFromRequest.fold(
+        FiveRatedTurnoverForm.form.bindFromRequest.fold(
           errors => Future.successful(
-              BadRequest(twentyRatesSuppliesView(
-                routes.TwentyRatedSuppliesController.submit,
-                errors
-              ))),
-            success => vatApplicationService.saveVatApplication(TwentyRated(success)) map { _ =>
-              Redirect(routes.FiveRatedTurnoverController.show)
-            }
-          )
+            BadRequest(fiveRatedTurnoverView(errors))
+          ),
+          success => vatApplicationService.saveVatApplication(FiveRated(success)) map { _ =>
+            Redirect(routes.TurnoverEstimateController.show)
+          }
+        )
   }
+
 }

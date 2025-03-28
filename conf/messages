@@ -566,6 +566,17 @@ pages.start.date.incorp.earlierHead.hint                     = This must be on o
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
 validation.startDateManIncorp.error                          = Enter the registration start date
 
+# FiveRated Turnover Page
+pages.fiveRatedTurnover.heading                              = What do you think the business’s reduced rate (5%) VAT taxable turnover will be for the next 12 months?
+pages.fiveRatedTurnover.text                                 = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
+pages.fiveRatedTurnover.hint                                 = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
+pages.fiveRatedTurnover.link                                 = Find out more about VAT rates on different goods and services
+validation.fiveRatedTurnover.missing                         = Enter your reduced rate (5%) VAT taxable turnover estimate
+validation.fiveRatedTurnover.invalid                         = Amount can only include numbers
+validation.fiveRatedTurnover.penceNotAllowed                 = Amount must not include pence
+validation.fiveRatedTurnover.range.above                     = Give an estimate that is less than or equal to £{0}
+validation.fiveRatedTurnover.range.below                     = Give an estimate that is more than or equal to £{0}
+
 # Turnover Estimate Page
 pages.turnoverEstimate.heading                              = What do you think the VAT-taxable turnover will be for the next 12 months?
 pages.turnoverEstimate.text1                                = Tell us the estimated value.
