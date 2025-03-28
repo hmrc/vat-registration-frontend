@@ -19,21 +19,24 @@ package views
 import config.FrontendAppConfig
 import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
+import org.scalatest.Assertion
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 import views.html.components.{button, h1, p}
 import views.html.layouts.layout
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val welshMessages: Messages = MessagesImpl(Lang("cy"), messagesApi)
+
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val testCall: Call = Call("POST", "/test-url")
 
@@ -155,5 +158,11 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
       def warningText(n: Int): Option[String] =
         doc.select(warning).toList.map(_.text).lift(n-1)
     }
+
+    def assertContainsLink(doc: Document, text: String, href: String): Assertion =
+      assert(
+        doc.getElementsContainingText(text).attr("href").contains(href),
+        s"\n\nLink $href was not rendered on the page\n"
+      )
   }
 }

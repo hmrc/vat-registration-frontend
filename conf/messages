@@ -593,6 +593,18 @@ validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed  = The value of zero-
 validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than or equal to the total value of the taxable turnover
 validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
+# Twenty Rated Supplies Page
+pages.twentyRatedSupplies.heading                             = What do you think the business’s standard rate (20%) VAT taxable turnover will be for the next 12 months?
+pages.twentyRatedSupplies.text                                = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
+pages.twentyRatedSupplies.link                                = Find out more about calculating your VAT taxable turnover
+pages.twentyRatedSupplies.hint                                = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
+validation.twentyRatedSupplies.missing                        = Enter your standard rate (20%) VAT taxable turnover estimate
+validation.twentyRatedSupplies.invalid                        = Amount can only include numbers
+validation.twentyRatedSupplies.penceNotAllowed                = Amount must not include pence
+validation.twentyRatedSupplies.range.above                    = Give an estimate that is less than or equal to £{0}
+validation.twentyRatedSupplies.range.below                    = Give an estimate that is more than or equal to £{0}
+
+
 # Vat Charge Expectancy Page
 pages.vat.charge.expectancy.heading                         = Does the business expect to regularly claim VAT refunds from HMRC?
 pages.vat.charge.expectancy.para1                           = Most businesses do not claim VAT refunds. It is only possible when the VAT a business pays on business-related purchases is more than the VAT it charges customers.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -312,6 +312,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val checkVatNumberUrl = "https://www.gov.uk/check-uk-vat-number"
 
+  lazy val calculateTurnoverUrl = "https://www.gov.uk/register-for-vat#calculate-your-turnover"
   lazy val maxPartnerCount: Int = servicesConfig.getInt("indexedSection.max.partner")
   lazy val maxObiLimit: Int = servicesConfig.getInt("obiMaxLimit")
 }

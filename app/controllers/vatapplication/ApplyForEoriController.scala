@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import views.html.vatapplication.{OverseasApplyForEori, ApplyForEori => ApplyFor
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
+import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
+import featuretoggle.FeatureToggleSupport.isEnabled
 
 @Singleton
 class ApplyForEoriController @Inject()(val sessionService: SessionService,
@@ -64,7 +66,12 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
             },
           success =>
             vatApplicationService.saveVatApplication(EoriRequested(success)).map { _ =>
-              Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+              val isTTJourneyEnabled = isEnabled(TaxableTurnoverJourney)
+              if(isTTJourneyEnabled) {
+                Redirect(controllers.vatapplication.routes.TwentyRatedSuppliesController.show)
+              } else {
+                Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+              }
             }
         )
   }

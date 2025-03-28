@@ -593,6 +593,17 @@ validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed  = Gall gwerth y nwyd
 validation.zeroRatedSupplies.range.above                    = Mae’n rhaid i werth y trosiant trethadwy sydd ar gyfradd sero fod yn llai na neu’n hafal i gyfanswm y trosiant trethadwy
 validation.zeroRatedSupplies.range.below                    = Peidiwch â defnyddio rhifau negyddol, megis -1200
 
+# Twenty Rated Supplies Page
+pages.twentyRatedSupplies.heading                             = Beth ydych yn credu fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf, a hynny ar y gyfradd safonol (20%)?
+pages.twentyRatedSupplies.text                                = Dylech geisio gwneud eich amcangyfrif mor fanwl gywir â phosibl. Os na fyddwch yn cyflwyno’ch Ffurflen TAW mewn pryd, gall yr amcangyfrif hwn gael ei ddefnyddio i gyfrifo faint o TAW sydd arnoch.
+pages.twentyRatedSupplies.link                                = Dysgwch ragor am sut i gyfrifo’ch trosiant sy’n agored i TAW
+pages.twentyRatedSupplies.hint                                = Nodwch swm mewn punnoedd, er enghraifft £600 neu £90000. Peidiwch â chynnwys ceiniogau.
+validation.twentyRatedSupplies.missing                        = Nodwch amcangyfrif o’ch trosiant sy’n agored i TAW ar y gyfradd safonol (20%)
+validation.twentyRatedSupplies.invalid                        = Gall y swm ddim ond cynnwys rhifau
+validation.twentyRatedSupplies.penceNotAllowed                = Mae’n rhaid i’r swm beidio â chynnwys ceiniogau
+validation.twentyRatedSupplies.range.above                    = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
+validation.twentyRatedSupplies.range.below                    = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
+
 # Vat Charge Expectancy Page
 pages.vat.charge.expectancy.heading                         = A yw’r busnes yn disgwyl hawlio ad-daliadau TAW yn rheolaidd gan CThEM?
 pages.vat.charge.expectancy.para1                           = Nid yw’r rhan fwyaf o fusnesau’n hawlio ad-daliadau TAW. Mae ond yn bosibl pan fydd y TAW y mae busnes yn ei thalu ar bryniannau sy’n gysylltiedig â’r busnes yn fwy na’r TAW y mae’n ei chodi ar gwsmeriaid.
