@@ -566,6 +566,17 @@ pages.start.date.incorp.earlierHead.hint                     = Mae’n rhaid i h
 validation.startDateManIncorp.range.below4y                  = Nodwch ddyddiad nad yw’n fwy na phedair blynedd yn y gorffennol
 validation.startDateManIncorp.error                          = Nodwch ddyddiad dechrau’r cofrestriad
 
+# FiveRated Turnover Page
+pages.fiveRatedTurnover.heading                              = Beth ydych yn credu fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf, a hynny ar y gyfradd safonol (5%)?
+pages.fiveRatedTurnover.text                                 = Dylech geisio gwneud eich amcangyfrif mor fanwl gywir â phosibl. Os na fyddwch yn cyflwyno’ch Ffurflen TAW mewn pryd, gall yr amcangyfrif hwn gael ei ddefnyddio i gyfrifo faint o TAW sydd arnoch.
+pages.fiveRatedTurnover.hint                                 = Nodwch swm mewn punnoedd, er enghraifft £600 neu £90000. Peidiwch â chynnwys ceiniogau
+pages.fiveRatedTurnover.link                                 = Dysgwch ragor am sut i gyfrifo’ch trosiant sy’n agored i TAW (yn agor tab newydd)
+validation.fiveRatedTurnover.missing                         = Nodwch amcangyfrif o’ch trosiant sy’n agored i TAW ar y gyfradd is (5%)
+validation.fiveRatedTurnover.invalid                         = Gall y swm ddim ond cynnwys rhifau
+validation.fiveRatedTurnover.penceNotAllowed                 = Mae’n rhaid i’r swm beidio â chynnwys ceiniogau
+validation.fiveRatedTurnover.range.above                     = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
+validation.fiveRatedTurnover.range.below                     = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
+
 # Turnover Estimate Page
 pages.turnoverEstimate.heading                              = Beth rydych yn meddwl fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf?
 pages.turnoverEstimate.text1                                = Rhowch wybod i ni beth yw’r gwerth amcangyfrifedig

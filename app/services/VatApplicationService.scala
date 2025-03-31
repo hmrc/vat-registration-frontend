@@ -62,6 +62,9 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
         before.copy(eoriRequested = Some(answer))
       case TwentyRated(answer) =>
         before.copy(twentyRatedSupplies = Some(answer))
+      case FiveRated(answer) =>
+        before.copy(
+          fiveRatedTurnover = Some(answer))
       case Turnover(answer) =>
         val ineligibleForFrs = answer > 150000
         val ineligibleForAas = answer > 1350000
@@ -205,7 +208,9 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
       _.calculatedDate.getOrElse(throw new InternalServerException("[VatApplicationService] Missing calculated date"))
     )
   }
-
+  def getFiveRated(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BigDecimal]] = {
+    getVatApplication.map(_.fiveRatedTurnover)
+  }
   def getTurnover(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BigDecimal]] = {
     getVatApplication.map(_.turnoverEstimate)
   }
@@ -255,6 +260,8 @@ object VatApplicationService {
   case class TradeVatGoodsOutsideUk(answer: Boolean)
 
   case class EoriRequested(answer: Boolean)
+
+  case class FiveRated(answer: BigDecimal)
 
   case class Turnover(answer: BigDecimal)
 
