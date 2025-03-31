@@ -23,6 +23,8 @@ import play.api.mvc.{Action, AnyContent}
 import services.VatApplicationService.TradeVatGoodsOutsideUk
 import services.{SessionService, VatApplicationService}
 import views.html.vatapplication.ImportsOrExports
+import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
+import featuretoggle.FeatureToggleSupport.isEnabled
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -55,7 +57,11 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
             if (success) {
               Redirect(controllers.vatapplication.routes.ApplyForEoriController.show)
             } else {
-              Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+              val isTTJourneyEnabled = isEnabled(TaxableTurnoverJourney)
+              if(isTTJourneyEnabled)
+                Redirect(controllers.vatapplication.routes.TwentyRatedSuppliesController.show)
+              else
+                Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
             }
           }
         )

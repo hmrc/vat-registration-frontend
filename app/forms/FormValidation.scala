@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.StringUtils.isNotBlank
 import play.api.data.format.Formatter
 import play.api.data.validation._
-import play.api.data.{FieldMapping, FormError, Forms, Mapping}
+import play.api.data.{FieldMapping, FormError, Mapping}
 import play.api.libs.json.Reads.email
 import play.api.libs.json.{JsString, JsSuccess}
 
@@ -33,8 +33,6 @@ import scala.util.{Failure, Success, Try}
 object FormValidation {
 
   type ErrorCode = String
-
-  val trimmedText: Mapping[String] = Forms.text.transform[String](_.trim, identity)
 
   def regexPattern(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[String] = Constraint {
     input: String =>

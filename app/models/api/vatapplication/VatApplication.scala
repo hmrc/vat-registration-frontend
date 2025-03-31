@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ case class VatApplication(tradeVatGoodsOutsideUk: Option[Boolean] = None,
                           eoriRequested: Option[Boolean] = None,
                           turnoverEstimate: Option[BigDecimal] = None,
                           zeroRatedSupplies: Option[BigDecimal] = None,
+                          twentyRatedSupplies: Option[BigDecimal] = None,
                           northernIrelandProtocol: Option[NIPTurnover] = None,
                           claimVatRefunds: Option[Boolean] = None,
                           appliedForExemption: Option[Boolean] = None,
