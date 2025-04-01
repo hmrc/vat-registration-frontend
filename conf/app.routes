@@ -95,8 +95,8 @@ GET         /zero-rated-turnover                                      controller
 POST        /zero-rated-turnover                                      controllers.vatapplication.ZeroRatedSuppliesController.submit
 
 ## TWENTY RATED SUPPLIES PAGE
-GET         /twenty-rated-turnover                                    controllers.vatapplication.TwentyRatedSuppliesController.show
-POST        /twenty-rated-turnover                                    controllers.vatapplication.TwentyRatedSuppliesController.submit
+GET         /standard-rate-turnover                                   controllers.vatapplication.TwentyRatedSuppliesController.show
+POST        /standard-rate-turnover                                   controllers.vatapplication.TwentyRatedSuppliesController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /claim-vat-refunds                                        controllers.vatapplication.ClaimRefundsController.show
