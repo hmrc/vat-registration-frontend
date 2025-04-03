@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class FiveRatedTurnoverControllerISpec extends ControllerISpec {
+class TotalTaxTurnoverEstimateControllerISpec extends ControllerISpec {
 
-  val url: String = controllers.vatapplication.routes.FiveRatedTurnoverController.show.url
+  val url: String = controllers.vatapplication.routes.TotalTaxTurnoverEstimateController.show.url
 
   s"GET $url" must {
     "return an OK" in new Setup {
@@ -46,7 +46,7 @@ class FiveRatedTurnoverControllerISpec extends ControllerISpec {
     "return an OK if there is data to prepop" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.getSection[VatApplication](Some(VatApplication(fiveRatedTurnover = Some(testTurnover))))
+        .registrationApi.getSection[VatApplication](Some(VatApplication(turnoverEstimate = Some(testTurnover))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -56,26 +56,28 @@ class FiveRatedTurnoverControllerISpec extends ControllerISpec {
         val doc = Jsoup.parse(result.body)
 
         result.status mustBe OK
-        doc.select("input[id=fiveRatedTurnover]").`val`() mustBe testTurnover.toString
+        doc.getElementById("value").hasAttr("checked")
       }
     }
   }
 
   s"POST $url" must {
-    "redirect to Turnover Estimate resolver if the form has no errors" in new Setup {
+    "redirect to sell-or-move-ni page if the form has no errors" in new Setup {
       given()
         .user.isAuthorised()
-        .registrationApi.replaceSection[VatApplication](VatApplication(fiveRatedTurnover = Some(10000)))
+        .registrationApi.replaceSection[VatApplication](fullVatApplication.copy(acceptTurnOverEstimate = Some(true)))
+        .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(acceptTurnOverEstimate = Some(true))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map(
-        "fiveRatedTurnover" -> "10000"
+        "value" -> "true"
       ))
 
       whenReady(res) { result =>
+        //result.body mustBe "TEST"
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.TurnoverEstimateController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
       }
     }
 
@@ -86,7 +88,7 @@ class FiveRatedTurnoverControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post(Map(
-        "fiveRatedTurnover" -> "text"
+        "value" -> ""
       ))
 
       whenReady(res) { result =>

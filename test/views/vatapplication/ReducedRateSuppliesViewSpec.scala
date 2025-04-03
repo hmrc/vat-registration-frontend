@@ -16,12 +16,12 @@
 
 package views.vatapplication
 
-import forms.FiveRatedTurnoverForm
+import forms.ReducedRateSuppliesForm
 import org.jsoup.Jsoup
 import views.VatRegViewSpec
-import views.html.vatapplication.FiveRatedTurnover
+import views.html.vatapplication.ReducedRateSupplies
 
-class FiveRatedTurnoverViewSpec extends VatRegViewSpec {
+class ReducedRateSuppliesViewSpec extends VatRegViewSpec {
 
   val heading = "What do you think the business’s reduced rate (5%) VAT taxable turnover will be for the next 12 months?"
   val title = s"$heading - Register for VAT - GOV.UK"
@@ -29,9 +29,9 @@ class FiveRatedTurnoverViewSpec extends VatRegViewSpec {
   val link = "Find out more about VAT rates on different goods and services (opens in new tab)"
   val buttonText = "Save and continue"
 
-  "FiveRated Turnover Page" must {
-    val form = FiveRatedTurnoverForm.form
-    val view = app.injector.instanceOf[FiveRatedTurnover].apply(form)
+  "ReducedRated Supplies Page" must {
+    val form = ReducedRateSuppliesForm.form
+    val view = app.injector.instanceOf[ReducedRateSupplies].apply(form)
     implicit val doc = Jsoup.parse(view.body)
 
     "have the correct title" in new ViewSetup {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@ import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
 
-object FiveRatedTurnoverForm {
+import scala.util.matching.Regex
 
-  implicit val errorCode: String = "fiveRatedTurnover"
-  val fiveRatedTurnoverEstimateKey = "fiveRatedTurnover"
-  val regex = """^[0-9 .]+$""".r
-  val penceNotAllowed = """^[^.]+$""".r
+object StandardRateSuppliesForm {
 
-  val form: Form[BigDecimal] = Form(
+  implicit val errorCode: String = "standardRateSupplies"
+  val standardRateSuppliesKey = "standardRateSupplies"
+  val regex: Regex = """^[0-9 .]+$""".r
+  private val penceNotAllowed = """^[^.]+$""".r
+
+  def form: Form[BigDecimal] = Form(
     single(
-      fiveRatedTurnoverEstimateKey ->
-        text
-          .verifying(stopOnFail(
+      standardRateSuppliesKey ->
+        text.verifying(stopOnFail(
             regexPattern(regex),
-            matchesRegex(penceNotAllowed, "validation.fiveRatedTurnover.penceNotAllowed"),
-            mandatoryFullNumericText
+            matchesRegex(penceNotAllowed, "validation.standardRateSupplies.penceNotAllowed")
           ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
@@ -44,4 +44,7 @@ object FiveRatedTurnoverForm {
     )
   )
 }
+
+
+
 

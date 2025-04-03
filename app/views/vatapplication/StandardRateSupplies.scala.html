@@ -33,32 +33,32 @@
 @(formAction: Call, form: Form[BigDecimal])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @detailsBlock = {
-    @p{ @messages("pages.twentyRatedSupplies.details") }
+    @p{ @messages("pages.standardRateSupplies.details") }
 
-    @link(appConfig.vatRatesUrl, "pages.twentyRatedSupplies.link", isExternal = true)
+    @link(appConfig.vatRatesUrl, "pages.standardRateSupplies.link", isExternal = true)
 }
 
-@layout(pageTitle = Some(title(form, "pages.twentyRatedSupplies.heading")), backLink = true) {
+@layout(pageTitle = Some(title(form, "pages.standardRateSupplies.heading")), backLink = true) {
 
     @errorSummary(form.errors)
 
-    @h1("pages.twentyRatedSupplies.heading")
+    @h1("pages.standardRateSupplies.heading")
 
-    @p { @messages("pages.twentyRatedSupplies.text") }
+    @p { @messages("pages.standardRateSupplies.text") }
     @p {
-        @link(appConfig.calculateTurnoverUrl, "pages.twentyRatedSupplies.link", isExternal = true)
+        @link(appConfig.calculateTurnoverUrl, "pages.standardRateSupplies.link", isExternal = true)
     }
 
     @formWithCSRF(action = formAction) {
         @inputCurrency(
             form = form,
-            id = "twentyRatedSupplies",
-            name = "twentyRatedSupplies",
+            id = "standardRateSupplies",
+            name = "standardRateSupplies",
             classes = Some("govuk-input--width-10"),
             isPageHeading = false,
-            label = Some(messages("pages.twentyRatedSupplies.heading")),
+            label = Some(messages("pages.standardRateSupplies.heading")),
             labelClasses = Some("govuk-visually-hidden"),
-            hint = Some(Html(messages("pages.twentyRatedSupplies.hint")))
+            hint = Some(Html(messages("pages.standardRateSupplies.hint")))
         )
 
         @button("app.common.continue")

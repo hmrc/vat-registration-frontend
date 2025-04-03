@@ -566,16 +566,16 @@ pages.start.date.incorp.earlierHead.hint                     = This must be on o
 validation.startDateManIncorp.range.below4y                  = Enter a date which is no more than 4 years in the past
 validation.startDateManIncorp.error                          = Enter the registration start date
 
-# FiveRated Turnover Page
-pages.fiveRatedTurnover.heading                              = What do you think the business’s reduced rate (5%) VAT taxable turnover will be for the next 12 months?
-pages.fiveRatedTurnover.text                                 = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
-pages.fiveRatedTurnover.hint                                 = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
-pages.fiveRatedTurnover.link                                 = Find out more about VAT rates on different goods and services
-validation.fiveRatedTurnover.missing                         = Enter your reduced rate (5%) VAT taxable turnover estimate
-validation.fiveRatedTurnover.invalid                         = Amount can only include numbers
-validation.fiveRatedTurnover.penceNotAllowed                 = Amount must not include pence
-validation.fiveRatedTurnover.range.above                     = Give an estimate that is less than or equal to £{0}
-validation.fiveRatedTurnover.range.below                     = Give an estimate that is more than or equal to £{0}
+# Reduced Rated Supplies Page
+pages.reducedRateSupplies.heading                              = What do you think the business’s reduced rate (5%) VAT taxable turnover will be for the next 12 months?
+pages.reducedRateSupplies.text                                 = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
+pages.reducedRateSupplies.hint                                 = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
+pages.reducedRateSupplies.link                                 = Find out more about VAT rates on different goods and services
+validation.reducedRateSupplies.missing                         = Enter your reduced rate (5%) VAT taxable turnover estimate
+validation.reducedRateSupplies.invalid                         = Amount can only include numbers
+validation.reducedRateSupplies.penceNotAllowed                 = Amount must not include pence
+validation.reducedRateSupplies.range.above                     = Give an estimate that is less than or equal to £{0}
+validation.reducedRateSupplies.range.below                     = Give an estimate that is more than or equal to £{0}
 
 # Turnover Estimate Page
 pages.turnoverEstimate.heading                              = What do you think the VAT-taxable turnover will be for the next 12 months?
@@ -589,6 +589,18 @@ validation.turnoverEstimate.commasNotAllowed                = The VAT-taxable tu
 validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed   = The VAT-taxable turnover, expected for the next 12 months, can only include pounds and pence
 validation.turnoverEstimate.range.above                     = Give an estimate that is less than or equal to £{0}
 validation.turnoverEstimate.range.below                     = Give an estimate that is more than or equal to £{0}
+
+# Total Tax Turnover Estimate Page
+pages.totalTaxTurnoverEstimate.heading                      = Total estimated VAT taxable turnover
+pages.totalTaxTurnoverEstimate.text1                        = We have calculated your total estimated VAT taxable turnover based on the information you have provided.
+pages.totalTaxTurnoverEstimate.standardRate                 = Standard rate (20%)
+pages.totalTaxTurnoverEstimate.reducedRate                  = Reduced rate (5%)
+pages.totalTaxTurnoverEstimate.zeroRate                     = Zero rate (0%)
+pages.totalTaxTurnoverEstimate.totalRate                    = Total taxable turnover
+pages.totalTaxTurnoverEstimate.optionHeading                = Are all values correct?
+pages.totalTaxTurnoverEstimate.noText                       = No, I want to change my answer
+pages.totalTaxTurnoverEstimate.poundSign                    = £
+validation.ttEstimate.error                                 = Select yes if all values are correct
 
 # Zero Rated Supplies Page
 pages.zeroRatedSupplies.heading                             = What will the value of the business’s zero-rated taxable goods be over the next 12 months?
@@ -604,16 +616,16 @@ validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed  = The value of zero-
 validation.zeroRatedSupplies.range.above                    = The value of taxable turnover that is zero-rated must be less than or equal to the total value of the taxable turnover
 validation.zeroRatedSupplies.range.below                    = Do not use negative numbers like -1200
 
-# Twenty Rated Supplies Page
-pages.twentyRatedSupplies.heading                             = What do you think the business’s standard rate (20%) VAT taxable turnover will be for the next 12 months?
-pages.twentyRatedSupplies.text                                = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
-pages.twentyRatedSupplies.link                                = Find out more about calculating your VAT taxable turnover
-pages.twentyRatedSupplies.hint                                = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
-validation.twentyRatedSupplies.missing                        = Enter your standard rate (20%) VAT taxable turnover estimate
-validation.twentyRatedSupplies.invalid                        = Amount can only include numbers
-validation.twentyRatedSupplies.penceNotAllowed                = Amount must not include pence
-validation.twentyRatedSupplies.range.above                    = Give an estimate that is less than or equal to £{0}
-validation.twentyRatedSupplies.range.below                    = Give an estimate that is more than or equal to £{0}
+# Standard Rated Supplies Page
+pages.standardRateSupplies.heading                             = What do you think the business’s standard rate (20%) VAT taxable turnover will be for the next 12 months?
+pages.standardRateSupplies.text                                = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.
+pages.standardRateSupplies.link                                = Find out more about calculating your VAT taxable turnover
+pages.standardRateSupplies.hint                                = Enter an amount in pounds, for example, £600 or £90000. Do not include pence.
+validation.standardRateSupplies.missing                        = Enter your standard rate (20%) VAT taxable turnover estimate
+validation.standardRateSupplies.invalid                        = Amount can only include numbers
+validation.standardRateSupplies.penceNotAllowed                = Amount must not include pence
+validation.standardRateSupplies.range.above                    = Give an estimate that is less than or equal to £{0}
+validation.standardRateSupplies.range.below                    = Give an estimate that is more than or equal to £{0}
 
 
 # Vat Charge Expectancy Page

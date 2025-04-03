@@ -68,7 +68,7 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
             vatApplicationService.saveVatApplication(EoriRequested(success)).map { _ =>
               val isTTJourneyEnabled = isEnabled(TaxableTurnoverJourney)
               if(isTTJourneyEnabled) {
-                Redirect(controllers.vatapplication.routes.TwentyRatedSuppliesController.show)
+                Redirect(controllers.vatapplication.routes.StandardRateSuppliesController.show)
               } else {
                 Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
               }
