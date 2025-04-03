@@ -83,8 +83,8 @@ POST        /apply-for-eori                                           controller
 GET         /resolve-zero-rated-turnover                              controllers.vatapplication.ZeroRatedSuppliesResolverController.resolve
 
 ## FIVE RATED TURNOVER PAGE
-GET         /five-rated-turnover                                       controllers.vatapplication.FiveRatedTurnoverController.show
-POST        /five-rated-turnover                                       controllers.vatapplication.FiveRatedTurnoverController.submit
+GET         /reduced-rate-turnover                                    controllers.vatapplication.FiveRatedTurnoverController.show
+POST        /reduced-rate-turnover                                    controllers.vatapplication.FiveRatedTurnoverController.submit
 
 ## TURNOVER ESTIMATE PAGE
 GET         /turnover-estimate                                        controllers.vatapplication.TurnoverEstimateController.show
