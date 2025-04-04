@@ -31,30 +31,30 @@
 
 @(form: Form[BigDecimal])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, "pages.fiveRatedTurnover.heading")), backLink = true) {
+@layout(pageTitle = Some(title(form, "pages.reducedRateSupplies.heading")), backLink = true) {
 
     @errorSummary(form.errors)
 
-    @h1("pages.fiveRatedTurnover.heading")
+    @h1("pages.reducedRateSupplies.heading")
 
     @p {
-       @messages("pages.fiveRatedTurnover.text")
+       @messages("pages.reducedRateSupplies.text")
     }
 
     @p {
-        @link(appConfig.VATRateDifferentGoodsURL, "pages.fiveRatedTurnover.link", isExternal = true)
+        @link(appConfig.VATRateDifferentGoodsURL, "pages.reducedRateSupplies.link", isExternal = true)
     }
 
-    @formWithCSRF(action = controllers.vatapplication.routes.FiveRatedTurnoverController.submit) {
+    @formWithCSRF(action = controllers.vatapplication.routes.ReducedRateSuppliesController.submit) {
          @inputCurrency(
              form = form,
-             id = "fiveRatedTurnover",
-             name = "fiveRatedTurnover",
+             id = "reducedRateSupplies",
+             name = "reducedRateSupplies",
              classes = Some("govuk-input--width-10"),
              isPageHeading = false,
-             label = Some(messages("pages.fiveRatedTurnover.heading")),
+             label = Some(messages("pages.reducedRateSupplies.heading")),
              labelClasses = Some("govuk-visually-hidden"),
-             hint = Some(Html(messages("pages.fiveRatedTurnover.hint")))
+             hint = Some(Html(messages("pages.reducedRateSupplies.hint")))
          )
 
          @button("app.common.continue")

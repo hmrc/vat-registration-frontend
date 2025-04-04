@@ -123,7 +123,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         if(isTTJourneyEnabled){
-          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TwentyRatedSuppliesController.show.url)
+          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.StandardRateSuppliesController.show.url)
         }
       }
     }

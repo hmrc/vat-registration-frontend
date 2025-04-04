@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ import java.time.LocalDate
 
 case class VatApplication(tradeVatGoodsOutsideUk: Option[Boolean] = None,
                           eoriRequested: Option[Boolean] = None,
-                          fiveRatedTurnover: Option[BigDecimal] = None,
-                          turnoverEstimate: Option[BigDecimal] = None,
+                          standardRateSupplies: Option[BigDecimal] = None,
+                          reducedRateSupplies: Option[BigDecimal] = None,
                           zeroRatedSupplies: Option[BigDecimal] = None,
-                          twentyRatedSupplies: Option[BigDecimal] = None,
+                          turnoverEstimate: Option[BigDecimal] = None,
+                          acceptTurnOverEstimate: Option[Boolean] = None,
                           northernIrelandProtocol: Option[NIPTurnover] = None,
                           claimVatRefunds: Option[Boolean] = None,
                           appliedForExemption: Option[Boolean] = None,

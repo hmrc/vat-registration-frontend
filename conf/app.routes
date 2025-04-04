@@ -82,9 +82,13 @@ POST        /apply-for-eori                                           controller
 ## ZERO RATED SUPPLIES RESOLVER
 GET         /resolve-zero-rated-turnover                              controllers.vatapplication.ZeroRatedSuppliesResolverController.resolve
 
-## FIVE RATED TURNOVER PAGE
-GET         /five-rated-turnover                                       controllers.vatapplication.FiveRatedTurnoverController.show
-POST        /five-rated-turnover                                       controllers.vatapplication.FiveRatedTurnoverController.submit
+## Standard(20%) RATED SUPPLIES PAGE
+GET         /standard-rate-turnover                                   controllers.vatapplication.StandardRateSuppliesController.show
+POST        /standard-rate-turnover                                   controllers.vatapplication.StandardRateSuppliesController.submit
+
+## Reduced(5%) RATED TURNOVER PAGE
+GET         /reduced-rate-turnover                                    controllers.vatapplication.ReducedRateSuppliesController.show
+POST        /reduced-rate-turnover                                    controllers.vatapplication.ReducedRateSuppliesController.submit
 
 ## TURNOVER ESTIMATE PAGE
 GET         /turnover-estimate                                        controllers.vatapplication.TurnoverEstimateController.show
@@ -94,9 +98,9 @@ POST        /turnover-estimate                                        controller
 GET         /zero-rated-turnover                                      controllers.vatapplication.ZeroRatedSuppliesController.show
 POST        /zero-rated-turnover                                      controllers.vatapplication.ZeroRatedSuppliesController.submit
 
-## TWENTY RATED SUPPLIES PAGE
-GET         /standard-rate-turnover                                   controllers.vatapplication.TwentyRatedSuppliesController.show
-POST        /standard-rate-turnover                                   controllers.vatapplication.TwentyRatedSuppliesController.submit
+## Total Taxable Turnover Estimate PAGE
+GET         /total-taxable-turnover                                   controllers.vatapplication.TotalTaxTurnoverEstimateController.show
+POST        /total-taxable-turnover                                   controllers.vatapplication.TotalTaxTurnoverEstimateController.submit
 
 ## VAT CHARGE EXPECTANCY PAGE
 GET         /claim-vat-refunds                                        controllers.vatapplication.ClaimRefundsController.show

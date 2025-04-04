@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,21 @@ import play.api.data.Forms._
 
 import scala.util.matching.Regex
 
-object TwentyRatedSuppliesForm {
+object ReducedRateSuppliesForm {
 
-  implicit val errorCode: String = "twentyRatedSupplies"
-  val twentyRatedSuppliesKey = "twentyRatedSupplies"
+  implicit val errorCode: String = "reducedRateSupplies"
+  val reducedRateSuppliesEstimateKey = "reducedRateSupplies"
   val regex: Regex = """^[0-9 .]+$""".r
-  private val penceNotAllowed = """^[^.]+$""".r
+  val penceNotAllowed: Regex = """^[^.]+$""".r
 
-  def form: Form[BigDecimal] = Form(
+  val form: Form[BigDecimal] = Form(
     single(
-      twentyRatedSuppliesKey ->
-        text.verifying(stopOnFail(
+      reducedRateSuppliesEstimateKey ->
+        text
+          .verifying(stopOnFail(
             regexPattern(regex),
-            matchesRegex(penceNotAllowed, "validation.twentyRatedSupplies.penceNotAllowed")
+            matchesRegex(penceNotAllowed, "validation.reducedRateSupplies.penceNotAllowed"),
+            mandatoryFullNumericText
           ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),
@@ -44,7 +46,4 @@ object TwentyRatedSuppliesForm {
     )
   )
 }
-
-
-
 

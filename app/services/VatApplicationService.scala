@@ -20,9 +20,11 @@ import connectors.RegistrationApiConnector
 import featuretoggle.FeatureToggleSupport
 import models._
 import models.api.vatapplication._
+import play.api.libs.json.Json
 import play.api.mvc.Request
 import services.VatApplicationService._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import java.time.LocalDate
 import java.util
@@ -33,7 +35,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiConnector,
                                       val vatService: VatRegistrationService,
                                       applicantDetailsService: ApplicantDetailsService,
-                                      timeService: TimeService
+                                      timeService: TimeService,
+                                      auditConnector: AuditConnector
                                      )(implicit executionContext: ExecutionContext) extends FeatureToggleSupport {
 
   def getVatApplication(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[VatApplication] = {
@@ -60,11 +63,18 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
         )
       case EoriRequested(answer) =>
         before.copy(eoriRequested = Some(answer))
-      case TwentyRated(answer) =>
-        before.copy(twentyRatedSupplies = Some(answer))
-      case FiveRated(answer) =>
+      case StandardRate(answer) =>
+        before.copy(standardRateSupplies = Some(answer))
+      case ReducedRate(answer) =>
+        before.copy(reducedRateSupplies = Some(answer))
+      case ZeroRated(answer) =>
+        val ineligibleForExemption = before.turnoverEstimate.exists(estimate => answer * 2 <= estimate)
+        val updatedExemptionAnswer = if (ineligibleForExemption) None else before.appliedForExemption
+        //If user changes zero rated to be less than or equal 50% of turnover, remove old exemption answer
         before.copy(
-          fiveRatedTurnover = Some(answer))
+          zeroRatedSupplies = Some(answer),
+          appliedForExemption = updatedExemptionAnswer
+        )
       case Turnover(answer) =>
         val ineligibleForFrs = answer > 150000
         val ineligibleForAas = answer > 1350000
@@ -76,14 +86,9 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
           returnsFrequency = if (ineligibleForAas) None else before.returnsFrequency,
           appliedForExemption = if (ineligibleForExemption) None else before.appliedForExemption
         )
-      case ZeroRated(answer) =>
-        val ineligibleForExemption = before.turnoverEstimate.exists(estimate => answer * 2 <= estimate)
-        val updatedExemptionAnswer = if (ineligibleForExemption) None else before.appliedForExemption
-        //If user changes zero rated to be less than or equal 50% of turnover, remove old exemption answer
-        before.copy(
-          zeroRatedSupplies = Some(answer),
-          appliedForExemption = updatedExemptionAnswer
-        )
+      case AcceptTurnOverEstimate(answer) => {
+        before.copy(acceptTurnOverEstimate = Some(answer))
+      }
       case ClaimVatRefunds(answer) =>
         val updatedExemptionAnswer = if (!answer) None else before.appliedForExemption
         //If user changes claim vat vatApplication answer to false, remove old exemption answer
@@ -140,6 +145,18 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
       case CurrentlyTrading(answer) =>
         before.copy(currentlyTrading = Some(answer))
     }
+  }
+
+  def raiseAuditEvent(vatApp: VatApplication)(implicit hc: HeaderCarrier, profile: CurrentProfile): Unit = {
+    logger.info("Raising an explicit audit event!")
+    val auditEventDetail = Json.obj(
+      "standardRateSupplies"    -> vatApp.standardRateSupplies,
+      "reducedRateSupplies"     -> vatApp.reducedRateSupplies,
+      "zeroRatedSupplies"       -> vatApp.zeroRatedSupplies,
+      "turnoverEstimate"        -> vatApp.turnoverEstimate,
+      "acceptTurnOverEstimate"  -> vatApp.acceptTurnOverEstimate
+    )
+    auditConnector.sendExplicitAudit("TotalTaxableTurnoverEvent", auditEventDetail)
   }
 
   private def updateNipBlock[T <: NipAnswer](data: T, nipBefore: NIPTurnover): NIPTurnover =
@@ -208,8 +225,8 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
       _.calculatedDate.getOrElse(throw new InternalServerException("[VatApplicationService] Missing calculated date"))
     )
   }
-  def getFiveRated(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BigDecimal]] = {
-    getVatApplication.map(_.fiveRatedTurnover)
+  def getReducedRated(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BigDecimal]] = {
+    getVatApplication.map(_.reducedRateSupplies)
   }
   def getTurnover(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BigDecimal]] = {
     getVatApplication.map(_.turnoverEstimate)
@@ -261,13 +278,15 @@ object VatApplicationService {
 
   case class EoriRequested(answer: Boolean)
 
-  case class FiveRated(answer: BigDecimal)
+  case class StandardRate(answer: BigDecimal)
 
-  case class Turnover(answer: BigDecimal)
+  case class ReducedRate(answer: BigDecimal)
 
   case class ZeroRated(answer: BigDecimal)
 
-  case class TwentyRated(answer: BigDecimal)
+  case class AcceptTurnOverEstimate(answer: Boolean)
+
+  case class Turnover(answer: BigDecimal)
 
   case class TurnoverToEu(answer: ConditionalValue) extends NipAnswer
 

@@ -1,0 +1,103 @@
+@*
+ * Copyright 2024 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import forms.genericForms.YesOrNoAnswer
+@import views.html.components._
+@import views.html.layouts.layout
+@import views.html.components._
+@import models.api.vatapplication.VatApplication
+
+@this(
+        layout: layout,
+        h1: h1,
+        h2: h2,
+        p: p,
+        button: button,
+        govukTable : GovukTable,
+        formWithCSRF: FormWithCSRF,
+        yesNoRadio: yesNoRadio,
+        errorSummary: errorSummary
+)
+
+@(totalTaxTurnoverForm: Form[Boolean],
+    standardRate: Option[String], reducedRate: Option[String], zeroRate: Option[String],
+    totalEstimate: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(totalTaxTurnoverForm, "pages.totalTaxTurnoverEstimate.heading")), backLink = true) {
+
+    @errorSummary(errors = totalTaxTurnoverForm.errors)
+
+    @h1("pages.totalTaxTurnoverEstimate.heading")
+
+    @p {
+        @messages("pages.totalTaxTurnoverEstimate.text1")
+    }
+
+    @formWithCSRF(action = controllers.vatapplication.routes.TotalTaxTurnoverEstimateController.submit) {
+        @govukTable(Table(
+            rows = Seq(
+                Seq(
+                    TableRow(
+                        content = Text(messages("pages.totalTaxTurnoverEstimate.standardRate"))
+                    ),
+                    TableRow(
+                        content = Text(standardRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(sr => sr))
+                    )
+                ),
+                Seq(
+                    TableRow(
+                        content = Text(messages("pages.totalTaxTurnoverEstimate.reducedRate"))
+                    ),
+                    TableRow(
+                        content = Text(reducedRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(rr => rr))
+                    )
+                ),
+                Seq(
+                    TableRow(
+                        content = Text(messages("pages.totalTaxTurnoverEstimate.zeroRate"))
+                    ),
+                    TableRow(
+                        content = Text(zeroRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(zr => zr))
+                    )
+                ),
+                Seq(
+                    TableRow(
+                        content = Text(messages("pages.totalTaxTurnoverEstimate.totalRate"))
+                    ),
+                    TableRow(
+                        content = Text(totalEstimate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(tt => tt)),
+                        classes = "govuk-!-font-weight-bold"
+                    )
+                )
+            ),
+            captionClasses = "govuk-table__caption--m",
+            firstCellIsHeader = true
+        ))
+
+        @h2("pages.totalTaxTurnoverEstimate.optionHeading")
+        @yesNoRadio(
+            form = totalTaxTurnoverForm,
+            headingKey = messages("pages.totalTaxTurnoverEstimate.optionHeading"),
+            isPageHeading = false,
+            classes = "govuk-visually-hidden",
+            headingMessageArgs = Nil,
+            noText = Some(messages("pages.totalTaxTurnoverEstimate.noText"))
+        )
+
+        @button("app.common.continue")
+    }
+}

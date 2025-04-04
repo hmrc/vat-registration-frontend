@@ -58,10 +58,11 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
               Redirect(controllers.vatapplication.routes.ApplyForEoriController.show)
             } else {
               val isTTJourneyEnabled = isEnabled(TaxableTurnoverJourney)
-              if(isTTJourneyEnabled)
-                Redirect(controllers.vatapplication.routes.TwentyRatedSuppliesController.show)
-              else
+              if(isTTJourneyEnabled) {
+                Redirect(controllers.vatapplication.routes.StandardRateSuppliesController.show)
+              } else {
                 Redirect(controllers.vatapplication.routes.TurnoverEstimateController.show)
+              }
             }
           }
         )

@@ -41,7 +41,8 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
       mockRegistrationApiConnector,
       vatRegistrationServiceMock,
       mockApplicantDetailsServiceOld,
-      mockTimeService
+      mockTimeService,
+      mockAuditConnector
     )
   }
 

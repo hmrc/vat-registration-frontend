@@ -16,26 +16,23 @@
 
 package controllers.vatapplication
 
-import javax.inject.Inject
-import play.api.mvc._
-
-import scala.concurrent.{ExecutionContext, Future}
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.FiveRatedTurnoverForm
-import services.VatApplicationService.FiveRated
+import forms.ReducedRateSuppliesForm
+import play.api.mvc._
+import services.VatApplicationService.ReducedRate
 import services.{SessionProfile, SessionService, VatApplicationService}
-import views.html.vatapplication.FiveRatedTurnover
+import views.html.vatapplication.ReducedRateSupplies
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FiveRatedTurnoverController @Inject()(
+class ReducedRateSuppliesController @Inject()(
                                              val sessionService: SessionService,
                                              val authConnector: AuthClientConnector,
                                              vatApplicationService: VatApplicationService,
-                                             fiveRatedTurnoverView: FiveRatedTurnover
+                                             reducedRatedSuppliesView: ReducedRateSupplies
                                            )(implicit val executionContext: ExecutionContext,
                                              appConfig: FrontendAppConfig,
                                              baseControllerComponents: BaseControllerComponents)
@@ -45,21 +42,21 @@ class FiveRatedTurnoverController @Inject()(
     implicit request =>
       implicit profile =>
         for {
-          optFiveRatedEstimate <- vatApplicationService.getFiveRated
-          form = optFiveRatedEstimate.fold(FiveRatedTurnoverForm.form)(FiveRatedTurnoverForm.form.fill)
-          page = Ok(fiveRatedTurnoverView(form))
+          optReducedRatedEstimate <- vatApplicationService.getReducedRated
+          form = optReducedRatedEstimate.fold(ReducedRateSuppliesForm.form)(ReducedRateSuppliesForm.form.fill)
+          page = Ok(reducedRatedSuppliesView(form))
         } yield page
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        FiveRatedTurnoverForm.form.bindFromRequest.fold(
+        ReducedRateSuppliesForm.form.bindFromRequest.fold(
           errors => Future.successful(
-            BadRequest(fiveRatedTurnoverView(errors))
+            BadRequest(reducedRatedSuppliesView(errors))
           ),
-          success => vatApplicationService.saveVatApplication(FiveRated(success)) map { _ =>
-            Redirect(routes.TurnoverEstimateController.show)
+          success => vatApplicationService.saveVatApplication(ReducedRate(success)) map { _ =>
+            Redirect(routes.ZeroRatedSuppliesController.show)
           }
         )
   }

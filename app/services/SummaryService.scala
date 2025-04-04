@@ -19,13 +19,13 @@ package services
 import config.FrontendAppConfig
 import models.CurrentProfile
 import play.api.i18n.Messages
+import play.api.mvc.Request
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.SummaryCheckYourAnswersBuilder
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.mvc.Request
 
 @Singleton
 class SummaryService @Inject()(vatRegistrationService: VatRegistrationService,

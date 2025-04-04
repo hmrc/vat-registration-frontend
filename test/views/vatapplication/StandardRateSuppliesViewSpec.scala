@@ -16,13 +16,13 @@
 
 package views.vatapplication
 
-import forms.TwentyRatedSuppliesForm
+import forms.StandardRateSuppliesForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.vatapplication.TwentyRatedSupplies
+import views.html.vatapplication.StandardRateSupplies
 
-class TwentyRatedSuppliesViewSpec extends VatRegViewSpec {
+class StandardRateSuppliesViewSpec extends VatRegViewSpec {
 
   val title = "What do you think the business’s standard rate (20%) VAT taxable turnover will be for the next 12 months?"
   val heading = "What do you think the business’s standard rate (20%) VAT taxable turnover will be for the next 12 months?"
@@ -34,8 +34,8 @@ class TwentyRatedSuppliesViewSpec extends VatRegViewSpec {
 
 
   "Twenty Rated Supplies Page" must {
-    val form = TwentyRatedSuppliesForm.form
-    val view = app.injector.instanceOf[TwentyRatedSupplies].apply(testCall, form)
+    val form = StandardRateSuppliesForm.form
+    val view = app.injector.instanceOf[StandardRateSupplies].apply(testCall, form)
     implicit val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
