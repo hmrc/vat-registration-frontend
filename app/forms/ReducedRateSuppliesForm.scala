@@ -20,12 +20,14 @@ import forms.FormValidation._
 import play.api.data.Form
 import play.api.data.Forms._
 
+import scala.util.matching.Regex
+
 object ReducedRateSuppliesForm {
 
   implicit val errorCode: String = "reducedRateSupplies"
   val reducedRateSuppliesEstimateKey = "reducedRateSupplies"
-  val regex = """^[0-9 .]+$""".r
-  val penceNotAllowed = """^[^.]+$""".r
+  val regex: Regex = """^[0-9 .]+$""".r
+  val penceNotAllowed: Regex = """^[^.]+$""".r
 
   val form: Form[BigDecimal] = Form(
     single(

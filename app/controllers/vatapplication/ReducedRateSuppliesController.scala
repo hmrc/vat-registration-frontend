@@ -32,7 +32,7 @@ class ReducedRateSuppliesController @Inject()(
                                              val sessionService: SessionService,
                                              val authConnector: AuthClientConnector,
                                              vatApplicationService: VatApplicationService,
-                                             reducedRatedSuppliesView: ReducedRateSupplies,
+                                             reducedRatedSuppliesView: ReducedRateSupplies
                                            )(implicit val executionContext: ExecutionContext,
                                              appConfig: FrontendAppConfig,
                                              baseControllerComponents: BaseControllerComponents)
