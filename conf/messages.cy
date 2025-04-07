@@ -629,7 +629,6 @@ validation.zeroRatedSupplies.newJourney.decimalsNotAllowed  = Mae’n rhaid i’
 validation.zeroRatedSupplies.newJourney.range.above         = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
 validation.zeroRatedSupplies.newJourney.range.below         = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
 
-
 # Vat Charge Expectancy Page
 pages.vat.charge.expectancy.heading                         = A yw’r busnes yn disgwyl hawlio ad-daliadau TAW yn rheolaidd gan CThEM?
 pages.vat.charge.expectancy.para1                           = Nid yw’r rhan fwyaf o fusnesau’n hawlio ad-daliadau TAW. Mae ond yn bosibl pan fydd y TAW y mae busnes yn ei thalu ar bryniannau sy’n gysylltiedig â’r busnes yn fwy na’r TAW y mae’n ei chodi ar gwsmeriaid.
