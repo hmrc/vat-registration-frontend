@@ -29,7 +29,8 @@ object FeatureSwitch {
     StubPartnershipIdentification,
     StubMinorEntityIdentification,
     VrsNewAttachmentJourney,
-    TaxableTurnoverJourney
+    TaxableTurnoverJourney,
+    SubmitDeadline
   )
 
   def apply(str: String): FeatureSwitch =
@@ -95,9 +96,15 @@ object FeatureSwitch {
     val name = "feature-switch.vRSNewAttachmentJourney"
     val displayText: String = "VRS New Attachment Journey"
   }
+
   case object TaxableTurnoverJourney extends FeatureSwitch {
     val name = "feature-switch.taxableTurnoverJourney"
     val displayText: String = "Taxable Turnover Journey"
+  }
+
+  case object SubmitDeadline extends FeatureSwitch {
+    val name: String = "feature-switch.submit-deadline"
+    val displayText: String = "Taxable Turnover May-June Journey"
   }
 
 }
