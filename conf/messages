@@ -627,7 +627,6 @@ validation.standardRateSupplies.penceNotAllowed                = Amount must not
 validation.standardRateSupplies.range.above                    = Give an estimate that is less than or equal to £{0}
 validation.standardRateSupplies.range.below                    = Give an estimate that is more than or equal to £{0}
 
-
 # Zero Rated TT Journey Page
 pages.zeroRatedSupplies.newJourney.heading                  = What do you think the business’s zero rate (0%) VAT Taxable Turnover will be for the next 12 months?
 pages.zeroRatedSupplies.newJourney.text                     = Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time.

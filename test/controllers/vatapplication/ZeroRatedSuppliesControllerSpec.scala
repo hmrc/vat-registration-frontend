@@ -96,7 +96,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
   }
   "show with the New Journey feature flag enabled " should {
-    "return OK if the user answered ZeroRatedSupply and TurnOverEstimate question with the new journey view if the feature flag is enabled" in new Setup {
+    "return OK if the user answered ZeroRatedSupply and TurnOverEstimate question with the new journey view" in new Setup {
       enable(TaxableTurnoverJourney)
       when(movkVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = Some(zeroRatedSupplies), turnoverEstimate = Some(estimates))))
@@ -110,7 +110,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
       }
     }
 
-    "return OK if the user answered TurnOverEstimate question with the new journey view if the feature flag is enabled" in new Setup {
+    "return OK if the user answered TurnOverEstimate question with the new journey view" in new Setup {
       enable(TaxableTurnoverJourney)
       when(movkVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = None, turnoverEstimate = Some(estimates))))
@@ -121,18 +121,6 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
           routes.ZeroRatedSuppliesController.submit,
           ZeroRatedSuppliesForm.form(estimates)
         )(fakeRequest, messages, appConfig).toString()
-      }
-    }
-
-    "return Missing Exception if the user has not answered" in new Setup {
-      enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
-        .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = None, turnoverEstimate = None)))
-      when(mockSessionService.cache(any(), any())(any(), any()))
-        .thenReturn(Future.successful(CacheMap("test", Map())))
-
-      callAuthorised(testController.show) { result =>
-        status(result) mustBe SEE_OTHER
       }
     }
   }
@@ -175,10 +163,19 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
   }
 
   "submit with the New Journey feature flag enabled" should {
+    val vatApplication: VatApplication = emptyReturns.copy(
+      standardRateSupplies = Some(BigDecimal(1000)),
+      reducedRateSupplies = Some(BigDecimal(2000))
+    )
+
     "redirect to the next page if everything is OK" in new Setup {
       enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getTurnover(any(), any(), any()))
-        .thenReturn(Future.successful(Some(BigDecimal(1000))))
+
+      when(mockSessionService.cache(any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("test", Map())))
+
+      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+        .thenReturn(Future.successful(vatApplication))
 
       when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
@@ -195,8 +192,12 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
     "return 400 for an invalid value" in new Setup {
       enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getTurnover(any(), any(), any()))
-        .thenReturn(Future.successful(Some(BigDecimal(1000))))
+
+      when(mockSessionService.cache(any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("test", Map())))
+
+      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+        .thenReturn(Future.successful(vatApplication))
 
       when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
@@ -210,5 +211,31 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
       }
     }
 
+    Seq(
+      ("standard rated supplies not answered", vatApplication.copy(standardRateSupplies = None)),
+      ("reduced rated supplies not answered", vatApplication.copy(reducedRateSupplies = None)),
+      ("standard and reduced supplies supply not answered", emptyReturns),
+    ).foreach { case (reason, savedVatApplication) =>
+      s"return Missing Exception if $reason" in new Setup {
+        enable(TaxableTurnoverJourney)
+
+        when(mockSessionService.cache(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CacheMap("test", Map())))
+
+        when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+          .thenReturn(Future.successful(savedVatApplication))
+
+        when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+          .thenReturn(Future.successful(emptyReturns))
+
+        val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
+          "zeroRatedSupplies" -> "1000"
+        )
+
+        submitAuthorised(testController.submit, request) { result =>
+          status(result) mustBe SEE_OTHER
+        }
+      }
+    }
   }
 }
