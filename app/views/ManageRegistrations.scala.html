@@ -17,6 +17,8 @@
 @import config.FrontendAppConfig
 @import models.api.VatSchemeHeader
 @import viewmodels.ManageRegistrationsBuilder
+@import featuretoggle.FeatureSwitch._
+@import featuretoggle.FeatureToggleSupport._
 
 @this(
     layout: layouts.layout,
@@ -44,5 +46,9 @@
 
 }
 @panelContent = {
+ @if(!isEnabled(SubmitDeadline)){
    @p { @messages("manageRegistrations.panel") }
+ } else {
+   @p { @messages("manageRegistrations.ttDeadline.panel") }
+ }
 }
