@@ -22,13 +22,12 @@ import play.api.data.{Form, FormError}
 
 class ZeroRatedSuppliesNewJourneyFormSpec extends PlaySpec with GuiceOneAppPerSuite {
 
-  val turnoverEstimate = 15000
-  val zeroRatedSuppliesForm: Form[BigDecimal] = ZeroRatedSuppliesNewJourneyForm.form(turnoverEstimate)
+  val zeroRatedSuppliesForm: Form[BigDecimal] = ZeroRatedSuppliesNewJourneyForm.form()
   val testValidZeroRatedSupplies: String = "14999"
   val validZeroRatedSupplies: BigDecimal = 14999
   val testNonNumberZeroRatedSupplies: String = "test"
   val testZeroRatedSuppliesWithDecimals: String = "14999.999"
-  val testInvalidZeroRatedSupplies: String = "16000"
+  val testInvalidZeroRatedSupplies: String = "9999999999999999"
   val testNegativeZeroRatedSupplies: String = "-1"
 
   val invalid_zero_rated_supplies_error_key: String = "validation.zeroRatedSupplies.newJourney.invalid"
@@ -66,10 +65,10 @@ class ZeroRatedSuppliesNewJourneyFormSpec extends PlaySpec with GuiceOneAppPerSu
       form.errors.head.message mustBe decimalsNotAllowed_zero_rated_supplies_error_key
     }
 
-    "validate that when zeroRatedSupplies > turnoverEstimates the form fails" in {
+    "validate that when zeroRatedSupplies > 999 trillions the form fails" in {
       val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey -> testInvalidZeroRatedSupplies))
 
-      form.errors must contain(FormError(ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey, too_big_zero_rated_supplies_error_key, List(turnoverEstimate)))
+      form.errors must contain(FormError(ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey, too_big_zero_rated_supplies_error_key, List(BigDecimal("999999999999999"))))
     }
 
     "validate that when zeroRatedSupplies is negative the form fails" in {
