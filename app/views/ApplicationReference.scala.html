@@ -23,19 +23,33 @@
         p: components.p,
         formWithCSRF: FormWithCSRF,
         inputText: components.inputText,
-        button: components.button
+        button: components.button,
+        govukNotificationBanner: GovukNotificationBanner
 )
 
 @(applicationReferenceForm: Form[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
+@bannerContent = {
+    <h3 class="govuk-notification-banner__heading">@messages("ttBanner.heading")</h3>
+    <p class="govuk-body" id="announcement-information">@messages("ttBanner.message.1")</p>
+}
+
 @layout(pageTitle = Some(title(applicationReferenceForm, messages("applicationReference.heading")))) {
+
+    @if(appConfig.isTTMayJunJourneyEnabled){
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("ttBanner.title")),
+            content = HtmlContent(bannerContent),
+            classes = "govuk-!-margin-top-6",
+            titleId = Some("tt-notification-banner")
+        ))
+    }
 
     @errorSummary(applicationReferenceForm.errors)
 
     @h1(messages("applicationReference.heading"))
 
     @p { @messages("applicationReference.para") }
-
     @formWithCSRF(action = controllers.routes.ApplicationReferenceController.submit) {
         @inputText(
             form = applicationReferenceForm,

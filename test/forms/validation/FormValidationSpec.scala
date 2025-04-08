@@ -193,7 +193,7 @@ class FormValidationSpec extends AnyWordSpec with Inside with Inspectors with Ma
 
   "patternCheckingConstraint" must {
 
-    val constraintMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, mandatory = true)("errorCode")
+    val constraintMandatory = FormValidation.regexPattern("""[a-z]{3}""".r)("errorCode")
     val constraintNonMandatory = FormValidation.regexPattern("""[a-z]{3}""".r, mandatory = false)("errorCode")
 
     "accept a string matching regex pattern as Valid" in {

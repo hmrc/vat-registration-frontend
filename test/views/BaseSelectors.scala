@@ -22,6 +22,7 @@ trait BaseSelectors {
   val panelBody = "main div.govuk-panel.govuk-panel--confirmation div.govuk-panel__body"
   val h1: String = "h1"
   val h2 = "main h2"
+  val h3 = "main h3"
   val h2ConfirmationPage = "#main-content > div > div > h2"
   val p: String = "main p"
   val legends: String = "main div div div fieldset legend"

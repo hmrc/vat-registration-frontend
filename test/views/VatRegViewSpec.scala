@@ -22,7 +22,7 @@ import org.jsoup.select.Elements
 import org.scalatest.Assertion
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{I18nSupport, Lang, Messages, MessagesApi, MessagesImpl}
+import play.api.i18n._
 import play.api.mvc.{AnyContentAsEmpty, Call}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
@@ -49,6 +49,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
   val formWithCSRF: FormWithCSRF = app.injector.instanceOf[FormWithCSRF]
 
   class ViewSetup(implicit val doc: Document) {
+
     case class Link(text: String, href: String)
     case class Details(summary: String, body: String)
     case class DateField(legend: String, hint: Option[String] = None)
@@ -68,6 +69,8 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
       def heading: Option[String] = doc.select(h1).headOption.map(_.text)
 
       def headingLevel2(n: Int): Option[String] = doc.select(h2).toList.map(_.text).lift(n-1)
+
+      def headingLevel3: Option[String] = doc.select(h3).headOption.map(_.text)
 
       def hasBackLink: Boolean = doc.select(".govuk-back-link").headOption.isDefined
 

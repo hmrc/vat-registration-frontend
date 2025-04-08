@@ -315,4 +315,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val calculateTurnoverUrl = "https://www.gov.uk/register-for-vat#calculate-your-turnover"
   lazy val maxPartnerCount: Int = servicesConfig.getInt("indexedSection.max.partner")
   lazy val maxObiLimit: Int = servicesConfig.getInt("obiMaxLimit")
+
+  def isTTMayJunJourneyEnabled: Boolean = isEnabled(SubmitDeadline)
 }
