@@ -52,8 +52,12 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupp
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
-    "have an explanation of what the reference is for" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedMessages.para1)
+    "have a check on the paragraph text" should {
+      appConfig.setValue(SubmitDeadline,"false")
+      implicit val doc = Jsoup.parse(view(form()).body)
+      "have an explanation of what the reference is for" in new ViewSetup {
+        doc.para(1) mustBe Some(ExpectedMessages.para1)
+      }
     }
     "have an input with the correct label" in new ViewSetup {
       doc.textBox("value") mustBe Some(ExpectedMessages.label)
