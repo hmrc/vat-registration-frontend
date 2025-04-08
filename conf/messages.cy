@@ -727,6 +727,8 @@ pages.application.progress.saved.para1                              = Ni fyddwch
 pages.application.progress.saved.para2                              = Gallwch adael y dudalen hon, neu
 pages.application.progress.saved.link                               = fynd yn ôl i’ch cais
 pages.application.progress.saved.inset                              = Dim ond am 7 diwrnod y bydd ceisiadau wedi’u cadw ar gael
+pages.application.progress.ttDeadline.saved.heading                 = Bydd y cais hwn yn cael ei arbed hyd at 19 Mai 2025
+pages.application.progress.ttDeadline.saved.para1                   = Os na fyddwch yn cwblhau a chyflwyno’r cais hwn erbyn y dyddiad hwn, bydd yn rhaid i chi ddechrau’r cais eto.
 
 # Summary page Applicant details
 cya.applicantDetails.leadPartner.partnerType                        = Math o bartner
@@ -1633,6 +1635,7 @@ manageRegistrations.attachmentsRequired                  = Angen atodiadau
 manageRegistrations.submitted                            = Cyflwynwyd
 manageRegistrations.panel                                = Bydd cofrestriadau sydd ar y gweill dim ond ar gael i’w cwblhau 7 diwrnod o’r diwrnod y gwnaethoch gadw’r cais ddiwethaf.
 manageRegistrations.startNew                             = Creu cais newydd
+manageRegistrations.ttDeadline.panel                     = Mae’n rhaid cwblhau a chyflwyno cofrestriadau ar y gweill erbyn 19 Mai 2025. Fel arall, bydd yn rhaid i chi ddechrau pob cofrestriad eto.
 
 # TRANSACTOR IDENTITY EVIDENCE REQUIRED
 attachments.transactorIdentityEvidenceRequired.title.1                      = Mae’n rhaid i chi anfon tair dogfen hunaniaeth atom ar gyfer {0} er mwyn i ni brosesu’r cais TAW hwn

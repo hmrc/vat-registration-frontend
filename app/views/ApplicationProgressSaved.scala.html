@@ -18,6 +18,8 @@
 @import views.html.components._
 @import views.html.layouts.layout
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import featuretoggle.FeatureSwitch._
+@import featuretoggle.FeatureToggleSupport._
 
 @this(
         layout: layout,
@@ -30,7 +32,9 @@
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm(messages("pages.application.progress.saved.heading")))) {
+@if(!isEnabled(SubmitDeadline)){
+
+  @layout(pageTitle = Some(titleNoForm(messages("pages.application.progress.saved.heading")))) {
 
     @govukPanel(Panel(
         title = Text(messages("pages.application.progress.saved.heading"))
@@ -47,4 +51,21 @@
         content = Text(messages("pages.application.progress.saved.inset"))
     ))
 
+  }
+} else {
+  @layout(pageTitle = Some(titleNoForm(messages("pages.application.progress.ttDeadline.saved.heading")))) {
+
+    @govukPanel(Panel(
+    title = Text(messages("pages.application.progress.ttDeadline.saved.heading"))
+    ))
+
+    @p(content = Html(messages("pages.application.progress.ttDeadline.saved.para1")))
+
+    @p{
+    @messages("pages.application.progress.saved.para2")
+    @link("#", messages("pages.application.progress.saved.link"), Some("back-link"), isExternal = false)
+    }
+
+  }
 }
+
