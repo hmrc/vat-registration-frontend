@@ -729,7 +729,7 @@ pages.application.progress.saved.para1                              = You will n
 pages.application.progress.saved.para2                              = You can leave this page, or
 pages.application.progress.saved.link                               = return to your application
 pages.application.progress.saved.inset                              = Saved applications will only be available for 7 days
-pages.application.progress.ttDeadline.saved.heading                 = This application will be saved until 19th May 2025
+pages.application.progress.ttDeadline.saved.heading                 = This application will be saved until 19 May 2025
 pages.application.progress.ttDeadline.saved.para1                   = If you do not return to complete and submit this application by this date, you''ll have to start the application again.
 
 # Summary page Applicant details
@@ -1681,7 +1681,7 @@ manageRegistrations.attachmentsRequired                  = Attachments required
 manageRegistrations.submitted                            = Submitted
 manageRegistrations.panel                                = In progress registrations will only be available for completion 7 days from the day you last saved the application.
 manageRegistrations.startNew                             = Create a new application
-manageRegistrations.ttDeadline.panel                     = In progress registrations must be completed and submitted by 19th May 2025. Otherwise, you''ll have to start all registrations again.
+manageRegistrations.ttDeadline.panel                     = In progress registrations must be completed and submitted by 19 May 2025. Otherwise, you''ll have to start all registrations again.
 
 # TRANSACTOR IDENTITY EVIDENCE REQUIRED
 attachments.transactorIdentityEvidenceRequired.title.1                      = You must send us three identity documents for {0} in order for us to process this VAT application

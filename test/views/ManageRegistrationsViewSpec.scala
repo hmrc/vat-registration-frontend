@@ -43,7 +43,7 @@ class ManageRegistrationsViewSpec extends VatRegViewSpec with VatRegistrationFix
   object ExpectedMessages {
     val heading = "Manage your VAT registration applications"
     val panelIndent = "In progress registrations will only be available for completion 7 days from the day you last saved the application."
-    val ttDeadlineIndent = "In progress registrations must be completed and submitted by 19th May 2025. Otherwise, you'll have to start all registrations again."
+    val ttDeadlineIndent = "In progress registrations must be completed and submitted by 19 May 2025. Otherwise, you'll have to start all registrations again."
     val referenceHeading = "Reference"
     val dateHeading = "Date created"
     val statusHeading = "Status"

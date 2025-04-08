@@ -25,7 +25,7 @@ import views.html.ApplicationProgressSaved
 class ApplicationProgressSavedViewSpec extends VatRegViewSpec {
 
   val heading = "Your application has been saved for 7 days"
-  val ttDeadlineHeading = "This application will be saved until 19th May 2025"
+  val ttDeadlineHeading = "This application will be saved until 19 May 2025"
   val title = s"$heading - Register for VAT - GOV.UK"
   val paragraph = "You will not be able to submit the application until you have completed the application."
   val ttDeadlineParagraph = "If you do not return to complete and submit this application by this date, you'll have to start the application again."
