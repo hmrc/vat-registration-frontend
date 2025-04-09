@@ -16,14 +16,21 @@
 
 package views
 
+import config.FrontendAppConfig
+import featuretoggle.FeatureSwitch.SubmitDeadline
+import featuretoggle.FeatureToggleSupport
 import forms.ApplicationReferenceForm
 import org.jsoup.Jsoup
+import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import views.html.ApplicationReference
 
-class ApplicationReferenceViewSpec extends VatRegViewSpec {
+class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupport {
 
   val form = app.injector.instanceOf[ApplicationReferenceForm]
   val view = app.injector.instanceOf[ApplicationReference]
+
+  val featureToggle = new FrontendAppConfig (app.injector.instanceOf[ServicesConfig], app.injector.instanceOf[Configuration])
 
   implicit val doc = Jsoup.parse(view(form()).body)
 
@@ -34,6 +41,8 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec {
     val label = "Application reference"
     val hint = "For example, Blue Steelworks"
     val button = "Continue"
+
+    val bannerHeading = "You must complete and submit this VAT registration application by 19 May 2025."
   }
 
   "the Application Reference page" must {
@@ -43,8 +52,12 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec {
     "have the correct heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
-    "have an explanation of what the reference is for" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedMessages.para1)
+    "have a check on the paragraph text" should {
+      appConfig.setValue(SubmitDeadline,"false")
+      implicit val doc = Jsoup.parse(view(form()).body)
+      "have an explanation of what the reference is for" in new ViewSetup {
+        doc.para(1) mustBe Some(ExpectedMessages.para1)
+      }
     }
     "have an input with the correct label" in new ViewSetup {
       doc.textBox("value") mustBe Some(ExpectedMessages.label)
@@ -54,6 +67,15 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec {
     }
     "have a button with the correct label" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedMessages.button)
+    }
+
+    "have a banner message appears when TTMayJunJourney is Enabled" should {
+      appConfig.setValue(SubmitDeadline,"true")
+      implicit val doc = Jsoup.parse(view(form()).body)
+
+      "have the correct heading" in new ViewSetup {
+        doc.headingLevel3 mustBe Some(ExpectedMessages.bannerHeading)
+      }
     }
   }
 

@@ -1665,6 +1665,11 @@ applicationReference.error.missing                       = Enter an application 
 applicationReference.error.invalid                       = Enter an application reference that does not contain special characters
 applicationReference.error.length                        = Enter an application reference that is 100 characters or less
 
+# TT Banner
+ttBanner.title                                           = Important
+ttBanner.heading                                         = You must complete and submit this VAT registration application by 19 May 2025.
+ttBanner.message.1                                       = Otherwise, you’ll have to start the application again.
+
 # SUBMISSION IN PROGRESS
 pages.submissionInProgress.heading                       = Your application is being processed
 pages.submissionInProgress.para1                         = It may take a moment before you get the confirmation of the application being submitted.

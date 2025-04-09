@@ -21,12 +21,28 @@
     layout: layouts.layout,
     h1: components.h1,
     p: components.p,
-    taskList: components.TaskListComponent
+    taskList: components.TaskListComponent,
+    govukNotificationBanner: GovukNotificationBanner
 )
 
 @(sections: TaskListSection*)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
+@bannerContent = {
+    <h3 class="govuk-notification-banner__heading">@messages("ttBanner.heading")</h3>
+    <p class="govuk-body" id="announcement-information">@messages("ttBanner.message.1")</p>
+}
+
 @layout(pageTitle = Some(titleNoForm(messages("tasklist.heading"))), backLink = false) {
+
+    @if(appConfig.isTTMayJunJourneyEnabled){
+        @govukNotificationBanner(NotificationBanner(
+            title = Text(messages("ttBanner.title")),
+            content = HtmlContent(bannerContent),
+            classes = "govuk-!-margin-top-6",
+            titleId = Some("tt-notification-banner")
+        ))
+    }
+
     @h1(messages("tasklist.heading"))
 
     @taskList(sections: _*)

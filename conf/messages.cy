@@ -1619,6 +1619,11 @@ applicationReference.error.missing                       = Nodwch gyfeirnod cais
 applicationReference.error.invalid                       = Nodwch gyfeirnod cais heb gynnwys cymeriadau arbennig
 applicationReference.error.length                        = Nodwch gyfeirnod cais sy’n 100 o gymeriadau neu lai
 
+# TT Banner
+ttBanner.title                                           = Pwysig
+ttBanner.heading                                         = Mae’n rhaid i chi gwblhau a chyflwyno’r cais cofrestru TAW hwn erbyn 19 Mai 2025.
+ttBanner.message.1                                       = Fel arall, bydd yn rhaid i chi ddechrau’r cais eto.
+
 # SUBMISSION IN PROGRESS
 pages.submissionInProgress.heading                       = Mae’ch cais wrthi’n cael ei brosesu
 pages.submissionInProgress.para1                         = Gall gymryd munud cyn i chi gael cadarnhad bod y cais wedi’i gyflwyno.
