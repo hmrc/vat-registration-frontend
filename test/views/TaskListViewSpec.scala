@@ -16,10 +16,13 @@
 
 package views
 
+import featuretoggle.FeatureSwitch.SubmitDeadline
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import viewmodels.tasklist.TaskListSections.sections
 import viewmodels.tasklist.{TLCompleted, TaskListSection, TaskListSectionRow}
 import views.html.TaskList
+import views.html.helper.form
 
 import scala.collection.JavaConverters._
 
@@ -39,6 +42,9 @@ class TaskListViewSpec extends VatRegViewSpec {
 
   object ExpectedMessages {
     val h1 = "Register for VAT"
+
+    val bannerHeading = "You must complete and submit this VAT registration application by 19 May 2025."
+    val bannerText = "Otherwise, you’ll have to start the application again."
 
     val section1 = new {
       val heading = "section 1 heading"
@@ -89,6 +95,10 @@ class TaskListViewSpec extends VatRegViewSpec {
       sectionMustExist(1)(s"1. ${ExpectedMessages.section1.heading}", List(s"${ExpectedMessages.section1.row1} Completed", s"${ExpectedMessages.section1.row2} Completed"))
       sectionMustExist(2)(s"2. ${ExpectedMessages.section2.heading}", List(s"${ExpectedMessages.section2.row1} Completed", s"${ExpectedMessages.section2.row2} Completed"))
     }
+    "have a banner message when TTMayJunJourney is Enabled" in new ViewSetup {
+      appConfig.setValue(SubmitDeadline, "true")
+      doc.headingLevel3 mustBe Some(ExpectedMessages.bannerHeading)
+      doc.para(1) mustBe Some(ExpectedMessages.bannerText)
+    }
   }
-
 }

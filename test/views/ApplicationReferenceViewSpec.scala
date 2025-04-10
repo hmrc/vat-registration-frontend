@@ -43,6 +43,7 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupp
     val button = "Continue"
 
     val bannerHeading = "You must complete and submit this VAT registration application by 19 May 2025."
+    val bannerText = "Otherwise, you’ll have to start the application again."
   }
 
   "the Application Reference page" must {
@@ -75,6 +76,7 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupp
 
       "have the correct heading" in new ViewSetup {
         doc.headingLevel3 mustBe Some(ExpectedMessages.bannerHeading)
+        doc.para(1) mustBe Some(ExpectedMessages.bannerText)
       }
     }
   }
