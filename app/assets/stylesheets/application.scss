@@ -62,3 +62,8 @@ $hmrc-assets-path: "/register-for-vat/assets/lib/hmrc-frontend/hmrc/";
     transform: rotate(360deg);
   }
 }
+
+//extra styling classes for TOTAL-TurnOver Page
+.govuk-table__row--no-border {
+  border-bottom: none;
+}
