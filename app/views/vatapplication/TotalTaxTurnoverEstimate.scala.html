@@ -55,7 +55,8 @@
                         content = Text(messages("pages.totalTaxTurnoverEstimate.standardRate"))
                     ),
                     TableRow(
-                        content = Text(standardRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(sr => sr))
+                        content = Text(standardRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(sr => sr)),
+                        classes = "govuk-!-text-align-right"
                     )
                 ),
                 Seq(
@@ -63,7 +64,8 @@
                         content = Text(messages("pages.totalTaxTurnoverEstimate.reducedRate"))
                     ),
                     TableRow(
-                        content = Text(reducedRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(rr => rr))
+                        content = Text(reducedRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(rr => rr)),
+                        classes = "govuk-!-text-align-right"
                     )
                 ),
                 Seq(
@@ -71,16 +73,18 @@
                         content = Text(messages("pages.totalTaxTurnoverEstimate.zeroRate"))
                     ),
                     TableRow(
-                        content = Text(zeroRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(zr => zr))
+                        content = Text(zeroRate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(zr => zr)),
+                        classes = "govuk-!-text-align-right"
                     )
                 ),
                 Seq(
                     TableRow(
-                        content = Text(messages("pages.totalTaxTurnoverEstimate.totalRate"))
+                        content = Text(messages("pages.totalTaxTurnoverEstimate.totalRate")),
+                        classes = "govuk-table__row--no-border"
                     ),
                     TableRow(
                         content = Text(totalEstimate.fold(messages("pages.totalTaxTurnoverEstimate.poundSign"))(tt => tt)),
-                        classes = "govuk-!-font-weight-bold"
+                        classes = "govuk-!-font-weight-bold govuk-table__row--no-border govuk-!-text-align-right"
                     )
                 )
             ),
@@ -93,8 +97,8 @@
             form = totalTaxTurnoverForm,
             headingKey = messages("pages.totalTaxTurnoverEstimate.optionHeading"),
             isPageHeading = false,
+            inline = false,
             classes = "govuk-visually-hidden",
-            headingMessageArgs = Nil,
             noText = Some(messages("pages.totalTaxTurnoverEstimate.noText"))
         )
 

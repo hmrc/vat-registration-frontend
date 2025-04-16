@@ -42,11 +42,13 @@ class TotalTaxTurnoverEstimateController @Inject()(val sessionService: SessionSe
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        vatApplicationService.getVatApplication.map {
-          vatApp => {
-            Ok(view(formProvider().fill(vatApp.acceptTurnOverEstimate.fold(false)(fg=>fg)), getAmount(vatApp.standardRateSupplies),
-              getAmount(vatApp.reducedRateSupplies), getAmount(vatApp.zeroRatedSupplies), getAmount(vatApp.turnoverEstimate)))
-          }
+        vatApplicationService.getVatApplication.map { rec =>
+            rec.acceptTurnOverEstimate match {
+              case Some(flag) => Ok(view(formProvider().fill(flag), getAmount(rec.standardRateSupplies),
+                getAmount(rec.reducedRateSupplies), getAmount(rec.zeroRatedSupplies), getAmount(rec.turnoverEstimate)))
+              case _ => Ok(view(formProvider(), getAmount(rec.standardRateSupplies),
+                getAmount(rec.reducedRateSupplies), getAmount(rec.zeroRatedSupplies), getAmount(rec.turnoverEstimate)))
+            }
         }
   }
 
