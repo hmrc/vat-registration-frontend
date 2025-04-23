@@ -22,21 +22,18 @@ import play.api.libs.json._
 
 case class CurrentProfile(registrationId: String,
                           vatRegistrationStatus: VatRegStatus.Value,
-                          affinityGroup: Option[String] = None,
                           agentReferenceNumber: Option[String] = None)
 
 object CurrentProfile {
   val reads: Reads[CurrentProfile] = (
     (__ \ "registrationID").read[String] and
       (__ \ "vatRegistrationStatus").read[VatRegStatus.Value] and
-      (__ \ "affinityGroup").readNullable[String] and
       (__ \ "agentReferenceNumber").readNullable[String]
     ) (CurrentProfile.apply _)
 
   val writes: Writes[CurrentProfile] = (
     (__ \ "registrationID").write[String] and
       (__ \ "vatRegistrationStatus").write[VatRegStatus.Value] and
-      (__ \ "affinityGroup").writeNullable[String] and
       (__ \ "agentReferenceNumber").writeNullable[String]
     ) (unlift(CurrentProfile.unapply))
 
