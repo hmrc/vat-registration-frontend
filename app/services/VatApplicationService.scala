@@ -147,7 +147,7 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     }
   }
 
-  def raiseAuditEvent(vatApp: VatApplication)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]) = {
+  def raiseAuditEvent(vatApp: VatApplication)(implicit hc: HeaderCarrier, profile: CurrentProfile): Unit = {
     logger.info("Raising an explicit audit event!")
 
     val affinityGroup = if(profile.agentReferenceNumber.isDefined) "Agent" else "Organisation"
