@@ -147,16 +147,22 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     }
   }
 
-  def raiseAuditEvent(vatApp: VatApplication)(implicit hc: HeaderCarrier, profile: CurrentProfile): Unit = {
+  def raiseAuditEvent(vatApp: VatApplication)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]) = {
     logger.info("Raising an explicit audit event!")
+
+    val affinityGroup = if(profile.agentReferenceNumber.isDefined) "Agent" else "Organisation"
+
     val auditEventDetail = Json.obj(
-      "standardRateSupplies"    -> vatApp.standardRateSupplies,
-      "reducedRateSupplies"     -> vatApp.reducedRateSupplies,
-      "zeroRatedSupplies"       -> vatApp.zeroRatedSupplies,
-      "turnoverEstimate"        -> vatApp.turnoverEstimate,
-      "acceptTurnOverEstimate"  -> vatApp.acceptTurnOverEstimate
-    )
-    auditConnector.sendExplicitAudit("TotalTaxableTurnoverEvent", auditEventDetail)
+          "journeyId"               -> profile.registrationId,
+          "userType"                -> affinityGroup,
+          "agentReferenceNumber"    -> profile.agentReferenceNumber,
+          "standardRateSupplies"    -> vatApp.standardRateSupplies,
+          "reducedRateSupplies"     -> vatApp.reducedRateSupplies,
+          "zeroRatedSupplies"       -> vatApp.zeroRatedSupplies,
+          "turnoverNext12Months"    -> vatApp.turnoverEstimate,
+          "acceptTurnOverEstimate"  -> vatApp.acceptTurnOverEstimate
+        )
+    auditConnector.sendExplicitAudit("TotalTaxableTurnover", auditEventDetail)
   }
 
   private def updateNipBlock[T <: NipAnswer](data: T, nipBefore: NIPTurnover): NIPTurnover =

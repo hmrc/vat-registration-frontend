@@ -16,9 +16,9 @@
 
 package forms
 
-
 import play.api.data.Form
 import play.api.data.Forms.single
+
 
 class TotalTaxTurnoverEstimateForm extends RequiredBooleanForm {
   override val errorMsg: String = "validation.ttEstimate.error"
