@@ -186,7 +186,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
       submitAuthorised(testController.submit, request) { result =>
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.vatapplication.routes.SellOrMoveNipController.show.url)
+        redirectLocation(result) mustBe Some(controllers.vatapplication.routes.TotalTaxTurnoverEstimateController.show.url)
       }
     }
 

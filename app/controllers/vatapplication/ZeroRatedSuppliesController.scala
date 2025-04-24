@@ -81,7 +81,12 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
                     _ <- vatApplicationService.saveVatApplication(ZeroRated(success))
                     _ <- vatApplicationService.saveVatApplication(Turnover(standardRated + reducedRated + success))
                   } yield {
-                    Redirect(routes.SellOrMoveNipController.show)
+                    val isTTJourneyEnabled = isEnabled(TaxableTurnoverJourney)
+                    if(isTTJourneyEnabled) {
+                      Redirect(routes.TotalTaxTurnoverEstimateController.show)
+                    } else {
+                      Redirect(routes.SellOrMoveNipController.show)
+                    }
                   }
                 )
               case _ => throw MissingAnswerException(missingDataSection)
