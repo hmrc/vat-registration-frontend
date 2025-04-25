@@ -885,10 +885,10 @@ cya.registrationDetails.warehouseName                           = Enw busnes y W
 cya.registrationDetails.sellOrMoveNip                           = Gwerthu neu symud nwyddau o Ogledd Iwerddon yn y 12 mis nesaf
 cya.registrationDetails.receiveGoodsNip                         = Derbyn nwyddau yng Ngogledd Iwerddon o’r UE
 cya.registrationDetails.valueOfGoods                            = Gwerth y nwyddau:
-cya.registrationDetails.standardRate20                          = Standard rate (20%) VAT taxable turnover for next 12 months
-cya.registrationDetails.reducedRate5                            = Reduced rate (5%) VAT taxable turnover for next 12 months
-cya.registrationDetails.zeroRateTT                              = Zero rate (0%) VAT taxable turnover for next 12 months
-cya.registrationDetails.totalTaxTurnover                        = Total estimated VAT taxable turnover for next 12 months
+cya.registrationDetails.standardRate20                          = Trosiant trethadwy TAW ar gyfer y 12 mis nesaf ar y gyfradd safonol (20%)
+cya.registrationDetails.reducedRate5                            = Trosiant trethadwy TAW ar gyfer y 12 mis nesaf ar y gyfradd is (5%)
+cya.registrationDetails.zeroRateTT                              = Trosiant trethadwy TAW gyfer y 12 mis nesaf ar y gyfradd sero (0%)
+cya.registrationDetails.totalTaxTurnover                        = Cyfanswm amcangyfrifedig y trosiant trethadwy TAW ar gyfer y 12 mis nesaf
 
 # Summary Headings
 cya.heading.eligibility                              = Rheswm dros gofrestru

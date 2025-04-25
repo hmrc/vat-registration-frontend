@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ReducedRateSuppliesForm
 import play.api.mvc._
-import services.VatApplicationService.ReducedRate
+import services.VatApplicationService.{ReducedRate, StandardRate, Turnover}
 import services.{SessionProfile, SessionService, VatApplicationService}
 import views.html.vatapplication.ReducedRateSupplies
 
@@ -51,14 +51,26 @@ class ReducedRateSuppliesController @Inject()(
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ReducedRateSuppliesForm.form.bindFromRequest.fold(
-          errors => Future.successful(
-            BadRequest(reducedRatedSuppliesView(errors))
-          ),
-          success => vatApplicationService.saveVatApplication(ReducedRate(success)) map { _ =>
-            Redirect(routes.ZeroRatedSuppliesController.show)
+        vatApplicationService.getVatApplication.flatMap { vatApplication => {
+          (vatApplication.zeroRatedSupplies, vatApplication.reducedRateSupplies) match {
+            case (Some(zeroRated), Some(standardRate)) => ReducedRateSuppliesForm.form.bindFromRequest.fold(
+                errors => Future.successful(BadRequest(reducedRatedSuppliesView(errors))),
+                success => for {
+                  _ <- vatApplicationService.saveVatApplication(ReducedRate(success))
+                  _ <- vatApplicationService.saveVatApplication(Turnover(zeroRated + standardRate + success))
+                } yield {
+                  Redirect(routes.ZeroRatedSuppliesController.show)
+                }
+              )
+            case _ => ReducedRateSuppliesForm.form.bindFromRequest.fold(
+              errors => Future.successful(BadRequest(reducedRatedSuppliesView(errors))),
+              success => vatApplicationService.saveVatApplication(ReducedRate(success)) map { _ =>
+                Redirect(routes.ZeroRatedSuppliesController.show)
+              }
+            )
           }
-        )
+        }}
+
   }
 
 }
