@@ -18,6 +18,8 @@ package viewmodels
 
 import config.FrontendAppConfig
 import controllers.vatapplication.{routes => vatApplicationRoutes}
+import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
+import helpers.FormInspectors.convertToAnyShouldWrapper
 import models.api.vatapplication.{Annual, Monthly, OverseasCompliance, StoringWithinUk}
 import models.api.{NETP, UkCompany}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
@@ -30,6 +32,7 @@ import services.FlatRateService
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import play.api.mvc.Request
@@ -41,6 +44,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
   val testTurnoverEstimate = "£100.00"
   val testZeroTurnoverEstimate = "£0.00"
+  val testStandardRate = "£2,500.00"
+  val testReducedRate = "£1,500.00"
+  val testZeroRatedTT = "£700.00"
+  val testTotalTaxover = "£5,700.00"
   val testZeroRated = "£10,000.50"
   val testNipAmount = "Value of goods: £1.00"
   val testWarehouseNumber = "testWarehouseName"
@@ -52,7 +59,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
-
+    appConfig.setValue(TaxableTurnoverJourney,"false")
     val Builder = new RegistrationDetailsSummaryBuilder(configConnector = mockConfigConnector, flatRateService = app.injector.instanceOf[FlatRateService], govukSummaryList)
   }
 
@@ -75,6 +82,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     val flatRateRegDate = "Date of registration"
     val currentlyTrading = "Trading by registration date"
     val importsOrExports = "Trade VAT-taxable goods outside UK"
+    val standardRate20 = "Standard rate (20%) VAT taxable turnover for next 12 months"
+    val reducedRate5 = "Reduced rate (5%) VAT taxable turnover for next 12 months"
+    val zeroRate = "Zero rate (0%) VAT taxable turnover for next 12 months"
+    val totalTaxTurnover = "Total estimated VAT taxable turnover for next 12 months"
     val applyForEori = "EORI number needed"
     val turnoverEstimate = "VAT-taxable turnover for next 12 months"
     val zeroRated = "Zero-rated taxable goods for next 12 months"
@@ -260,6 +271,117 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       ))))
     }
+
+    "show the standard rate, reduced rate and zero rate, total taxable if Taxable Turnover feature flag is enabled" in new Setup {
+
+      appConfig.setValue(TaxableTurnoverJourney,"true")
+
+      val testVatScheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+          partyType = UkCompany
+        )),
+        vatApplication = Some(validVatApplication.copy(
+          zeroRatedSupplies = Some(BigDecimal(700)),
+          standardRateSupplies = Some(BigDecimal(2500)),
+          reducedRateSupplies = Some(BigDecimal(1500)),
+          turnoverEstimate = Some(BigDecimal(5700)),
+          acceptTurnOverEstimate = Some(true),
+          claimVatRefunds = Some(true),
+          returnsFrequency = Some(Annual),
+          annualAccountingDetails = Some(validAasDetails),
+          startDate = Some(LocalDate.now()),
+          currentlyTrading = Some(true)
+        )),
+
+        bankAccount = Some(validUkBankAccount),
+        flatRateScheme = Some(validFlatRate.copy(
+          frsStart = Some(LocalDate.now())
+        ))
+      )
+
+      val expectedSummaryList: SummaryList = SummaryList(List(
+        optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+        optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
+        optSummaryListRowString(TestContent.standardRate20, Some(testStandardRate), Some(vatApplicationRoutes.StandardRateSuppliesController.show.url)),
+        optSummaryListRowString(TestContent.reducedRate5, Some(testReducedRate), Some(vatApplicationRoutes.ReducedRateSuppliesController.show.url)),
+        optSummaryListRowString(TestContent.zeroRate, Some(testZeroRatedTT), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
+        optSummaryListRowString(TestContent.totalTaxTurnover, Some(testTotalTaxover), Some(vatApplicationRoutes.TotalTaxTurnoverEstimateController.show.url)),
+        optSummaryListRowBoolean(TestContent.claimRefunds, Some(true), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.bankAccount, optAnswer = Some(true), optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
+        optSummaryListRowSeq(questionId = TestContent.bankAccountDetails, optAnswers = Some(Seq("testName", "12-34-56", "12345678")), optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
+        optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+        optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
+        optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("I would like to join the Annual Accounting Scheme"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)),
+        optSummaryListRowString(questionId = TestContent.paymentFrequency, optAnswer = Some("Quarterly"), optUrl = Some(controllers.vatapplication.routes.PaymentFrequencyController.show.url)),
+        optSummaryListRowString(questionId = TestContent.paymentMethod, optAnswer = Some("BACS or internet banking"), optUrl = Some(controllers.vatapplication.routes.PaymentMethodController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.joinFrs, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.costsInclusive, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.AnnualCostsInclusiveController.show.url)),
+        optSummaryListRowString(questionId = TestContent.estimatedTotalSales, optAnswer = Some("£5,003.00"), optUrl = Some(controllers.flatratescheme.routes.EstimateTotalSalesController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.costsLimited, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.AnnualCostsLimitedController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.flatRate, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.YourFlatRateController.show.url)),
+        optSummaryListRowString(questionId = TestContent.businessSector, optAnswer = Some("Pubs"), optUrl = Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)),
+        optSummaryListRowString(questionId = TestContent.flatRateDate, optAnswer = Some(TestContent.flatRateRegDate), optUrl = Some(controllers.flatratescheme.routes.StartDateController.show.url))
+      ).flatten)
+
+      when(mockConfigConnector.getBusinessType(any())(any())).thenReturn(FrsBusinessType(testBusinessCategory, "Pubs", "Pubs", BigDecimal("6.5")))
+
+      Builder.build(testVatScheme)  should === (HtmlFormat.fill(List(govukSummaryList(expectedSummaryList))))
+    }
+
+    "show no standard rate, reduced rate even if it has vat values and if Taxable Turnover feature flag is disable" in new Setup {
+
+      appConfig.setValue(TaxableTurnoverJourney,"false")
+
+      val testVatScheme = emptyVatScheme.copy(
+        eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
+          partyType = UkCompany
+        )),
+        vatApplication = Some(validVatApplication.copy(
+          zeroRatedSupplies = Some(BigDecimal(700)),
+          standardRateSupplies = Some(BigDecimal(2500)),
+          reducedRateSupplies = Some(BigDecimal(1500)),
+          turnoverEstimate = Some(BigDecimal(5700)),
+          acceptTurnOverEstimate = Some(true),
+          claimVatRefunds = Some(true),
+          returnsFrequency = Some(Annual),
+          annualAccountingDetails = Some(validAasDetails),
+          startDate = Some(LocalDate.now()),
+          currentlyTrading = Some(true)
+        )),
+
+        bankAccount = Some(validUkBankAccount),
+        flatRateScheme = Some(validFlatRate.copy(
+          frsStart = Some(LocalDate.now())
+        ))
+      )
+
+      val expectedSummaryList: SummaryList = SummaryList(List(
+        optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
+        optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
+        optSummaryListRowString(TestContent.turnoverEstimate, Some(testTotalTaxover), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
+        optSummaryListRowString(TestContent.zeroRated, Some(testZeroRatedTT), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
+        optSummaryListRowBoolean(TestContent.claimRefunds, Some(true), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.bankAccount, optAnswer = Some(true), optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
+        optSummaryListRowSeq(questionId = TestContent.bankAccountDetails, optAnswers = Some(Seq("testName", "12-34-56", "12345678")), optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
+        optSummaryListRowString(questionId = TestContent.startDate, optAnswer = Some(TestContent.formattedDate), optUrl = Some(controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url)),
+        optSummaryListRowBoolean(questionId = TestContent.currentlyTrading, optAnswer = Some(true), optUrl = Some(controllers.vatapplication.routes.CurrentlyTradingController.show.url)),
+        optSummaryListRowString(questionId = TestContent.accountingPeriod, optAnswer = Some("I would like to join the Annual Accounting Scheme"), optUrl = Some(controllers.vatapplication.routes.ReturnsFrequencyController.show.url)),
+        optSummaryListRowString(questionId = TestContent.paymentFrequency, optAnswer = Some("Quarterly"), optUrl = Some(controllers.vatapplication.routes.PaymentFrequencyController.show.url)),
+        optSummaryListRowString(questionId = TestContent.paymentMethod, optAnswer = Some("BACS or internet banking"), optUrl = Some(controllers.vatapplication.routes.PaymentMethodController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.joinFrs, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.costsInclusive, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.AnnualCostsInclusiveController.show.url)),
+        optSummaryListRowString(questionId = TestContent.estimatedTotalSales, optAnswer = Some("£5,003.00"), optUrl = Some(controllers.flatratescheme.routes.EstimateTotalSalesController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.costsLimited, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.AnnualCostsLimitedController.show.url)),
+        optSummaryListRowBoolean(questionId = TestContent.flatRate, optAnswer = Some(true), optUrl = Some(controllers.flatratescheme.routes.YourFlatRateController.show.url)),
+        optSummaryListRowString(questionId = TestContent.businessSector, optAnswer = Some("Pubs"), optUrl = Some(controllers.flatratescheme.routes.ChooseBusinessTypeController.show.url)),
+        optSummaryListRowString(questionId = TestContent.flatRateDate, optAnswer = Some(TestContent.flatRateRegDate), optUrl = Some(controllers.flatratescheme.routes.StartDateController.show.url))
+      ).flatten)
+
+      when(mockConfigConnector.getBusinessType(any())(any())).thenReturn(FrsBusinessType(testBusinessCategory, "Pubs", "Pubs", BigDecimal("6.5")))
+
+      Builder.build(testVatScheme)  should === (HtmlFormat.fill(List(govukSummaryList(expectedSummaryList))))
+    }
+
   }
 
   "the user is sending goods to the EU" when {

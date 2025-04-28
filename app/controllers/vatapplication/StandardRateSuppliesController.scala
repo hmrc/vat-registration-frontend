@@ -18,9 +18,10 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.StandardRateSuppliesForm
+import forms.{StandardRateSuppliesForm, ZeroRatedSuppliesNewJourneyForm}
+import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
-import services.VatApplicationService.StandardRate
+import services.VatApplicationService.{StandardRate, Turnover, ZeroRated}
 import services.{SessionProfile, SessionService, VatApplicationService}
 import views.html.vatapplication.StandardRateSupplies
 
@@ -37,6 +38,8 @@ class StandardRateSuppliesController @Inject()(val sessionService: SessionServic
                                              baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile {
 
+  val missingDataSection = "tasklist.vatRegistration.goodsAndServices"
+
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
@@ -49,15 +52,24 @@ class StandardRateSuppliesController @Inject()(val sessionService: SessionServic
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        StandardRateSuppliesForm.form.bindFromRequest.fold(
-          errors => Future.successful(
-              BadRequest(standardRatesSuppliesView(
-                routes.StandardRateSuppliesController.submit,
-                errors
-              ))),
-            success => vatApplicationService.saveVatApplication(StandardRate(success)) map { _ =>
-              Redirect(routes.ReducedRateSuppliesController.show)
-            }
-          )
+        vatApplicationService.getVatApplication.flatMap { vatApplication => {
+          (vatApplication.zeroRatedSupplies, vatApplication.reducedRateSupplies) match {
+            case (Some(zeroRated), Some(reducedRated)) => StandardRateSuppliesForm.form.bindFromRequest.fold(
+                errors => Future.successful(BadRequest(standardRatesSuppliesView(routes.StandardRateSuppliesController.submit,errors))),
+                success => for {
+                  _ <- vatApplicationService.saveVatApplication(StandardRate(success))
+                  _ <- vatApplicationService.saveVatApplication(Turnover(zeroRated + reducedRated + success))
+                } yield {
+                  Redirect(routes.ReducedRateSuppliesController.show)
+                }
+              )
+            case _ => StandardRateSuppliesForm.form.bindFromRequest.fold(
+              errors => Future.successful(BadRequest(standardRatesSuppliesView(routes.StandardRateSuppliesController.submit,errors))),
+              success => vatApplicationService.saveVatApplication(StandardRate(success)) map { _ =>
+                Redirect(routes.ReducedRateSuppliesController.show)
+              }
+            )
+          }
+        }}
   }
 }

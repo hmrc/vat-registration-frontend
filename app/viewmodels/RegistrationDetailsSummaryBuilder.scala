@@ -19,6 +19,7 @@ package viewmodels
 import config.FrontendAppConfig
 import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
+import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import models._
 import models.api.vatapplication._
 import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
@@ -30,6 +31,7 @@ import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 import utils.MessageDateFormat
+import featuretoggle.FeatureToggleSupport.isEnabled
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -53,13 +55,23 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val partyType = eligibilityData.partyType
     val fixedEstablishment = eligibilityData.fixedEstablishmentInManOrUk
 
+    val isTTJourneyEnabled = isEnabled(TaxableTurnoverJourney)
+
+    val taxableTurnoverList = if (isTTJourneyEnabled) {
+      List(standardRate20(vatApplication),
+        reducedRate5(vatApplication),
+        zeroRatedTT(vatScheme),
+        totalTaxTurnover(vatApplication)).flatten
+    } else {
+      List(turnoverEstimate(vatApplication),
+        zeroRatedTurnover(vatScheme)).flatten
+    }
+
     govukSummaryList(SummaryList(
       List(
         importsOrExports(vatApplication),
-        applyForEori(vatApplication),
-        turnoverEstimate(vatApplication),
-        zeroRatedTurnover(vatScheme)
-      ).flatten ++
+        applyForEori(vatApplication)
+      ).flatten ++ taxableTurnoverList ++
         nipSection(vatApplication) ++
         List(
           claimRefunds(vatApplication),
@@ -100,6 +112,34 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
       vatApplication.turnoverEstimate.map(Formatters.currency),
       Some(vatApplicationRoutes.TurnoverEstimateController.show.url)
     )
+
+  private def standardRate20(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowString(
+      s"$sectionId.standardRate20",
+      vatApplication.standardRateSupplies.map(Formatters.currency),
+      Some(vatApplicationRoutes.StandardRateSuppliesController.show.url)
+    )
+
+  private def reducedRate5(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowString(
+      s"$sectionId.reducedRate5",
+      vatApplication.reducedRateSupplies.map(Formatters.currency),
+      Some(vatApplicationRoutes.ReducedRateSuppliesController.show.url)
+    )
+
+  private def totalTaxTurnover(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
+    optSummaryListRowString(
+      s"$sectionId.totalTaxTurnover",
+      vatApplication.turnoverEstimate.map(Formatters.currency),
+      Some(vatApplicationRoutes.TotalTaxTurnoverEstimateController.show.url)
+    )
+
+  private def zeroRatedTT(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
+    if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).contains(BigDecimal(0))) None else optSummaryListRowString(
+    s"$sectionId.zeroRateTT",
+    vatScheme.vatApplication.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
+    Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)
+  )
 
   private def zeroRatedTurnover(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
     if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).contains(BigDecimal(0))) None else optSummaryListRowString(

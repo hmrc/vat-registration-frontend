@@ -886,6 +886,10 @@ cya.registrationDetails.warehouseName                           = Fulfilment War
 cya.registrationDetails.sellOrMoveNip                           = Sell or move Northern Irish goods in next 12 months
 cya.registrationDetails.receiveGoodsNip                         = Receive goods in Northern Ireland from EU
 cya.registrationDetails.valueOfGoods                            = Value of goods:
+cya.registrationDetails.standardRate20                          = Standard rate (20%) VAT taxable turnover for next 12 months
+cya.registrationDetails.reducedRate5                            = Reduced rate (5%) VAT taxable turnover for next 12 months
+cya.registrationDetails.zeroRateTT                              = Zero rate (0%) VAT taxable turnover for next 12 months
+cya.registrationDetails.totalTaxTurnover                        = Total estimated VAT taxable turnover for next 12 months
 
 # Summary Headings
 cya.heading.eligibility                              = Registration reason
