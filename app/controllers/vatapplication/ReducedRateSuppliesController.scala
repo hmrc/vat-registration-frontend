@@ -52,7 +52,7 @@ class ReducedRateSuppliesController @Inject()(
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication.flatMap { vatApplication => {
-          (vatApplication.zeroRatedSupplies, vatApplication.reducedRateSupplies) match {
+          (vatApplication.zeroRatedSupplies, vatApplication.standardRateSupplies) match {
             case (Some(zeroRated), Some(standardRate)) => ReducedRateSuppliesForm.form.bindFromRequest.fold(
                 errors => Future.successful(BadRequest(reducedRatedSuppliesView(errors))),
                 success => for {
