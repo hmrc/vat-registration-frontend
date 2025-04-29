@@ -75,7 +75,6 @@ class TotalTaxTurnoverEstimateControllerISpec extends ControllerISpec {
       ))
 
       whenReady(res) { result =>
-        //result.body mustBe "TEST"
         result.status mustBe SEE_OTHER
         result.header(HeaderNames.LOCATION) mustBe Some(routes.SellOrMoveNipController.show.url)
       }

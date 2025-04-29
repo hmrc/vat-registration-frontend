@@ -116,28 +116,28 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
   private def standardRate20(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.standardRate20",
-      vatApplication.standardRateSupplies.map(Formatters.currency),
+      vatApplication.standardRateSupplies.map(Formatters.currencyWithoutDecimal),
       Some(vatApplicationRoutes.StandardRateSuppliesController.show.url)
     )
 
   private def reducedRate5(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.reducedRate5",
-      vatApplication.reducedRateSupplies.map(Formatters.currency),
+      vatApplication.reducedRateSupplies.map(Formatters.currencyWithoutDecimal),
       Some(vatApplicationRoutes.ReducedRateSuppliesController.show.url)
     )
 
   private def totalTaxTurnover(vatApplication: VatApplication)(implicit messages: Messages): Option[SummaryListRow] =
     optSummaryListRowString(
       s"$sectionId.totalTaxTurnover",
-      vatApplication.turnoverEstimate.map(Formatters.currency),
+      vatApplication.turnoverEstimate.map(Formatters.currencyWithoutDecimal),
       Some(vatApplicationRoutes.TotalTaxTurnoverEstimateController.show.url)
     )
 
   private def zeroRatedTT(vatScheme: VatScheme)(implicit messages: Messages): Option[SummaryListRow] =
     if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).contains(BigDecimal(0))) None else optSummaryListRowString(
     s"$sectionId.zeroRateTT",
-    vatScheme.vatApplication.flatMap(_.zeroRatedSupplies.map(Formatters.currency)),
+    vatScheme.vatApplication.flatMap(_.zeroRatedSupplies.map(Formatters.currencyWithoutDecimal)),
     Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)
   )
 

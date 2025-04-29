@@ -74,7 +74,7 @@ class TotalTaxTurnoverEstimateController @Inject()(val sessionService: SessionSe
   }
 
   private def getAmount(amt: Option[BigDecimal]): Option[String] = {
-    amt.map(Formatters.currency)
+    amt.map(Formatters.currencyWithoutDecimal)
   }
 
 }
