@@ -44,10 +44,12 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
   val testTurnoverEstimate = "£100.00"
   val testZeroTurnoverEstimate = "£0.00"
-  val testStandardRate = "£2,500.00"
-  val testReducedRate = "£1,500.00"
-  val testZeroRatedTT = "£700.00"
-  val testTotalTaxover = "£5,700.00"
+  val testStandardRate = "£2,500"
+  val testReducedRate = "£1,500"
+  val testZeroRatedTT = "£700"
+  val testZeroRatedWithPence = "£700.00"
+  val testTotalTaxover = "£4,700"
+  val testTotalTaxoverWithPence = "£4,700.00"
   val testZeroRated = "£10,000.50"
   val testNipAmount = "Value of goods: £1.00"
   val testWarehouseNumber = "testWarehouseName"
@@ -281,10 +283,10 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           partyType = UkCompany
         )),
         vatApplication = Some(validVatApplication.copy(
-          zeroRatedSupplies = Some(BigDecimal(700)),
           standardRateSupplies = Some(BigDecimal(2500)),
           reducedRateSupplies = Some(BigDecimal(1500)),
-          turnoverEstimate = Some(BigDecimal(5700)),
+          zeroRatedSupplies = Some(BigDecimal(700)),
+          turnoverEstimate = Some(BigDecimal(4700)),
           acceptTurnOverEstimate = Some(true),
           claimVatRefunds = Some(true),
           returnsFrequency = Some(Annual),
@@ -328,7 +330,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
       Builder.build(testVatScheme)  should === (HtmlFormat.fill(List(govukSummaryList(expectedSummaryList))))
     }
 
-    "show no standard rate, reduced rate even if it has vat values and if Taxable Turnover feature flag is disable" in new Setup {
+   "show no standard rate, reduced rate even if it has vat values and if Taxable Turnover feature flag is disable" in new Setup {
 
       appConfig.setValue(TaxableTurnoverJourney,"false")
 
@@ -340,7 +342,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           zeroRatedSupplies = Some(BigDecimal(700)),
           standardRateSupplies = Some(BigDecimal(2500)),
           reducedRateSupplies = Some(BigDecimal(1500)),
-          turnoverEstimate = Some(BigDecimal(5700)),
+          turnoverEstimate = Some(BigDecimal(4700)),
           acceptTurnOverEstimate = Some(true),
           claimVatRefunds = Some(true),
           returnsFrequency = Some(Annual),
@@ -358,8 +360,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
       val expectedSummaryList: SummaryList = SummaryList(List(
         optSummaryListRowBoolean(TestContent.importsOrExports, Some(false), Some(vatApplicationRoutes.ImportsOrExportsController.show.url)),
         optSummaryListRowBoolean(TestContent.applyForEori, Some(false), Some(vatApplicationRoutes.ApplyForEoriController.show.url)),
-        optSummaryListRowString(TestContent.turnoverEstimate, Some(testTotalTaxover), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
-        optSummaryListRowString(TestContent.zeroRated, Some(testZeroRatedTT), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
+        optSummaryListRowString(TestContent.turnoverEstimate, Some(testTotalTaxoverWithPence), Some(vatApplicationRoutes.TurnoverEstimateController.show.url)),
+        optSummaryListRowString(TestContent.zeroRated, Some(testZeroRatedWithPence), Some(vatApplicationRoutes.ZeroRatedSuppliesController.show.url)),
         optSummaryListRowBoolean(TestContent.claimRefunds, Some(true), Some(vatApplicationRoutes.ClaimRefundsController.show.url)),
         optSummaryListRowBoolean(questionId = TestContent.bankAccount, optAnswer = Some(true), optUrl = Some(controllers.bankdetails.routes.HasBankAccountController.show.url)),
         optSummaryListRowSeq(questionId = TestContent.bankAccountDetails, optAnswers = Some(Seq("testName", "12-34-56", "12345678")), optUrl = Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)),
