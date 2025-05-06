@@ -102,26 +102,6 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
   s"POST ${routes.ApplyForEoriController.submit.url}" must {
 
-    "when TaxableTurnoverJourney is DISABLED" must {
-
-      "redirect to TurnoverEstimateController" in new Setup {
-        disable(TaxableTurnoverJourney)
-        given
-          .user.isAuthorised()
-          .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
-          .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
-
-        insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-        val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
-        }
-      }
-    }
-
     "when TaxableTurnoverJourney is ENABLED" must {
 
       "redirect to StandardRateSuppliesController" in new Setup {
@@ -138,6 +118,26 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
           result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.StandardRateSuppliesController.show.url)
+        }
+      }
+    }
+
+    "when TaxableTurnoverJourney is DISABLED" must {
+
+      "redirect to TurnoverEstimateController" in new Setup {
+        disable(TaxableTurnoverJourney)
+        given
+          .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
+          .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
         }
       }
     }

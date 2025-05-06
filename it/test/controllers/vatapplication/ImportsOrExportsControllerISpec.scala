@@ -91,23 +91,6 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       }
     }
 
-    "redirect to Turnover when no is selected with TT journey disabled" in new Setup {
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[VatApplication](None)
-        .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
-
-      disable(TaxableTurnoverJourney)
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: Future[WSResponse] = buildClient("/imports-or-exports").post(Map("value" -> "false"))
-
-      whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
-      }
-    }
-
     "redirect to TwentyRatedSupplies when no is selected with TT journey enabled" in new Setup {
       given
         .user.isAuthorised()
@@ -122,6 +105,23 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
         result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.StandardRateSuppliesController.show.url)
+      }
+    }
+
+    "redirect to Turnover when no is selected with TT journey disabled" in new Setup {
+      given
+        .user.isAuthorised()
+        .registrationApi.getSection[VatApplication](None)
+        .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
+
+      disable(TaxableTurnoverJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: Future[WSResponse] = buildClient("/imports-or-exports").post(Map("value" -> "false"))
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
       }
     }
 
