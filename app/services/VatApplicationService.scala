@@ -153,14 +153,13 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
     val affinityGroup = if(profile.agentReferenceNumber.isDefined) "Agent" else "Organisation"
 
     val auditEventDetail = Json.obj(
-          "journeyId"               -> profile.registrationId,
-          "userType"                -> affinityGroup,
-          "agentReferenceNumber"    -> profile.agentReferenceNumber,
-          "standardRateSupplies"    -> vatApp.standardRateSupplies,
-          "reducedRateSupplies"     -> vatApp.reducedRateSupplies,
-          "zeroRatedSupplies"       -> vatApp.zeroRatedSupplies,
-          "turnoverNext12Months"    -> vatApp.turnoverEstimate,
-          "acceptTurnOverEstimate"  -> vatApp.acceptTurnOverEstimate
+          "journeyId"                 -> profile.registrationId,
+          "userType"                  -> affinityGroup,
+          "standardRateSupplies"      -> vatApp.standardRateSupplies,
+          "reducedRateSupplies"       -> vatApp.reducedRateSupplies,
+          "zeroRatedSupplies"         -> vatApp.zeroRatedSupplies,
+          "turnoverNextTwelveMonths"  -> vatApp.turnoverEstimate,
+          "acceptTurnOverEstimate"    -> vatApp.acceptTurnOverEstimate
         )
     auditConnector.sendExplicitAudit("TotalTaxableTurnover", auditEventDetail)
   }
