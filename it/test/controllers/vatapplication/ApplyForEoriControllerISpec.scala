@@ -16,6 +16,7 @@
 
 package controllers.vatapplication
 
+import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import models.api.{EligibilitySubmissionData, NETP}
@@ -100,19 +101,44 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
   }
 
   s"POST ${routes.ApplyForEoriController.submit.url}" must {
-    "redirect to the next page" in new Setup {
-      given
-        .user.isAuthorised()
-        .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
-        .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
+    "when TaxableTurnoverJourney is ENABLED" must {
 
-      val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
+      "redirect to StandardRateSuppliesController" in new Setup {
+        enable(TaxableTurnoverJourney)
+        given
+          .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
+          .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.StandardRateSuppliesController.show.url)
+        }
+      }
+    }
+
+    "when TaxableTurnoverJourney is DISABLED" must {
+
+      "redirect to TurnoverEstimateController" in new Setup {
+        disable(TaxableTurnoverJourney)
+        given
+          .user.isAuthorised()
+          .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
+          .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: Future[WSResponse] = buildClient("/apply-for-eori").post(Map("value" -> "true"))
+
+        whenReady(res) { result =>
+          result.status mustBe SEE_OTHER
+          result.headers(HeaderNames.LOCATION) must contain(controllers.vatapplication.routes.TurnoverEstimateController.show.url)
+        }
       }
     }
 
@@ -130,5 +156,4 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       }
     }
   }
-
 }
