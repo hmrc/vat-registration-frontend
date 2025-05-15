@@ -18,7 +18,8 @@ package repositories
 
 import com.mongodb.client.model.Indexes.ascending
 import org.mongodb.scala.model
-import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.Filters.{equal, exists}
+import org.mongodb.scala.model.Updates.set
 import org.mongodb.scala.model.{IndexOptions, ReplaceOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
@@ -47,11 +48,18 @@ class SessionRepository @Inject()(config: Configuration,
         IndexOptions()
           .name("userAnswersExpiry")
           .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+      ),
+      model.IndexModel(
+        ascending("lastEditedTemp"),
+        IndexOptions()
+          .name("userAnswersExpiryTemp")
+          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
       )
     )
   ) {
 
   val fieldName = "lastUpdated"
+  val defaultTime: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
 
   def upsert(cm: CacheMap): Future[Boolean] = {
     collection.replaceOne(
@@ -59,6 +67,13 @@ class SessionRepository @Inject()(config: Configuration,
       DatedCacheMap(cm),
       ReplaceOptions().upsert(true)
     ).map(_.wasAcknowledged()).head()
+  }
+
+  def updateExistingUpdated(): Future[Long] = {
+    collection.updateMany(
+      exists("lastEditedTemp", false),
+      set("lastEditedTemp", defaultTime)
+    ).map(_.getModifiedCount).head()
   }
 
   def removeDocument(id: String): Future[Boolean] = {
@@ -72,7 +87,8 @@ class SessionRepository @Inject()(config: Configuration,
 
 case class DatedCacheMap(id: String,
                          data: Map[String, JsValue],
-                         lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)) {
+                         lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS),
+                         lastEditedTemp: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)) {
   def asCacheMap: CacheMap = CacheMap(id, data)
 }
 
