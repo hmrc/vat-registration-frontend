@@ -23,8 +23,8 @@ import views.html.vatapplication.ZeroRatedSuppliesNewJourney
 
 class ZeroRatedSuppliesViewNewJourneySpec extends VatRegViewSpec {
 
-  val title = "What do you think the business’s zero rate (0%) VAT Taxable Turnover will be for the next 12 months?"
-  val heading = "What do you think the business’s zero rate (0%) VAT Taxable Turnover will be for the next 12 months?"
+  val title = "What do you think the business’s zero rate (0%) VAT taxable turnover will be for the next 12 months?"
+  val heading = "What do you think the business’s zero rate (0%) VAT taxable turnover will be for the next 12 months?"
   val text = "Try to make your estimate as accurate as possible. It may be used to calculate how much VAT you owe if you do not submit your return on time."
   val summary = "What are zero-rated taxable goods and services?"
   val details = "Zero-rated goods and services are those which are still taxable as VAT but you do not charge your customers any VAT. You must still record these sales in your VAT software and report them to HMRC when you do your VAT Return."
