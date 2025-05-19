@@ -48,16 +48,16 @@ class SessionRepository @Inject()(config: Configuration,
         IndexOptions()
           .name("userAnswersExpiry")
           .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
-      ),
+      )
       // 'lastUpdated' is the old TTL index that was incorrectly formatted.
       // Has now been replaced by 'lastUpdatedTimestamp'.
       // 'lastUpdated' index and 'lastUpdatedTimestamp's default value will be removed in DL-15459 clean-up.
-      model.IndexModel(
-        ascending("lastUpdatedTimestamp"),
-        IndexOptions()
-          .name("userAnswersTimeToLive")
-          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
-      )
+//      model.IndexModel(
+//        ascending("lastUpdatedTimestamp"),
+//        IndexOptions()
+//          .name("userAnswersTimeToLive")
+//          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+//      )
     )
   ) {
 
@@ -90,8 +90,9 @@ class SessionRepository @Inject()(config: Configuration,
 
 case class DatedCacheMap(id: String,
                          data: Map[String, JsValue],
-                         lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS),
-                         lastUpdatedTimestamp: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)) {
+                         lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+//                         lastUpdatedTimestamp: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+                        ) {
   def asCacheMap: CacheMap = CacheMap(id, data)
 }
 
