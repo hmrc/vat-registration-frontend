@@ -19,10 +19,10 @@ import sbt._
 
 object AppDependencies {
 
-  private val hmrcMongoVersion = "1.8.0"
-  private val bootstrapVersion = "8.5.0"
+  private val hmrcMongoVersion = "2.6.0"
+  private val bootstrapVersion = "8.6.0"
   private val partialsVersion = "9.1.0"
-  private val cachingClientVersion = "11.1.0"
+  private val cachingClientVersion = "11.2.0"
   private val formMappingVersion = "2.0.0"
   private val catsVersion = "2.10.0"
   private val playJsonJodaVersion = "3.0.2"
