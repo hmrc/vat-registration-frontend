@@ -25,7 +25,7 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "vat-registration-frontend"
 
-val silencerVersion = "1.7.16"
+val silencerVersion = "1.7.19"
 ThisBuild / majorVersion := 1
 ThisBuild / scalaVersion := "2.13.16"
 
