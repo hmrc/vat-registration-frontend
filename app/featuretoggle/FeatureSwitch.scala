@@ -30,15 +30,13 @@ object FeatureSwitch {
     StubMinorEntityIdentification,
     VrsNewAttachmentJourney,
     TaxableTurnoverJourney,
-    SubmitDeadline,
-    DeleteSomeInvalidTimestampData,
-    DeleteAllInvalidTimestampData
+    SubmitDeadline
   )
 
   def apply(str: String): FeatureSwitch =
     featureSwitches find (_.name == str) match {
       case Some(switch) => switch
-      case None         => throw new IllegalArgumentException("Invalid feature switch: " + str)
+      case None => throw new IllegalArgumentException("Invalid feature switch: " + str)
     }
 
   def get(string: String): Option[FeatureSwitch] = featureSwitches find (_.name == string)
@@ -50,78 +48,63 @@ object FeatureSwitch {
   }
 
   case object StubIncorpIdJourney extends FeatureSwitch {
-    val name        = "feature-switch.stub-incorp-id"
+    val name = "feature-switch.stub-incorp-id"
     val displayText = "Stub incorporated entity identification flow"
   }
 
   case object StubEmailVerification extends FeatureSwitch {
-    val name        = "feature-switch.stub-email-verification"
+    val name = "feature-switch.stub-email-verification"
     val displayText = "Stub email verification flow"
   }
 
   case object StubIcl extends FeatureSwitch {
-    val name        = "feature-switch.stub-icl"
+    val name = "feature-switch.stub-icl"
     val displayText = "Stub ICL flow"
   }
 
   case object StubSoleTraderIdentification extends FeatureSwitch {
-    val name        = "feature-switch.stub-sole-trader-identification"
+    val name = "feature-switch.stub-sole-trader-identification"
     val displayText = "Stub sole trader identification journey"
   }
 
   case object StubUpscan extends FeatureSwitch {
-    val name        = "feature-switch.stub-upscan"
+    val name = "feature-switch.stub-upscan"
     val displayText = "Stub Upscan Calls (Digital attachments)"
   }
 
   case object StubAlf extends FeatureSwitch {
-    val name        = "feature-switch.stub-alf"
+    val name = "feature-switch.stub-alf"
     val displayText = "Stub Address Lookup Frontend"
   }
 
   case object StubBars extends FeatureSwitch {
-    val name        = "feature-switch.stub-bars"
+    val name = "feature-switch.stub-bars"
     val displayText = "Stub Bank Account Reputation"
   }
 
   case object StubPartnershipIdentification extends FeatureSwitch {
-    val name        = "feature-switch.partnership-identification"
+    val name = "feature-switch.partnership-identification"
     val displayText = "Stub Partnership Identification"
   }
 
   case object StubMinorEntityIdentification extends FeatureSwitch {
-    val name        = "feature-switch.minor-entity-identification"
+    val name = "feature-switch.minor-entity-identification"
     val displayText = "Stub Minor Entity Identification"
   }
 
   case object VrsNewAttachmentJourney extends FeatureSwitch {
-    val name                = "feature-switch.vRSNewAttachmentJourney"
+    val name = "feature-switch.vRSNewAttachmentJourney"
     val displayText: String = "VRS New Attachment Journey"
   }
 
   case object TaxableTurnoverJourney extends FeatureSwitch {
-    val name                = "feature-switch.taxableTurnoverJourney"
+    val name = "feature-switch.taxableTurnoverJourney"
     val displayText: String = "Taxable Turnover Journey"
   }
 
   case object SubmitDeadline extends FeatureSwitch {
-    val name: String        = "feature-switch.submit-deadline"
+    val name: String = "feature-switch.submit-deadline"
     val displayText: String = "Taxable Turnover May-June Journey"
-  }
-
-  case object DeleteAllInvalidTimestampData extends FeatureSwitch {
-    val name: String        = "feature-switch.delete-ALL-invalid-timestamp-data"
-    val displayText: String = "Enable to delete all database items with a String 'lastUpdated' timestamp on start up"
-  }
-
-  case object DeleteSomeInvalidTimestampData extends FeatureSwitch {
-    val name: String        = "feature-switch.delete-SOME-invalid-timestamp-data"
-    val displayText: String = "Enable to delete database items with a String 'lastUpdated' timestamp on start up, up to the config limit"
-  }
-
-  case object LimitForDeleteSomeData extends FeatureSwitch {
-    val name: String        = "feature-switch.limit-for-deleting-invalid-timestamp-data"
-    val displayText: String = "Not a Boolean feature switch - is an Int limit value"
   }
 
 }
