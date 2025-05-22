@@ -17,16 +17,19 @@
 package repositories
 
 import com.mongodb.client.model.Indexes.ascending
+import com.mongodb.client.result.DeleteResult
+import org.bson.BsonType
 import org.mongodb.scala.model
-import org.mongodb.scala.model.Filters.{equal, exists}
-import org.mongodb.scala.model.Updates.set
-import org.mongodb.scala.model.{IndexOptions, ReplaceOptions}
+import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.Projections.include
+import org.mongodb.scala.model.{Filters, IndexOptions, ReplaceOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import utils.LoggingUtil
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -35,70 +38,99 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SessionRepository @Inject()(config: Configuration,
-                                  mongo: MongoComponent)
-                                 (implicit ec: ExecutionContext)
-  extends PlayMongoRepository[DatedCacheMap](
-    collectionName = config.get[String]("appName"),
-    mongoComponent = mongo,
-    domainFormat = DatedCacheMap.formats,
-    indexes = Seq(
-      model.IndexModel(
-        ascending("lastUpdated"),
-        IndexOptions()
-          .name("userAnswersExpiry")
-          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+class SessionRepository @Inject() (config: Configuration, mongo: MongoComponent)(implicit ec: ExecutionContext)
+    extends PlayMongoRepository[DatedCacheMap](
+      collectionName = config.get[String]("appName"),
+      mongoComponent = mongo,
+      domainFormat = DatedCacheMap.formats,
+      indexes = Seq(
+        model.IndexModel(
+          ascending("lastUpdated"),
+          IndexOptions()
+            .name("userAnswersExpiry")
+            .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+        )
       )
-      // 'lastUpdated' is the old TTL index that was incorrectly formatted.
-      // Has now been replaced by 'lastUpdatedTimestamp'.
-      // 'lastUpdated' index and 'lastUpdatedTimestamp's default value will be removed in DL-15459 clean-up.
-//      model.IndexModel(
-//        ascending("lastUpdatedTimestamp"),
-//        IndexOptions()
-//          .name("userAnswersTimeToLive")
-//          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
-//      )
     )
-  ) {
+    with LoggingUtil {
 
-  val fieldName = "lastUpdated"
-  val defaultTime: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+  def upsert(cm: CacheMap): Future[Boolean] =
+    collection
+      .replaceOne(
+        equal("id", cm.id),
+        DatedCacheMap(cm),
+        ReplaceOptions().upsert(true)
+      )
+      .map(_.wasAcknowledged())
+      .head()
 
-  def upsert(cm: CacheMap): Future[Boolean] = {
-    collection.replaceOne(
-      equal("id", cm.id),
-      DatedCacheMap(cm),
-      ReplaceOptions().upsert(true)
-    ).map(_.wasAcknowledged()).head()
-  }
-
-  def updateExistingUpdated(): Future[Long] = {
-    collection.updateMany(
-      exists("lastUpdatedTimestamp", false),
-      set("lastUpdatedTimestamp", defaultTime)
-    ).map(_.getModifiedCount).head()
-  }
-
-  def removeDocument(id: String): Future[Boolean] = {
+  def removeDocument(id: String): Future[Boolean] =
     collection.deleteOne(equal("id", id)).map(_.wasAcknowledged()).head()
-  }
 
-  def get(id: String): Future[Option[CacheMap]] = {
+  def get(id: String): Future[Option[CacheMap]] =
     collection.find(equal("id", id)).map(_.asCacheMap).headOption()
-  }
+
+  private val filter = Filters.`type`("lastUpdated", BsonType.STRING)
+
+  private def errorMessage(e: Throwable, allOrN: String) =
+    s"[MongoRemoveInvalidDataOnStartUp][delete${allOrN}DataWithLastUpdatedStringType] Deletion of data failed with invalid 'lastUpdated' index." +
+      s"\n[MongoRemoveInvalidDataOnStartUp][delete${allOrN}DataWithLastUpdatedStringType] Error: $e"
+
+  def deleteNDataWithLastUpdatedStringType(nLimitForDeletion: Int): Future[DeleteResult] =
+    if (nLimitForDeletion > 0) { // This seems unnecessary but if limit is zero => no limit
+      collection
+        .withDocumentClass() // Has to be Document instead of DatedCacheMap to get '_id'
+        .find(filter)
+        .projection(include("_id"))
+        .limit(nLimitForDeletion)
+        .toFuture()
+        .flatMap { documents =>
+          val ids = documents.map(_.getObjectId("_id"))
+          if (ids.nonEmpty) {
+            val idFilter = Filters.in("_id", ids: _*)
+            collection
+              .deleteMany(idFilter)
+              .toFuture()
+              .map { result =>
+                logger.warn(s"[MongoRemoveInvalidDataOnStartUp][deleteNDataWithLastUpdatedStringType] Number of DELETED" +
+                  s" invalid documents: ${result.getDeletedCount}, limit: $nLimitForDeletion")
+                result
+              }
+          } else {
+            Future.successful(DeleteResult.acknowledged(0))
+          }
+        }
+        .recover { case e: Throwable =>
+          logger.error(errorMessage(e, "N"))
+          DeleteResult.acknowledged(0)
+        }
+    } else {
+      Future.successful(DeleteResult.acknowledged(0))
+    }
+
+  def deleteAllDataWithLastUpdatedStringType(): Future[DeleteResult] =
+    collection
+      .deleteMany(filter)
+      .toFuture()
+      .map { result =>
+        logger.warn(
+          s"[MongoRemoveInvalidDataOnStartUp][deleteAllDataWithLastUpdatedStringType] Number of DELETED invalid documents: ${result.getDeletedCount}")
+        result
+      }
+      .recover { case e: Throwable =>
+        logger.error(errorMessage(e, "All"))
+        DeleteResult.acknowledged(0)
+      }
+
 }
 
-case class DatedCacheMap(id: String,
-                         data: Map[String, JsValue],
-                         lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
-//                         lastUpdatedTimestamp: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)
-                        ) {
+case class DatedCacheMap(id: String, data: Map[String, JsValue], lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)) {
   def asCacheMap: CacheMap = CacheMap(id, data)
 }
 
 object DatedCacheMap {
   implicit val instantDateFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
-  implicit val formats: OFormat[DatedCacheMap] = Json.format[DatedCacheMap]
+  implicit val formats: OFormat[DatedCacheMap]    = Json.format[DatedCacheMap]
 
   def apply(cacheMap: CacheMap): DatedCacheMap = DatedCacheMap(cacheMap.id, cacheMap.data)
 }
