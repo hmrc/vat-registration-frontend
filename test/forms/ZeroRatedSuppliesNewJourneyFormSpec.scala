@@ -26,6 +26,7 @@ class ZeroRatedSuppliesNewJourneyFormSpec extends PlaySpec with GuiceOneAppPerSu
   val testValidZeroRatedSupplies: String = "14999"
   val validZeroRatedSupplies: BigDecimal = 14999
   val testNonNumberZeroRatedSupplies: String = "test"
+  val testZeroRatedSuppliesWithComma: String = "15,000"
   val testZeroRatedSuppliesWithDecimals: String = "14999.999"
   val testInvalidZeroRatedSupplies: String = "9999999999999999"
   val testNegativeZeroRatedSupplies: String = "-1"
@@ -51,6 +52,13 @@ class ZeroRatedSuppliesNewJourneyFormSpec extends PlaySpec with GuiceOneAppPerSu
 
     "validate that non numeric zeroRatedSupplies fails" in {
       val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey -> testNonNumberZeroRatedSupplies))
+
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey
+      form.errors.head.message mustBe invalid_zero_rated_supplies_error_key
+    }
+    "validate zeroRatedSupplies with comma fails" in {
+      val form = zeroRatedSuppliesForm.bind(Map(ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey -> testZeroRatedSuppliesWithComma))
 
       form.errors.size mustBe 1
       form.errors.head.key mustBe ZeroRatedSuppliesNewJourneyForm.zeroRatedSuppliesKey

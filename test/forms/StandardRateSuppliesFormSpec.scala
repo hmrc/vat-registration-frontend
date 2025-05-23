@@ -32,10 +32,12 @@ class StandardRateSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
   val testInvalidStandardRateSupplies: String = "16000"
   val testAlphabetsStandardRateSupplies: String = "AABBCC99aaa"
   val testNegativeStandardRateSupplies: String = "-1"
+  val testWhiteSpaceChar: String = " 11 22"
 
   val invalid_standard_rate_supplies_error_key: String = "validation.standardRateSupplies.invalid"
   val missing_standard_rate_supplies_error_key: String = "validation.standardRateSupplies.missing"
   val penceNotAllowed_standard_rate_supplies_error_key: String = "validation.standardRateSupplies.penceNotAllowed"
+  val valid_numeric = "validation.numeric"
 
   "The standardRateSuppliesForm" must {
     "validate that standardRateSupplies is valid" in {
@@ -72,6 +74,14 @@ class StandardRateSuppliesFormSpec extends PlaySpec with GuiceOneAppPerSuite {
       form.errors.size mustBe 1
       form.errors.head.key mustBe StandardRateSuppliesForm.standardRateSuppliesKey
       form.errors.head.message mustBe invalid_standard_rate_supplies_error_key
+    }
+
+    "validate standardRateSupplies with whitespace char fails" in {
+      val form = standardRateSuppliesForm.bind(Map(StandardRateSuppliesForm.standardRateSuppliesKey -> testWhiteSpaceChar))
+
+      form.errors.size mustBe 1
+      form.errors.head.key mustBe StandardRateSuppliesForm.standardRateSuppliesKey
+      form.errors.head.message mustBe valid_numeric
     }
 
     "validate standardRateSupplies with decimals fails" in {
