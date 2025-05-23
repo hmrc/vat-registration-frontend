@@ -41,7 +41,7 @@ class MongoRemoveInvalidDataOnStartUp @Inject() (actorSystem: ActorSystem, sessi
     logger.warn(s"[MongoRemoveInvalidDataOnStartUp] Start up job has ended.")
   }
 
-  private def deleteInvalidData(): Unit = {
+  def deleteInvalidData(): Unit = {
     val deleteAllDocuments: Boolean      = isEnabled(DeleteAllInvalidTimestampData)
     val deleteNDocuments: Boolean        = isEnabled(DeleteSomeInvalidTimestampData)
     val deleteDocumentLimit: Option[Int] = Try(getValue(LimitForDeleteSomeData).toInt).toOption
