@@ -30,9 +30,7 @@ object FeatureSwitch {
     StubMinorEntityIdentification,
     VrsNewAttachmentJourney,
     TaxableTurnoverJourney,
-    SubmitDeadline,
-    DeleteSomeInvalidTimestampData,
-    DeleteAllInvalidTimestampData
+    SubmitDeadline
   )
 
   def apply(str: String): FeatureSwitch =
@@ -107,21 +105,6 @@ object FeatureSwitch {
   case object SubmitDeadline extends FeatureSwitch {
     val name: String        = "feature-switch.submit-deadline"
     val displayText: String = "Taxable Turnover May-June Journey"
-  }
-
-  case object DeleteAllInvalidTimestampData extends FeatureSwitch {
-    val name: String        = "feature-switch.delete-ALL-invalid-timestamp-data"
-    val displayText: String = "Enable to delete all database items with a String 'lastUpdated' timestamp on start up"
-  }
-
-  case object DeleteSomeInvalidTimestampData extends FeatureSwitch {
-    val name: String        = "feature-switch.delete-SOME-invalid-timestamp-data"
-    val displayText: String = "Enable to delete database items with a String 'lastUpdated' timestamp on start up, up to the config limit"
-  }
-
-  case object LimitForDeleteSomeData extends FeatureSwitch {
-    val name: String        = "feature-switch.limit-for-deleting-invalid-timestamp-data"
-    val displayText: String = "Not a Boolean feature switch - is an Int limit value"
   }
 
 }
