@@ -17,15 +17,19 @@
 package repositories
 
 import com.mongodb.client.model.Indexes.ascending
+import com.mongodb.client.result.DeleteResult
+import org.bson.BsonType
 import org.mongodb.scala.model
 import org.mongodb.scala.model.Filters.equal
-import org.mongodb.scala.model.{IndexOptions, ReplaceOptions}
+import org.mongodb.scala.model.Projections.include
+import org.mongodb.scala.model.{Filters, IndexOptions, ReplaceOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+import utils.LoggingUtil
 
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -64,7 +68,6 @@ class SessionRepository @Inject() (config: Configuration, mongo: MongoComponent)
 
   def get(id: String): Future[Option[CacheMap]] =
     collection.find(equal("id", id)).map(_.asCacheMap).headOption()
-
 }
 
 case class DatedCacheMap(id: String, data: Map[String, JsValue], lastUpdated: Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS)) {

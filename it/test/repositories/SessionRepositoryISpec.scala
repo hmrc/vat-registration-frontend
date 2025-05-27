@@ -17,15 +17,25 @@
 package repositories
 
 import common.enums.VatRegStatus
+import config.FrontendAppConfig
 import itutil.IntegrationSpecBase
 import models.CurrentProfile._
-import play.api.libs.json.{JsObject, Json, OWrites}
+import org.mockito.Mockito.when
+import org.mongodb.scala.bson.collection.immutable.Document
+import org.mongodb.scala.bson.{BsonBoolean, BsonDateTime, BsonDocument, BsonString}
+import org.mongodb.scala.{MongoCollection, result}
+import org.scalatestplus.mockito.MockitoSugar.mock
+import play.api.libs.json.{JsBoolean, JsObject, Json, OWrites}
 import play.api.test.Helpers._
 import services.SessionService
 import support.AppAndStubs
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
+import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
