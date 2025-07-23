@@ -567,11 +567,11 @@ validation.startDateManIncorp.range.below4y                  = Nodwch ddyddiad n
 validation.startDateManIncorp.error                          = Nodwch ddyddiad dechrau’r cofrestriad
 
 # Reduced Turnover Page
-pages.reducedRateSupplies.heading                            = Beth ydych yn credu fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf, a hynny ar y gyfradd safonol (5%)?
+pages.reducedRateSupplies.heading                            = Beth ydych yn credu fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf, a hynny ar y gyfradd is (5%)?
 pages.reducedRateSupplies.text                               = Dylech geisio gwneud eich amcangyfrif mor fanwl gywir â phosibl. Os na fyddwch yn cyflwyno’ch Ffurflen TAW mewn pryd, gall yr amcangyfrif hwn gael ei ddefnyddio i gyfrifo faint o TAW sydd arnoch.
 pages.reducedRateSupplies.hint                               = Nodwch swm mewn punnoedd, er enghraifft £600 neu £90000. Peidiwch â chynnwys ceiniogau
-pages.reducedRateSupplies.link                               = Dysgwch ragor am sut i gyfrifo’ch trosiant sy’n agored i TAW (yn agor tab newydd)
-validation.reducedRateSupplies.missing                       = Nodwch amcangyfrif o’ch trosiant sy’n agored i TAW ar y gyfradd is (5%)
+pages.reducedRateSupplies.link                               = Dysgwch ragor am sut i gyfrifo’ch trosiant trethadwy TAW
+validation.reducedRateSupplies.missing                       = Nodwch amcangyfrif o’ch trosiant trethadwy TAW ar y gyfradd is (5%)
 validation.reducedRateSupplies.invalid                       = Gall y swm ddim ond cynnwys rhifau
 validation.reducedRateSupplies.penceNotAllowed               = Mae’n rhaid i’r swm beidio â chynnwys ceiniogau
 validation.reducedRateSupplies.range.above                   = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
@@ -591,8 +591,8 @@ validation.turnoverEstimate.range.above                     = Rhowch amcangyfrif
 validation.turnoverEstimate.range.below                     = Rhowch amcangyfrif sy’n fwy na neu’n hafal i £{0}
 
 # Total Tax Turnover Estimate Page
-pages.totalTaxTurnoverEstimate.heading                      = Cyfanswm amcangyfrifedig y trosiant sy’n agored i TAW
-pages.totalTaxTurnoverEstimate.text1                        = Rydym wedi cyfrifo cyfanswm amcangyfrifedig y trosiant sy’n agored i TAW, a hynny’n seiliedig ar yr wybodaeth rydych wedi’i nodi.
+pages.totalTaxTurnoverEstimate.heading                      = Cyfanswm amcangyfrifedig y trosiant trethadwy TAW
+pages.totalTaxTurnoverEstimate.text1                        = Rydym wedi cyfrifo cyfanswm amcangyfrifedig eich trosiant trethadwy TAW, a hynny’n seiliedig ar yr wybodaeth rydych wedi’i nodi.
 pages.totalTaxTurnoverEstimate.standardRate                 = Cyfradd safonol (20%)
 pages.totalTaxTurnoverEstimate.reducedRate                  = Cyfradd is (5%)
 pages.totalTaxTurnoverEstimate.zeroRate                     = Cyfradd sero (0%)
@@ -605,9 +605,9 @@ validation.ttEstimate.error                                 = Dewiswch ‘Iawn�
 # Twenty Rated Supplies Page
 pages.standardRateSupplies.heading                          = Beth ydych yn credu fydd trosiant trethadwy TAW y busnes ar gyfer y 12 mis nesaf, a hynny ar y gyfradd safonol (20%)?
 pages.standardRateSupplies.text                             = Dylech geisio gwneud eich amcangyfrif mor fanwl gywir â phosibl. Os na fyddwch yn cyflwyno’ch Ffurflen TAW mewn pryd, gall yr amcangyfrif hwn gael ei ddefnyddio i gyfrifo faint o TAW sydd arnoch.
-pages.standardRateSupplies.link                             = Dysgwch ragor am sut i gyfrifo’ch trosiant sy’n agored i TAW
+pages.standardRateSupplies.link                             = Dysgwch ragor am sut i gyfrifo’ch trosiant trethadwy TAW
 pages.standardRateSupplies.hint                             = Nodwch swm mewn punnoedd, er enghraifft £600 neu £90000. Peidiwch â chynnwys ceiniogau.
-validation.standardRateSupplies.missing                     = Nodwch amcangyfrif o’ch trosiant sy’n agored i TAW ar y gyfradd safonol (20%)
+validation.standardRateSupplies.missing                     = Nodwch amcangyfrif o’ch trosiant trethadwy TAW ar y gyfradd safonol (20%)
 validation.standardRateSupplies.invalid                     = Gall y swm ddim ond cynnwys rhifau
 validation.standardRateSupplies.penceNotAllowed             = Mae’n rhaid i’r swm beidio â chynnwys ceiniogau
 validation.standardRateSupplies.range.above                 = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
@@ -634,7 +634,7 @@ pages.zeroRatedSupplies.newJourney.summary                  = Beth yw nwyddau a 
 pages.zeroRatedSupplies.newJourney.details                  = Mae nwyddau a gwasanaethau cyfradd sero yn dal i fod yn agored i TAW, ond nid ydych yn codi unrhyw TAW ar eich cwsmeriaid. Mae’n rhaid i chi barhau i gofnodi’r gwerthiannau gan ddefnyddio’ch meddalwedd TAW a rhoi gwybod i CThEF amdanynt pan fyddwch yn llenwi’ch Ffurflen TAW.
 pages.zeroRatedSupplies.newJourney.link                     = Dysgwch ragor am gyfraddau TAW ar wahanol nwyddau a gwasanaethau
 pages.zeroRatedSupplies.newJourney.hint                     = Nodwch swm mewn punnoedd, er enghraifft £600 neu £90000. Peidiwch â chynnwys ceiniogau.
-validation.zeroRatedSupplies.newJourney.missing             = Nodwch amcangyfrif o’ch trosiant sy’n agored i TAW ar y gyfradd sero (0%)
+validation.zeroRatedSupplies.newJourney.missing             = Nodwch amcangyfrif o’ch trosiant trethadwy TAW ar y gyfradd sero (0%)
 validation.zeroRatedSupplies.newJourney.invalid             = Gall y swm ddim ond cynnwys rhifau
 validation.zeroRatedSupplies.newJourney.decimalsNotAllowed  = Mae’n rhaid i’r swm beidio â chynnwys ceiniogau
 validation.zeroRatedSupplies.newJourney.range.above         = Rhowch amcangyfrif sy’n llai na neu’n hafal i £{0}
