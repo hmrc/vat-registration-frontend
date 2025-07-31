@@ -57,6 +57,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
   lazy val feedbackUrl = s"$feedbackFrontendUrl/feedback/vat-registration"
+  private lazy val basGatewayUrl: String = loadConfig(s"bas-gateway-frontend.host")
+  private val signOutUri: String = loadConfig("sign-out.uri")
+  lazy val signOutUrl: String = s"$basGatewayUrl$signOutUri"
   lazy val contactFrontendUrl: String = loadConfig("microservice.services.contact-frontend.url")
   lazy val oshLink: String = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
   lazy val betaFeedbackUrl = s"$contactFrontendUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
