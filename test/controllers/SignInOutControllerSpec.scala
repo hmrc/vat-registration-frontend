@@ -41,7 +41,7 @@ class SignInOutControllerSpec extends ControllerSpec with FutureAssertions {
   "signOut" should {
     "redirect to the exit questionnaire and clear the session" in {
       callAuthorisedOrg(testController.signOut) { res =>
-        redirectLocation(res) mustBe Some(s"${appConfig.signOutUrl}?continue=${appConfig.feedbackUrl}")
+        redirectLocation(res) mustBe Some(appConfig.feedbackUrl)
         session(res) mustBe Session.emptyCookie
       }
     }
