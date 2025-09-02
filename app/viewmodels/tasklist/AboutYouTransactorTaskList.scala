@@ -19,7 +19,7 @@ package viewmodels.tasklist
 
 import config.FrontendAppConfig
 import models.CurrentProfile
-import models.api.{NETP, NonUkNonEstablished, VatScheme}
+import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust, VatScheme}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.InternalServerException
 
@@ -112,7 +112,8 @@ object AboutYouTransactorTaskList {
 
   def resolveAddressRowUrl(vatScheme: VatScheme): String = {
     vatScheme.partyType match {
-      case Some(NETP) | Some(NonUkNonEstablished) if vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
+      case Some(Individual) | Some(NonUkNonEstablished) | Some(Partnership) |
+           Some(LtdLiabilityPartnership) | Some(Trust) if vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
         controllers.transactor.routes.TransactorInternationalAddressController.show.url
       case Some(_) =>
         controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url
