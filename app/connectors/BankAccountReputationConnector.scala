@@ -43,7 +43,7 @@ class BankAccountReputationConnector @Inject()(val http: HttpClientV2,
             infoLog("Bank account details validated successfully")
             response.json
           case status =>
-            val errorMessage = s"Unexpected status returned by Bank Account Reputation: $status"
+            val errorMessage = s"Unexpected status returned by Bank Account Reputation: $status - ${response.body}"
             errorLog(errorMessage)
             throw new InternalServerException(errorMessage)
         }
