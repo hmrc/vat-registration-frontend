@@ -128,11 +128,11 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
         }
       }
 
-      "redirect to send goods overseas page when the user is NETP" in new Setup {
+      "redirect to send goods overseas page when the user is NETP (Individual with no fixed establishment in UK)" in new Setup {
         given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-          partyType = NETP,
+          partyType = Individual,
           registrationReason = NonUk,
           fixedEstablishmentInManOrUk = false
         )))

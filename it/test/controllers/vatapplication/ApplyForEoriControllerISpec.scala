@@ -19,7 +19,7 @@ package controllers.vatapplication
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
-import models.api.{EligibilitySubmissionData, NETP}
+import models.api.{EligibilitySubmissionData, Individual, NETP}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -52,7 +52,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-        partyType = NETP,
+        partyType = Individual,
         fixedEstablishmentInManOrUk = false
       )))
         .registrationApi.getSection[VatApplication](None)

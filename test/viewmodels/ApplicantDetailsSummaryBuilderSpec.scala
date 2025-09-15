@@ -43,7 +43,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
       "return the summary list without partner details" in new Setup {
         val vatScheme: VatScheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             isTransactor = false,
             fixedEstablishmentInManOrUk = false
           ))
@@ -103,7 +103,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
       "return the summary list without partner details" in new Setup {
         val vatScheme: VatScheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             isTransactor = true,
             fixedEstablishmentInManOrUk = false
           ))

@@ -18,7 +18,7 @@ package controllers.bankdetails
 
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, Individual, NETP, NonUkNonEstablished}
 import org.jsoup.Jsoup
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -40,11 +40,11 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
-    "return SEE_OTHER when the party type is NETP" in new Setup {
+    "return SEE_OTHER when the party type is NETP (Individual with no fixed establishment in UK)" in new Setup {
       given
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-        partyType = NETP,
+        partyType = Individual,
         fixedEstablishmentInManOrUk = false
       )))
         .registrationApi.getSection[BankAccount](None)

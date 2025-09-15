@@ -54,7 +54,7 @@ class SummaryControllerISpec extends ControllerISpec {
       }
     }
 
-    "display the summary page correctly for a NETP" in new Setup {
+    "display the summary page correctly for a NETP (Individual with no fixed establishment in UK)" in new Setup {
       implicit val key: ApiKey[String] = nrsSubmissionPayloadKey
       val nrsSubmissionPayload = "nrsSubmissionPayload"
       given()

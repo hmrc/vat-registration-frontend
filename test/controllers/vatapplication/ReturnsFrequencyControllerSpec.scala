@@ -19,7 +19,7 @@ package controllers.vatapplication
 import fixtures.VatRegistrationFixture
 import forms.vatapplication.ReturnsFrequencyForm
 import models.CurrentProfile
-import models.api.NETP
+import models.api.{Individual, NETP}
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -116,7 +116,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
 
     "redirect to the TaxRepController when they select the monthly option and overseas entity does not have a fixed establishment in IsleOfManOrUK" in new Setup {
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
-        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)))
+        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = Individual, fixedEstablishmentInManOrUk = false)))
       when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
       when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))

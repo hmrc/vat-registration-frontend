@@ -415,7 +415,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val fullVatSchemeAttachmentNETP: VatScheme = fullVatSchemeAttachment.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
-      partyType = NETP,
+      partyType = Individual,
       fixedEstablishmentInManOrUk = false,
       registrationReason = NonUk
     )),
