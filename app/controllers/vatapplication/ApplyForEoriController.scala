@@ -19,7 +19,7 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ApplyForEoriForm
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, Request}
 import services.VatApplicationService.EoriRequested
@@ -79,7 +79,7 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
   private def getView(eligibilityData: EligibilitySubmissionData, form: Form[Boolean])
                      (implicit request: Request[_]) = {
     eligibilityData.partyType match {
-      case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk => overseasApplyForEoriView(form)
+      case Individual | NonUkNonEstablished | Partnership | LtdLiabilityPartnership | Trust if !eligibilityData.fixedEstablishmentInManOrUk => overseasApplyForEoriView(form)
       case _ => applyForEoriView(form)
     }
   }

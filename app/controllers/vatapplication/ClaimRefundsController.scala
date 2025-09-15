@@ -19,7 +19,7 @@ package controllers.vatapplication
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.ChargeExpectancyForm
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust}
 import models.error.MissingAnswerException
 import models.{BackwardLook, ForwardLook, NonUk, TransferOfAGoingConcern}
 import play.api.mvc.{Action, AnyContent}
@@ -76,7 +76,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
             } yield eligibilityData.partyType match {
               case _ if canApplyForExemption =>
                 Redirect(routes.VatExemptionController.show)
-              case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
+              case Individual | NonUkNonEstablished | Partnership | LtdLiabilityPartnership | Trust if !eligibilityData.fixedEstablishmentInManOrUk =>
                 Redirect(routes.SendGoodsOverseasController.show)
               case _ =>
                 Redirect(controllers.routes.TaskListController.show.url)

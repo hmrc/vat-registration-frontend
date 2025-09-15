@@ -81,5 +81,5 @@ class LeadPartnerEntityController @Inject()(val authConnector: AuthConnector,
   }
 
   private def isBusinessPartyType(partyType: PartyType) =
-    List(NETP, UkCompany, RegSociety, CharitableOrg, ScotPartnership, ScotLtdPartnership, LtdLiabilityPartnership).contains(partyType)
+    List(Individual, UkCompany, RegSociety, CharitableOrg, ScotPartnership, ScotLtdPartnership, LtdLiabilityPartnership).contains(partyType)
 }

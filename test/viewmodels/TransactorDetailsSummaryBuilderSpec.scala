@@ -145,7 +145,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
     "return an full summary list for an Overseas transactor" in new Setup {
       val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-          partyType = NETP,
+          partyType = Individual,
           isTransactor = true,
           fixedEstablishmentInManOrUk = false
         )),

@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.ReturnsFrequencyForm
 import models.api.vatapplication.{Annual, Monthly}
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.vatapplication.ReturnFrequency
@@ -74,7 +74,7 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
                 returnFrequency match {
                   case Monthly =>
                     eligibilityData.partyType match {
-                      case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
+                      case Individual | NonUkNonEstablished | Partnership | LtdLiabilityPartnership | Trust if !eligibilityData.fixedEstablishmentInManOrUk =>
                         Redirect(controllers.vatapplication.routes.TaxRepController.show)
                       case _ =>
                         Redirect(controllers.routes.TaskListController.show)
