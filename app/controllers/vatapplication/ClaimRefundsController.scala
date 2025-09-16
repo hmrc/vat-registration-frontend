@@ -57,7 +57,7 @@ class ClaimRefundsController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ChargeExpectancyForm.form.bindFromRequest.fold(
+        ChargeExpectancyForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(claimRefundsView(errors))),
           success => {
             for {

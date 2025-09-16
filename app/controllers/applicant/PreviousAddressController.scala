@@ -69,7 +69,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
           optName <- if (isTransactor) applicantDetailsService.getApplicantNameForTransactorFlow else Future.successful(None)
           errorCode = if (isTransactor) "previousAddressQuestionThirdParty" else "previousAddressQuestion"
           form = PreviousAddressForm.form(errorCode)
-          result <- form.bindFromRequest.fold(
+          result <- form.bindFromRequest().fold(
             badForm =>
               applicantDetailsService.getApplicantDetails.map { applicant =>
                 applicant.currentAddress.fold(

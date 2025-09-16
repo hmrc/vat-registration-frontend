@@ -55,7 +55,7 @@ class SendGoodsOverseasController @Inject()(val authConnector: AuthConnector,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        SendGoodsOverseasForm.form.bindFromRequest.fold(
+        SendGoodsOverseasForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(view(errors))),
           success => {
             vatApplicationService.saveVatApplication(GoodsToOverseas(success)).map { _ =>

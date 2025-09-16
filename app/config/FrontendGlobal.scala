@@ -27,7 +27,7 @@ import javax.inject.Inject
 class FrontendGlobal @Inject()(errorTemplate: ErrorTemplate)(val messagesApi: MessagesApi, val appConfig: FrontendAppConfig) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html = {
-    implicit val ac = appConfig
+    implicit val ac: FrontendAppConfig = appConfig
     errorTemplate(pageTitle, heading, message)
   }
 

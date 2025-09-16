@@ -21,13 +21,13 @@ import play.api.libs.json.{Json, OFormat}
 case class SupplyWorkers(yesNo: Boolean)
 
 object SupplyWorkers {
-  implicit val format = Json.format[SupplyWorkers]
+  implicit val format: OFormat[SupplyWorkers] = Json.format[SupplyWorkers]
 }
 
 case class IntermediarySupply(yesNo: Boolean)
 
 object IntermediarySupply {
-  implicit val format = Json.format[IntermediarySupply]
+  implicit val format: OFormat[IntermediarySupply] = Json.format[IntermediarySupply]
 }
 
 case class Workers(numberOfWorkers: Int)

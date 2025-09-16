@@ -44,7 +44,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
   implicit val appConfig: FrontendAppConfig = this
 
-  lazy val thresholdString: String = runModeConfiguration.get[ConfigList]("vat-threshold").render(ConfigRenderOptions.concise())
+  private lazy val thresholdString: String = runModeConfiguration.get[ConfigList]("vat-threshold").render(ConfigRenderOptions.concise())
   lazy val thresholds: Seq[VatThreshold] = Json.parse(thresholdString).as[List[VatThreshold]]
 
   def eligibilityStartUrl(regId: String): String = s"$eligibilityUrl/journey/$regId"
@@ -55,16 +55,16 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   val contactFormServiceIdentifier = "vrs"
 
-  lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
+  private lazy val feedbackFrontendUrl = loadConfig("microservice.services.feedback-frontend.url")
   lazy val feedbackUrl = s"$feedbackFrontendUrl/feedback/vat-registration"
   private lazy val basGatewayUrl: String = loadConfig(s"bas-gateway-frontend.host")
   private val signOutUri: String = loadConfig("sign-out.uri")
   lazy val signOutUrl: String = s"$basGatewayUrl$signOutUri"
-  lazy val contactFrontendUrl: String = loadConfig("microservice.services.contact-frontend.url")
+  private lazy val contactFrontendUrl: String = loadConfig("microservice.services.contact-frontend.url")
   lazy val oshLink: String = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
   lazy val betaFeedbackUrl = s"$contactFrontendUrl/contact/beta-feedback?service=$contactFormServiceIdentifier"
 
-  lazy val accessibilityStatementPath = loadConfig("accessibility-statement.host")
+  private lazy val accessibilityStatementPath = loadConfig("accessibility-statement.host")
   lazy val accessibilityStatementUrl = s"$accessibilityStatementPath/accessibility-statement/vat-registration"
 
   lazy val aasPaymentMethodInfoUrl = "https://www.gov.uk/government/publications/vat-annual-accounting-scheme-direct-debit-form-vat-623"
@@ -72,10 +72,10 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   val timeout: Int = servicesConfig.getInt("timeout.timeout")
   val countdown: Int = servicesConfig.getInt("timeout.countdown")
 
-  lazy val companyAuthHost = servicesConfig.getString("microservice.services.auth.company-auth.url")
+  private lazy val companyAuthHost = servicesConfig.getString("microservice.services.auth.company-auth.url")
 
-  lazy val loginCallback = servicesConfig.getString("microservice.services.auth.login-callback.url")
-  lazy val loginPath = servicesConfig.getString("microservice.services.auth.login_path")
+  private lazy val loginCallback = servicesConfig.getString("microservice.services.auth.login-callback.url")
+  private lazy val loginPath = servicesConfig.getString("microservice.services.auth.login_path")
 
   lazy val loginUrl = s"$companyAuthHost$loginPath"
   lazy val continueUrl = s"$loginCallback${routes.SignInOutController.postSignIn}"
@@ -85,13 +85,13 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     runModeConfiguration.getOptional[String]("sosOrigin").getOrElse(appName)
   }
 
-  lazy val scoreKey = servicesConfig.getString("constants.score")
+  lazy val scoreKey: String = servicesConfig.getString("constants.score")
 
   // Bank holidays
-  lazy val bankHolidaysUrl = servicesConfig.getString("microservice.services.bank-holidays.url")
+  lazy val bankHolidaysUrl: String = servicesConfig.getString("microservice.services.bank-holidays.url")
 
   // ALF
-  lazy val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
+  private lazy val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
 
   def addressLookupJourneyUrl: String =
     if (isEnabled(StubAlf)) s"$host/register-for-vat/test-only/address-lookup/init"
@@ -102,7 +102,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     else s"$addressLookupFrontendUrl/api/v2/confirmed?id=$id"
 
   // Bank Account Reputation Section
-  lazy val bankAccountReputationHost = servicesConfig.baseUrl("bank-account-reputation")
+  private lazy val bankAccountReputationHost = servicesConfig.baseUrl("bank-account-reputation")
 
   def validateBankDetailsUrl: String =
     if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/validate-bank-details"
@@ -113,7 +113,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Incorporated Entity Identification Section
 
-  lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
+  private lazy val incorpIdHost: String = servicesConfig.baseUrl("incorporated-entity-identification-frontend")
 
   def startUkCompanyIncorpJourneyUrl(): String =
     if (isEnabled(StubIncorpIdJourney)) {
@@ -149,7 +149,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Sole Trader Identification Section
 
-  lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
+  private lazy val soleTraderIdentificationFrontendHost: String = servicesConfig.baseUrl("sole-trader-identification-frontend")
 
   def soleTraderJourneyUrl(partyType: PartyType): String =
     if (isEnabled(StubSoleTraderIdentification)) {
@@ -182,7 +182,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Partnership Identification Section
 
-  lazy val partnershipIdHost: String = servicesConfig.baseUrl("partnership-identification-frontend")
+  private lazy val partnershipIdHost: String = servicesConfig.baseUrl("partnership-identification-frontend")
 
   def startPartnershipJourneyUrl(partyType: PartyType): String = {
     if (isEnabled(StubPartnershipIdentification)) {
@@ -213,7 +213,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Minor Entity Identification Section
 
-  lazy val minorEntityIdHost: String = servicesConfig.baseUrl("minor-entity-identification-frontend")
+  private lazy val minorEntityIdHost: String = servicesConfig.baseUrl("minor-entity-identification-frontend")
 
   def startUnincorpAssocJourneyUrl: String =
     if (isEnabled(StubMinorEntityIdentification)) {
@@ -247,7 +247,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Email Verification Section
 
-  lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
+  private lazy val emailVerificationBaseUrl: String = servicesConfig.baseUrl("email-verification")
 
   def requestEmailVerificationPasscodeUrl(): String =
     if (isEnabled(StubEmailVerification)) s"$host/register-for-vat/test-only/api/request-passcode"
@@ -259,7 +259,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Upscan Section
 
-  lazy val upscanInitiateHost: String = servicesConfig.baseUrl("upscan-initiate")
+  private lazy val upscanInitiateHost: String = servicesConfig.baseUrl("upscan-initiate")
 
   def setupUpscanJourneyUrl: String =
     if (isEnabled(StubUpscan)) s"$host/register-for-vat/test-only/upscan/initiate"
@@ -284,9 +284,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val govukHowToRegister: String = "https://www.gov.uk/register-for-vat/how-register-for-vat"
 
-  lazy val businessDescriptionMaxLength = servicesConfig.getInt("constants.businessDescriptionMaxLength")
+  lazy val businessDescriptionMaxLength: Int = servicesConfig.getInt("constants.businessDescriptionMaxLength")
 
-  lazy val findOutAboutEoriUrl = servicesConfig.getString("urls.findOutAboutEori")
+  lazy val findOutAboutEoriUrl: String = servicesConfig.getString("urls.findOutAboutEori")
   lazy val overseasEoriBullet1Url = "https://www.gov.uk/check-customs-declaration/"
   lazy val overseasEoriBullet2Url = "https://www.gov.uk/guidance/making-an-entry-summary-declaration"
   lazy val overseasEoriBullet3Url = "https://www.gov.uk/guidance/find-out-when-to-make-an-exit-summary-declaration"

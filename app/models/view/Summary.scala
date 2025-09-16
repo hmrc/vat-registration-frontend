@@ -17,19 +17,17 @@
 package models.view
 
 import config.FrontendAppConfig
-import models.VatThreshold
 import models.api._
 import play.api.i18n.Messages
 import play.api.libs.json.Reads._
 import play.api.libs.json._
-import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
 import services.ThresholdService
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import utils.MessageDateFormat
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 object SummaryListRowUtils {
@@ -179,9 +177,8 @@ object EligibilityJsonParser extends ThresholdService {
   private def lookupQuestion(questionId: String, regReason: String)(implicit messages: Messages, appConfig: FrontendAppConfig): String = {
 
     questionId match {
-      case "thresholdInTwelveMonths" | "thresholdNextThirtyDays" | "thresholdPreviousThirtyDays" => {
+      case "thresholdInTwelveMonths" | "thresholdNextThirtyDays" | "thresholdPreviousThirtyDays" =>
         messages(s"eligibility.question.$questionId", formattedVatThreshold())
-      }
       case _ =>
         val togcColeSuffix = if (EligibilityPageIds.togcColeQuestionIds.contains(questionId)) s".$regReason" else ""
         messages(s"eligibility.question.$questionId" + togcColeSuffix)
@@ -235,7 +232,7 @@ object EligibilityJsonParser extends ThresholdService {
       (EligibilityPageIds.thresholdTaxableSupplies, answers.get(EligibilityPageIds.thresholdTaxableSupplies))
     ).collect { case (id, Some(value)) => (id, value) }
 
-  object EligibilityPageIds extends ThresholdService {
+  private object EligibilityPageIds extends ThresholdService {
     val thresholdInTwelveMonths = "thresholdInTwelveMonths"
     val thresholdNextThirtyDays = "thresholdNextThirtyDays"
     val thresholdPreviousThirtyDays = "thresholdPreviousThirtyDays"

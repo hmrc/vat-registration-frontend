@@ -29,14 +29,14 @@ class TestVatRegistrationConnector @Inject()(val http: HttpClient, config: Servi
                                             (implicit ec: ExecutionContext) {
 
   val vatRegUrl: String = config.baseUrl("vat-registration")
-  val vatStubUrl: String = config.baseUrl("vat-registration-stub")
+  private val vatStubUrl: String = config.baseUrl("vat-registration-stub")
 
   def retrieveVatSubmission(regId: String)(implicit hc: HeaderCarrier): Future[JsValue] = {
     http.GET(s"$vatRegUrl/vatreg/test-only/submissions/$regId/submission-payload") map (_.json)
   }
 
   def hitVatStub(userId: String, regId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.GET(s"$vatStubUrl/vat-registration-stub/setup-data/${userId}/${regId}")
+    http.GET(s"$vatStubUrl/vat-registration-stub/setup-data/$userId/$regId")
   }
 
   def deleteAllRegistrations(implicit hc: HeaderCarrier): Future[Boolean] =

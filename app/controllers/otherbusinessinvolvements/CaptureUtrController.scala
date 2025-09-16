@@ -61,7 +61,7 @@ class CaptureUtrController @Inject()(val authConnector: AuthConnector,
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        CaptureUtrForm().bindFromRequest.fold(
+        CaptureUtrForm().bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
           success => {

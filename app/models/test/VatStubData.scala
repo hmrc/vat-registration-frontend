@@ -16,10 +16,10 @@
 
 package models.test
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class VatStubData(stubUserId: String)
 
 object VatStubData {
-  implicit val format = Json.format[VatStubData]
+  implicit val format: OFormat[VatStubData] = Json.format[VatStubData]
 }

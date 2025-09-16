@@ -22,7 +22,6 @@ import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.tasklist._
 import views.html.TaskList
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 

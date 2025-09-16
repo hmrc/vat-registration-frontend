@@ -17,10 +17,8 @@
 package featuretoggle
 
 import config.FrontendAppConfig
-import featuretoggle.ConfigurableValue.ConfigurableValue
 import featuretoggle.FeatureSwitch.FeatureSwitch
 import utils.LoggingUtil
-
 import scala.sys.SystemProperties
 
 trait FeatureToggleSupport extends LoggingUtil {

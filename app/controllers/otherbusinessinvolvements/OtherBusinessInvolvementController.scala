@@ -59,7 +59,7 @@ class OtherBusinessInvolvementController @Inject()(val sessionService: SessionSe
           eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
           isVatGroup  = eligibilitySubmissionData.registrationReason.equals(GroupRegistration)
           result <- {
-            OtherBusinessInvolvementForm.form.bindFromRequest.fold(
+            OtherBusinessInvolvementForm.form.bindFromRequest().fold(
               errors => Future.successful(BadRequest(view(errors, isVatGroup))),
           success => businessService.updateBusiness(OtherBusinessInvolvementAnswer(success)).flatMap { _ =>
             if (success) {

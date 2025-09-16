@@ -19,13 +19,11 @@ package controllers.business
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.CaptureTradingNameForm
-import models.api.{NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.TradingName
 import services._
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.business.CaptureTradingNameView
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 

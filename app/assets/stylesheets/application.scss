@@ -1,7 +1,7 @@
 $govuk-assets-path: "/register-for-vat/assets/lib/govuk-frontend/govuk/assets/";
 $hmrc-assets-path: "/register-for-vat/assets/lib/hmrc-frontend/hmrc/";
 
-@import "lib/govuk-frontend/govuk/all";
+@import "lib/govuk-frontend/dist/govuk/index";
 @import "lib/hmrc-frontend/hmrc/all";
 @import "accessible-autocomplete";
 

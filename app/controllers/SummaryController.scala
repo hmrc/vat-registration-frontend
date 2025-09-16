@@ -74,7 +74,7 @@ class SummaryController @Inject()(val sessionService: SessionService,
             infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are all complete")
             for {
               _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-              response <- vrs.submitRegistration
+              response <- vrs.submitRegistration()
               result <- submissionRedirectLocation(response)
             } yield {
               result

@@ -63,7 +63,7 @@ class InternationalPpobAddressController  @Inject()(val authConnector: AuthConne
       addressFormResultsHandler.handle(
         countries,
         headingMessageKey,
-        formProvider.form(invalidCountries).bindFromRequest,
+        formProvider.form(invalidCountries).bindFromRequest(),
         submitAction,
         internationalAddress => {
           businessService.updateBusiness(internationalAddress) map { _ =>

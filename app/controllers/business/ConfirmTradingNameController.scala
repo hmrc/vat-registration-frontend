@@ -19,7 +19,6 @@ package controllers.business
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ConfirmTradingNameForm
-import models.api.{NETP, NonUkNonEstablished}
 import models.error.MissingAnswerException
 import play.api.mvc.{Action, AnyContent}
 import services.BusinessService.ConfirmTradingName
@@ -56,7 +55,7 @@ class ConfirmTradingNameController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ConfirmTradingNameForm.form.bindFromRequest.fold(
+        ConfirmTradingNameForm.form.bindFromRequest().fold(
           formWithErrors => 
             applicantDetailsService.getCompanyName.map(_.getOrElse(
               throw MissingAnswerException(missingDataSection)

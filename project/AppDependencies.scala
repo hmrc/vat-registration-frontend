@@ -19,33 +19,33 @@ import sbt._
 
 object AppDependencies {
 
-  private val hmrcMongoVersion = "2.6.0"
+  private val hmrcMongoVersion = "2.7.0"
   private val bootstrapVersion = "8.6.0"
   private val partialsVersion = "9.1.0"
   private val cachingClientVersion = "11.2.0"
   private val formMappingVersion = "2.0.0"
   private val catsVersion = "2.10.0"
   private val playJsonJodaVersion = "3.0.2"
-  private val playHmrcFrontendVersion = "8.5.0"
+  private val playHmrcFrontendVersion = "12.10.0"
 
 
   val compileDependencies: Seq[ModuleID] = Seq(
     caffeine,
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30" % hmrcMongoVersion,
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-30" % bootstrapVersion,
-    "uk.gov.hmrc" %% "play-partials-play-30" % partialsVersion,
-    "uk.gov.hmrc" %% "http-caching-client-play-30" % cachingClientVersion,
-    "uk.gov.hmrc" %% "play-conditional-form-mapping-play-30" % formMappingVersion,
-    "org.typelevel" %% "cats-core" % catsVersion,
-    "org.playframework" %% "play-json-joda" % playJsonJodaVersion,
-    "uk.gov.hmrc" %% "play-frontend-hmrc-play-30" % playHmrcFrontendVersion
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30"                     % hmrcMongoVersion,
+    "uk.gov.hmrc"       %% "bootstrap-frontend-play-30"             % bootstrapVersion,
+    "uk.gov.hmrc"       %% "play-partials-play-30"                  % partialsVersion,
+    "uk.gov.hmrc"       %% "http-caching-client-play-30"            % cachingClientVersion,
+    "uk.gov.hmrc"       %% "play-conditional-form-mapping-play-30"  % formMappingVersion,
+    "org.typelevel"     %% "cats-core"                              % catsVersion,
+    "org.playframework" %% "play-json-joda"                         % playJsonJodaVersion,
+    "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30"             % playHmrcFrontendVersion
   )
 
   val testDependencies: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
-    "org.scalamock" %% "scalamock" % "6.0.0",
-    "com.vladsch.flexmark" % "flexmark-all" % "0.64.8",
-    "uk.gov.hmrc" %% "bootstrap-test-play-30" % bootstrapVersion,
+    "uk.gov.hmrc.mongo"     %% "hmrc-mongo-test-play-30"  % hmrcMongoVersion,
+    "org.scalamock"         %% "scalamock"                % "6.0.0",
+    "com.vladsch.flexmark"  % "flexmark-all"              % "0.64.8",
+    "uk.gov.hmrc"           %% "bootstrap-test-play-30"   % bootstrapVersion,
   ).map(_ % Test)
 
   def apply(): Seq[ModuleID] = compileDependencies ++ testDependencies

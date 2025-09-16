@@ -62,7 +62,7 @@ class OtherBusinessActivelyTradingController @Inject()(val sessionService: Sessi
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        OtherBusinessActivelyTradingForm.form.bindFromRequest.fold(
+        OtherBusinessActivelyTradingForm.form.bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
           success =>

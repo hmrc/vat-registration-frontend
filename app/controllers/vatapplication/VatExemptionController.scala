@@ -52,7 +52,7 @@ class VatExemptionController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        VatExemptionForm.form.bindFromRequest.fold(
+        VatExemptionForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(vatExemptionView(errors))),
           success => {
             for {

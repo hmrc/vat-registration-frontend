@@ -55,7 +55,7 @@ class RemoveOtherBusinessController @Inject()(val authConnector: AuthConnector,
   def submit(otherBusinessName: String, index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        RemoveOtherBusinessForm(otherBusinessName).form.bindFromRequest.fold(
+        RemoveOtherBusinessForm(otherBusinessName).form.bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors, otherBusinessName, index))),
           success => {

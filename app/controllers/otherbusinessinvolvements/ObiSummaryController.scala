@@ -62,7 +62,7 @@ class ObiSummaryController @Inject()(val authConnector: AuthConnector,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ObiSummaryForm().bindFromRequest.fold(
+        ObiSummaryForm().bindFromRequest().fold(
           errors =>
             otherBusinessInvolvementsService.getOtherBusinessInvolvements.map {
               case Nil =>

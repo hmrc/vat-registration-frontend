@@ -36,7 +36,7 @@ object FormValidation {
 
   def regexPattern(pattern: Regex, mandatory: Boolean = true)(implicit e: ErrorCode): Constraint[String] = Constraint {
     input: String =>
-      mandatoryText.apply(input) match {
+      mandatoryText().apply(input) match {
         case Valid => Constraints.pattern(pattern, error = s"validation.$e.invalid")(input)
         case err => if (mandatory) err else Valid
       }
@@ -101,7 +101,7 @@ object FormValidation {
 
   def inRangeWithArgs[T](minValue: T, maxValue: T)(args: Seq[Any] = Seq())(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
-      (ordering.compare(t, minValue).signum, ordering.compare(t, maxValue).signum) match {
+      (ordering.compare(t, minValue).sign, ordering.compare(t, maxValue).sign) match {
         case (1, -1) | (0, _) | (_, 0) => Valid
         case (_, 1) => Invalid(ValidationError(s"validation.$e.range.above", maxValue))
         case (-1, _) if !args.isEmpty => Invalid(ValidationError(s"validation.$e.range.below", args.head))
@@ -111,7 +111,7 @@ object FormValidation {
 
   def onOrAfter[T](minValue: T)(implicit ordering: Ordering[T], e: ErrorCode): Constraint[T] =
     Constraint[T] { (t: T) =>
-      (ordering.compare(t, minValue).signum) match {
+      (ordering.compare(t, minValue).sign) match {
         case (1) | (0) => Valid
         case (-1) => Invalid(ValidationError(s"validation.$e.range.below", minValue))
       }

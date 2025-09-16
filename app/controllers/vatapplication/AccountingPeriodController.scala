@@ -52,7 +52,7 @@ class AccountingPeriodController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        AccountingPeriodForm.form.bindFromRequest.fold(
+        AccountingPeriodForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(accountingPeriodPage(errors))),
           success =>
             vatRegistrationService.getEligibilitySubmissionData.flatMap { eligibilityData =>

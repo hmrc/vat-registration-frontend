@@ -62,7 +62,7 @@ class PartnerSummaryController @Inject()(val authConnector: AuthConnector,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        PartnerSummaryForm().bindFromRequest.fold(
+        PartnerSummaryForm().bindFromRequest().fold(
           errors =>
             entityService.getAllEntities(profile.registrationId).map {
               case Nil => Redirect(controllers.routes.TaskListController.show)

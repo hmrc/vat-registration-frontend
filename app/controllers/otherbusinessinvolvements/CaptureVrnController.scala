@@ -63,7 +63,7 @@ class CaptureVrnController @Inject()(val authConnector: AuthConnector,
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        CaptureVrnForm().bindFromRequest.fold(
+        CaptureVrnForm().bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
           success => {

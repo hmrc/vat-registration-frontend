@@ -94,7 +94,7 @@ class ZeroRatedSuppliesController @Inject()(val sessionService: SessionService,
           }}
         } else {
           vatApplicationService.getTurnover.flatMap {
-            case Some(estimates) => ZeroRatedSuppliesForm.form(estimates).bindFromRequest.fold(
+            case Some(estimates) => ZeroRatedSuppliesForm.form(estimates).bindFromRequest().fold(
               errors => Future.successful(BadRequest(view(routes.ZeroRatedSuppliesController.submit, errors))),
               success => vatApplicationService.saveVatApplication(ZeroRated(success)) map { _ =>
                 Redirect(routes.SellOrMoveNipController.show)

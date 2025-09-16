@@ -63,7 +63,7 @@ class HaveVatNumberController @Inject()(val authConnector: AuthConnector,
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        HaveVatNumberForm().bindFromRequest.fold(
+        HaveVatNumberForm().bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
           hasVrn => {

@@ -39,7 +39,7 @@ object SellOrMoveNipForm extends RequiredBooleanForm {
           regexPattern(regex),
           matchesRegex(commasNotAllowed, "validation.sellOrMoveNip.commasNotAllowed"),
           matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.sellOrMoveNip.moreThanTwoDecimalsNotAllowed"),
-          mandatoryFullNumericText
+          mandatoryFullNumericText()
         ))
         .transform[BigDecimal](s =>
           BigDecimal(s).setScale(2, BigDecimal.RoundingMode.HALF_UP),

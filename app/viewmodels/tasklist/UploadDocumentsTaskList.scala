@@ -16,15 +16,10 @@
 
 package viewmodels.tasklist
 
-import models.CurrentProfile
 import models.api.AttachmentType
 import models.external.upscan._
-import play.api.mvc.Request
-import services.{AttachmentsService, UpscanService}
-import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import javax.inject.Singleton
 
 @Singleton
 class UploadDocumentsTaskList {

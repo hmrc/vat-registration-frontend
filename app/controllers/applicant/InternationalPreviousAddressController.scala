@@ -59,7 +59,7 @@ class InternationalPreviousAddressController @Inject()(val authConnector: AuthCo
       addressFormResultsHandler.handle(
         countries,
         headingMessageKey,
-        formProvider.form().bindFromRequest,
+        formProvider.form().bindFromRequest(),
         submitAction,
         internationalAddress => {
           applicantDetailsService.saveApplicantDetails(PreviousAddress(internationalAddress)) map { _ =>

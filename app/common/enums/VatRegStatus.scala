@@ -20,13 +20,13 @@ import models.ApiKey
 import play.api.libs.json.{Format, Reads, Writes}
 
 object VatRegStatus extends Enumeration {
-  val draft = Value
-  val locked = Value
-  val submitted = Value
-  val failed = Value
-  val failedRetryable = Value
-  val duplicateSubmission = Value
-  val contact = Value
+  val draft: VatRegStatus.Value = Value
+  val locked: VatRegStatus.Value = Value
+  val submitted: VatRegStatus.Value = Value
+  val failed: VatRegStatus.Value = Value
+  val failedRetryable: VatRegStatus.Value = Value
+  val duplicateSubmission: VatRegStatus.Value = Value
+  val contact: VatRegStatus.Value = Value
 
   implicit val apiKey: ApiKey[VatRegStatus.Value] = ApiKey[VatRegStatus.Value]("status")
   implicit val format: Format[VatRegStatus.Value] = Format(Reads.enumNameReads(VatRegStatus), Writes.enumNameWrites)

@@ -16,16 +16,14 @@
 
 package services
 
-import common.DateConversions._
 import connectors.BankHolidaysConnector
 import play.api.cache.SyncCacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import utils.SystemDate
-import utils.workingdays._
-import utils.workingdays.WorkingDays._
 import utils.DateTimeUtils._
-
+import utils.SystemDate
+import utils.workingdays.WorkingDays._
+import utils.workingdays._
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}

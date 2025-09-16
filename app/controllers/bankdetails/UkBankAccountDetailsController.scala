@@ -47,7 +47,7 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        enterBankAccountDetailsForm.bindFromRequest.fold(
+        enterBankAccountDetailsForm.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(view(formWithErrors))),
           accountDetails =>

@@ -26,7 +26,7 @@ import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 import java.time.LocalDate
 
 object OverBusinessGoodsForm extends RequiredBooleanForm {
-  val RADIO_INCLUSIVE: String = "value"
+  private val RADIO_INCLUSIVE: String = "value"
 
   override val errorMsg: String = "validation.frs.costsInclusive.missing"
 
@@ -36,27 +36,27 @@ object OverBusinessGoodsForm extends RequiredBooleanForm {
 }
 
 trait OverBusinessGoodsPercentForm extends RequiredBooleanForm {
-  val RADIO_INCLUSIVE: String = "value"
+  private val RADIO_INCLUSIVE: String = "value"
   val pct: BigDecimal
 
   override val errorMsg: String = "validation.frs.costsLimited.missing"
   override lazy val errorMsgArgs: Seq[Any] = Seq(pct)
 
-  def form = Form(
+  def form: Form[Boolean] = Form(
     single(RADIO_INCLUSIVE -> requiredBoolean)
   )
 }
 
 object FRSStartDateForm {
 
-  val frsDateSelectionEmpty = "validation.frs.startDate.choice.missing"
+  private val frsDateSelectionEmpty = "validation.frs.startDate.choice.missing"
   val dateEmptyKey = "validation.frs.startDate.missing"
   val dateInvalidKey = "validation.frs.startDate.invalid"
-  val dateBeforeVatStartDate = "validation.frs.startDate.range.below.vatStartDate"
-  val dateAfterMaxKey = "validation.frs.startDate.range.after.maxDate"
+  private val dateBeforeVatStartDate = "validation.frs.startDate.range.below.vatStartDate"
+  private val dateAfterMaxKey = "validation.frs.startDate.range.after.maxDate"
 
-  val frsStartDateRadio: String = "frsStartDateRadio"
-  val frsStartDateInput: String = "frsStartDate"
+  private val frsStartDateRadio: String = "frsStartDateRadio"
+  private val frsStartDateInput: String = "frsStartDate"
 
   implicit val specificErrorCode: String = "frs.startDate"
 
@@ -64,7 +64,7 @@ object FRSStartDateForm {
     override val format = Some(("format.string", Nil))
 
     def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
+      Right(data.getOrElse(key,"")).flatMap {
         case e if e == FRSDateChoice.VATDate.toString => Right(FRSDateChoice.VATDate)
         case e if e == FRSDateChoice.DifferentDate.toString => Right(FRSDateChoice.DifferentDate)
         case _ => Left(Seq(FormError(key, frsDateSelectionEmpty, Nil)))
@@ -104,7 +104,7 @@ object EstimateTotalSalesForm {
       regexPattern(regex),
       matchesRegex(commasNotAllowed, "validation.estimateTotalSales.commasNotAllowed"),
       matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.estimateTotalSales.moreThanTwoDecimalsNotAllowed"),
-      mandatoryFullNumericText))
+      mandatoryFullNumericText()))
     )
     .transform[BigDecimal](BigDecimal(_).setScale(2, BigDecimal.RoundingMode.HALF_UP), _.toString)
     .verifying(inRange[BigDecimal](1, BigDecimal("99999999999")))

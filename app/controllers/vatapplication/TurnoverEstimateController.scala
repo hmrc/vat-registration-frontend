@@ -50,7 +50,7 @@ class TurnoverEstimateController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        TurnoverEstimateForm.form.bindFromRequest.fold(
+        TurnoverEstimateForm.form.bindFromRequest().fold(
           errors => Future.successful(
             BadRequest(turnoverEstimateView(errors))
           ),

@@ -48,7 +48,7 @@ class BusinessTelephoneNumberController @Inject()(val sessionService: SessionSer
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        BusinessTelephoneNumberForm.form.bindFromRequest.fold(
+        BusinessTelephoneNumberForm.form.bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors))),
           telephoneNumber => businessService.updateBusiness[TelephoneNumber](TelephoneNumber(telephoneNumber)) map {

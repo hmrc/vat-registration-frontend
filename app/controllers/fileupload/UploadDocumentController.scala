@@ -18,18 +18,16 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.UploadDocumentHintBuilder
-import views.html.fileupload.UploadDocument
 import views.html.attachments.UploadDocumentsNewJourney
+import views.html.fileupload.UploadDocument
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import viewmodels.tasklist.{TLNotStarted, TaskListSectionRow}
 
 
 @Singleton

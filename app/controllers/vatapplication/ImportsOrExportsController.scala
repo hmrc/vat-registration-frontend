@@ -51,7 +51,7 @@ class ImportsOrExportsController @Inject()(val authConnector: AuthClientConnecto
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ImportsOrExportsForm.form.bindFromRequest.fold(
+        ImportsOrExportsForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(view(errors))),
           success => vatApplicationService.saveVatApplication(TradeVatGoodsOutsideUk(success)).map { _ =>
             if (success) {

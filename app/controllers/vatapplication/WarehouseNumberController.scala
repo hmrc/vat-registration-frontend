@@ -54,7 +54,7 @@ class WarehouseNumberController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        WarehouseNumberForm.form.bindFromRequest.fold(
+        WarehouseNumberForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(warehouseNumberView(errors))),
           success => {
             vatApplicationService.saveVatApplication(WarehouseNumber(success)).map { _ =>

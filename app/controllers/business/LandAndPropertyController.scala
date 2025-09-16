@@ -51,7 +51,7 @@ class LandAndPropertyController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        LandAndPropertyForm.form.bindFromRequest.fold(
+        LandAndPropertyForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(view(errors))),
           success => businessService.updateBusiness(LandAndPropertyAnswer(success)).map { _ =>
             Redirect(routes.BusinessActivityDescriptionController.show)

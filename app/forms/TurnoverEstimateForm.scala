@@ -36,7 +36,7 @@ object TurnoverEstimateForm {
             regexPattern(regex),
             matchesRegex(commasNotAllowed, "validation.turnoverEstimate.commasNotAllowed"),
             matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.turnoverEstimate.moreThanTwoDecimalsNotAllowed"),
-            mandatoryFullNumericText
+            mandatoryFullNumericText()
           ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),

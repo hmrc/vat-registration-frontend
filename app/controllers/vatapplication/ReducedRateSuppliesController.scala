@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.ReducedRateSuppliesForm
 import play.api.mvc._
-import services.VatApplicationService.{ReducedRate, StandardRate, Turnover}
+import services.VatApplicationService.{ReducedRate, Turnover}
 import services.{SessionProfile, SessionService, VatApplicationService}
 import views.html.vatapplication.ReducedRateSupplies
 
@@ -53,7 +53,7 @@ class ReducedRateSuppliesController @Inject()(
       implicit profile =>
         vatApplicationService.getVatApplication.flatMap { vatApplication => {
           (vatApplication.zeroRatedSupplies, vatApplication.standardRateSupplies) match {
-            case (Some(zeroRated), Some(standardRate)) => ReducedRateSuppliesForm.form.bindFromRequest.fold(
+            case (Some(zeroRated), Some(standardRate)) => ReducedRateSuppliesForm.form.bindFromRequest().fold(
                 errors => Future.successful(BadRequest(reducedRatedSuppliesView(errors))),
                 success => for {
                   _ <- vatApplicationService.saveVatApplication(ReducedRate(success))
@@ -62,7 +62,7 @@ class ReducedRateSuppliesController @Inject()(
                   Redirect(routes.ZeroRatedSuppliesController.show)
                 }
               )
-            case _ => ReducedRateSuppliesForm.form.bindFromRequest.fold(
+            case _ => ReducedRateSuppliesForm.form.bindFromRequest().fold(
               errors => Future.successful(BadRequest(reducedRatedSuppliesView(errors))),
               success => vatApplicationService.saveVatApplication(ReducedRate(success)) map { _ =>
                 Redirect(routes.ZeroRatedSuppliesController.show)

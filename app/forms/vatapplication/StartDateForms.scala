@@ -25,7 +25,6 @@ import play.api.data.{Form, FormError, Forms}
 import play.api.i18n.Messages
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 import utils.MessageDateFormat
-
 import java.time.LocalDate
 
 trait StartDateForm {
@@ -40,7 +39,7 @@ trait StartDateForm {
 
   implicit def formatter: Formatter[DateSelection.Value] = new Formatter[DateSelection.Value] {
     def bind(key: String, data: Map[String, String]): Either[Seq[FormError], DateSelection.Value] = {
-      Right(data.getOrElse(key, "")).right.flatMap {
+      Right(data.getOrElse(key, "")).flatMap {
         case e if e == DateSelection.company_registration_date.toString => Right(DateSelection.company_registration_date)
         case e if e == DateSelection.business_start_date.toString => Right(DateSelection.business_start_date)
         case e if e == DateSelection.specific_date.toString => Right(DateSelection.specific_date)
@@ -49,7 +48,7 @@ trait StartDateForm {
       }
     }
 
-    def unbind(key: String, value: DateSelection.Value) = Map(key -> value.toString)
+    def unbind(key: String, value: DateSelection.Value): Map[String, String] = Map(key -> value.toString)
   }
 }
 

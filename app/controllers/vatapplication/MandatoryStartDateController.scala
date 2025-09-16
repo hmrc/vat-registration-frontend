@@ -62,7 +62,7 @@ class MandatoryStartDateController @Inject()(val sessionService: SessionService,
       implicit profile =>
         vatApplicationService.calculateEarliestStartDate().flatMap(incorpDate =>
           vatApplicationService.retrieveCalculatedStartDate.flatMap { calcDate =>
-            MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest.fold(
+            MandatoryDateForm.form(incorpDate, calcDate).bindFromRequest().fold(
               errors => {
                 Future.successful(BadRequest(mandatoryStartDateIncorpView(errors, MessageDateFormat.format(calcDate))))
               },
