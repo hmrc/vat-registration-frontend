@@ -32,7 +32,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
 
   s"GET ${routes.ImportsOrExportsController.show.url}" must {
     "return OK when trading details aren't stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
 
@@ -45,7 +45,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       }
     }
     "return OK when vat application is stored in backend" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(false))))
 
@@ -59,7 +59,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
       }
     }
     "return OK when trading details are stored in the backend" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
 
@@ -76,7 +76,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
 
   s"POST ${routes.ImportsOrExportsController.submit.url}" must {
     "redirect to EORI when yes is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true)))
@@ -92,7 +92,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     }
 
     "redirect to TwentyRatedSupplies when no is selected with TT journey enabled" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
@@ -109,7 +109,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     }
 
     "redirect to Turnover when no is selected with TT journey disabled" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(false)))
@@ -126,7 +126,7 @@ class ImportsOrExportsControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {
-      given.user.isAuthorised()
+      given().user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient("/imports-or-exports").post("")

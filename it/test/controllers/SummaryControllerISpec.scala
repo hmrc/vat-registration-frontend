@@ -19,7 +19,7 @@ package controllers
 import connectors.RegistrationApiConnector.nrsSubmissionPayloadKey
 import itutil.ControllerISpec
 import models.ApiKey
-import models.api.{Attachment1614a, Attachment1614h, ExtraIdentityEvidence, ExtraTransactorIdentityEvidence, IdentityEvidence, LandPropertyOtherDocs, LetterOfAuthority, OtherAttachments, PrimaryIdentityEvidence, PrimaryTransactorIdentityEvidence, TaxAgentAuthorisation, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, VAT2, VAT51, VAT5L}
+import models.api.{Attachment1614a, Attachment1614h}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse

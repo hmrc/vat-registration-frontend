@@ -17,6 +17,7 @@
 package controllers.errors
 
 import itutil.ControllerISpec
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class EmailPasscodeNotFoundControllerISpec extends ControllerISpec {
@@ -28,7 +29,7 @@ class EmailPasscodeNotFoundControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(routes.EmailPasscodeNotFoundController.show("test").url).get())
+      val res: WSResponse = await(buildClient(routes.EmailPasscodeNotFoundController.show("test").url).get())
 
       res.status mustBe OK
     }

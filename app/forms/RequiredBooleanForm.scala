@@ -30,7 +30,7 @@ trait RequiredBooleanForm {
 
     // default play binding is to data.getOrElse(key, "false")
     def bind(key: String, data: Map[String, String]) = {
-      Right(data.getOrElse(key,"")).right.flatMap {
+      Right(data.getOrElse(key,"")).flatMap {
         case "true" => Right(true)
         case "false" => Right(false)
         case _ => Left(Seq(FormError(key, errorMsg, errorMsgArgs)))

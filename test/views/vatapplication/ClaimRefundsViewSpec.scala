@@ -17,6 +17,7 @@
 package views.vatapplication
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.data.Forms.{boolean, single}
 import views.VatRegViewSpec
@@ -24,17 +25,17 @@ import views.html.vatapplication.ClaimRefunds
 
 class ClaimRefundsViewSpec extends VatRegViewSpec {
 
-  val form = Form(single("value" -> boolean))
-  val view = app.injector.instanceOf[ClaimRefunds]
-  implicit val doc = Jsoup.parse(view(form).body)
+  val form: Form[Boolean] = Form(single("value" -> boolean))
+  val view: ClaimRefunds = app.injector.instanceOf[ClaimRefunds]
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
     val heading = "Does the business expect to regularly claim VAT refunds from HMRC?"
     val title = "Does the business expect to regularly claim VAT refunds from HMRC?"
-    val para1 = "Most businesses do not claim VAT refunds. It is only possible when the VAT a business pays on " +
+    val para1: String = "Most businesses do not claim VAT refunds. It is only possible when the VAT a business pays on " +
       "business-related purchases is more than the VAT it charges customers."
     val detailsSummary = "Show me an example"
-    val detailsContent = "If a business sells mainly zero-rated items (the VAT on them is 0%), it may pay more VAT to " +
+    val detailsContent: String = "If a business sells mainly zero-rated items (the VAT on them is 0%), it may pay more VAT to " +
       "run its business than it can charge. For example, most books are zero-rated, so a bookshop may find itself in this situation."
     val label = "Select yes if you expect the business to regularly claim VAT refunds from HMRC"
     val continue = "Save and continue"

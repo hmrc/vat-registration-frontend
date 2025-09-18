@@ -78,7 +78,7 @@ class FormerNameCaptureControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/what-was-previous-name").post(Map(
+      val response: Future[WSResponse] = buildClient("/what-was-previous-name").post(Map(
         "formerFirstName" -> testFirstName,
         "formerLastName" -> testLastName
       ))
@@ -96,7 +96,7 @@ class FormerNameCaptureControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/what-was-previous-name").post(Map(
+      val response: Future[WSResponse] = buildClient("/what-was-previous-name").post(Map(
         "formerFirstName" -> "",
         "formerLastName" -> ""
       ))

@@ -21,7 +21,7 @@ import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import helpers.FormInspectors.convertToAnyShouldWrapper
 import models.api.vatapplication.{Annual, Monthly, OverseasCompliance, StoringWithinUk}
-import models.api.{NETP, UkCompany}
+import models.api.{NETP, UkCompany, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import models.{ConditionalValue, FrsBusinessType}
 import org.mockito.ArgumentMatchers.any
@@ -57,7 +57,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
   val testVrn = "testVrn"
 
   class Setup {
-    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
+    val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
@@ -106,7 +106,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
   "Generate Registration Details Builder" when {
     "returns a registration detail summary list for UK company" in new Setup {
-      val testVatScheme = emptyVatScheme.copy(
+      val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = UkCompany
         )),
@@ -151,7 +151,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     }
 
     "returns a registration detail summary list for NETP" in new Setup {
-      val testVatScheme = emptyVatScheme.copy(
+      val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = NETP,
           fixedEstablishmentInManOrUk = false
@@ -178,7 +178,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     }
 
     "hide the zero rated row if the user's turnover is £0" in new Setup {
-      val scheme = emptyVatScheme.copy(
+      val scheme: VatScheme = emptyVatScheme.copy(
         business = Some(validBusiness.copy(
           otherBusinessInvolvement = Some(false),
           labourCompliance = Some(complianceWithLabour),
@@ -209,7 +209,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     }
 
     "not show the NIP compliance values if the user answered No to both questions" in new Setup {
-      val scheme = emptyVatScheme.copy(
+      val scheme: VatScheme = emptyVatScheme.copy(
         business = Some(validBusiness.copy(
           otherBusinessInvolvement = Some(false),
           labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
@@ -217,8 +217,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         vatApplication = Some(validVatApplication.copy(
           northernIrelandProtocol = Some(validNipCompliance.copy(
-            goodsToEU = Some(ConditionalValue(false, None)),
-            goodsFromEU = Some(ConditionalValue(false, None)))
+            goodsToEU = Some(ConditionalValue(answer = false, None)),
+            goodsFromEU = Some(ConditionalValue(answer = false, None)))
           ),
           currentlyTrading = Some(true),
           startDate = Some(LocalDate.now())
@@ -242,7 +242,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     }
 
     "show the NIP compliance values if the user answered Yes to atleast one" in new Setup {
-      val scheme = emptyVatScheme.copy(
+      val scheme: VatScheme = emptyVatScheme.copy(
         business = Some(validBusiness.copy(
           otherBusinessInvolvement = Some(false),
           labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
@@ -250,8 +250,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
         eligibilitySubmissionData = Some(validEligibilitySubmissionData),
         vatApplication = Some(validVatApplication.copy(
           northernIrelandProtocol = Some(validNipCompliance.copy(
-            goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
-            goodsFromEU = Some(ConditionalValue(false, None)))
+            goodsToEU = Some(ConditionalValue(answer = true, Some(BigDecimal(1)))),
+            goodsFromEU = Some(ConditionalValue(answer = false, None)))
           ),
           currentlyTrading = Some(true),
           startDate = Some(LocalDate.now())
@@ -278,7 +278,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
       appConfig.setValue(TaxableTurnoverJourney,"true")
 
-      val testVatScheme = emptyVatScheme.copy(
+      val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = UkCompany
         )),
@@ -334,7 +334,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
       appConfig.setValue(TaxableTurnoverJourney,"false")
 
-      val testVatScheme = emptyVatScheme.copy(
+      val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
           partyType = UkCompany
         )),
@@ -389,7 +389,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
   "the user is sending goods to the EU" when {
     "the user is using a dispatch warehouse" must {
       "show the overseas answers with the EU questions, dispatch questions and international address" in new Setup {
-        val scheme = emptyVatScheme.copy(
+        val scheme: VatScheme = emptyVatScheme.copy(
           business = Some(validBusiness.copy(
             otherBusinessInvolvement = Some(false),
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
@@ -401,8 +401,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           vatApplication = Some(validVatApplication.copy(
             currentlyTrading = Some(true),
             northernIrelandProtocol = Some(validNipCompliance.copy(
-              goodsToEU = Some(ConditionalValue(false, None)),
-              goodsFromEU = Some(ConditionalValue(false, None))
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None))
             )),
             overseasCompliance = Some(OverseasCompliance(
               goodsToOverseas = Some(true),
@@ -441,7 +441,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
 
     "the user is not using a dispatch warehouse" must {
       "show the overseas answers with the EU questions with an international address, minus the dispatch questions" in new Setup {
-        val scheme = emptyVatScheme.copy(
+        val scheme: VatScheme = emptyVatScheme.copy(
           business = Some(validBusiness.copy(
             otherBusinessInvolvement = Some(false),
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
@@ -452,8 +452,8 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           )),
           vatApplication = Some(validVatApplication.copy(
             northernIrelandProtocol = Some(validNipCompliance.copy(
-              goodsToEU = Some(ConditionalValue(false, None)),
-              goodsFromEU = Some(ConditionalValue(false, None))
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None))
             )),
             overseasCompliance = Some(OverseasCompliance(
               goodsToOverseas = Some(true),
@@ -465,7 +465,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           ))
         )
 
-        val res = Builder.build(scheme)
+        val res: HtmlFormat.Appendable = Builder.build(scheme)
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(
@@ -491,7 +491,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
   "the user is overseas" when {
     "the user is not sending goods to the EU" must {
       "show the overseas answers with an international address, mandatory trading name, without questions regarding sending goods to the EU" in new Setup {
-        val scheme = emptyVatScheme.copy(
+        val scheme: VatScheme = emptyVatScheme.copy(
           business = Some(validBusiness.copy(
             otherBusinessInvolvement = Some(false),
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
@@ -509,7 +509,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
           ))
         )
 
-        val res = Builder.build(scheme)
+        val res: HtmlFormat.Appendable = Builder.build(scheme)
 
         res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(
           rows = List(

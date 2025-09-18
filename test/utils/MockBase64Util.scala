@@ -24,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 trait MockBase64Util extends MockitoSugar {
   self: Suite =>
 
-  val mockBase64Util = mock[Base64Util]
+  val mockBase64Util: Base64Util = mock[Base64Util]
 
   def mockEncodeBase64(inStr: String)(response: String): OngoingStubbing[String] =
     when(mockBase64Util.encodeString(inStr)) thenReturn response

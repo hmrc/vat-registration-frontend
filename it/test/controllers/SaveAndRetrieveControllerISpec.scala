@@ -18,6 +18,7 @@ package controllers
 
 import itutil.ControllerISpec
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class SaveAndRetrieveControllerISpec extends ControllerISpec {
@@ -26,12 +27,12 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
 
   "GET /schemes/save-for-later" must {
     "return SEE_OTHER" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationProgressSavedController.show.url)

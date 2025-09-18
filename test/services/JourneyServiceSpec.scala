@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 class JourneyServiceSpec extends VatRegSpec {
 
-  lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  lazy val frontendAppConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   class Setup {
     val service = new JourneyService(
@@ -43,7 +43,7 @@ class JourneyServiceSpec extends VatRegSpec {
   }
   implicit val request: Request[_] = FakeRequest()
 
-  val now = LocalDate.now()
+  val now: LocalDate = LocalDate.now()
 
   val testCurrentProfile: CurrentProfile = CurrentProfile(
     registrationId = "testRegId",
@@ -53,7 +53,7 @@ class JourneyServiceSpec extends VatRegSpec {
   "buildCurrentProfile" should {
     "return a CurrentProfile" when {
       "the a CurrentProfile has been cached in Keystore" in new Setup {
-        implicit val hc = HeaderCarrier()
+        implicit val hc: HeaderCarrier = HeaderCarrier()
 
         when(mockVatRegistrationService.getStatus(any())(any[HeaderCarrier](), any()))
           .thenReturn(Future.successful(VatRegStatus.draft))
@@ -61,7 +61,7 @@ class JourneyServiceSpec extends VatRegSpec {
         when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("", Map())))
 
-        val result = await(service.buildCurrentProfile("testRegId"))
+        val result: CurrentProfile = await(service.buildCurrentProfile("testRegId"))
         result mustBe testCurrentProfile
       }
     }

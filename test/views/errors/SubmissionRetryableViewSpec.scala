@@ -30,7 +30,7 @@ class SubmissionRetryableViewSpec extends VatRegViewSpec {
     val resend =  "Resend"
   }
 
-  val view = app.injector.instanceOf[SubmissionRetryableView]
+  val view: SubmissionRetryableView = app.injector.instanceOf[SubmissionRetryableView]
 
   implicit val doc: Document = Jsoup.parse(view().body)
 

@@ -37,7 +37,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return OK with a blank form if no data is stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](None)
 
@@ -49,7 +49,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'Yes' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplySupportingDocuments = Some(true))))
 
@@ -64,7 +64,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'No' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplySupportingDocuments = Some(false))))
 
@@ -81,7 +81,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to Upload Supporting Document page if 'yes' is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false), supplySupportingDocuments = Some(true)))
@@ -95,7 +95,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
     }
 
     "remove old supplySupportingDocuments files and redirect to Tasklist page if 'no' is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false), supplySupportingDocuments = Some(false)))
@@ -112,7 +112,7 @@ class SupplySupportingDocumentsControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)

@@ -18,10 +18,9 @@ package controllers.vatapplication
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.{StandardRateSuppliesForm, ZeroRatedSuppliesNewJourneyForm}
-import models.error.MissingAnswerException
+import forms.StandardRateSuppliesForm
 import play.api.mvc.{Action, AnyContent}
-import services.VatApplicationService.{StandardRate, Turnover, ZeroRated}
+import services.VatApplicationService.{StandardRate, Turnover}
 import services.{SessionProfile, SessionService, VatApplicationService}
 import views.html.vatapplication.StandardRateSupplies
 
@@ -54,7 +53,7 @@ class StandardRateSuppliesController @Inject()(val sessionService: SessionServic
       implicit profile =>
         vatApplicationService.getVatApplication.flatMap { vatApplication => {
           (vatApplication.zeroRatedSupplies, vatApplication.reducedRateSupplies) match {
-            case (Some(zeroRated), Some(reducedRated)) => StandardRateSuppliesForm.form.bindFromRequest.fold(
+            case (Some(zeroRated), Some(reducedRated)) => StandardRateSuppliesForm.form.bindFromRequest().fold(
                 errors => Future.successful(BadRequest(standardRatesSuppliesView(routes.StandardRateSuppliesController.submit,errors))),
                 success => for {
                   _ <- vatApplicationService.saveVatApplication(StandardRate(success))
@@ -63,7 +62,7 @@ class StandardRateSuppliesController @Inject()(val sessionService: SessionServic
                   Redirect(routes.ReducedRateSuppliesController.show)
                 }
               )
-            case _ => StandardRateSuppliesForm.form.bindFromRequest.fold(
+            case _ => StandardRateSuppliesForm.form.bindFromRequest().fold(
               errors => Future.successful(BadRequest(standardRatesSuppliesView(routes.StandardRateSuppliesController.submit,errors))),
               success => vatApplicationService.saveVatApplication(StandardRate(success)) map { _ =>
                 Redirect(routes.ReducedRateSuppliesController.show)

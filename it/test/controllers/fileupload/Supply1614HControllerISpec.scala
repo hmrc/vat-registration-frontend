@@ -35,7 +35,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return OK with a blank form if no data is stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](None)
 
@@ -47,7 +47,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'Yes' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614h = Some(true))))
 
@@ -62,7 +62,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'No' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614h = Some(false))))
 
@@ -79,7 +79,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "change old supplyVat1614a answer and uploaded file and redirect to Upload 1614H page if 'yes' is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(true), supplyVat1614h = Some(false))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(true)))
@@ -95,7 +95,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
     }
 
     "remove old supplyVat1614h uploaded file and redirect to Supply Supporting Documents page if 'no' is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(true))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false)))
@@ -111,7 +111,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
     }
 
     "remove old supplyVat1614h uploaded file and redirect to Supply Supporting Documents page if 'no' is selected and there is already a supporting document uploaded" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(true))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false)))
@@ -127,7 +127,7 @@ class Supply1614HControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)

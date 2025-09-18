@@ -19,6 +19,7 @@ package views.fileupload
 import models.api.PrimaryIdentityEvidence
 import models.external.upscan.{Ready, UploadDetails, UpscanDetails}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.fileupload.UploadingDocument
@@ -27,7 +28,7 @@ import java.time.LocalDateTime
 
 class UploadingDocumentViewSpec extends VatRegViewSpec {
 
-  val uploadingDocumentPage = app.injector.instanceOf[UploadingDocument]
+  val uploadingDocumentPage: UploadingDocument = app.injector.instanceOf[UploadingDocument]
 
   lazy val view: Html = uploadingDocumentPage(UpscanDetails(
     attachmentType = PrimaryIdentityEvidence,
@@ -35,7 +36,7 @@ class UploadingDocumentViewSpec extends VatRegViewSpec {
     fileStatus = Ready,
     uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))
   ))
-  implicit val doc = Jsoup.parse(view.body)
+  implicit val doc: Document = Jsoup.parse(view.body)
 
   object ExpectedContent {
     val heading = "Uploading the document"
@@ -54,7 +55,7 @@ class UploadingDocumentViewSpec extends VatRegViewSpec {
     }
 
     "have the correct title" in new ViewSetup {
-      doc.getElementsByTag("title").text mustBe ExpectedContent.title
+      doc.getElementsByTag("title").first().text() mustBe ExpectedContent.title
     }
 
     "have the correct subheading" in new ViewSetup {

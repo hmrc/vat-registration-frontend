@@ -31,7 +31,7 @@ class EmailVerifiedControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient("/email-address-verified").get)
+      val res: WSResponse = await(buildClient("/email-address-verified").get())
 
       res.status mustBe OK
     }

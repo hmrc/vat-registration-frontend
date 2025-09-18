@@ -20,9 +20,9 @@ import testHelpers.VatRegSpec
 
 class ApplicationReferenceFormSpec extends VatRegSpec {
 
-  val form = app.injector.instanceOf[ApplicationReferenceForm]
+  val form: ApplicationReferenceForm = app.injector.instanceOf[ApplicationReferenceForm]
 
-  val validValues = Seq (
+  val validValues: Seq[(String, String)] = Seq (
     ("letters", "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
     ("numbers", "1234567890"),
     ("special characters", " '‘()[]{}<>!«»\"ʺ˝ˮ?/\\\\+=%#*&$€£_-@¥.,:;")
@@ -31,7 +31,7 @@ class ApplicationReferenceFormSpec extends VatRegSpec {
   "the Application Reference form" must {
     validValues.collect { case (test, value) =>
       s"bind valid characters for $test" in {
-        form().bind(Map("value" -> value)).errors.isEmpty mustBe true
+        form().bind(Map("value" -> `value`)).errors.isEmpty mustBe true
       }
     }
 

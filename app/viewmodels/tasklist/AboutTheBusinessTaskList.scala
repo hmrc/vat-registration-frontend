@@ -24,7 +24,7 @@ import models.{Business, CurrentProfile}
 import play.api.i18n.Messages
 import services.BusinessService
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 
 @Singleton
 object AboutTheBusinessTaskList {

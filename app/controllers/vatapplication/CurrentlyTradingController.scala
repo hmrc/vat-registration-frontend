@@ -70,7 +70,7 @@ class CurrentlyTradingController@Inject()(val authConnector: AuthConnector,
               val msgKeySuffix = if (startDate.isBefore(LocalDate.now())) "past" else "future"
               val registrationDate = MessageDateFormat.format(startDate)
 
-              CurrentlyTradingForm(msgKeySuffix, registrationDate).form.bindFromRequest.fold(
+              CurrentlyTradingForm(msgKeySuffix, registrationDate).form.bindFromRequest().fold(
                 errors => Future.successful(BadRequest(view(errors, msgKeySuffix, registrationDate))),
                 success => {
                   vatApplicationService.saveVatApplication(CurrentlyTrading(success)).map { _ =>

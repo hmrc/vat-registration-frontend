@@ -21,7 +21,6 @@ import itutil.ControllerISpec
 import models.Entity
 import models.api._
 import org.jsoup.Jsoup
-import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse

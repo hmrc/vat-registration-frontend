@@ -37,7 +37,7 @@ object ZeroRatedSuppliesNewJourneyForm {
           .verifying(stopOnFail(
             regexPattern(regex),
             matchesRegex(penceNotAllowed, "validation.zeroRatedSupplies.newJourney.decimalsNotAllowed"),
-            mandatoryFullNumericText
+            mandatoryFullNumericText()
           ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),

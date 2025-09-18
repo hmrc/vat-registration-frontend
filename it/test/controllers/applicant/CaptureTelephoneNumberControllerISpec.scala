@@ -44,7 +44,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
 
@@ -82,7 +82,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
+      val res: WSResponse = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq(testPhoneNumber))))
 
       res.status mustBe SEE_OTHER
       res.header("LOCATION") mustBe Some(controllers.routes.TaskListController.show.url)
@@ -97,7 +97,7 @@ class CaptureTelephoneNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq())))
+      val res: WSResponse = await(buildClient("/telephone-number").post(Map("telephone-number" -> Seq())))
 
       res.status mustBe BAD_REQUEST
     }

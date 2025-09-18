@@ -34,20 +34,20 @@ import java.util.UUID
 
 class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
 
-  val sId = UUID.randomUUID().toString
+  val sId: String = UUID.randomUUID().toString
 
-  override implicit val hc = HeaderCarrier(sessionId = Some(SessionId(sId)))
+  override implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sId)))
 
   class Setup {
-    val repository = app.injector.instanceOf[SessionRepository]
+    val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
 
-    val connector = app.injector.instanceOf[SessionService]
+    val connector: SessionService = app.injector.instanceOf[SessionService]
     await(repository.collection.drop().head())
-    await(repository.ensureIndexes)
+    await(repository.ensureIndexes())
 
     implicit val jsObjWts: OWrites[JsObject] = OWrites(identity)
 
-    def count = await(repository.collection.countDocuments().head())
+    def count: Long = await(repository.collection.countDocuments().head())
   }
 
   "SessionRepository" should {
@@ -110,7 +110,7 @@ class SessionRepositoryISpec extends IntegrationSpecBase with AppAndStubs {
         count mustBe 0
       }
       "there are two current profiles" in new Setup() {
-        val hc1 = hc.copy(sessionId = Some(SessionId("id1")))
+        val hc1: HeaderCarrier = hc.copy(sessionId = Some(SessionId("id1")))
 
         await(connector.cache("CurrentProfile", currentProfile)(hc1, models.CurrentProfile.format))
         await(connector.cache("CurrentProfile", currentProfile)(hc.copy(sessionId = Some(SessionId("id2"))), models.CurrentProfile.format))

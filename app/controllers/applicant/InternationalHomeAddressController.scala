@@ -65,7 +65,7 @@ class InternationalHomeAddressController @Inject()(val authConnector: AuthConnec
           addressFormResultsHandler.handle(
             countries,
             headingMessageKey,
-            formProvider.form().bindFromRequest,
+            formProvider.form().bindFromRequest(),
             submitAction,
             internationalAddress =>
               applicantDetailsService.saveApplicantDetails(CurrentAddress(internationalAddress)) map { _ =>

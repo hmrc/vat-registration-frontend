@@ -16,7 +16,6 @@
 
 package controllers.business
 
-import featuretoggle.FeatureSwitch.FeatureSwitch
 import fixtures.VatRegistrationFixture
 import models.api.{NonUkNonEstablished, UkCompany}
 import play.api.mvc.{AnyContentAsEmpty, Call}
@@ -31,7 +30,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
   with VatRegistrationFixture with BusinessServiceMock with MockVatRegistrationService {
 
   trait Setup {
-    val view = app.injector.instanceOf[Workers]
+    val view: Workers = app.injector.instanceOf[Workers]
     val controller: WorkersController = new WorkersController(
       mockAuthClientConnector,
       mockSessionService,
@@ -45,7 +44,7 @@ class WorkersControllerSpec extends ControllerSpec with FutureAwaits with Future
 
     val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.WorkersController.show)
 
-    def verifyRedirectLocation(featureSwitchFn: FeatureSwitch => Unit, resolvedLocation: Call): Unit = {
+    def verifyRedirectLocation(resolvedLocation: Call): Unit = {
       submitAuthorised(controller.submit, fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "numberOfWorkers" -> "5"
       ))(_ redirectsTo resolvedLocation.url)

@@ -24,9 +24,6 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import testHelpers.VatRegSpec
 import utils.workingdays._
 
-
-import java.time.LocalDate
-
 class VoluntaryDateFormIncorpSpec extends VatRegSpec {
   val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))

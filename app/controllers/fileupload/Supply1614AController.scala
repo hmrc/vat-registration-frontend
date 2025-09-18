@@ -54,7 +54,7 @@ class Supply1614AController @Inject()(val authConnector: AuthConnector,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        Supply1614AForm.form.bindFromRequest.fold(
+        Supply1614AForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(page(errors))),
           success => {
             attachmentsService.storeAttachmentDetails(profile.registrationId, Supply1614AAnswer(success)).flatMap { _ =>

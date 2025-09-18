@@ -31,7 +31,7 @@ import scala.concurrent.Future
 trait BusinessServiceMock {
   this: MockitoSugar =>
 
-  lazy val mockBusinessService = mock[BusinessService]
+  lazy val mockBusinessService: BusinessService = mock[BusinessService]
 
   def mockGetBusiness(res: Future[Business]): OngoingStubbing[Future[Business]] = {
     when(mockBusinessService.getBusiness(Matchers.any[CurrentProfile], Matchers.any[HeaderCarrier], any[Request[_]])).thenReturn(res)

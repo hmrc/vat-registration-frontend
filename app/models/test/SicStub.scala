@@ -16,7 +16,7 @@
 
 package models.test
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class SicStub(selection: SicStubSelection,
                    sicCode1: Option[String] = None,
@@ -29,5 +29,5 @@ case class SicStub(selection: SicStubSelection,
 }
 
 object SicStub {
-  implicit val format = Json.format[SicStub]
+  implicit val format: OFormat[SicStub] = Json.format[SicStub]
 }

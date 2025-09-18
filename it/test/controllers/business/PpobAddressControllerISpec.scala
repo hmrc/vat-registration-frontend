@@ -19,7 +19,10 @@ package controllers.business
 import itutil.ControllerISpec
 import models.Business
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class PpobAddressControllerISpec extends ControllerISpec {
 
@@ -31,7 +34,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.business.routes.PpobAddressController.startJourney.url).get()
+      val response: Future[WSResponse] = buildClient(controllers.business.routes.PpobAddressController.startJourney.url).get()
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
@@ -41,7 +44,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
       given()
         .user.isNotAuthorised
 
-      val response = buildClient(controllers.business.routes.PpobAddressController.startJourney.url).get()
+      val response: Future[WSResponse] = buildClient(controllers.business.routes.PpobAddressController.startJourney.url).get()
       whenReady(response) { res =>
         res.status mustBe INTERNAL_SERVER_ERROR
 
@@ -59,7 +62,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
+      val response: Future[WSResponse] = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessEmailController.show.url)
@@ -75,7 +78,7 @@ class PpobAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
+      val response: Future[WSResponse] = buildClient(controllers.business.routes.PpobAddressController.callback(id = "fudgesicle").url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.BusinessEmailController.show.url)

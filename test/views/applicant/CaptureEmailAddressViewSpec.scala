@@ -18,6 +18,7 @@ package views.applicant
 
 import forms.EmailAddressForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.applicant.CaptureEmailAddress
 
@@ -36,7 +37,7 @@ class CaptureEmailAddressViewSpec extends VatRegViewSpec {
     val nonTransactorView = app.injector.instanceOf[CaptureEmailAddress].apply(testCall, form, None)
     val transactorView = app.injector.instanceOf[CaptureEmailAddress].apply(testCall, form, Some(name))
 
-    implicit val nonTransactorDoc = Jsoup.parse(nonTransactorView.body)
+    implicit val nonTransactorDoc: Document = Jsoup.parse(nonTransactorView.body)
     val transactorDoc = Jsoup.parse(transactorView.body)
 
     "have the correct title" in new ViewSetup {

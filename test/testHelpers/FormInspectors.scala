@@ -23,24 +23,24 @@ import play.api.data.{Form, FormError}
 
 object FormInspectors extends Matchers with Inspectors {
 
-  val toErrorSeq = (fe: FormError) => (fe.key, fe.message)
+  val toErrorSeq: FormError => (String, String) = (fe: FormError) => (fe.key, fe.message)
 
   implicit class FormErrorOps[T](form: Form[T]) {
 
     def shouldHaveErrors(es: Seq[(String, String)]): Assertion = {
-      form.errors shouldBe 'nonEmpty
+      form.errors shouldBe Symbol("nonEmpty")
       form.errors.size shouldBe es.size
       form.errors.map(toErrorSeq) shouldBe es
     }
 
     def shouldHaveGlobalErrors(es: String*): Assertion = {
-      form.globalErrors shouldBe 'nonEmpty
+      form.globalErrors shouldBe Symbol("nonEmpty")
       form.globalErrors.size shouldBe es.size
       form.globalErrors.map(toErrorSeq).map(_._2) should contain only (es: _*)
     }
 
     def shouldContainValue(value: T): Assertion = {
-      form.errors shouldBe 'empty
+      form.errors shouldBe Symbol("empty")
       form.value shouldBe Some(value)
     }
 

@@ -67,7 +67,7 @@ class VoluntaryStartDateController @Inject()(val sessionService: SessionService,
       implicit profile =>
         vatApplicationService.calculateEarliestStartDate().flatMap { incorpDate =>
           val voluntaryDateForm = VoluntaryDateForm.form(incorpDate, timeService.addMonths(3))
-          voluntaryDateForm.bindFromRequest.fold(
+          voluntaryDateForm.bindFromRequest().fold(
             errors => {
               val dynamicDate = timeService.dynamicFutureDateExample()
               val incorpDateAfter = incorpDate.isAfter(timeService.minusYears(4))

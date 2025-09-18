@@ -22,12 +22,15 @@ import models.api.{EligibilitySubmissionData, NonUkNonEstablished}
 import models.{Business, LabourCompliance}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import views.html.sicandcompliance.Workers
 
+import scala.concurrent.Future
+
 class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
-  val view = app.injector.instanceOf[Workers]
+  val view: Workers = app.injector.instanceOf[Workers]
 
   "show" should {
     "return OK with the form unpopulated" in new Setup {
@@ -37,7 +40,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/number-of-workers-supplied").get()
+      val response: Future[WSResponse] = buildClient("/number-of-workers-supplied").get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -45,7 +48,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
       }
     }
     "return OK with the form prepopulated" in new Setup {
-      val dataModel = fullModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
+      val dataModel: Business = fullModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -53,7 +56,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/number-of-workers-supplied").get()
+      val response: Future[WSResponse] = buildClient("/number-of-workers-supplied").get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -64,8 +67,8 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
   "submit" should {
     "redirect to the Task List" in new Setup {
-      val initialModel = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
-      val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
+      val initialModel: Business = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
+      val expectedModel: Business = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -74,7 +77,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
+      val response: Future[WSResponse] = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> Seq("1")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
@@ -83,8 +86,8 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
     }
 
     "return BAD_REQUEST" in new Setup {
-      val initialModel = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
-      val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
+      val initialModel: Business = fullModel.copy(labourCompliance = Some(LabourCompliance(None, None, Some(true))))
+      val expectedModel: Business = initialModel.copy(labourCompliance = Some(LabourCompliance(Some(1), None, Some(true))))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
@@ -95,7 +98,7 @@ class WorkersControllerISpec extends ControllerISpec with FeatureToggleSupport {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> ""))
+      val response: Future[WSResponse] = buildClient("/number-of-workers-supplied").post(Map("numberOfWorkers" -> ""))
 
       whenReady(response) { res =>
         res.status mustBe BAD_REQUEST

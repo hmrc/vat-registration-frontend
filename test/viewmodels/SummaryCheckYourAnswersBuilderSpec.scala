@@ -83,7 +83,7 @@ class SummaryCheckYourAnswersBuilderSpec extends VatRegSpec {
     stillTrading = Some(true)
   )
 
-  val testObiSection = List(testObi, testObi)
+  val testObiSection: List[OtherBusinessInvolvement] = List(testObi, testObi)
   val testVatScheme: VatScheme = validVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson))
 
   "generateSummaryAccordion" must {

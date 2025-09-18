@@ -21,6 +21,7 @@ import models.api.{EligibilitySubmissionData, UkCompany}
 import models.{ApplicantDetails, Contact, TransactorDetails}
 import org.jsoup.Jsoup
 import play.api.libs.json.Format
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends ControllerISpec {
@@ -36,7 +37,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
+      val res: WSResponse = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 
       res.status mustBe OK
       Jsoup.parse(res.body).getElementsByTag("p").text() contains validFullApplicantDetails.contact.email.get
@@ -52,16 +53,16 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
+      val res: WSResponse = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 
       res.status mustBe OK
-      Jsoup.parse(res.body).getElementsByTag("p").text() contains validTransactorDetails.email
+      Jsoup.parse(res.body).getElementsByTag("p").text() contains Some(validTransactorDetails.email)
     }
 
     "return INTERNAL_SERVER_ERROR when email is not present" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      val transactorDetailsWithoutEmail = validTransactorDetails.copy(email = None)
-      val applicantDetailsWithoutEmail = validFullApplicantDetails.copy(contact = Contact())
+      val transactorDetailsWithoutEmail: TransactorDetails = validTransactorDetails.copy(email = None)
+      val applicantDetailsWithoutEmail: ApplicantDetails = validFullApplicantDetails.copy(contact = Contact())
       given()
         .user.isAuthorised()
         .registrationApi.getSection[TransactorDetails](Some(transactorDetailsWithoutEmail))
@@ -70,7 +71,7 @@ class EmailConfirmationCodeMaxAttemptsExceededControllerISpec extends Controller
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
+      val res: WSResponse = await(buildClient(routes.EmailConfirmationCodeMaxAttemptsExceededController.show.url).get())
 
       res.status mustBe INTERNAL_SERVER_ERROR
     }

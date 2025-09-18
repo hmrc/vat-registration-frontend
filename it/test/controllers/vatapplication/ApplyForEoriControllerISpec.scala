@@ -24,15 +24,14 @@ import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-
-import scala.collection.JavaConverters.asScalaIteratorConverter
+import scala.jdk.CollectionConverters._
 import scala.concurrent.Future
 
 class ApplyForEoriControllerISpec extends ControllerISpec {
 
   s"GET ${routes.ApplyForEoriController.show.url}" must {
     "return OK when trading details aren't stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](None)
@@ -49,7 +48,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
 
     "return OK for overseas page when trading details aren't stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
         partyType = NETP,
@@ -69,7 +68,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
 
     "return OK when trading details are stored in backend" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(false), eoriRequested = Some(false))))
@@ -84,7 +83,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
       }
     }
     "return OK when trading details are stored in the backend" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[VatApplication](Some(VatApplication(eoriRequested = Some(true))))
@@ -106,7 +105,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       "redirect to StandardRateSuppliesController" in new Setup {
         enable(TaxableTurnoverJourney)
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
           .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
@@ -126,7 +125,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
 
       "redirect to TurnoverEstimateController" in new Setup {
         disable(TaxableTurnoverJourney)
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection[VatApplication](Some(VatApplication(tradeVatGoodsOutsideUk = Some(true))))
           .registrationApi.replaceSection[VatApplication](VatApplication(tradeVatGoodsOutsideUk = Some(true), eoriRequested = Some(true)))
@@ -143,7 +142,7 @@ class ApplyForEoriControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no radio option selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

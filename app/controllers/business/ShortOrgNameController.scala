@@ -49,7 +49,7 @@ class ShortOrgNameController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ShortOrgNameForm().bindFromRequest.fold(
+        ShortOrgNameForm().bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors))),
           success => {

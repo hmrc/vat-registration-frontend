@@ -31,7 +31,7 @@ trait AuthMock {
   this: MockitoSugar =>
 
   lazy val mockAuthClientConnector: AuthClientConnector = mock[AuthClientConnector]
-  def agentEnrolment(arn: String) = Enrolment("HMRC-AS-AGENT").withIdentifier("AgentReferenceNumber", arn)
+  def agentEnrolment(arn: String): Enrolment = Enrolment("HMRC-AS-AGENT").withIdentifier("AgentReferenceNumber", arn)
 
   def mockAuthenticatedBasic: OngoingStubbing[Future[Unit]] =
     when(mockAuthClientConnector.authorise[Unit](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))

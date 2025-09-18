@@ -22,17 +22,17 @@ import models.external._
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 object VerifyEmailVerificationPasscodeParser {
 
-  val CodeKey = "code"
-  val PasscodeMismatchKey = "PASSCODE_MISMATCH"
-  val PasscodeNotFoundKey = "PASSCODE_NOT_FOUND"
-  val MaxAttemptsExceededKey = "MAX_PASSCODE_ATTEMPTS_EXCEEDED"
+  private val CodeKey = "code"
+  private val PasscodeMismatchKey = "PASSCODE_MISMATCH"
+  private val PasscodeNotFoundKey = "PASSCODE_NOT_FOUND"
+  private val MaxAttemptsExceededKey = "MAX_PASSCODE_ATTEMPTS_EXCEEDED"
 
   implicit object VerifyEmailVerificationPasscodeHttpReads extends HttpReads[VerifyEmailPasscodeResult] {
     override def read(method: String, url: String, response: HttpResponse): VerifyEmailPasscodeResult = {

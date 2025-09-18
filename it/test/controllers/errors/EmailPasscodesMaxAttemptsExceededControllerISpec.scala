@@ -17,6 +17,7 @@
 package controllers.errors
 
 import itutil.ControllerISpec
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {
@@ -28,7 +29,7 @@ class EmailPasscodesMaxAttemptsExceededControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(routes.EmailPasscodesMaxAttemptsExceededController.show.url).get())
+      val res: WSResponse = await(buildClient(routes.EmailPasscodesMaxAttemptsExceededController.show.url).get())
 
       res.status mustBe OK
     }

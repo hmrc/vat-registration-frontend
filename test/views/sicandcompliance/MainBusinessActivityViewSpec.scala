@@ -20,18 +20,19 @@ import forms.MainBusinessActivityForm
 import models.api.SicCode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.sicandcompliance.MainBusinessActivity
 
 class MainBusinessActivityViewSpec extends VatRegViewSpec {
 
   val view: MainBusinessActivity = app.injector.instanceOf[MainBusinessActivity]
-  lazy val form = MainBusinessActivityForm.form
+  lazy val form: Form[String] = MainBusinessActivityForm.form
 
   val heading = "Which activity is the business’s main source of income?"
   val title = s"$heading - Register for VAT - GOV.UK"
   val continue = "Save and continue"
-  val sicCodeList = Seq(SicCode("id1", "code1", "code display 1"), SicCode("id2", "code2", "code display 2"), SicCode("id3", "code3", "code display 3"))
+  val sicCodeList: Seq[SicCode] = Seq(SicCode("id1", "code1", "code display 1"), SicCode("id2", "code2", "code display 2"), SicCode("id3", "code3", "code display 3"))
 
   implicit val doc: Document = Jsoup.parse(view(form, sicCodeList).body)
 
@@ -49,7 +50,7 @@ class MainBusinessActivityViewSpec extends VatRegViewSpec {
     }
 
     "display a list of Sic Code description not pre selected" in new ViewSetup {
-      lazy val document = Jsoup.parse(view(form, sicCodeList).body)
+      lazy val document: Document = Jsoup.parse(view(form, sicCodeList).body)
 
       document.getElementsByAttributeValue("name", "value").size mustBe 3
       document.getElementsByAttributeValue("checked", "checked").size mustBe 0

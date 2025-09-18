@@ -54,7 +54,7 @@ class DispatchFromWarehouseController @Inject()(val sessionService: SessionServi
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        DispatchFromWarehouseForm.form.bindFromRequest.fold(
+        DispatchFromWarehouseForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(dispatchFromWarehouseView(errors))),
           success => {
             vatApplicationService.saveVatApplication(UsingWarehouse(success)).map { _ =>

@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
 
-  class Setup() {
+  class Setup {
     val accountingPeriodView: AccountingPeriodView = app.injector.instanceOf[AccountingPeriodView]
     val testController = new AccountingPeriodController(
       mockSessionService, mockAuthClientConnector, movkVatApplicationService, mockVatRegistrationService, accountingPeriodView

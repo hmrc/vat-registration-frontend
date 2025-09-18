@@ -47,7 +47,7 @@ class HasWebsiteController @Inject()(val authConnector: AuthClientConnector,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        hasWebsiteForm.bindFromRequest.fold(
+        hasWebsiteForm.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(view(formWithErrors))),
           hasWebsite =>

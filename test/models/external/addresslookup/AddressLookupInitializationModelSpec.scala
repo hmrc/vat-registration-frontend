@@ -25,10 +25,10 @@ import testHelpers.VatRegSpec
 
 class AddressLookupInitializationModelSpec extends VatRegSpec {
 
-  val messagesApi = app.injector.instanceOf[MessagesApi]
-  val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
-  val testJourneyId = AddressLookupJourneyIdentifier.homeAddress
-  val testContinueUrl = Call("GET", "/continueUrl")
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val frontendAppConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val testJourneyId: AddressLookupJourneyIdentifier.Value = AddressLookupJourneyIdentifier.homeAddress
+  val testContinueUrl: Call = Call("GET", "/continueUrl")
 
   def addressInitializationModel(ukMode: Boolean = false): AddressLookupConfigurationModel =
     new AddressLookupConfiguration()(frontendAppConfig, messagesApi).apply(testJourneyId, testContinueUrl, ukMode)

@@ -18,6 +18,7 @@ package views.business
 
 import forms.ContactPreferenceForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.business.ContactPreferenceView
 
@@ -30,12 +31,12 @@ class ContactPreferenceViewSpec extends VatRegViewSpec {
   val email = "email"
   val letter = "letter"
   val buttonText = "Save and continue"
-  val viewInstance = app.injector.instanceOf[ContactPreferenceView]
+  val viewInstance: ContactPreferenceView = app.injector.instanceOf[ContactPreferenceView]
 
   "Contact Preference Page" should {
     lazy val form = ContactPreferenceForm()
     lazy val view = viewInstance(form, testCall)
-    implicit lazy val doc = Jsoup.parse(view.body)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(title)

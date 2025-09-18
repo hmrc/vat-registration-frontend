@@ -91,7 +91,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockCreateJourney(testJourneyConfig, GovOrg)(Future.successful(testJourneyStartUrl))
       mockPartyType(Future.successful(GovOrg))
 
-      val ex = intercept[InternalServerException] {
+      val ex: InternalServerException = intercept[InternalServerException] {
         await(testController.startJourney(fakeRequest))
       }
       ex.getMessage mustBe "[IncorpIdController][startJourney] attempted to start journey with invalid partyType: GovOrg"
@@ -104,7 +104,7 @@ class IncorpIdControllerSpec extends ControllerSpec
       mockSaveApplicantDetails(testLimitedCompany)(completeApplicantDetails)
       mockIsTransactor(Future(true))
 
-      val res = testController.incorpIdCallback(testJourneyId)(fakeRequest)
+      val res: Future[Result] = testController.incorpIdCallback(testJourneyId)(fakeRequest)
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) must contain(controllers.routes.TaskListController.show.url)

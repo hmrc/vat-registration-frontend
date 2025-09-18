@@ -34,7 +34,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
   val tokenKey: String = "token"
   val referenceKey: String = "reference"
 
-  def cookieValue(sessionData: Map[String, String]) = {
+  def cookieValue(sessionData: Map[String, String]): String = {
     def encode(data: Map[String, String]): PlainText = {
       val encoded = data.map {
         case (k, v) => URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
@@ -84,7 +84,7 @@ object SessionCookieBaker extends IntegrationSpecBase {
       tokenKey -> "RANDOMTOKEN",
       userIdKey -> userId)
 
-  def getSessionCookie(reference: Option[String] = None) = {
+  def getSessionCookie(reference: Option[String] = None): String = {
     cookieValue(cookieData(reference = reference))
   }
 }

@@ -32,7 +32,7 @@ import scala.concurrent.Future
 class ApplicationSubmissionControllerSpec extends ControllerSpec with FutureAssertions with MockVatRegistrationService with VatRegistrationFixture with MockTransactorDetailsService with MockApplicantDetailsService {
 
   val applicationSubmissionConfirmationView: ApplicationSubmissionConfirmation =
-    fakeApplication.injector.instanceOf[ApplicationSubmissionConfirmation]
+    fakeApplication().injector.instanceOf[ApplicationSubmissionConfirmation]
 
   val testController = new ApplicationSubmissionController(
     vatRegistrationServiceMock,

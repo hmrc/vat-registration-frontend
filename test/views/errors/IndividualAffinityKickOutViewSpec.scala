@@ -17,13 +17,14 @@
 package views.errors
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.errors.IndividualAffinityKickOut
 
 class IndividualAffinityKickOutViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[IndividualAffinityKickOut]
-  implicit val doc = Jsoup.parse(view().body)
+  val view: IndividualAffinityKickOut = app.injector.instanceOf[IndividualAffinityKickOut]
+  implicit val doc: Document = Jsoup.parse(view().body)
 
   object ExpectedContent {
     val title = "You need to use a business tax account for this service"

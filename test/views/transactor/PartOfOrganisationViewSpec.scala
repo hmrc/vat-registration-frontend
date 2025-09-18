@@ -17,16 +17,17 @@
 package views.transactor
 
 import forms.PartOfOrganisationForm
-import forms.genericForms.YesOrNoFormFactory
+import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.transactor.PartOfOrganisationView
 
 class PartOfOrganisationViewSpec extends VatRegViewSpec {
 
-  val form = YesOrNoFormFactory.form()("transactor.partOfOrganisation")
-  val view = app.injector.instanceOf[PartOfOrganisationView]
+  val form: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("transactor.partOfOrganisation")
+  val view: PartOfOrganisationView = app.injector.instanceOf[PartOfOrganisationView]
   implicit val doc: Document = Jsoup.parse(view(PartOfOrganisationForm.form).body)
 
   val heading = "Are you a part of an organisation?"

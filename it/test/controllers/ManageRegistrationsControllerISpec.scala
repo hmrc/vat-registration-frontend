@@ -20,6 +20,7 @@ import common.enums.VatRegStatus
 import itutil.ControllerISpec
 import models.api.VatSchemeHeader
 import org.jsoup.Jsoup
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class ManageRegistrationsControllerISpec extends ControllerISpec {
@@ -36,7 +37,7 @@ class ManageRegistrationsControllerISpec extends ControllerISpec {
 
   "GET /manage-registrations" must {
     "return OK and present a list of only draft, submitted or contact registrations" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getAllRegistrations(List(
           vatSchemeHeader(testRegId, VatRegStatus.submitted),
@@ -44,7 +45,7 @@ class ManageRegistrationsControllerISpec extends ControllerISpec {
           vatSchemeHeader("3", VatRegStatus.contact)
         ))
 
-      val res = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
       Jsoup.parse(res.body).select("tr a").text mustBe s"Application for $testRegId Application for 2 Application for 3"

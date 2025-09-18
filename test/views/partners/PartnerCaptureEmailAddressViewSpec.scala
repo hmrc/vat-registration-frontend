@@ -19,13 +19,14 @@ package views.partners
 import forms.PartnerEmailAddressForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.partners.PartnerCaptureEmailAddress
 
 class PartnerCaptureEmailAddressViewSpec extends VatRegViewSpec {
 
-  val form = PartnerEmailAddressForm.form
-  val view = app.injector.instanceOf[PartnerCaptureEmailAddress]
+  val form: Form[String] = PartnerEmailAddressForm.form
+  val view: PartnerCaptureEmailAddress = app.injector.instanceOf[PartnerCaptureEmailAddress]
   implicit val doc: Document = Jsoup.parse(view(form, 2, Some("testFirstName")).body)
 
   val title = "What is testFirstName’s email address? - Register for VAT - GOV.UK"

@@ -17,6 +17,7 @@
 package views.business
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.business.AddressCharacterLimitGuideView
 
@@ -49,7 +50,7 @@ class AddressCharacterLimitGuideViewSpec extends VatRegViewSpec {
   }
 
   "AddressCharacterLimitGuideView" must {
-    implicit val doc = Jsoup.parse(view().body)
+    implicit val doc: Document = Jsoup.parse(view().body)
 
     "have the correct title" in {
       doc.title must include(ExpectedContent.title)

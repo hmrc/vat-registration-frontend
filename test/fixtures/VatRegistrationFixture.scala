@@ -22,7 +22,7 @@ import models.api._
 import models.api.vatapplication._
 import models.external.{BvPass, PartnershipIdEntity}
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -42,9 +42,9 @@ trait BaseFixture {
                         thresholdPreviousThirtyDays: Option[LocalDate] = None,
                         thresholdInTwelveMonths: Option[LocalDate] = None): Threshold =
     (mandatory, thresholdPreviousThirtyDays, thresholdInTwelveMonths) match {
-      case (false, None, None) => Threshold(false)
-      case (_, ptd, itm) if List(ptd, itm).flatten.nonEmpty => Threshold(true, ptd, itm)
-      case _ => Threshold(false)
+      case (false, None, None) => Threshold(mandatoryRegistration = false)
+      case (_, ptd, itm) if List(ptd, itm).flatten.nonEmpty => Threshold(mandatoryRegistration = true, ptd, itm)
+      case _ => Threshold(mandatoryRegistration = false)
     }
 
   val validVoluntaryRegistration: Threshold = generateThreshold()
@@ -53,34 +53,34 @@ trait BaseFixture {
   val validMandatoryRegistrationTwelve: Threshold = generateThreshold(thresholdInTwelveMonths = Some(testDate))
   val optVoluntaryRegistration: Option[Threshold] = Some(validVoluntaryRegistration)
   val optMandatoryRegistrationThirtyDays: Option[Threshold] = Some(validMandatoryRegistrationThirtyDays)
-  val optMandatoryRegistrationBothDates = Some(validMandatoryRegistrationBothDates)
-  val optMandatoryRegistrationTwelve = Some(validMandatoryRegistrationTwelve)
+  val optMandatoryRegistrationBothDates: Option[Threshold] = Some(validMandatoryRegistrationBothDates)
+  val optMandatoryRegistrationTwelve: Option[Threshold] = Some(validMandatoryRegistrationTwelve)
 }
 
 trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with ApplicantDetailsFixtures {
 
-  val ukBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None)
+  val ukBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("accountName", "SortCode", "AccountNumber")), None)
 
-  val sicCode = SicCode("88888", "description", "displayDetails")
+  val sicCode: SicCode = SicCode("88888", "description", "displayDetails")
 
   val currentThreshold = "50000"
   val formattedThreshold = "50,000"
 
   //Responses
-  val forbidden = UpstreamErrorResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
-  val noContent = HttpResponse(204, "")
-  val upstream4xx = UpstreamErrorResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
-  val upstream5xx = UpstreamErrorResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
-  val validHttpResponse = HttpResponse(OK, "{}")
+  val forbidden: UpstreamErrorResponse = UpstreamErrorResponse(FORBIDDEN.toString, FORBIDDEN, FORBIDDEN)
+  val noContent: HttpResponse = HttpResponse(204, "")
+  val upstream4xx: UpstreamErrorResponse = UpstreamErrorResponse(IM_A_TEAPOT.toString, IM_A_TEAPOT, IM_A_TEAPOT)
+  val upstream5xx: UpstreamErrorResponse = UpstreamErrorResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+  val validHttpResponse: HttpResponse = HttpResponse(OK, "{}")
 
-  val validCacheMap = CacheMap("fooBarWizzBand", Map("foo" -> Json.toJson("wizz")))
+  val validCacheMap: CacheMap = CacheMap("fooBarWizzBand", Map("foo" -> Json.toJson("wizz")))
 
   //Exceptions
   val badRequest = new BadRequestException(BAD_REQUEST.toString)
   val notFound = new NotFoundException(NOT_FOUND.toString)
   val internalServiceException = new InternalServerException(BAD_GATEWAY.toString)
   val runTimeException = new RuntimeException("tst")
-  val internalServerError = UpstreamErrorResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+  val internalServerError: UpstreamErrorResponse = UpstreamErrorResponse(INTERNAL_SERVER_ERROR.toString, INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
   val exception = new Exception(BAD_GATEWAY.toString)
 
   //Test variables
@@ -89,7 +89,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val testBusinessActivityDescription = "description"
   val testRegId = "VAT123456"
   val testHonestyDeclaration = true
-  val validBankCheckJsonResponseString =
+  val validBankCheckJsonResponseString: String =
     s"""
        |{
        |  "accountNumberIsWellFormatted": "yes",
@@ -97,9 +97,9 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
        |}
      """.stripMargin
 
-  val validBankCheckJsonResponse = Json.parse(validBankCheckJsonResponseString)
+  val validBankCheckJsonResponse: JsValue = Json.parse(validBankCheckJsonResponseString)
 
-  val invalidBankCheckJsonResponseString =
+  val invalidBankCheckJsonResponseString: String =
     s"""
        |{
        |  "accountNumberIsWellFormatted": "no",
@@ -107,9 +107,9 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
        |}
      """.stripMargin
 
-  val invalidBankCheckJsonResponse = Json.parse(invalidBankCheckJsonResponseString)
+  val invalidBankCheckJsonResponse: JsValue = Json.parse(invalidBankCheckJsonResponseString)
 
-  val indeterminateBankCheckJsonResponseString =
+  val indeterminateBankCheckJsonResponseString: String =
     s"""
        |{
        |  "accountNumberIsWellFormatted": "indeterminate",
@@ -117,10 +117,10 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
        |}
      """.stripMargin
 
-  val indeterminateBankCheckJsonResponse = Json.parse(indeterminateBankCheckJsonResponseString)
+  val indeterminateBankCheckJsonResponse: JsValue = Json.parse(indeterminateBankCheckJsonResponseString)
 
-  val complianceWithoutLabour = LabourCompliance(None, None, None)
-  val complianceWithLabour = LabourCompliance(Some(12), Some(true), Some(true))
+  val complianceWithoutLabour: LabourCompliance = LabourCompliance(None, None, None)
+  val complianceWithLabour: LabourCompliance = LabourCompliance(Some(12), Some(true), Some(true))
 
   lazy val validTransactorDetails: TransactorDetails = TransactorDetails(
     personalDetails = Some(PersonalDetails(
@@ -147,8 +147,8 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   val testLine3 = "line3"
   val testLine4 = "line4"
   val testLine5 = "line5"
-  val testCountry = Country(Some("UK"), Some("United Kingdom"))
-  val testAddress = Address(testLine1, Some(testLine2), None, None, None, Some(testPostcode), Some(testCountry), addressValidated = true)
+  val testCountry: Country = Country(Some("UK"), Some("United Kingdom"))
+  val testAddress: Address = Address(testLine1, Some(testLine2), None, None, None, Some(testPostcode), Some(testCountry), addressValidated = true)
 
   val validCompRegProfileJson: JsObject = Json.parse(
     """
@@ -160,9 +160,9 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
       |}
     """.stripMargin).as[JsObject]
 
-  val emptyVatScheme = VatScheme(testRegId, testDate, status = VatRegStatus.draft)
+  val emptyVatScheme: VatScheme = VatScheme(testRegId, testDate, status = VatRegStatus.draft)
 
-  val validPartnershipIdEntity = PartnershipIdEntity(
+  val validPartnershipIdEntity: PartnershipIdEntity = PartnershipIdEntity(
     sautr = Some(testSautr),
     companyName = Some(testCompanyName),
     postCode = Some(testPostcode),
@@ -171,7 +171,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     identifiersMatch = true
   )
 
-  val validEntities = List[Entity](
+  val validEntities: List[Entity] = List[Entity](
     Entity(
       details = Some(validPartnershipIdEntity),
       partyType = LtdLiabilityPartnership,
@@ -192,9 +192,9 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     )
   )
 
-  val validNipCompliance = NIPTurnover(
-    goodsToEU = Some(ConditionalValue(true, Some(BigDecimal(1)))),
-    goodsFromEU = Some(ConditionalValue(true, Some(BigDecimal(1))))
+  val validNipCompliance: NIPTurnover = NIPTurnover(
+    goodsToEU = Some(ConditionalValue(answer = true, Some(BigDecimal(1)))),
+    goodsFromEU = Some(ConditionalValue(answer = true, Some(BigDecimal(1))))
   )
 
   val testTurnover = 100
@@ -211,11 +211,11 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     staggerStart = Some(MonthlyStagger)
   )
 
-  val validAasDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
+  val validAasDetails: AASDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
 
-  val validUkBankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
+  val validUkBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
 
-  val noUkBankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
+  val noUkBankAccount: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
 
   val validEligibilitySubmissionData: EligibilitySubmissionData = EligibilitySubmissionData(
     validMandatoryRegistrationThirtyDays,
@@ -235,7 +235,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     fixedEstablishmentInManOrUk = true
   )
 
-  val validBusiness = Business(
+  val validBusiness: Business = Business(
     hasTradingName = Some(true),
     tradingName = Some(testTradingName),
     email = Some("test@foo.com"),
@@ -250,7 +250,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     mainBusinessActivity = Some(sicCode)
   )
 
-  val validBusinessWithNoDescription = Business(
+  val validBusinessWithNoDescription: Business = Business(
     hasTradingName = Some(true),
     tradingName = Some(testTradingName),
     email = Some("test@foo.com"),
@@ -262,7 +262,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     labourCompliance = Some(complianceWithoutLabour)
   )
 
-  val validBusinessWithNoDescriptionAndLabour = Business(
+  val validBusinessWithNoDescriptionAndLabour: Business = Business(
     hasTradingName = Some(true),
     tradingName = Some(testTradingName),
     email = Some("test@foo.com"),
@@ -275,28 +275,31 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     businessActivities = Some(List(sicCode))
   )
 
-  val otherBusinessInvolvementWithVrn = OtherBusinessInvolvement(
+  val otherBusinessInvolvementWithVrn: OtherBusinessInvolvement = OtherBusinessInvolvement(
     businessName = Some("test business name"),
     hasVrn = Some(true),
     vrn = Some("123456782"),
     hasUtr = None,
     utr = None,
     stillTrading = Some(false))
-  val otherBusinessInvolvementWithUtr = OtherBusinessInvolvement(
+
+  val otherBusinessInvolvementWithUtr: OtherBusinessInvolvement = OtherBusinessInvolvement(
     businessName = Some("test business name"),
     hasVrn = Some(false),
     vrn = None,
     hasUtr = Some(true),
     utr = Some("123456782"),
     stillTrading = Some(false))
-  val otherBusinessInvolvementWithoutVrnUtr = OtherBusinessInvolvement(
+
+  val otherBusinessInvolvementWithoutVrnUtr: OtherBusinessInvolvement = OtherBusinessInvolvement(
     businessName = Some("test business name"),
     hasVrn = Some(false),
     vrn = None,
     hasUtr = Some(false),
     utr = None,
     stillTrading = Some(false))
-  val otherBusinessInvolvementWithPartialData = OtherBusinessInvolvement(
+
+  val otherBusinessInvolvementWithPartialData: OtherBusinessInvolvement = OtherBusinessInvolvement(
     businessName = Some("test business name"),
     hasVrn = None,
     vrn = None,
@@ -304,7 +307,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     utr = None,
     stillTrading = None)
 
-  val validVatScheme = VatScheme(
+  val validVatScheme: VatScheme = VatScheme(
     registrationId = testRegId,
     createdDate = testDate,
     business = Some(validBusiness),
@@ -316,7 +319,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
     eligibilitySubmissionData = Some(validEligibilitySubmissionData)
   )
 
-  val validSoleTraderVatScheme = VatScheme(
+  val validSoleTraderVatScheme: VatScheme = VatScheme(
     registrationId = testRegId,
     createdDate = testDate,
     business = Some(validBusiness),
@@ -329,7 +332,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
   )
 
   // ICL
-  val iclMultipleResults = Json.parse(
+  val iclMultipleResults: JsObject = Json.parse(
     """
       | {
       |   "sicCodes": [
@@ -354,10 +357,10 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
       | }
     """.stripMargin).as[JsObject]
 
-  val iclMultipleResultsSicCode1 = SicCode("12345", "Whale farming", "")
-  val iclMultipleResultsSicCode2 = SicCode("23456", "Dog walking", "")
+  val iclMultipleResultsSicCode1: SicCode = SicCode("12345", "Whale farming", "")
+  val iclMultipleResultsSicCode2: SicCode = SicCode("23456", "Dog walking", "")
 
-  val iclSingleResult = Json.parse(
+  val iclSingleResult: JsObject = Json.parse(
     """
       | {
       |   "sicCodes": [

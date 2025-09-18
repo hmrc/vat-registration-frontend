@@ -18,16 +18,17 @@ package config
 
 import org.slf4j.{Logger, LoggerFactory}
 import uk.gov.hmrc.auth.core.PlayAuthConnector
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AuthClientConnector @Inject()(val http: HttpClient, config: ServicesConfig) extends PlayAuthConnector {
+class AuthClientConnector @Inject()(val http: HttpClientV2, config: ServicesConfig) extends PlayAuthConnector {
 
   override val serviceUrl: String = config.baseUrl("auth")
 
+  override def httpClientV2: HttpClientV2 = http
 }
 
 trait Logging {

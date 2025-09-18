@@ -53,7 +53,7 @@ class PartnershipNameControllerISpec extends ControllerISpec {
   "submit Partnership Name page" must {
     "return SEE_OTHER" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Partnership)
-      val testApplicant = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
+      val testApplicant: ApplicantDetails = validFullApplicantDetails.copy(entity = Some(testPartnership), roleInTheBusiness = Some(Partner))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(testApplicant))

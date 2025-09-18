@@ -18,14 +18,16 @@ package views.partners
 
 import forms.PartnerTelephoneForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.partners.PartnerTelephoneNumber
 
 class PartnerTelephoneNumberViewSpec extends VatRegViewSpec {
 
-  val form = PartnerTelephoneForm.form
-  val view = app.injector.instanceOf[PartnerTelephoneNumber]
-  implicit val doc = Jsoup.parse(view(form, 2, Some("test name")).body)
+  val form: Form[String] = PartnerTelephoneForm.form
+  val view: PartnerTelephoneNumber = app.injector.instanceOf[PartnerTelephoneNumber]
+  implicit val doc: Document = Jsoup.parse(view(form, 2, Some("test name")).body)
 
   object ExpectedContent {
     val heading = "What is test name’s telephone number?"

@@ -20,6 +20,7 @@ import common.enums.VatRegStatus
 import connectors.mocks.MockRegistrationApiConnector
 import fixtures.ApplicantDetailsFixtures
 import models._
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.TransactorDetailsService.{OrganisationName, PartOfOrganisation, Telephone, TransactorEmail}
 import testHelpers.VatRegSpec
@@ -27,7 +28,7 @@ import testHelpers.VatRegSpec
 class TransactorDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtures with MockRegistrationApiConnector {
   override val testRegId = "testRegId"
   override implicit val currentProfile: CurrentProfile = CurrentProfile(testRegId, VatRegStatus.draft)
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   val testOrganisationName = "testOrganisationName"
   val testTelephone = "1234567890"

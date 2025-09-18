@@ -53,7 +53,7 @@ def showVatStubPage: Action[AnyContent] = isAuthenticatedWithProfileNoStatusChec
   def submitVatStubPage: Action[AnyContent] = isAuthenticatedWithProfileNoStatusCheck {
     implicit request =>
       implicit profile =>
-        VatStubForm.form.bindFromRequest.fold(
+        VatStubForm.form.bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(vatStubView(errors))),
           values =>

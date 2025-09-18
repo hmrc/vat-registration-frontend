@@ -26,11 +26,11 @@ import play.api.libs.ws.WSResponse
 import scala.concurrent.Future
 
 class TelephoneNumberControllerISpec extends ControllerISpec {
-  val url = controllers.transactor.routes.TelephoneNumberController.show.url
+  val url: String = controllers.transactor.routes.TelephoneNumberController.show.url
 
   private val testPhoneNumber = "12345 123456"
   val cleanedPhoneNumber = "12345123456"
-  val testDetails = TransactorDetails(
+  val testDetails: TransactorDetails = TransactorDetails(
     telephone = Some(testPhoneNumber)
   )
 
@@ -74,7 +74,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map(telephoneNumberKey -> testPhoneNumber))
+      val res: Future[WSResponse] = buildClient(url).post(Map(telephoneNumberKey -> testPhoneNumber))
 
       whenReady(res) { res =>
         res.status mustBe SEE_OTHER
@@ -86,7 +86,7 @@ class TelephoneNumberControllerISpec extends ControllerISpec {
       given().user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post("")
+      val res: Future[WSResponse] = buildClient(url).post("")
       whenReady(res) { res =>
         res.status mustBe BAD_REQUEST
       }

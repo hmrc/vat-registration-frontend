@@ -18,7 +18,7 @@ package controllers
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import itutil.ControllerISpec
-import play.api.mvc.Cookie
+import play.api.mvc.{AnyContentAsEmpty, Cookie}
 import play.api.test.FakeRequest
 import services.SessionService
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -34,8 +34,8 @@ class BaseControllerISpec extends ControllerISpec {
 
   val controller: TestController = app.injector.instanceOf[TestController]
 
-  val enRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "en"))
-  val cyRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "cy"))
+  val enRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withCookies(Cookie("PLAY_LANG", "en"))
+  val cyRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withCookies(Cookie("PLAY_LANG", "cy"))
 
   "request2Messages" when {
     "the welsh FS" must {

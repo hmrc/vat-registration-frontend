@@ -16,7 +16,6 @@
 
 package views
 
-import config.FrontendAppConfig
 import featuretoggle.FeatureSwitch.SubmitDeadline
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

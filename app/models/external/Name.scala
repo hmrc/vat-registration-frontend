@@ -60,7 +60,7 @@ object Name {
   }
 
   object inlineShow {
-    implicit val inline = show((name: Name) => normalisedSeq(name).mkString(" "))
+    implicit val inline: Show[Name] = show((name: Name) => normalisedSeq(name).mkString(" "))
   }
 
 }

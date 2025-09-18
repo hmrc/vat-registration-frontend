@@ -18,6 +18,7 @@ package views.vatapplication
 
 import forms.ImportsOrExportsForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.vatapplication.ImportsOrExports
 
@@ -26,12 +27,12 @@ class ImportsOrExportsViewSpec extends VatRegViewSpec {
   val title = "Will the business trade VAT-taxable goods with countries outside the UK?"
   val heading = "Will the business trade VAT-taxable goods with countries outside the UK?"
   val buttonText = "Save and continue"
-  val viewInstance = app.injector.instanceOf[ImportsOrExports]
+  val viewInstance: ImportsOrExports = app.injector.instanceOf[ImportsOrExports]
 
   "ImportsOrExports Page" should {
     lazy val form = ImportsOrExportsForm.form
     lazy val view = viewInstance(form)
-    implicit lazy val doc = Jsoup.parse(view.body)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(title)

@@ -49,7 +49,7 @@ class BusinessNameController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        BusinessNameForm().bindFromRequest.fold(
+        BusinessNameForm().bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors))),
           success => {

@@ -50,7 +50,7 @@ class StoringGoodsController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        formProvider.form.bindFromRequest.fold(
+        formProvider.form.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(view(formWithErrors))),
           answer =>

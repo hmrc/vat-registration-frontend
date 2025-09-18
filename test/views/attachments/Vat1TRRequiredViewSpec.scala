@@ -17,6 +17,7 @@
 package views.attachments
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.attachments.Vat1TRRequired
@@ -27,7 +28,7 @@ class Vat1TRRequiredViewSpec extends VatRegViewSpec {
 
 
   lazy val view: Html = vat1TRRequiredPage()
-  implicit val doc = Jsoup.parse(view.body)
+  implicit val doc: Document = Jsoup.parse(view.body)
 
   object ExpectedContent {
     val heading = "You must send us a completed VAT1TR form in order for us to process this application"

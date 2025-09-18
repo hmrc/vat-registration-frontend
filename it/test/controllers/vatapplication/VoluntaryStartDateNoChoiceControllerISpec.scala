@@ -19,7 +19,9 @@ package controllers.vatapplication
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import java.time.LocalDate
@@ -27,7 +29,7 @@ import java.time.LocalDate
 class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
   val url = "/voluntary-vat-start-date"
-  val testDate = LocalDate.of(2022, 2, 16)
+  val testDate: LocalDate = LocalDate.of(2022, 2, 16)
 
   def fieldSelector(unit: String) = s"input[id=startDate.$unit]"
 
@@ -41,8 +43,8 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(url).get)
-          val doc = Jsoup.parse(res.body)
+          val res: WSResponse = await(buildClient(url).get())
+          val doc: Document = Jsoup.parse(res.body)
 
           res.status mustBe OK
           doc.select(fieldSelector("day")).`val`() mustBe testDate.getDayOfMonth.toString
@@ -58,8 +60,8 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(url).get)
-          val doc = Jsoup.parse(res.body)
+          val res: WSResponse = await(buildClient(url).get())
+          val doc: Document = Jsoup.parse(res.body)
 
           res.status mustBe OK
           doc.select(fieldSelector("day")).`val`() mustBe testDate.getDayOfMonth.toString
@@ -76,8 +78,8 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get)
-        val doc = Jsoup.parse(res.body)
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document = Jsoup.parse(res.body)
 
         res.status mustBe OK
         doc.select(fieldSelector("day")).`val`() mustBe ""
@@ -91,14 +93,14 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
     "the date entered is valid" must {
       "Update backend and redirect to the Returns Frequency page" in new Setup {
         val vatApplication: VatApplication = fullVatApplication.copy(turnoverEstimate = None)
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.replaceSection[VatApplication](vatApplication.copy(startDate = Some(testDate)))
           .registrationApi.getSection[VatApplication](Some(vatApplication.copy(startDate = Some(testDate))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "startDate.day" -> testDate.getDayOfMonth.toString,
           "startDate.month" -> testDate.getMonthValue.toString,
           "startDate.year" -> testDate.getYear.toString
@@ -110,12 +112,12 @@ class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
     }
     "the data entered is invalid" must {
       "return BAD REQUEST" in new Setup {
-        given
+        given()
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "startDate.day" -> "",
           "startDate.month" -> "",
           "startDate.year" -> ""

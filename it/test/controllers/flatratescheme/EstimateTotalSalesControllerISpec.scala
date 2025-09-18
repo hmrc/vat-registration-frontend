@@ -107,7 +107,7 @@ class EstimateTotalSalesControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val invalidEstimates = Seq("", "a", "0", "999999999999999")
+      val invalidEstimates: Seq[String] = Seq("", "a", "0", "999999999999999")
 
       invalidEstimates.map { estimate =>
         val res: Future[WSResponse] = buildClient(url).post(Map("totalSalesEstimate" -> estimate))

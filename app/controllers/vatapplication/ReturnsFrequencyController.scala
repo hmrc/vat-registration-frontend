@@ -60,7 +60,7 @@ class ReturnsFrequencyController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ReturnsFrequencyForm.form.bindFromRequest.fold(
+        ReturnsFrequencyForm.form.bindFromRequest().fold(
           errors => for {
             vatApplication <- vatApplicationService.getVatApplication
             showAAS <- vatApplicationService.isEligibleForAAS

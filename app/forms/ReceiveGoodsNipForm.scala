@@ -39,7 +39,7 @@ object ReceiveGoodsNipForm extends RequiredBooleanForm {
           regexPattern(regex),
           matchesRegex(commasNotAllowed, "validation.northernIrelandReceiveGoods.commasNotAllowed"),
           matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.northernIrelandReceiveGoods.moreThanTwoDecimalsNotAllowed"),
-          mandatoryFullNumericText
+          mandatoryFullNumericText()
         ))
         .transform[BigDecimal](string =>
           BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),

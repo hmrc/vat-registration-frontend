@@ -16,12 +16,12 @@
 
 package forms
 
-import models.{Email, Letter}
-import play.api.data.FormError
+import models.{ContactPreference, Email, Letter}
+import play.api.data.{Form, FormError}
 import testHelpers.VatRegSpec
 
 class ContactPreferenceFormSpec extends VatRegSpec {
-  val form = ContactPreferenceForm()
+  val form: Form[ContactPreference] = ContactPreferenceForm()
 
   "contactPreferenceForm" must {
 

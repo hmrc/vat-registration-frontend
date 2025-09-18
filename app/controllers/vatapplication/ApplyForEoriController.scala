@@ -59,7 +59,7 @@ class ApplyForEoriController @Inject()(val sessionService: SessionService,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        ApplyForEoriForm.form.bindFromRequest.fold(
+        ApplyForEoriForm.form.bindFromRequest().fold(
           errors =>
             vatRegistrationService.getEligibilitySubmissionData.map { eligibilityData =>
               BadRequest(getView(eligibilityData, errors))

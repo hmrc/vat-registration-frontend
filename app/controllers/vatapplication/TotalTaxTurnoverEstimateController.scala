@@ -57,7 +57,7 @@ class TotalTaxTurnoverEstimateController @Inject()(val sessionService: SessionSe
     implicit request =>
       implicit profile =>
         vatApplicationService.getVatApplication.flatMap { vatApp =>
-          formProvider().bindFromRequest.fold(
+          formProvider().bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, getAmount(vatApp.standardRateSupplies),
                 getAmount(vatApp.reducedRateSupplies), getAmount(vatApp.zeroRatedSupplies), getAmount(vatApp.turnoverEstimate)))),
 

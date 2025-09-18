@@ -20,13 +20,15 @@ package views.otherbusinessinvolvements
 import fixtures.VatRegistrationFixture
 import forms.otherbusinessinvolvements.ObiSummaryForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.mvc.Call
 import viewmodels.ObiSummaryRow
 import views.VatRegViewSpec
 import views.html.otherbusinessinvolvements.ObiSummary
 
 class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
-  val view = app.injector.instanceOf[ObiSummary]
+  val view: ObiSummary = app.injector.instanceOf[ObiSummary]
 
   object ExpectedMessages {
     val heading = "You have added 1 business involvement"
@@ -40,8 +42,8 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
     val submitButton = "Save and continue"
   }
 
-  val changeLink = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
-  val removeLink = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
+  val changeLink: Call = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
+  val removeLink: Call = controllers.otherbusinessinvolvements.routes.OtherBusinessNameController.show(1)
   val testVatNumber = "testVatNumber"
 
   val summaryRow: ObiSummaryRow = ObiSummaryRow(
@@ -52,7 +54,7 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   "The OBI summary view" must {
     val testList = List(summaryRow)
-    implicit val doc = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
+    implicit val doc: Document = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include (ExpectedMessages.heading)
@@ -86,7 +88,7 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
   "OBI summary view with max allowed OBI rows" must {
     val testList = List.fill(10)(summaryRow)
-    implicit val doc = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
+    implicit val doc: Document = Jsoup.parse(view(ObiSummaryForm(), testList, testList.size).body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(ExpectedMessages.maxOBILimitHeading)

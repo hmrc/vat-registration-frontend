@@ -159,7 +159,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       }
 
       "updating applicant former name" in new SetupForBackendSave(completeApplicantDetails) {
-        val formerName = Name(Some(testFirstName), last = testLastName)
+        val formerName: Name = Name(Some(testFirstName), last = testLastName)
         val expected: ApplicantDetails = completeApplicantDetails.copy(changeOfName = completeApplicantDetails.changeOfName.copy(name = Some(formerName)))
         mockReplaceSection[ApplicantDetails](testRegId, expected)
         mockPartyType(Future.successful(UkCompany))
@@ -168,7 +168,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       }
 
       "updating applicant former name date change" in new SetupForBackendSave(completeApplicantDetails) {
-        val formerNameDate = LocalDate.of(2002, 5, 15)
+        val formerNameDate: LocalDate = LocalDate.of(2002, 5, 15)
         val expected: ApplicantDetails = completeApplicantDetails.copy(changeOfName = completeApplicantDetails.changeOfName.copy(change = Some(formerNameDate)))
         mockReplaceSection[ApplicantDetails](testRegId, expected)
         mockPartyType(Future.successful(UkCompany))
@@ -177,7 +177,7 @@ class ApplicantDetailsServiceSpec extends VatRegSpec with ApplicantDetailsFixtur
       }
 
       "updating applicant previous address" in new SetupForBackendSave(completeApplicantDetails) {
-        val previousAddress = Address(line1 = "PrevLine1", line2 = Some("PrevLine2"), postcode = Some("PO PRE"), addressValidated = true)
+        val previousAddress: Address = Address(line1 = "PrevLine1", line2 = Some("PrevLine2"), postcode = Some("PO PRE"), addressValidated = true)
         val expected: ApplicantDetails = completeApplicantDetails.copy(previousAddress = Some(previousAddress))
         mockReplaceSection[ApplicantDetails](testRegId, expected)
         mockPartyType(Future.successful(UkCompany))

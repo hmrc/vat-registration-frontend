@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import itutil.ControllerISpec
 import models.Entity
 import models.api.{EligibilitySubmissionData, Individual, ScotPartnership, UkCompany}
-import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._

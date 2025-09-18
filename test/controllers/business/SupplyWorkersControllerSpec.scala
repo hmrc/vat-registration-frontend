@@ -17,6 +17,7 @@
 package controllers.business
 
 import fixtures.VatRegistrationFixture
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import services.mocks.{MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -30,8 +31,8 @@ class SupplyWorkersControllerSpec extends ControllerSpec
   with MockVatRegistrationService
   with MockSoleTraderIdService {
 
-  val view = app.injector.instanceOf[SupplyWorkers]
-  val fakeRequest = FakeRequest(controllers.business.routes.SupplyWorkersController.show)
+  val view: SupplyWorkers = app.injector.instanceOf[SupplyWorkers]
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.SupplyWorkersController.show)
 
   class Setup {
     object Controller extends SupplyWorkersController(

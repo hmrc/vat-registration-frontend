@@ -20,7 +20,10 @@ import itutil.ControllerISpec
 import models.api._
 import models.{ApplicantDetails, TransactorDetails}
 import play.api.libs.json.Format
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
 
@@ -37,7 +40,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(showUrl).get()
+      val res: Future[WSResponse] = buildClient(showUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -57,7 +60,7 @@ class MultipleDocumentsRequiredControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(showUrl).get()
+      val res: Future[WSResponse] = buildClient(showUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe OK

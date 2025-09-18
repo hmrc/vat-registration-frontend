@@ -17,13 +17,14 @@
 package views.errors
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.errors.ContactView
 
 class ContactViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[ContactView]
-  implicit val doc = Jsoup.parse(view().body)
+  val view: ContactView = app.injector.instanceOf[ContactView]
+  implicit val doc: Document = Jsoup.parse(view().body)
   val oshLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
 
   object ExpectedMessages {

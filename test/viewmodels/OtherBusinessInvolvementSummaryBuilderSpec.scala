@@ -17,8 +17,8 @@
 package viewmodels
 
 import models.OtherBusinessInvolvement
-import models.view.SummaryListRowUtils.{optSummaryListRowIndexed, optSummaryListRowBoolean}
-import play.api.i18n.{Lang, MessagesApi}
+import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowIndexed}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
@@ -28,22 +28,22 @@ import views.html.components.h3
 
 class OtherBusinessInvolvementSummaryBuilderSpec extends VatRegSpec {
 
-  val builder = app.injector.instanceOf[OtherBusinessInvolvementSummaryBuilder]
-  val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
-  val h3 = app.injector.instanceOf[h3]
-  val messagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val messages = messagesApi.preferred(Seq(Lang("en")))
+  val builder: OtherBusinessInvolvementSummaryBuilder = app.injector.instanceOf[OtherBusinessInvolvementSummaryBuilder]
+  val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
+  val h3: h3 = app.injector.instanceOf[h3]
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
   val testVrn = "testVrn"
 
-  val testObi = OtherBusinessInvolvement(
+  val testObi: OtherBusinessInvolvement = OtherBusinessInvolvement(
     businessName = Some(testCompanyName),
     hasVrn = Some(true),
     vrn = Some(testVrn),
     stillTrading = Some(true)
   )
 
-  val testObiSection = List(testObi, testObi)
+  val testObiSection: List[OtherBusinessInvolvement] = List(testObi, testObi)
 
   "The OBJ builder" when {
 

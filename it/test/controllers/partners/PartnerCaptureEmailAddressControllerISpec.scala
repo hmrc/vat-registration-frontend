@@ -21,7 +21,6 @@ import itutil.ControllerISpec
 import models.Entity
 import models.api._
 import org.jsoup.Jsoup
-import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -47,7 +46,7 @@ class PartnerCaptureEmailAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response: WSResponse = await(buildClient(url(2)).get)
+      val response: WSResponse = await(buildClient(url(2)).get())
       response.status mustBe OK
     }
 

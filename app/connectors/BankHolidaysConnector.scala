@@ -17,6 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
+import org.joda.time.LocalDate
 import play.api.Environment
 import play.api.libs.json.JodaReads.jodaLocalDateReads
 import play.api.libs.json.{Json, Reads}
@@ -24,6 +25,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import utils.workingdays._
+
 import java.io.InputStream
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,12 +36,12 @@ class BankHolidaysConnector @Inject()(http: HttpClientV2,
                                       environment: Environment)
                                      (implicit ec: ExecutionContext) {
 
-  implicit val jodaReads = jodaLocalDateReads("yyyy-MM-dd")
+  implicit val jodaReads: Reads[LocalDate] = jodaLocalDateReads("yyyy-MM-dd")
   protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
   protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
 
   lazy val url: String = config.bankHolidaysUrl
-  val division = "england-and-wales"
+  private val division = "england-and-wales"
 
   def defaultHolidaySet: BankHolidaySet = {
     logger.info("Loading static set of bank holidays from classpath file: bank-holidays.json")

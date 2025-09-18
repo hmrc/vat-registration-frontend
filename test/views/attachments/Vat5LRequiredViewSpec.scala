@@ -39,7 +39,7 @@ class Vat5LRequiredViewSpec extends VatRegViewSpec {
   }
 
   "The VAT5L Required page" must {
-    implicit val doc = Jsoup.parse(view.body)
+    implicit val doc: Document = Jsoup.parse(view.body)
     "have a back link in new Setup" in new ViewSetup {
       doc.hasBackLink mustBe true
     }

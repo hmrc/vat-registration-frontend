@@ -30,13 +30,13 @@ import java.time.LocalDate
 trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testRegId = "1"
   val testArn = "testArn"
-  val testCreatedDate = LocalDate.of(2021, 1, 1)
+  val testCreatedDate: LocalDate = LocalDate.of(2021, 1, 1)
 
-  val voluntaryThreshold = Threshold(
+  val voluntaryThreshold: Threshold = Threshold(
     mandatoryRegistration = false
   )
 
-  val threshold = Threshold(
+  val threshold: Threshold = Threshold(
     mandatoryRegistration = true,
     thresholdPreviousThirtyDays = None,
     thresholdInTwelveMonths = Some(LocalDate.of(2018, 5, 30))
@@ -48,9 +48,9 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testAccountNumber = "12345678"
   val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
   val bankAccount: BankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
-  val emptyBankAccount = BankAccount(isProvided = true, None, None)
-  val bankAccountNotProvidedNoReason = BankAccount(isProvided = false, None, None)
-  val bankAccountNotProvided = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
+  val emptyBankAccount: BankAccount = BankAccount(isProvided = true, None, None)
+  val bankAccountNotProvidedNoReason: BankAccount = BankAccount(isProvided = false, None, None)
+  val bankAccountNotProvided: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
   val testTurnover = 30000
   val fullVatApplication: VatApplication = VatApplication(
     tradeVatGoodsOutsideUk = Some(false),
@@ -70,12 +70,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCalculatedDate: LocalDate = LocalDate.now()
   val testLine1 = "line1"
   val testLine2 = "line2"
-  val testCountry = Country(Some("UK"), Some("United Kingdom"))
-  val address = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE1 1ST"), addressValidated = true)
-  val addressWithCountry = Address(testLine1, Some(testLine2), None, None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
+  val testCountry: Country = Country(Some("UK"), Some("United Kingdom"))
+  val address: Address = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE1 1ST"), addressValidated = true)
+  val addressWithCountry: Address = Address(testLine1, Some(testLine2), None, None, None, Some("XX XX"), Some(testCountry), addressValidated = true)
 
-  val testWarehouseNumber = "tst123456789012"
-  val testWarehouseName = "testWarehouseName"
+  val testWarehouseNumber: String = "tst123456789012"
+  val testWarehouseName: String = "testWarehouseName"
   val testFullOverseasCompliance: OverseasCompliance = OverseasCompliance(
     goodsToOverseas = Some(true),
     goodsToEu = Some(true),
@@ -140,7 +140,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     businessActivities = Some(List(SicCode("AB123", "super business", "super business by super people")))
   )
 
-  val validBusinessContactDetailsJson = Json.parse(
+  val validBusinessContactDetailsJson: JsValue = Json.parse(
     """
       |{
       |"ppob" : {
@@ -199,7 +199,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     ))
   )
 
-  val fullVatScheme = VatScheme(
+  val fullVatScheme: VatScheme = VatScheme(
     registrationId = "1",
     createdDate = testCreatedDate,
     status = VatRegStatus.draft,
@@ -223,7 +223,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     bankAccount = None
   )
 
-  val vatRegIncorporated = VatScheme(
+  val vatRegIncorporated: VatScheme = VatScheme(
     registrationId = "1",
     createdDate = testCreatedDate,
     status = VatRegStatus.draft,
@@ -256,12 +256,12 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testCasc = "testCasc"
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
-  val testIncorpDate = Some(LocalDate.of(2020, 2, 3))
+  val testIncorpDate: Option[LocalDate] = Some(LocalDate.of(2020, 2, 3))
 
-  val testIncorpDetails = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, RegisteredStatus, Some(BvPass), Some(testBpSafeId))
+  val testIncorpDetails: IncorporatedEntity = IncorporatedEntity(testCrn, Some(testCompanyName), Some(testCtUtr), None, testIncorpDate, "GB", identifiersMatch = true, RegisteredStatus, Some(BvPass), Some(testBpSafeId))
 
   val testSautr = "1234567890"
-  val testRegistration = RegisteredStatus
+  val testRegistration: BusinessRegistrationStatus = RegisteredStatus
   val testSafeId = "X00000123456789"
   val testSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
     firstName = testFirstName,
@@ -272,9 +272,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     trn = None,
     registration = testRegistration,
     businessVerification = Some(BvPass),
-    bpSafeId = Some(testSafeId),
-    identifiersMatch = true
-  )
+    bpSafeId = Some(testSafeId))
 
   val testNetpSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
     firstName = testFirstName,
@@ -381,7 +379,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     )
   )
 
-  val otherBusinessInvolvement1 = List(OtherBusinessInvolvement(
+  val otherBusinessInvolvement1: List[OtherBusinessInvolvement] = List(OtherBusinessInvolvement(
     businessName = Some("test business name"),
     hasVrn = Some(true),
     vrn = Some("test vrn"),
@@ -430,7 +428,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     entities = Some(validEntitiesNETP),
   )
 
-  val jsonListSicCode =
+  val jsonListSicCode: String =
     s"""
        |  [
        |    {
@@ -461,15 +459,15 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     "ICLFetchResultsUri" -> JsString("/fetch-results")
   )
 
-  val mainBusinessActivity = SicCode(sicCodeId, sicCodeDesc, sicCodeDescCy)
+  val mainBusinessActivity: SicCode = SicCode(sicCodeId, sicCodeDesc, sicCodeDescCy)
 
-  val labourCompliance = LabourCompliance(
+  val labourCompliance: LabourCompliance = LabourCompliance(
     supplyWorkers = Some(true),
     numOfWorkersSupplied = Some(200),
     intermediaryArrangement = Some(true),
   )
 
-  val fullModel = Business(
+  val fullModel: Business = Business(
     email = Some("test@foo.com"),
     telephoneNumber = Some("987654"),
     hasWebsite = Some(true),
@@ -483,7 +481,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     labourCompliance = Some(labourCompliance)
   )
 
-  val modelWithoutCompliance = Business(
+  val modelWithoutCompliance: Business = Business(
     businessDescription = Some(businessActivityDescription),
     mainBusinessActivity = Some(mainBusinessActivity)
   )

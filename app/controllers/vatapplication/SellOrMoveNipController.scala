@@ -52,7 +52,7 @@ class SellOrMoveNipController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        SellOrMoveNipForm.form.bindFromRequest.fold(
+        SellOrMoveNipForm.form.bindFromRequest().fold(
           badForm => Future.successful(BadRequest(view(badForm))),
           successForm => {
             val success = ConditionalValue(successForm._1, successForm._2)

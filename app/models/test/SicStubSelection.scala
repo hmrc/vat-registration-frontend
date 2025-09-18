@@ -37,7 +37,7 @@ object SicStubSelection {
   val multipleCompliance = "MultipleSicCodeCompliance"
   val custom = "CustomSicCodes"
 
-  implicit val format = Format[SicStubSelection](
+  implicit val format: Format[SicStubSelection] = Format[SicStubSelection](
     Reads[SicStubSelection] {
       case JsString(`single`) => JsSuccess(SingleSicCode)
       case JsString(`singleCompliance`) => JsSuccess(SingleSicCodeCompliance)

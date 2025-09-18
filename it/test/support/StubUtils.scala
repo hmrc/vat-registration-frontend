@@ -36,26 +36,26 @@ trait StubUtils {
 
     implicit val builder: PreconditionBuilder = this
 
-    def address(id: String, line1: String, line2: String, country: String, postcode: String) =
+    def address(id: String, line1: String, line2: String, country: String, postcode: String): AddressStub =
       AddressStub(id, line1, line2, country, postcode)
 
-    def user = UserStub()
+    def user: UserStub = UserStub()
 
-    def alfeJourney = JourneyStub()
+    def alfeJourney: JourneyStub = JourneyStub()
 
-    def vatRegistration = VatRegistrationStub()
+    def vatRegistration: VatRegistrationStub = VatRegistrationStub()
 
-    def icl = ICL()
+    def icl: ICL = ICL()
 
-    def bankAccountReputation = BankAccountReputationServiceStub()
+    def bankAccountReputation: BankAccountReputationServiceStub = BankAccountReputationServiceStub()
 
-    def audit = AuditStub()
+    def audit: AuditStub = AuditStub()
 
-    def registrationApi = RegistrationApiStub()
+    def registrationApi: RegistrationApiStub = RegistrationApiStub()
 
-    def upscanApi = UpscanApiStub()
+    def upscanApi: UpscanApiStub = UpscanApiStub()
 
-    def attachmentsApi = AttachmentsApiStub()
+    def attachmentsApi: AttachmentsApiStub = AttachmentsApiStub()
   }
 
   def given(): PreconditionBuilder = {
@@ -138,7 +138,7 @@ trait StubUtils {
       builder
     }
 
-    def isNotAuthorised = {
+    def isNotAuthorised: PreconditionBuilder = {
       stubFor(
         post(urlPathEqualTo("/auth/authorise"))
           .willReturn(unauthorized()))
@@ -208,7 +208,7 @@ trait StubUtils {
   }
 
   case class AuditStub()(implicit builder: PreconditionBuilder) {
-    def writesAudit(status: Int = 204) = {
+    def writesAudit(status: Int = 204): PreconditionBuilder = {
       stubFor(post(urlMatching("/write/audit"))
         .willReturn(
           aResponse().
@@ -219,7 +219,7 @@ trait StubUtils {
       builder
     }
 
-    def writesAuditMerged(status: Int = 204) = {
+    def writesAuditMerged(status: Int = 204): PreconditionBuilder = {
       stubFor(post(urlMatching("/write/audit/merged"))
         .willReturn(
           aResponse().
@@ -230,7 +230,7 @@ trait StubUtils {
       builder
     }
 
-    def failsToWriteAudit() = {
+    def failsToWriteAudit(): PreconditionBuilder = {
       writesAudit(404)
     }
   }

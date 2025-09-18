@@ -20,6 +20,8 @@ import common.enums.VatRegStatus
 import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.{VatScheme, VatSchemeHeader}
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.UpstreamErrorResponse
@@ -28,11 +30,11 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
   with AppAndStubs
   with ITRegistrationFixtures {
 
-  implicit val req = this.request
+  implicit val req: FakeRequest[AnyContentAsFormUrlEncoded] = this.request
 
   def vatregConnector: VatRegistrationConnector = app.injector.instanceOf(classOf[VatRegistrationConnector])
 
-  val testRegistrationsResponse = List(
+  val testRegistrationsResponse: List[VatSchemeHeader] = List(
     VatSchemeHeader(
       registrationId = "1",
       createdDate = testCreatedDate,
@@ -76,7 +78,7 @@ class VatRegistrationConnectorISpec extends IntegrationSpecBase
 
   "submitRegistration" should {
     "return success response and not submit to the backend for an allowed regId" in {
-      given.attachmentsApi
+      given().attachmentsApi
       given().vatRegistration.submit(s"/vatreg/$testRegId/submit-registration", OK)
       val res = vatregConnector.submitRegistration(testRegId, Map("testHeaderKey" -> "testHeaderValue"), "en")(hc)
       await(res) mustBe Success

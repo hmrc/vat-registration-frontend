@@ -75,7 +75,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/changed-name").post(Map("value" -> Seq("true")))
+      val response: Future[WSResponse] = buildClient("/changed-name").post(Map("value" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.FormerNameCaptureController.show.url)
@@ -91,7 +91,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/changed-name").post(Map("value" -> Seq("false")))
+      val response: Future[WSResponse] = buildClient("/changed-name").post(Map("value" -> Seq("false")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -104,7 +104,7 @@ class FormerNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/changed-name").post(Map("value" -> Seq()))
+      val response: Future[WSResponse] = buildClient("/changed-name").post(Map("value" -> Seq()))
 
       whenReady(response) { res =>
         res.status mustBe BAD_REQUEST

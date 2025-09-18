@@ -41,15 +41,15 @@ class VatRegSpec extends PlaySpec with GuiceOneAppPerSuite with AuthMock with Au
   with MockitoSugar with VatMocks with BusinessServiceMock with LoginFixture with Inside with Inspectors
   with ScalaFutures with ApplicativeSyntax with FutureInstances with BeforeAndAfterEach with FutureAssertions with VatRegistrationFixture {
 
-  implicit val hc = HeaderCarrier()
-  implicit val cp = currentProfile
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val cp: CurrentProfile = currentProfile
 
-  def currentProfile =
+  def currentProfile: CurrentProfile =
     CurrentProfile(testRegId, VatRegStatus.draft)
 
-  override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = Span(1, Seconds), interval = Span(50, Millis))
 
-  implicit val duration = 5.seconds
+  implicit val duration: FiniteDuration = 5.seconds
 
   def await[T](future: Awaitable[T]): T = Await.result(future, duration)
 

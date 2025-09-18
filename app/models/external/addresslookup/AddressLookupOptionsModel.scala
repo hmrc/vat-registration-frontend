@@ -33,7 +33,7 @@ case class AddressLookupOptionsModel(continueUrl: SafeRedirectUrl,
                                     )
 
 object AddressLookupOptionsModel {
-  implicit val safeRedirectUrlWrites = Writes[SafeRedirectUrl](safeUrl => JsString(safeUrl.url))
+  implicit val safeRedirectUrlWrites: Writes[SafeRedirectUrl] = Writes[SafeRedirectUrl](safeUrl => JsString(safeUrl.url))
   implicit val writes: Writes[AddressLookupOptionsModel] = Json.writes[AddressLookupOptionsModel]
 }
 

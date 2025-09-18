@@ -137,7 +137,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
         await(Service.saveVatApplication(ZeroRated(testZeroRatedSupplies))) mustBe expected
       }
       "updating with zeroRatedSupplies while removing exemption answer if zeroRatedSupplies is too small" in new Setup() {
-        val testVatApplication = validVatApplication.copy(appliedForExemption = Some(true))
+        val testVatApplication: VatApplication = validVatApplication.copy(appliedForExemption = Some(true))
         val expected: VatApplication = testVatApplication.copy(
           zeroRatedSupplies = Some(testTurnover / 2),
           appliedForExemption = None
@@ -157,7 +157,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
         await(Service.saveVatApplication(ClaimVatRefunds(true))) mustBe expected
       }
       "updating with claimVatRefunds while removing exemption answer if claimVatRefunds is false" in new Setup() {
-        val testVatApplication = validVatApplication.copy(appliedForExemption = Some(true))
+        val testVatApplication: VatApplication = validVatApplication.copy(appliedForExemption = Some(true))
         val expected: VatApplication = testVatApplication.copy(
           claimVatRefunds = Some(false),
           appliedForExemption = None
@@ -233,7 +233,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
         await(Service.saveVatApplication(HasTaxRepresentative(true))) mustBe expected
       }
       "updating with NIP answer goodsToEu" in new Setup() {
-        val testConditionalTurnover = ConditionalValue(answer = true, Some(testTurnover))
+        val testConditionalTurnover: ConditionalValue = ConditionalValue(answer = true, Some(testTurnover))
         val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(Some(testConditionalTurnover))))
 
         mockGetSection[VatApplication](testRegId, None)
@@ -242,7 +242,7 @@ class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport wit
         await(Service.saveVatApplication(TurnoverToEu(testConditionalTurnover))) mustBe expected
       }
       "updating with NIP answer goodsFromEu" in new Setup() {
-        val testConditionalTurnover = ConditionalValue(answer = true, Some(testTurnover))
+        val testConditionalTurnover: ConditionalValue = ConditionalValue(answer = true, Some(testTurnover))
         val expected: VatApplication = emptyVatApplication.copy(northernIrelandProtocol = Some(NIPTurnover(goodsFromEU = Some(testConditionalTurnover))))
 
         mockGetSection[VatApplication](testRegId, None)

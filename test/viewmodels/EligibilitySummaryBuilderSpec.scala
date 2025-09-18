@@ -28,7 +28,7 @@ import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 
 class EligibilitySummaryBuilderSpec extends VatRegSpec {
   class Setup {
-    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
+    val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
@@ -65,7 +65,7 @@ class EligibilitySummaryBuilderSpec extends VatRegSpec {
     }
 
     "return a Summary with welsh translated dates when language choice is welsh" in new Setup {
-      implicit val welshMessages = messagesApi.preferred(Seq(Lang("cy")))
+      implicit val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
 
       object WelshBuilder extends EligibilitySummaryBuilder(govukSummaryList)
 

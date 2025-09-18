@@ -43,7 +43,7 @@ object WorkersForm {
     Form(
       single(
         NUMBER_OF_WORKERS -> text
-          .verifying(mandatoryNumericText)
+          .verifying(mandatoryNumericText())
           .transform[Int](strVal => strVal.toInt, intVal => intVal.toString)
           .verifying(_ > 0)
       )

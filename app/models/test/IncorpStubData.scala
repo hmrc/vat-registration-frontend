@@ -16,10 +16,10 @@
 
 package models.test
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class IncorpStubData(crn: String, utr: Option[String], chrn: Option[String], bpRef: Option[String], identifiersMatch: Boolean, passBv: Boolean)
 
 object IncorpStubData {
-  implicit val format = Json.format[IncorpStubData]
+  implicit val format: OFormat[IncorpStubData] = Json.format[IncorpStubData]
 }

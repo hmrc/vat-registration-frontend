@@ -33,7 +33,7 @@ class SystemDateSpec extends PlaySpec with BeforeAndAfterEach {
     System.clearProperty("feature.system-date")
   }
 
-  def testLocalDateTime = LocalDateTime.now
+  def testLocalDateTime: LocalDateTime = LocalDateTime.now
 
   "getSystemDate" should {
     "return a LocalDate of today" when {

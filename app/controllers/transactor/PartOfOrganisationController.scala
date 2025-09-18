@@ -49,7 +49,7 @@ class PartOfOrganisationController @Inject()(val sessionService: SessionService,
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        PartOfOrganisationForm.form.bindFromRequest.fold(
+        PartOfOrganisationForm.form.bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
           partOfOrganisation =>
             transactorDetailsService.saveTransactorDetails(PartOfOrganisation(partOfOrganisation)).map { _ =>

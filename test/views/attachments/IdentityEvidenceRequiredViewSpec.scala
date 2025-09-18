@@ -17,13 +17,14 @@
 package views.attachments
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.IdentityEvidenceRequired
 
 class IdentityEvidenceRequiredViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[IdentityEvidenceRequired]
-  implicit val doc = Jsoup.parse(view().body)
+  val view: IdentityEvidenceRequired = app.injector.instanceOf[IdentityEvidenceRequired]
+  implicit val doc: Document = Jsoup.parse(view().body)
 
   object ExpectedContent {
     val heading = "You must send us three identity documents in order for us to process this VAT application"

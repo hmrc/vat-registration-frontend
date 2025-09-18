@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.InternalServerException
 
 class AboutYouTransactorTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = AboutYouTransactorTaskList
+  val section: AboutYouTransactorTaskList.type = AboutYouTransactorTaskList
   val testArn = "testArn"
 
   "the user has logged in as an Agent" must {

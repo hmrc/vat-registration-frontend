@@ -30,7 +30,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
   val url: String = controllers.transactor.routes.OrganisationNameController.show.url
 
   val orgName = "testOrgName"
-  val testDetails = TransactorDetails(
+  val testDetails: TransactorDetails = TransactorDetails(
     organisationName = Some(orgName)
   )
 
@@ -74,7 +74,7 @@ class OrganisationNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map(organisationNameKey -> orgName))
+      val res: Future[WSResponse] = buildClient(url).post(Map(organisationNameKey -> orgName))
 
       whenReady(res) { res =>
         res.status mustBe SEE_OTHER

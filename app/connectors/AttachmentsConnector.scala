@@ -38,7 +38,7 @@ class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendA
       .map { result =>
         result.status match {
           case OK => result.json.as[List[AttachmentType]]
-          case status => 
+          case status =>
             errorLog(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
             throw new InternalServerException(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
         }
@@ -53,7 +53,7 @@ class AttachmentsConnector @Inject()(httpClient: HttpClientV2, config: FrontendA
       .map { result =>
         result.status match {
           case OK => result.json.as[List[AttachmentType]]
-          case status => 
+          case status =>
             errorLog(s"[AttachmentsConnector][getAttachmentList] unexpected status from backend: $status")
             throw new InternalServerException(s"[AttachmentsConnector][getIncompleteAttachments] unexpected status from backend: $status")
         }

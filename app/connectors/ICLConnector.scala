@@ -30,13 +30,13 @@ import play.api.mvc.Request
 class ICLConnector @Inject()(val http: HttpClientV2, config: ServicesConfig)
                             (implicit ec: ExecutionContext) extends LoggingUtil {
 
-  val baseUri: String = config.getConfString("industry-classification-lookup-frontend.uri",
+  private val baseUri: String = config.getConfString("industry-classification-lookup-frontend.uri",
     throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.uri'"))
-  val iclFEurl: String = config.baseUrl("industry-classification-lookup-frontend") + baseUri
-  val IClFEinternal: String = config.baseUrl("industry-classification-lookup-frontend-internal")
-  val initialiseJourney: String = config.getConfString("industry-classification-lookup-frontend.initialise-journey", throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.initialise-journey'"))
+  private val iclFEurl: String = config.baseUrl("industry-classification-lookup-frontend") + baseUri
+  private val IClFEinternal: String = config.baseUrl("industry-classification-lookup-frontend-internal")
+  private val initialiseJourney: String = config.getConfString("industry-classification-lookup-frontend.initialise-journey", throw new RuntimeException("[ICLConnector] Could not retrieve config for 'industry-classification-lookup-frontend.initialise-journey'"))
 
-  val IClInitialiseUrl: String = iclFEurl + initialiseJourney
+  private val IClInitialiseUrl: String = iclFEurl + initialiseJourney
 
   def iclSetup(js: JsObject)(implicit hc: HeaderCarrier, request: Request[_]): Future[JsValue] = {
     infoLog("[iclSetup] Initializing a new ICL journey")

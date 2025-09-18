@@ -31,11 +31,11 @@ import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import java.util.UUID
 
 class VatRegistrationServiceISpec extends IntegrationSpecBase {
-  val mockHost = WiremockHelper.wiremockHost
-  val mockPort = WiremockHelper.wiremockPort
+  val mockHost: String = WiremockHelper.wiremockHost
+  val mockPort: Int = WiremockHelper.wiremockPort
   val mockUrl = s"http://$mockHost:$mockPort"
 
-  val additionalConfiguration = Map(
+  val additionalConfiguration: Map[String, String] = Map(
     "microservice.services.vat-registration.host" -> s"$mockHost",
     "microservice.services.vat-registration.port" -> s"$mockPort",
     "microservice.services.cachable.session-cache.host" -> s"$mockHost",
@@ -48,11 +48,11 @@ class VatRegistrationServiceISpec extends IntegrationSpecBase {
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .configure(additionalConfiguration)
-    .build
+    .build()
 
-  val sId = UUID.randomUUID().toString
-  implicit val hc = HeaderCarrier(sessionId = Some(SessionId(sId)))
-  val messagesApi = app.injector.instanceOf[MessagesApi]
+  val sId: String = UUID.randomUUID().toString
+  implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sId)))
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   def currentProfile(regId: String): CurrentProfile = CurrentProfile(
     registrationId = regId,

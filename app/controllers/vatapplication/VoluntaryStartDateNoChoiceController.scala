@@ -46,7 +46,7 @@ class VoluntaryStartDateNoChoiceController @Inject()(val sessionService: Session
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    formProvider().bindFromRequest.fold(
+    formProvider().bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(view(formWithErrors, MessageDateFormat.format(timeService.today)))),
       startDate =>

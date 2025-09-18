@@ -21,7 +21,7 @@ import testHelpers.VatRegSpec
 
 class HaveVatNumberFormSpec extends VatRegSpec {
 
-  val formValue = HaveVatNumberForm.haveVatNumberKey
+  val formValue: String = HaveVatNumberForm.haveVatNumberKey
   val testHaveVatNumber = "true"
 
   "HaveVatNumberForm" must {

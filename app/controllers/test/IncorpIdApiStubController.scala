@@ -78,7 +78,7 @@ class IncorpIdApiStubController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def submitStubPage(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
-    IncorpIdStubForm.form.bindFromRequest.fold(
+    IncorpIdStubForm.form.bindFromRequest().fold(
       errors =>
         Future.successful(BadRequest(stubView(errors, journeyId))),
       values =>

@@ -20,20 +20,21 @@ import fixtures.FlatRateFixtures
 import forms.ChooseBusinessTypeForm
 import models.{FrsBusinessType, FrsGroup}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.flatratescheme.ChooseBusinessType
 
 class ChooseBusinessTypeViewSpec extends VatRegViewSpec with FlatRateFixtures {
 
-  val view = app.injector.instanceOf[ChooseBusinessType]
-  val groupings = Seq(
+  val view: ChooseBusinessType = app.injector.instanceOf[ChooseBusinessType]
+  val groupings: Seq[FrsGroup] = Seq(
     FrsGroup(
       label = "section",
       labelCy = "sectionCy",
       categories = List(FrsBusinessType(businessCategory, "testCategory", "testCategoryCy", 10))
     )
   )
-  implicit val document = Jsoup.parse(view(ChooseBusinessTypeForm.form(Seq()), groupings).body)
+  implicit val document: Document = Jsoup.parse(view(ChooseBusinessTypeForm.form(Seq()), groupings).body)
 
   "Choose Business Type view" must {
     "have the correct title" in new ViewSetup {

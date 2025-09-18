@@ -21,22 +21,23 @@ import featuretoggle.FeatureSwitch.SubmitDeadline
 import featuretoggle.FeatureToggleSupport
 import forms.ApplicationReferenceForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import views.html.ApplicationReference
 
 class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupport {
 
-  val form = app.injector.instanceOf[ApplicationReferenceForm]
-  val view = app.injector.instanceOf[ApplicationReference]
+  val form: ApplicationReferenceForm = app.injector.instanceOf[ApplicationReferenceForm]
+  val view: ApplicationReference = app.injector.instanceOf[ApplicationReference]
 
   val featureToggle = new FrontendAppConfig (app.injector.instanceOf[ServicesConfig], app.injector.instanceOf[Configuration])
 
-  implicit val doc = Jsoup.parse(view(form()).body)
+  implicit val doc: Document = Jsoup.parse(view(form()).body)
 
   object ExpectedMessages {
     val heading = "Choose an application reference"
-    val para1 = "You can add a memorable word, phrase or number to every application." +
+    val para1: String = "You can add a memorable word, phrase or number to every application." +
       " This could be a business name or a unique number to help you manage ongoing applications."
     val label = "Application reference"
     val hint = "For example, Blue Steelworks"
@@ -55,7 +56,7 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupp
     }
     "have a check on the paragraph text" should {
       appConfig.setValue(SubmitDeadline,"false")
-      implicit val doc = Jsoup.parse(view(form()).body)
+      implicit val doc: Document = Jsoup.parse(view(form()).body)
       "have an explanation of what the reference is for" in new ViewSetup {
         doc.para(1) mustBe Some(ExpectedMessages.para1)
       }
@@ -72,7 +73,7 @@ class ApplicationReferenceViewSpec extends VatRegViewSpec with FeatureToggleSupp
 
     "have a banner message appears when TTMayJunJourney is Enabled" should {
       appConfig.setValue(SubmitDeadline,"true")
-      implicit val doc = Jsoup.parse(view(form()).body)
+      implicit val doc: Document = Jsoup.parse(view(form()).body)
 
       "have the correct heading" in new ViewSetup {
         doc.headingLevel3 mustBe Some(ExpectedMessages.bannerHeading)

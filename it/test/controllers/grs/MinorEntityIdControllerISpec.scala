@@ -106,7 +106,7 @@ class MinorEntityIdControllerISpec extends ControllerISpec {
 
   val testOverseasIdentifier = "1234567890"
   val testOverseasIdentifierCountry = "EE"
-  val testOverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
+  val testOverseasIdentifierDetails: OverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
 
   val testNonUkCompanyResponse: JsObject = Json.obj(
     "ctutr" -> testCrn,

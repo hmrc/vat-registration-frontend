@@ -35,7 +35,7 @@ object StandardRateSuppliesForm {
         text.verifying(stopOnFail(
             regexPattern(regex),
             matchesRegex(penceNotAllowed, "validation.standardRateSupplies.penceNotAllowed"),
-            mandatoryFullNumericText
+            mandatoryFullNumericText()
           ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),

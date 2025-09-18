@@ -17,15 +17,15 @@
 package models
 
 import models.api.{Address, SicCode}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import testHelpers.VatRegSpec
 
 class BusinessSpec extends VatRegSpec {
 
-  val sicCodeNoneLabour = SicCode(code = "123", description = "none labour", descriptionCy = "none labour")
-  val sicCodeLabour = SicCode(code = "123", description = "labour", descriptionCy = "labour")
+  val sicCodeNoneLabour: SicCode = SicCode(code = "123", description = "none labour", descriptionCy = "none labour")
+  val sicCodeLabour: SicCode = SicCode(code = "123", description = "labour", descriptionCy = "labour")
 
-  val jsonNoneLabour = Json.parse(
+  val jsonNoneLabour: JsObject = Json.parse(
     s"""
        |{
        |"businessDescription": "Test Desc",
@@ -43,13 +43,13 @@ class BusinessSpec extends VatRegSpec {
        |]
        |}
     """.stripMargin).as[JsObject]
-  val noneLabour = Business(
+  val noneLabour: Business = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeNoneLabour),
     businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness")))
   )
 
-  val jsonLabourWithoutWorkers = Json.parse(
+  val jsonLabourWithoutWorkers: JsValue = Json.parse(
     s"""
        |{
        |  "businessDescription": "Test Desc",
@@ -70,7 +70,7 @@ class BusinessSpec extends VatRegSpec {
        |  }
        |}
          """.stripMargin)
-  val labourWithoutWorkers = Business(
+  val labourWithoutWorkers: Business = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeLabour),
     businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1"))),
@@ -81,7 +81,7 @@ class BusinessSpec extends VatRegSpec {
     ))
   )
 
-  val jsonLabourWithWorkers = Json.parse(
+  val jsonLabourWithWorkers: JsValue = Json.parse(
     s"""
        |{
        |  "businessDescription": "Test Desc",
@@ -104,7 +104,7 @@ class BusinessSpec extends VatRegSpec {
        |}
          """.stripMargin)
 
-  val labourWithWorkers = Business(
+  val labourWithWorkers: Business = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeLabour),
     businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1"))),
@@ -115,7 +115,7 @@ class BusinessSpec extends VatRegSpec {
     ))
   )
 
-  val jsonLabourWithoutTemporaryContracts = Json.parse(
+  val jsonLabourWithoutTemporaryContracts: JsValue = Json.parse(
     s"""
        |{
        |  "businessDescription": "Test Desc",
@@ -139,7 +139,7 @@ class BusinessSpec extends VatRegSpec {
        |}
          """.stripMargin)
 
-  val labourWithoutTemporaryContracts = Business(
+  val labourWithoutTemporaryContracts: Business = Business(
     businessDescription = Some("Test Desc"),
     mainBusinessActivity = Some(sicCodeLabour),
     businessActivities = Some(List(SicCode(code="99889", description = "otherBusiness", descriptionCy = "otherBusiness1"))),

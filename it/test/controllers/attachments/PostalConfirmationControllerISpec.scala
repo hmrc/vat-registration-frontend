@@ -23,23 +23,24 @@ import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.http.Status.NO_CONTENT
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class PostalConfirmationControllerISpec extends ControllerISpec {
 
   val url = "/postal-confirmation"
-  val fullAttachmentList = Attachments(Some(Post))
+  val fullAttachmentList: Attachments = Attachments(Some(Post))
   val deleteAllUpscanDetailsUrl = s"/vatreg/1/upscan-file-details"
 
   "GET /register-for-vat/postal-confirmation" when {
     "the backend contains no attachment information" must {
       "return OK and render the page with a blank form" in new Setup {
-        given
+        given()
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
@@ -51,16 +52,16 @@ class PostalConfirmationControllerISpec extends ControllerISpec {
   "POST /register-for-vat/postal-confirmation" when {
     "yes is selected" must {
       "store the answer and redirect to the next page" in new Setup {
-        given
+        given()
           .user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        given
+        given()
           .registrationApi.getSection[Attachments](Some(fullAttachmentList), currentProfile.registrationId)
 
         stubDelete(deleteAllUpscanDetailsUrl, NO_CONTENT, "true")
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "value" -> "true"
         )))
         res.status mustBe SEE_OTHER
@@ -72,13 +73,13 @@ class PostalConfirmationControllerISpec extends ControllerISpec {
     "Post is selected" when {
       "no is selected" must {
         "store the answer and redirect to the next page" in new Setup {
-          given
+          given()
             .user.isAuthorised()
           insertCurrentProfileIntoDb(currentProfile, sessionString)
-          given
+          given()
             .registrationApi.getSection[Attachments](Some(fullAttachmentList), currentProfile.registrationId)
 
-          val res = await(buildClient(url).post(Map(
+          val res: WSResponse = await(buildClient(url).post(Map(
             "value" -> "false"
           )))
 

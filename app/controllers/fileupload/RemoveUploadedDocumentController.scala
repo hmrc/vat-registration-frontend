@@ -66,7 +66,7 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
           upscanDetails: UpscanDetails =>
             upscanDetails.uploadDetails match {
               case Some(uploadDetails) =>
-                RemoveUploadedDocumentForm(uploadDetails.fileName).form.bindFromRequest.fold(
+                RemoveUploadedDocumentForm(uploadDetails.fileName).form.bindFromRequest().fold(
                   errors => Future.successful(BadRequest(view(errors, reference, uploadDetails.fileName))),
                   success => {
                     if (success) {

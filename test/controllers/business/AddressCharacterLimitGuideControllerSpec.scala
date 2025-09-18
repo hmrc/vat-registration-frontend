@@ -17,7 +17,7 @@
 package controllers.business
 
 import fixtures.VatRegistrationFixture
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{CharitableOrg, EligibilitySubmissionData, Individual, LtdLiabilityPartnership, LtdPartnership, NETP, NonUkNonEstablished, Partnership, PartyType, RegSociety, ScotLtdPartnership, Trust, UkCompany, UnincorpAssoc}
 import models.CurrentProfile
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -27,31 +27,18 @@ import services.mocks.MockVatRegistrationService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.business.AddressCharacterLimitGuideView
-
 import scala.concurrent.Future
-import models.api.EligibilitySubmissionData
-import models.api.UkCompany
-import models.api.RegSociety
-import models.api.CharitableOrg
-import models.api.ScotLtdPartnership
-import models.api.LtdPartnership
-import models.api.LtdLiabilityPartnership
-import models.api.Trust
-import models.api.UnincorpAssoc
-
 import org.scalatest.prop.TableDrivenPropertyChecks._
-import models.api.Individual
-import models.api.Partnership
 
-class AddressCharacterLimitGuideControllerSpec extends ControllerSpec 
-  with VatRegistrationFixture 
-  with FutureAssertions 
+class AddressCharacterLimitGuideControllerSpec extends ControllerSpec
+  with VatRegistrationFixture
+  with FutureAssertions
   with MockVatRegistrationService {
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.AddressCharacterLimitGuideController.show)
 
   class Setup {
-    val view = app.injector.instanceOf[AddressCharacterLimitGuideView]
+    val view: AddressCharacterLimitGuideView = app.injector.instanceOf[AddressCharacterLimitGuideView]
     val testController = new AddressCharacterLimitGuideController(
       mockAuthClientConnector,
       mockSessionService,
@@ -103,7 +90,7 @@ class AddressCharacterLimitGuideControllerSpec extends ControllerSpec
     }
 
     "redirect to PPOB Address page for other party types" in new Setup {
-      val otherPartyTypes = Seq(
+      val otherPartyTypes: Seq[PartyType] = Seq(
         RegSociety, CharitableOrg, ScotLtdPartnership, LtdPartnership, LtdLiabilityPartnership, Trust, UnincorpAssoc
       )
 

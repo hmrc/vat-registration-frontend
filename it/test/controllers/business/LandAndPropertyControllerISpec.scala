@@ -30,7 +30,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
   val url: String = controllers.business.routes.LandAndPropertyController.show.url
   s"GET $url" must {
     "return OK" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
 
@@ -45,7 +45,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
     }
 
     "return OK when there is an answer to prepop" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(businessDetails.copy(hasLandAndProperty = Some(true))))
 
@@ -62,7 +62,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to the next page" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(hasLandAndProperty = Some(true)))
@@ -78,7 +78,7 @@ class LandAndPropertyControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST when no option is selected" in new Setup {
-      given.user.isAuthorised()
+      given().user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: Future[WSResponse] = buildClient(url).post("")

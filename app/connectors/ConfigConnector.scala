@@ -38,7 +38,7 @@ class ConfigConnector @Inject()(val config: ServicesConfig,
     val frsBusinessTypesFile = "conf/frs-business-types.json"
 
     val bufferedSource = Source.fromFile(environment.getFile(frsBusinessTypesFile))
-    val fileContents = bufferedSource.getLines.mkString
+    val fileContents = bufferedSource.getLines().mkString
     bufferedSource.close
 
     (Json.parse(fileContents).as[JsObject] \ "businessTypes").as[Seq[FrsGroup]]

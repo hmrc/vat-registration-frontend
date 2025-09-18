@@ -62,20 +62,20 @@ class AddressTest extends VatRegSpec {
   "normalise" should {
     "leave normal address as-is" in {
       val a1 = Address("line 1", Some("line 2"), None, None, Some("postcode"), None, addressValidated = true)
-      a1.normalise mustBe a1
+      a1.normalise() mustBe a1
 
       val a2 = Address("line 1", Some("line 2"), Some("l3"), Some("l4"), None, None, Some(testCountry), addressValidated = true)
-      a2.normalise mustBe a2
+      a2.normalise() mustBe a2
     }
 
     "convert empty some to none " in {
       val a1 = Address("line 1", Some("line 2"), Some(""), Some("    "), None, Some("  "), Some(testCountry), addressValidated = true)
       val expected1 = Address("line 1", Some("line 2"), None, None, None, None, Some(testCountry), addressValidated = true)
-      a1.normalise mustBe expected1
+      a1.normalise() mustBe expected1
 
       val a2 = Address("line 1", Some("line 2"), Some(""), Some("  "), None, Some("postcode"), Some(Country(Some(""), Some("   "))), addressValidated = true)
       val expected2 = Address("line 1", Some("line 2"), None, None, None, Some("postcode"), None, addressValidated = true)
-      a2.normalise mustBe expected2
+      a2.normalise() mustBe expected2
     }
   }
 }

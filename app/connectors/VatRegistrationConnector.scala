@@ -32,7 +32,6 @@ class VatRegistrationConnector @Inject()(val http: HttpClientV2,
                                         (implicit ec: ExecutionContext) {
 
   lazy val vatRegUrl: String = config.servicesConfig.baseUrl("vat-registration")
-  lazy val vatRegElUrl: String = config.servicesConfig.baseUrl("vat-registration-eligibility-frontend")
 
   def createNewRegistration(implicit hc: HeaderCarrier, rds: HttpReads[VatScheme], request: Request[_]): Future[VatScheme] =
     http.post(url"$vatRegUrl/vatreg/registrations")

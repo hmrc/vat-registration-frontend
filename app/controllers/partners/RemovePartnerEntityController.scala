@@ -56,7 +56,7 @@ class RemovePartnerEntityController @Inject()(val authConnector: AuthConnector,
     implicit request =>
       implicit profile =>
         validateIndexSubmit(index, routes.RemovePartnerEntityController.show) {
-          RemovePartnerEntityForm(partnerName).form.bindFromRequest.fold(
+          RemovePartnerEntityForm(partnerName).form.bindFromRequest().fold(
             errors =>
               Future.successful(BadRequest(view(errors, partnerName, index))),
             success => {

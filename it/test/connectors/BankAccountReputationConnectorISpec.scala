@@ -18,17 +18,16 @@ package connectors
 
 import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
-import play.api.mvc.Request
 
 class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
-  val connector = app.injector.instanceOf[BankAccountReputationConnector]
+  val connector: BankAccountReputationConnector = app.injector.instanceOf[BankAccountReputationConnector]
 
-  val stubbedBarsSuccessResponse = Json.obj(
+  val stubbedBarsSuccessResponse: JsObject = Json.obj(
    "accountNumberIsWellFormatted" -> "yes",
    "nonStandardAccountDetailsRequiredForBacs" -> "no"
   )
@@ -42,7 +41,7 @@ class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAn
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(connector.validateBankDetails(testUkBankDetails))
+        val res: JsValue = await(connector.validateBankDetails(testUkBankDetails))
 
         res mustBe stubbedBarsSuccessResponse
       }

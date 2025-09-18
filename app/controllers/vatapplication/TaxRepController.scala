@@ -53,7 +53,7 @@ class TaxRepController @Inject()(val authConnector: AuthConnector,
   val submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        TaxRepForm.form.bindFromRequest.fold(
+        TaxRepForm.form.bindFromRequest().fold(
           errors => Future.successful(BadRequest(taxRepPage(errors))),
           success => {
             vatApplicationService.saveVatApplication(HasTaxRepresentative(success)).map { _ =>

@@ -26,7 +26,8 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
     val form = EnterBankAccountDetailsForm.form
 
-    val validAccountName = 60 + "testAccountName"
+    val numStr = 60
+    val validAccountName = s"${numStr}testAccountName"
     val validAccountNumber = "12345678"
     val validSortCode = "123456"
 

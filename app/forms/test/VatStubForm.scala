@@ -17,9 +17,8 @@
 package forms.test
 
 import models.test._
+import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.format.Formatter
-import play.api.data.{Form, FormError}
 
 object VatStubForm {
 

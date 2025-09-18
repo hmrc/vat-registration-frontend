@@ -19,18 +19,18 @@ package connectors
 import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
 import models.api.SicCode
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 class ICLConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
-  val connector = app.injector.instanceOf[ICLConnector]
+  val connector: ICLConnector = app.injector.instanceOf[ICLConnector]
   val iclJourneySetupUrl = "/internal/initialise-journey"
   val iclGetResultUrl = "/test-url"
 
-  val testJourneySetupJson = Json.obj(
+  val testJourneySetupJson: JsObject = Json.obj(
     "redirectUrl" -> "/test",
     "journeySetupDetails" -> Json.obj(
       "customMessages" -> Json.obj(
@@ -41,21 +41,21 @@ class ICLConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegi
     )
   )
 
-  val testSicCode = SicCode(sicCodeId, sicCodeDesc, sicCodeDescCy)
+  val testSicCode: SicCode = SicCode(sicCodeId, sicCodeDesc, sicCodeDescCy)
 
-  val testGetResultJson = Json.obj(
+  val testGetResultJson: JsObject = Json.obj(
     "sicCodes" -> Json.arr(
       Json.toJson(testSicCode)
     )
   )
 
-  val testIclResponseJson = Json.obj("link" -> "/test")
+  val testIclResponseJson: JsObject = Json.obj("link" -> "/test")
 
   "iclSetup" must {
     "return json containing a redirect link" in new Setup {
       stubPost(iclJourneySetupUrl, OK, testIclResponseJson.toString())
 
-      val res = await(connector.iclSetup(testJourneySetupJson))
+      val res: JsValue = await(connector.iclSetup(testJourneySetupJson))
 
       res mustBe testIclResponseJson
     }
@@ -72,7 +72,7 @@ class ICLConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegi
     "return the selected SIC codes" in new Setup {
       stubGet(iclGetResultUrl, OK, testGetResultJson.toString())
 
-      val res = await(connector.iclGetResult(iclGetResultUrl))
+      val res: JsValue = await(connector.iclGetResult(iclGetResultUrl))
 
       res mustBe testGetResultJson
     }

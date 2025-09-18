@@ -124,7 +124,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
 
   s"GET ${callbackUrl()}" must {
     "redirect to the correct controller for Scottish Partnership" in new Setup {
-      val details = testPartnership.copy(companyName = Some(testOtherCompanyName))
+      val details: PartnershipIdEntity = testPartnership.copy(companyName = Some(testOtherCompanyName))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[Entity](Some(Entity(Some(testPartnership), ScotPartnership, Some(true), Some(testOtherCompanyName), None, None, None)), idx = Some(1))
@@ -142,7 +142,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to correct controller for Scottish Limited Partnership" in new Setup {
-      val entity = Entity(None, ScotLtdPartnership, Some(true), Some("company name"), None, None, None)
+      val entity: Entity = Entity(None, ScotLtdPartnership, Some(true), Some("company name"), None, None, None)
 
       given()
         .user.isAuthorised()
@@ -162,7 +162,7 @@ class PartnerPartnershipIdControllerISpec extends ControllerISpec {
     }
 
     "redirect to the individual identification for Limited Liability Partnership" in new Setup {
-      val entity = Entity(None, LtdLiabilityPartnership, Some(true), Some("company name"), None, None, None)
+      val entity: Entity = Entity(None, LtdLiabilityPartnership, Some(true), Some("company name"), None, None, None)
 
       given()
         .user.isAuthorised()

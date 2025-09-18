@@ -18,13 +18,14 @@ package views.sicandcompliance
 
 import forms.IntermediarySupplyForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.sicandcompliance.IntermediarySupply
 
 class IntermediarySupplyViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[IntermediarySupply]
-  implicit val doc = Jsoup.parse(view(IntermediarySupplyForm.form).body)
+  val view: IntermediarySupply = app.injector.instanceOf[IntermediarySupply]
+  implicit val doc: Document = Jsoup.parse(view(IntermediarySupplyForm.form).body)
 
   object ExpectedContent {
     val heading = "Is the business an intermediary arranging the supply of workers?"

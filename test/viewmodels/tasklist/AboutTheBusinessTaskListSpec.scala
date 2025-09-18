@@ -21,12 +21,13 @@ import controllers.partners.PartnerIndexValidation
 import fixtures.VatRegistrationFixture
 import models.api.{Attachments, Individual, Partnership, ScotPartnership, SicCode}
 import models.{Business, Entity, LabourCompliance}
+import services.BusinessService
 import testHelpers.VatRegSpec
 
 class AboutTheBusinessTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = AboutTheBusinessTaskList
-  val businessService = mockBusinessService
+  val section: AboutTheBusinessTaskList.type = AboutTheBusinessTaskList
+  val businessService: BusinessService = mockBusinessService
 
   "Additional partners row" must {
     val expectedRowUrl = controllers.partners.routes.PartnerEntityTypeController.showPartnerType(PartnerIndexValidation.minPartnerIndex).url

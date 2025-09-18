@@ -63,7 +63,7 @@ class OtherBusinessNameController @Inject()(val authConnector: AuthConnector,
   def submit(index: Int): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        OtherBusinessNameForm().bindFromRequest.fold(
+        OtherBusinessNameForm().bindFromRequest().fold(
           errors =>
             Future.successful(BadRequest(view(errors, index))),
           success => {

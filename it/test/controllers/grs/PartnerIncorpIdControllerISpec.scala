@@ -42,7 +42,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -57,7 +57,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(2).url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(2).url).get())
 
       res.status mustBe INTERNAL_SERVER_ERROR
     }
@@ -76,7 +76,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/limited-company-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -96,7 +96,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -116,7 +116,7 @@ class PartnerIncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.PartnerIncorpIdController.startJourney(1).url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)

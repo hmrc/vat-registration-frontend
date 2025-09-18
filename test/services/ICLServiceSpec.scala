@@ -16,6 +16,7 @@
 
 package services
 
+import models.Business
 import models.api.SicCode
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
@@ -37,8 +38,8 @@ class ICLServiceSpec extends VatRegSpec {
 
   class Setup {
 
-    val jsResponse = Json.obj("journeyStartUri" -> "example.url", "fetchResultsUri" -> "exampleresults.url")
-    val jsInvalidResponse = Json.obj("journeyStartUrl" -> "example.url")
+    val jsResponse: JsObject = Json.obj("journeyStartUri" -> "example.url", "fetchResultsUri" -> "exampleresults.url")
+    val jsInvalidResponse: JsObject = Json.obj("journeyStartUrl" -> "example.url")
     val testService: ICLService = new ICLService(
       mockICLConnector,
       mockServicesConfig,
@@ -61,7 +62,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
-      val res = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
+      val res: String = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
       res mustBe "example.url"
     }
     "return the ICL start url when VR codes are prepopped" in new Setup {
@@ -73,7 +74,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
-      val res = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
+      val res: String = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
       res mustBe "example.url"
     }
     "return the ICL start url when VR call fails" in new Setup {
@@ -83,7 +84,7 @@ class ICLServiceSpec extends VatRegSpec {
         .thenReturn(Future.successful(jsResponse))
       when(mockSessionService.cache[String](any(), any())(any(), any()))
         .thenReturn(Future.successful(validCacheMap))
-      val res = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
+      val res: String = await(testService.journeySetup(customICLMessages, customICLMessagesCy))
       res mustBe "example.url"
     }
     "return an exception when setting up ICL failed" in new Setup {
@@ -107,8 +108,8 @@ class ICLServiceSpec extends VatRegSpec {
 
   "getICLSICCodes" should {
     "return list of sic codes when a successful response is returned from the connector with more than 1 SIC code and keystore returns a String" in new Setup {
-      val listOfSicCodes = iclMultipleResultsSicCode1 :: iclMultipleResultsSicCode2 :: Nil
-      val updaetdBusiness = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOfSicCodes))
+      val listOfSicCodes: List[SicCode] = iclMultipleResultsSicCode1 :: iclMultipleResultsSicCode2 :: Nil
+      val updaetdBusiness: Business = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOfSicCodes))
 
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(iclMultipleResults))
@@ -118,12 +119,12 @@ class ICLServiceSpec extends VatRegSpec {
       when(mockBusinessService.updateBusiness[BusinessActivities]
         (any[BusinessActivities]())(any(), any(), any())).thenReturn(Future.successful(updaetdBusiness))
 
-      val res = await(testService.getICLSICCodes())
+      val res: Seq[SicCode] = await(testService.getICLSICCodes())
       res mustBe listOfSicCodes
     }
     "return list of sic code containing 1 sic code when a successful response is returned from the connector with only 1 SIC code and keystore returns a String" in new Setup {
-      val listOf1SicCode = iclMultipleResultsSicCode1 :: Nil
-      val updaetdBusiness = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOf1SicCode))
+      val listOf1SicCode: List[SicCode] = iclMultipleResultsSicCode1 :: Nil
+      val updaetdBusiness: Business = validBusinessWithNoDescriptionAndLabour.copy(businessActivities = Some(listOf1SicCode))
       when(mockICLConnector.iclGetResult(any[String]())(any[HeaderCarrier](), any[Request[_]]()))
         .thenReturn(Future.successful(iclSingleResult))
       when(mockSessionService.fetchAndGet[String](any())(any(), any()))
@@ -132,7 +133,7 @@ class ICLServiceSpec extends VatRegSpec {
       when(mockBusinessService.updateBusiness[BusinessActivities]
         (any[BusinessActivities]())(any(), any(), any())).thenReturn(Future.successful(updaetdBusiness))
 
-      val res = await(testService.getICLSICCodes())
+      val res: List[SicCode] = await(testService.getICLSICCodes())
       res mustBe listOf1SicCode
     }
     "return an Exception when the provided key cannot be found in keystore" in new Setup {

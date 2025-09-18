@@ -21,7 +21,10 @@ import itutil.ControllerISpec
 import models.Business
 import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsFinder {
 
@@ -31,14 +34,14 @@ class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsF
 
     insertIntoDb(sessionString, sicCodeMapping)
 
-    val response = buildClient(routes.MainBusinessActivityController.show.url).get()
+    val response: Future[WSResponse] = buildClient(routes.MainBusinessActivityController.show.url).get()
     whenReady(response) { res =>
       res.status mustBe OK
     }
   }
 
   "MainBusinessActivity on submit returns SEE_OTHER vat Scheme is upserted because the model is NOW complete" in new Setup {
-    val incompleteModelWithoutSicCode = fullModel.copy(mainBusinessActivity = None)
+    val incompleteModelWithoutSicCode: Business = fullModel.copy(mainBusinessActivity = None)
     val expectedUpdateToBusiness: Business = incompleteModelWithoutSicCode.copy(mainBusinessActivity = Some(mainBusinessActivity))
     given()
       .user.isAuthorised()
@@ -48,7 +51,7 @@ class MainBusinessActivityControllerISpec extends ControllerISpec with RequestsF
 
     insertIntoDb(sessionString, sicCodeMapping)
 
-    val response = buildClient(routes.MainBusinessActivityController.submit.url).post(Map("value" -> Seq(sicCodeId)))
+    val response: Future[WSResponse] = buildClient(routes.MainBusinessActivityController.submit.url).post(Map("value" -> Seq(sicCodeId)))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve.url)

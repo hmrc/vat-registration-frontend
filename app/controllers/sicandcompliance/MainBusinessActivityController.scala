@@ -44,7 +44,7 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
     implicit request =>
       implicit profile =>
         for {
-          sicCodeList <- fetchSicCodeList
+          sicCodeList <- fetchSicCodeList()
           businessDetails <- businessService.getBusiness
           formFilled = businessDetails.mainBusinessActivity.fold(MainBusinessActivityForm.form)(sicCode => MainBusinessActivityForm.form.fill(sicCode.code))
         } yield Ok(mainBusinessActivityPage(formFilled, sicCodeList))
@@ -53,7 +53,7 @@ class MainBusinessActivityController @Inject()(val authConnector: AuthClientConn
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        fetchSicCodeList flatMap { sicCodeList =>
+        fetchSicCodeList() flatMap { sicCodeList =>
           MainBusinessActivityForm.form.bindFromRequest().fold(
             badForm => Future.successful(BadRequest(mainBusinessActivityPage(badForm, sicCodeList))),
             data => sicCodeList.find(_.code == data).fold(

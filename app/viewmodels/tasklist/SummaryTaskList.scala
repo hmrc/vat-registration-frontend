@@ -22,8 +22,6 @@ import models.api.VatScheme
 import play.api.i18n.Messages
 import services.BusinessService
 
-import javax.inject.Inject
-
 object SummaryTaskList {
 
   def summaryRow(attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService)

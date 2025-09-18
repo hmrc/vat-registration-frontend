@@ -15,9 +15,9 @@
  */
 
 import play.api.http.Status
-import uk.gov.hmrc.http.{BadRequestException, NotFoundException, Upstream4xxResponse, Upstream5xxResponse}
-import utils.LoggingUtil
 import play.api.mvc.Request
+import uk.gov.hmrc.http.{BadRequestException, NotFoundException, UpstreamErrorResponse}
+import utils.LoggingUtil
 
 package object connectors extends LoggingUtil {
   def logResponse(e: Throwable, func: String)(implicit request: Request[_]): Throwable = {
@@ -26,15 +26,15 @@ package object connectors extends LoggingUtil {
         warnLog(s"[$func] received NOT FOUND")
       case e: BadRequestException =>
         warnLog(s"[$func] received BAD REQUEST")
-      case e: Upstream4xxResponse => e.upstreamResponseCode match {
+      case e: UpstreamErrorResponse => e.statusCode match {
         case Status.FORBIDDEN =>
           errorLog(s"[$func] received FORBIDDEN")
         case _ =>
-          errorLog(s"[$func] received Upstream 4xx: ${e.upstreamResponseCode}")
+          errorLog(s"[$func] received Upstream 4xx: ${e.statusCode}")
       }
-      case e: Upstream5xxResponse =>
-        errorLog(s"[$func] received Upstream 5xx: ${e.upstreamResponseCode}")
-      case e: Exception           =>
+      case e: UpstreamErrorResponse if UpstreamErrorResponse.Upstream5xxResponse.unapply(e).isDefined =>
+        errorLog(s"[$func] received Upstream 5xx: ${e.statusCode}")
+      case e: Exception             =>
         errorLog(s"[$func] received unexpected error")
     }
     e

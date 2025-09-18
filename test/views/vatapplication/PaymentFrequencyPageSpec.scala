@@ -55,7 +55,7 @@ class PaymentFrequencyPageSpec extends VatRegViewSpec {
     }
 
     "have the correct content for each option" in new ViewSetup()(asDocument(PaymentFrequencyForm())) {
-      val validOptions = Map(
+      val validOptions: Map[String, String] = Map(
         "quarterly" -> ExpectedMessages.quarterly,
         "monthly" -> ExpectedMessages.monthly
       )

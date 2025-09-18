@@ -20,7 +20,10 @@ import itutil.ControllerISpec
 import models.api._
 import models.{Business, LabourCompliance}
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
 
@@ -32,7 +35,7 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/arrange-supply-of-workers").get()
+      val response: Future[WSResponse] = buildClient("/arrange-supply-of-workers").get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -40,8 +43,8 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
     }
 
     "return SEE_OTHER on submit redirecting to Import of Export for UkCompany" in new Setup {
-      val initialModel = fullModel.copy(labourCompliance = None)
-      val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
+      val initialModel: Business = fullModel.copy(labourCompliance = None)
+      val expectedModel: Business = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -55,8 +58,8 @@ class SupplyWorkersIntermediaryControllerISpec extends ControllerISpec {
     }
 
     "return SEE_OTHER on submit redirecting to Turnover for NonUkCompany" in new Setup {
-      val initialModel = fullModel.copy(labourCompliance = None)
-      val expectedModel = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
+      val initialModel: Business = fullModel.copy(labourCompliance = None)
+      val expectedModel: Business = initialModel.copy(labourCompliance = Some(LabourCompliance(None, Some(true), None)))
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(

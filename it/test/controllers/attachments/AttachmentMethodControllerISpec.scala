@@ -22,6 +22,7 @@ import models.api._
 import models.external.upscan.{InProgress, UpscanDetails}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class AttachmentMethodControllerISpec extends ControllerISpec {
@@ -37,7 +38,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
@@ -46,13 +47,13 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
     }
     "the backend contains Post as the attachment method" must {
       "return OK and render the page with the Post option selected" in new Setup {
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection[Attachments](Some(fullAttachmentList))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe false
@@ -61,13 +62,13 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
     }
     "the backend contains Upload as the attachment method" must {
       "return OK and render the page with the Upload option selected" in new Setup {
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection[Attachments](Some(fullAttachmentList.copy(method = Some(Upload))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).select("input[value=2]").hasAttr("checked") mustBe true
@@ -80,14 +81,14 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
     "Upload is selected" must {
       "store the answer and redirect to the next page" in new Setup {
         enable(VrsNewAttachmentJourney)
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
           .upscanApi.deleteAttachments()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "value" -> "2"
         )))
 
@@ -99,16 +100,16 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
       "no upscan details are present" must {
       "store the answer and redirect to the next page" in new Setup {
         enable(VrsNewAttachmentJourney)
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
           .upscanApi.fetchAllUpscanDetails(List())
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "value" -> "3"
         )))
 
@@ -118,16 +119,16 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
     }
       "upscan is in progress" must {
         "Redirect to the error page" in new Setup {
-          given
+          given()
             .user.isAuthorised()
             .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))
-          given
+          given()
             .user.isAuthorised()
             .registrationApi.replaceSection[Attachments](Attachments(Some(Upload)))
             .upscanApi.fetchAllUpscanDetails(List(UpscanDetails(VAT51, "ref", None, InProgress, None)))
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(url).post(Map(
+          val res: WSResponse = await(buildClient(url).post(Map(
             "value" -> "3"
           )))
 
@@ -138,12 +139,12 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
   }
     "nothing is selected" must {
       "return BAD_REQUEST" in new Setup {
-        given
+        given()
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(""))
+        val res: WSResponse = await(buildClient(url).post(""))
 
         res.status mustBe BAD_REQUEST
       }

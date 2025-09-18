@@ -17,16 +17,19 @@
 package views.vatapplication
 
 import forms.StoringGoodsForm
+import models.api.vatapplication.StoringGoodsForDispatch
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.vatapplication.StoringGoods
 
 class StoringGoodsViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[StoringGoods]
-  val form = app.injector.instanceOf[StoringGoodsForm].form
+  val view: StoringGoods = app.injector.instanceOf[StoringGoods]
+  val form: Form[StoringGoodsForDispatch] = app.injector.instanceOf[StoringGoodsForm].form
 
-  implicit val doc = Jsoup.parse(view(form).body)
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedMessages {
     val title = "Where is the business storing goods for dispatch?"

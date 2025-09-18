@@ -42,7 +42,7 @@ class BusinessEmailControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response: WSResponse = await(buildClient(url).get)
+      val response: WSResponse = await(buildClient(url).get())
       response.status mustBe OK
     }
 

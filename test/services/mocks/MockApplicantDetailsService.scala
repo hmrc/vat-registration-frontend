@@ -31,7 +31,7 @@ import scala.concurrent.Future
 trait MockApplicantDetailsService extends MockitoSugar {
   self: Suite =>
 
-  val mockApplicantDetailsService = mock[ApplicantDetailsService]
+  val mockApplicantDetailsService: ApplicantDetailsService = mock[ApplicantDetailsService]
 
   def mockGetApplicantDetails(profile: CurrentProfile)(response: ApplicantDetails): OngoingStubbing[Future[ApplicantDetails]] =
     when(mockApplicantDetailsService.getApplicantDetails(
@@ -39,7 +39,7 @@ trait MockApplicantDetailsService extends MockitoSugar {
       ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[Request[_]])
     ) thenReturn Future.successful(response)
 
-  def mockSaveApplicantDetails[T](data: T)(response: ApplicantDetails) =
+  def mockSaveApplicantDetails[T](data: T)(response: ApplicantDetails): OngoingStubbing[Future[ApplicantDetails]] =
     when(mockApplicantDetailsService.saveApplicantDetails(
       ArgumentMatchers.eq(data)
     )(

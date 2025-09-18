@@ -23,7 +23,7 @@ import play.api.data.{Form, FormError}
 
 object SicStubForm {
 
-  implicit val sicStubFormatter = new Formatter[SicStubSelection] {
+  implicit val sicStubFormatter: Formatter[SicStubSelection] = new Formatter[SicStubSelection] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], SicStubSelection] =
       data.get(key) match {
         case Some("SingleSicCode") => Right(SingleSicCode)

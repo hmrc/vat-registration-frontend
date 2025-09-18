@@ -31,7 +31,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 class GrsSummaryBuilderSpec extends VatRegSpec {
 
   class Setup {
-    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
+    val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
@@ -64,7 +64,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testLtdCompany)
         )
-        val expectedLtdCompanySummaryList = SummaryList(Seq(
+        val expectedLtdCompanySummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company registration number",
             optAnswer = Some(testCrn),
@@ -79,7 +79,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLtdCompanySummaryList)))
       }
     }
@@ -105,7 +105,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testCharitableOrg)
         )
-        val expectedCharitableOrgSummaryList = SummaryList(Seq(
+        val expectedCharitableOrgSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company registration number",
             optAnswer = Some(testCrn),
@@ -116,7 +116,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedCharitableOrgSummaryList)))
       }
     }
@@ -142,7 +142,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testRegSociety)
         )
-        val expectedRegSocietySummaryList = SummaryList(Seq(
+        val expectedRegSocietySummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company registration number",
             optAnswer = Some(testCrn),
@@ -157,7 +157,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-incorp-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedRegSocietySummaryList)))
       }
     }
@@ -175,9 +175,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             trn = None,
             registration = testRegistration,
             businessVerification = Some(BvPass),
-            bpSafeId = Some(testSafeId),
-            identifiersMatch = true
-          ))
+            bpSafeId = Some(testSafeId)))
         )
         val vatScheme: VatScheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
@@ -185,14 +183,14 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testIndividual)
         )
-        val expectedIndividualSummaryList = SummaryList(Seq(
+        val expectedIndividualSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-sti-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedIndividualSummaryList)))
       }
     }
@@ -208,9 +206,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             trn = Some(testTrn),
             registration = testRegistration,
             businessVerification = Some(BvPass),
-            bpSafeId = Some(testSafeId),
-            identifiersMatch = true
-          ))
+            bpSafeId = Some(testSafeId)))
         )
         val vatScheme: VatScheme = emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
@@ -219,14 +215,14 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testNetp)
         )
-        val expectedNetpSummaryList = SummaryList(Seq(
+        val expectedNetpSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
             optUrl = Some("/register-for-vat/start-sti-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedNetpSummaryList)))
       }
     }
@@ -252,7 +248,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           applicantDetails = Some(testGenPartnership)
         )
 
-        val expectedGeneralPartnershipSummaryList = SummaryList(Seq(
+        val expectedGeneralPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company name",
             optAnswer = Some(testCompanyName),
@@ -267,7 +263,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedGeneralPartnershipSummaryList)))
       }
     }
@@ -291,7 +287,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testLtdPartnership)
         )
-        val expectedLimitedPartnershipSummaryList = SummaryList(Seq(
+        val expectedLimitedPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company registration number",
             optAnswer = Some(testCrn),
@@ -310,7 +306,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLimitedPartnershipSummaryList)))
       }
     }
@@ -333,7 +329,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testScotPartnership)
         )
-        val expectedScottishPartnershipSummaryList = SummaryList(Seq(
+        val expectedScottishPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company name",
             optAnswer = Some(testCompanyName),
@@ -348,7 +344,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScottishPartnershipSummaryList)))
       }
     }
@@ -372,7 +368,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testScotLtdPartnership)
         )
-        val expectedScottishLimitedPartnershipSummaryList = SummaryList(Seq(
+        val expectedScottishLimitedPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company registration number",
             optAnswer = Some(testCrn),
@@ -391,7 +387,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScottishLimitedPartnershipSummaryList)))
       }
     }
@@ -415,7 +411,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testLtdLiabilityPartnership)
         )
-        val expectedLimitedLiabilityPartnershipSummaryList = SummaryList(Seq(
+        val expectedLimitedLiabilityPartnershipSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Company registration number",
             optAnswer = Some(testCrn),
@@ -434,7 +430,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-partnership-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLimitedLiabilityPartnershipSummaryList)))
       }
     }
@@ -461,7 +457,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testUnincorpAssoc)
         )
-        val expectedUnincorpAssocSummaryList = SummaryList(Seq(
+        val expectedUnincorpAssocSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testCtUtr),
@@ -472,7 +468,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedUnincorpAssocSummaryList)))
       }
     }
@@ -497,7 +493,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testTrust)
         )
-        val expectedTrustSummaryList = SummaryList(Seq(
+        val expectedTrustSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testSautr),
@@ -508,7 +504,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedTrustSummaryList)))
       }
     }
@@ -537,7 +533,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
           )),
           applicantDetails = Some(testNonUkNonEstablished)
         )
-        val expectedNonUkNonEstablishedSummaryList = SummaryList(Seq(
+        val expectedNonUkNonEstablishedSummaryList: SummaryList = SummaryList(Seq(
           optSummaryListRowString(
             questionId = "UK Unique Taxpayer Reference number (UTR)",
             optAnswer = Some(testCtUtr),
@@ -552,7 +548,7 @@ class GrsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/start-minor-entity-id-journey"))
         ).flatten)
 
-        val result = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = grsCheckYourAnswersBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedNonUkNonEstablishedSummaryList)))
       }
     }

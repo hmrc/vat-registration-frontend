@@ -32,7 +32,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return OK with a blank form if no data is stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
@@ -45,7 +45,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
       }
     }
     "return OK with 'Email' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(businessDetails.copy(contactPreference = Some(Email))))
 
@@ -59,7 +59,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
       }
     }
     "return OK with 'Letter' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](Some(businessDetails.copy(contactPreference = Some(Letter))))
 
@@ -76,7 +76,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to task list page" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .registrationApi.replaceSection[Business](Business(contactPreference = Some(Letter)))
@@ -90,7 +90,7 @@ class ContactPreferenceControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {
-      given.user.isAuthorised()
+      given().user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(url).post(""))

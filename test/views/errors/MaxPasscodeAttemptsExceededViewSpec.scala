@@ -17,14 +17,15 @@
 package views.errors
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.errors.MaxPasscodeAttemptsExceeded
 
 class MaxPasscodeAttemptsExceededViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[MaxPasscodeAttemptsExceeded]
-  val testUrl = controllers.callbacks.routes.SignInOutController.signOut.url
-  implicit val doc = Jsoup.parse(view().body)
+  val view: MaxPasscodeAttemptsExceeded = app.injector.instanceOf[MaxPasscodeAttemptsExceeded]
+  val testUrl: String = controllers.callbacks.routes.SignInOutController.signOut.url
+  implicit val doc: Document = Jsoup.parse(view().body)
 
   object ExpectedContent {
     val title = "You need to start again - Register for VAT - GOV.UK"

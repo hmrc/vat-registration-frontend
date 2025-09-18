@@ -45,7 +45,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/limited-company-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.IncorpIdController.startJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.IncorpIdController.startJourney.url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -65,7 +65,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/registered-society-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.IncorpIdController.startJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.IncorpIdController.startJourney.url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)
@@ -85,7 +85,7 @@ class IncorpIdControllerISpec extends ControllerISpec {
 
       stubPost("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", CREATED, Json.obj("journeyStartUrl" -> testJourneyStartUrl, "deskProServiceId" -> testDeskProServiceId).toString)
 
-      val res: WSResponse = await(buildClient(grsRoutes.IncorpIdController.startJourney.url).get)
+      val res: WSResponse = await(buildClient(grsRoutes.IncorpIdController.startJourney.url).get())
 
       res.status mustBe SEE_OTHER
       res.header(LOCATION) mustBe Some(testJourneyStartUrl)

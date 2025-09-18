@@ -15,12 +15,11 @@
  */
 
 import play.sbt.PlayImport.PlayKeys
-import sbt.Keys.*
 import sbt.*
+import sbt.Keys.*
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.*
+import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "vat-registration-frontend"
@@ -37,7 +36,7 @@ lazy val scoverageSettings = Seq(
 )
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(PlayScala, SbtDistributablesPlugin): _*)
+  .enablePlugins(Seq(PlayScala, SbtDistributablesPlugin) *)
   .settings(defaultSettings(), scalaSettings, scoverageSettings)
   .settings(
     isPublicArtefact := true

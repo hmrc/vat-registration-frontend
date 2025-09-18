@@ -62,7 +62,7 @@ class TransactorInternationalAddressController @Inject()(val authConnector: Auth
         addressFormResultsHandler.handle(
           countries,
           headingMessageKey,
-          formProvider.form().bindFromRequest,
+          formProvider.form().bindFromRequest(),
           submitAction,
           internationalAddress =>
             transactorDetailsService.saveTransactorDetails(internationalAddress) map { _ =>

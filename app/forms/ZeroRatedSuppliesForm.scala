@@ -36,7 +36,7 @@ object ZeroRatedSuppliesForm {
             regexPattern(regex),
             matchesRegex(commasNotAllowed, "validation.zeroRatedSupplies.commasNotAllowed"),
             matchesRegex(moreThanTwoDecimalsNotAllowed, "validation.zeroRatedSupplies.moreThanTwoDecimalsNotAllowed"),
-            mandatoryFullNumericText
+            mandatoryFullNumericText()
           ))
           .transform[BigDecimal](string =>
             BigDecimal(string).setScale(2, BigDecimal.RoundingMode.HALF_UP),

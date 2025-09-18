@@ -19,6 +19,7 @@ package controllers.vatapplication
 import itutil.ControllerISpec
 import models.api.vatapplication.VatApplication
 import org.jsoup.Jsoup
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
@@ -28,7 +29,7 @@ class TaxRepControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return OK with a blank form if no data is stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
@@ -39,7 +40,7 @@ class TaxRepControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'Yes' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(hasTaxRepresentative = Some(true))))
 
@@ -54,7 +55,7 @@ class TaxRepControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'No' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](Some(fullVatApplication.copy(hasTaxRepresentative = Some(false))))
 
@@ -71,40 +72,40 @@ class TaxRepControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to Join Flat Rate Scheme page if yes is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(true)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map("value" -> "true")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "true")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "redirect to Join Flat Rate Scheme page if no is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[VatApplication](None)
         .registrationApi.replaceSection[VatApplication](VatApplication(hasTaxRepresentative = Some(false)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map("value" -> "false")))
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(""))
+      val res: WSResponse = await(buildClient(url).post(""))
 
       res.status mustBe BAD_REQUEST
     }

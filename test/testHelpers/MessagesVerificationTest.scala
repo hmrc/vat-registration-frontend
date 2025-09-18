@@ -28,7 +28,7 @@ class MessagesVerificationTest extends PlaySpec {
     "not contain unescaped single quotes" in {
       for {
         line <- Source.fromFile("conf/messages").getLines()
-        if line.matches("""^.+[=].*[^']'[^'].*$""")
+        if line.matches("""^.+=.*[^']'[^'].*$""")
       } fail(s"Found an unescaped single quote in messages file under key: ${key(line)}")
     }
 
@@ -44,7 +44,7 @@ class MessagesVerificationTest extends PlaySpec {
     "not contain unescaped single quotes" in {
       for {
         line <- Source.fromFile("conf/messages.cy").getLines()
-        if line.matches("""^.+[=].*[^']'[^'].*$""")
+        if line.matches("""^.+=.*[^']'[^'].*$""")
       } fail(s"Found an unescaped single quote in messages file under key: ${key(line)}")
     }
 

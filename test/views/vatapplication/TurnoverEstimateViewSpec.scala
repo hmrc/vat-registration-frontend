@@ -18,6 +18,7 @@ package views.vatapplication
 
 import forms.TurnoverEstimateForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.vatapplication.TurnoverEstimate
 
@@ -33,7 +34,7 @@ class TurnoverEstimateViewSpec extends VatRegViewSpec {
   "Turnver Estimate Page" must {
     val form = TurnoverEstimateForm.form
     val view = app.injector.instanceOf[TurnoverEstimate].apply(form)
-    implicit val doc = Jsoup.parse(view.body)
+    implicit val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in new ViewSetup {
       doc.title() mustBe title

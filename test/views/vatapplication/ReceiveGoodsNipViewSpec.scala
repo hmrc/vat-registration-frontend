@@ -18,14 +18,16 @@ package views.vatapplication
 
 import forms.ReceiveGoodsNipForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.vatapplication.ReceiveGoodsNip
 
 class ReceiveGoodsNipViewSpec extends VatRegViewSpec {
 
-  val form = ReceiveGoodsNipForm.form
-  val view = app.injector.instanceOf[ReceiveGoodsNip]
-  implicit val doc = Jsoup.parse(view(form).body)
+  val form: Form[(Boolean, Option[BigDecimal])] = ReceiveGoodsNipForm.form
+  val view: ReceiveGoodsNip = app.injector.instanceOf[ReceiveGoodsNip]
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
     val heading = "Does the business expect to receive goods in Northern Ireland from an EU country?"

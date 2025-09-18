@@ -72,8 +72,8 @@ object PartyType {
   def fromString(value: String): PartyType = inverseStati(value)
   def toJsString(value: PartyType): JsString = JsString(stati(value))
 
-  implicit val writes = Writes[PartyType] { partyType => toJsString(partyType) }
-  implicit val reads = Reads[PartyType] { partyType => partyType.validate[String] map fromString }
-  implicit val format = Format[PartyType](reads, writes)
+  implicit val writes: Writes[PartyType] = Writes[PartyType] { partyType => toJsString(partyType) }
+  implicit val reads: Reads[PartyType] = Reads[PartyType] { partyType => partyType.validate[String] map fromString }
+  implicit val format: Format[PartyType] = Format[PartyType](reads, writes)
 
 }

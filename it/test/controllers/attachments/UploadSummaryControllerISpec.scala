@@ -17,16 +17,17 @@
 package controllers.attachments
 
 import itutil.ControllerISpec
-import models.api.{AttachmentType, Attachments, IdentityEvidence, TaxRepresentativeAuthorisation, TransactorIdentityEvidence, Upload, VAT2, VAT51, VAT5L}
+import models.api._
 import models.external.upscan.{Failed, InProgress, Ready, UpscanDetails}
 import org.jsoup.Jsoup
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class UploadSummaryControllerISpec extends ControllerISpec {
 
-  val fullAttachmentList = Attachments(Some(Upload))
+  val fullAttachmentList: Attachments = Attachments(Some(Upload))
 
   val url = "/upload-summary"
   val fullAttachmentsList: List[AttachmentType] = List(TransactorIdentityEvidence, IdentityEvidence, VAT2, VAT51, TaxRepresentativeAuthorisation, VAT5L)
@@ -48,7 +49,7 @@ class UploadSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
         res.status mustBe OK
 
         val elements = Jsoup.parse(res.body).select("a[href*=register-for-vat/file-upload/]").asScala
@@ -65,7 +66,7 @@ class UploadSummaryControllerISpec extends ControllerISpec {
           .registrationApi.getRegistration(fullVatScheme)
 
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
         res.status mustBe OK
 
         val elements = Jsoup.parse(res.body).select("a[href*=register-for-vat/file-upload/upload-document]").asScala
@@ -81,7 +82,7 @@ class UploadSummaryControllerISpec extends ControllerISpec {
           .upscanApi.fetchAllUpscanDetails(upscanDetailsList)
           .registrationApi.getRegistration(fullVatScheme)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
         res.status mustBe OK
 
         val editLinkFailed = Jsoup.parse(res.body).select("a[href*=register-for-vat/attachment-error]").asScala

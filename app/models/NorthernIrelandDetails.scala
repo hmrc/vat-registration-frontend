@@ -27,9 +27,9 @@ case class ConditionalValue(answer: Boolean,
                             value: Option[BigDecimal])
 
 object ConditionalValue {
-  implicit val format = Json.format[ConditionalValue]
+  implicit val format: OFormat[ConditionalValue] = Json.format[ConditionalValue]
 }
 
 object NIPTurnover {
-  implicit val format = Json.format[NIPTurnover]
+  implicit val format: OFormat[NIPTurnover] = Json.format[NIPTurnover]
 }
