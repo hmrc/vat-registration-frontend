@@ -51,7 +51,7 @@ class CaptureEmailAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
 

@@ -31,14 +31,14 @@ class AgentNameViewSpec extends VatRegViewSpec {
     val lastNameLabel = "Last name"
   }
 
-  val testForm = Form(
+  val testForm: Form[(String, String)] = Form(
     mapping(
       "firstName" -> text,
       "lastName" -> text
     )(Tuple2.apply)(Tuple2.unapply)
   )
 
-  val view = app.injector.instanceOf[AgentNameView]
+  val view: AgentNameView = app.injector.instanceOf[AgentNameView]
   implicit val doc: Document = Jsoup.parse(view(testForm).body)
 
   "the Agent Name page" must {

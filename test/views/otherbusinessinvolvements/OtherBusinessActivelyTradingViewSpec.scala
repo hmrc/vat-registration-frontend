@@ -24,7 +24,7 @@ import views.html.otherbusinessinvolvements.OtherBusinessActivelyTradingView
 
 class OtherBusinessActivelyTradingViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[OtherBusinessActivelyTradingView]
+  val view: OtherBusinessActivelyTradingView = app.injector.instanceOf[OtherBusinessActivelyTradingView]
   implicit val doc: Document = Jsoup.parse(view(OtherBusinessActivelyTradingForm.form, 1).body)
 
   val heading = "Is the other business still actively trading?"

@@ -18,13 +18,14 @@ package views.sicandcompliance
 
 import forms.WorkersForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.sicandcompliance.Workers
 
 class WorkersViewSpec extends VatRegViewSpec {
 
-  lazy val view = app.injector.instanceOf[Workers]
-  implicit val doc = Jsoup.parse(view(WorkersForm.form).body)
+  lazy val view: Workers = app.injector.instanceOf[Workers]
+  implicit val doc: Document = Jsoup.parse(view(WorkersForm.form).body)
 
   object ExpectedContent {
     val heading = "How many workers does the business supply?"

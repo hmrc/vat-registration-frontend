@@ -20,51 +20,53 @@ import itutil.ControllerISpec
 import models.ApplicantDetails
 import models.api.{Address, Country, EligibilitySubmissionData, UkCompany}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.libs.json.Format
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
   val url = "/home-address/international"
-  val testForeignCountry = Country(Some("NO"), Some("Norway"))
-  val testShortForeignAddress = Address(testLine1, Some(testLine2), country = Some(testForeignCountry))
-  val testForeignAddress = Address("testLine1", Some("testLine2"), Some("testLine3"), Some("testLine4"), Some("testLine5"), Some("AB12 3YZ"), country = Some(testForeignCountry))
+  val testForeignCountry: Country = Country(Some("NO"), Some("Norway"))
+  val testShortForeignAddress: Address = Address(testLine1, Some(testLine2), country = Some(testForeignCountry))
+  val testForeignAddress: Address = Address("testLine1", Some("testLine2"), Some("testLine3"), Some("testLine4"), Some("testLine5"), Some("AB12 3YZ"), country = Some(testForeignCountry))
 
   "GET /home-address/international" when {
     "return OK when the ApplicantDetails block is empty" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get())
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
     }
 
     "return OK and pre-populate the page" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      val appDetails = ApplicantDetails(
+      val appDetails: ApplicantDetails = ApplicantDetails(
         personalDetails = Some(testPersonalDetails),
         currentAddress = Some(testShortForeignAddress)
       )
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get())
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
 
-      val doc = Jsoup.parse(res.body)
+      val doc: Document = Jsoup.parse(res.body)
       doc.select("input[id=line1]").`val`() mustBe testLine1
       doc.select("input[id=line2]").`val`() mustBe testLine2
       doc.select("option[value=Norway]").hasAttr("selected") mustBe true
@@ -72,22 +74,22 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
     "return OK and pre-populate the page for transactor journey" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      val appDetails = ApplicantDetails(
+      val appDetails: ApplicantDetails = ApplicantDetails(
         personalDetails = Some(testPersonalDetails),
         currentAddress = Some(testShortForeignAddress)
       )
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(appDetails))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get())
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
 
-      val doc = Jsoup.parse(res.body)
+      val doc: Document = Jsoup.parse(res.body)
       doc.select("input[id=line1]").`val`() mustBe testLine1
       doc.select("input[id=line2]").`val`() mustBe testLine2
       doc.select("option[value=Norway]").hasAttr("selected") mustBe true
@@ -97,7 +99,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
   "POST /home-address/international" must {
     "Store the address and redirect to the previous address page if a minimal address is provided" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
@@ -105,7 +107,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> testLine1,
         "line2" -> testLine2,
         "country" -> "Norway"
@@ -117,7 +119,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
     "Store the address for transactor journey and redirect to the previous address page if a minimal address is provided" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
@@ -125,7 +127,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> testLine1,
         "line2" -> testLine2,
         "country" -> "Norway"
@@ -137,7 +139,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
     "Store the address and redirect to the previous address page if a full address is provided" in new Setup {
       implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[ApplicantDetails](None)
@@ -145,7 +147,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
         "line2" -> "testLine2",
         "line3" -> "testLine3",
@@ -160,13 +162,13 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if line 1 is missing" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line2" -> "testLine2",
         "line3" -> "testLine3",
         "line4" -> "testLine4",
@@ -179,13 +181,13 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if country is missing" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
         "line2" -> "testLine2",
         "line3" -> "testLine3",
@@ -198,7 +200,7 @@ class InternationalHomeAddressControllerISpec extends ControllerISpec {
     }
     "return BAD_REQUEST if country is UK and postcode is missing" in new Setup {
       def assertMissingPostcode(country: String): Assertion = {
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
 

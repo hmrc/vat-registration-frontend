@@ -30,7 +30,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
   private val testEmail = "test@test.com"
   private val testPasscode = "123456"
 
-  val testTransactor = TransactorDetails(email = Some(testEmail))
+  val testTransactor: TransactorDetails = TransactorDetails(email = Some(testEmail))
 
   "GET /transactor-details/enter-the-verification-code" must {
     "show the view correctly" in new Setup {
@@ -52,7 +52,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get())
+      val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.show.url).get())
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
@@ -154,7 +154,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", CREATED, Json.obj("passcode" -> testPasscode).toString)
 
-        val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
@@ -189,7 +189,7 @@ class TransactorCaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
         stubPost("/email-verification/verify-passcode", NOT_FOUND, Json.obj("code" -> "PASSCODE_MISMATCH").toString)
 
-        val res = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
+        val res: WSResponse = await(buildClient(routes.TransactorCaptureEmailPasscodeController.submit(false).url).post(Map("email-passcode" -> testPasscode)))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)

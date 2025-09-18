@@ -19,6 +19,7 @@ package controllers.transactor
 import itutil.ControllerISpec
 import models.{AccountantAgent, DeclarationCapacityAnswer, PersonalDetails, TransactorDetails}
 import org.jsoup.Jsoup
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class AgentNameControllerISpec extends ControllerISpec {
@@ -39,7 +40,7 @@ class AgentNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
       fieldValue(res.body, firstNameField) mustBe ""
@@ -52,7 +53,7 @@ class AgentNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
       fieldValue(res.body, firstNameField) mustBe testFirstName
@@ -63,14 +64,14 @@ class AgentNameControllerISpec extends ControllerISpec {
   "POST /agent-name" when {
     "the name is valid" when {
       "redirect to the task list" in new Setup {
-        val firstUpdateDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
+        val firstUpdateDetails: TransactorDetails = TransactorDetails(personalDetails = Some(PersonalDetails(
           firstName = testFirstName,
           lastName = testLastName,
           identifiersMatch = true,
           arn = Some(testArn)
         )))
 
-        val secondUpdateDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
+        val secondUpdateDetails: TransactorDetails = firstUpdateDetails.copy(declarationCapacity = Some(DeclarationCapacityAnswer(AccountantAgent)))
 
         given()
           .user.isAuthorised(arn = Some(testArn))
@@ -81,7 +82,7 @@ class AgentNameControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
+        val res: WSResponse = await(buildClient(url).post(Map(firstNameField -> testFirstName, lastNameField -> testLastName)))
 
         res.status mustBe SEE_OTHER
         res.headers(LOCATION) must contain(controllers.routes.TaskListController.show.url)
@@ -95,7 +96,7 @@ class AgentNameControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(firstNameField -> "%%%", lastNameField -> testLastName)))
+        val res: WSResponse = await(buildClient(url).post(Map(firstNameField -> "%%%", lastNameField -> testLastName)))
 
         res.status mustBe BAD_REQUEST
       }

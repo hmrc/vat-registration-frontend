@@ -30,7 +30,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
 
   class Setup {
-    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
+    val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
@@ -95,7 +95,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
       }
     }
@@ -155,7 +155,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
       }
     }
@@ -225,7 +225,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedIndividualSummaryList)))
       }
     }
@@ -295,7 +295,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedNETPSummaryList)))
       }
     }
@@ -377,7 +377,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLtdCompanySummaryList)))
       }
     }
@@ -455,7 +455,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScotPartnershipSummaryList)))
       }
     }
@@ -549,7 +549,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedScotLtdPartnershipSummaryList)))
       }
     }
@@ -643,7 +643,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedLtdLiabilityPartnershipSummaryList)))
       }
     }
@@ -725,7 +725,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedCharitableOrgSummaryList)))
       }
     }
@@ -807,7 +807,7 @@ class ApplicantDetailsSummaryBuilderSpec extends VatRegSpec {
             optUrl = Some("/register-for-vat/telephone-number"))
         ).flatten)
 
-        val result = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
+        val result: HtmlFormat.Appendable = applicantDetailsSummaryBuilder.build(vatScheme = vatScheme)(messages = messages)
         result mustBe HtmlFormat.fill(List(govukSummaryList(expectedRegSocietySummaryList)))
       }
     }

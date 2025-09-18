@@ -20,6 +20,7 @@ import fixtures.VatRegistrationFixture
 import models.api._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -52,7 +53,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     List(Individual, NETP).foreach { partyType =>
       s"redirects to ${controllers.business.routes.CaptureTradingNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(partyType))
-        val res = Controller.resolve(FakeRequest())
+        val res: Future[Result] = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.CaptureTradingNameController.show.url)
       }
@@ -61,7 +62,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     List(Partnership, ScotPartnership).foreach { partyType =>
       s"redirects to ${controllers.business.routes.PartnershipNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(Partnership))
-        val res = Controller.resolve(FakeRequest())
+        val res: Future[Result] = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.PartnershipNameController.show.url)
       }
@@ -70,7 +71,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
     List(ScotLtdPartnership, LtdPartnership).foreach { partyType =>
       s"redirects to ${controllers.business.routes.PartnershipNameController.show.url} for partyType ${partyType.toString}" in new Setup {
         mockPartyType(Future.successful(Partnership))
-        val res = Controller.resolve(FakeRequest())
+        val res: Future[Result] = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.PartnershipNameController.show.url)
       }
@@ -82,7 +83,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
           .thenReturn(Future.successful(Some(testBusinessName)))
 
         mockPartyType(Future.successful(partyType))
-        val res = Controller.resolve(FakeRequest())
+        val res: Future[Result] = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.ConfirmTradingNameController.show.url)
       }
@@ -94,7 +95,7 @@ class TradingNameResolverControllerSpec extends ControllerSpec
           .thenReturn(Future.successful(None))
 
         mockPartyType(Future.successful(partyType))
-        val res = Controller.resolve(FakeRequest())
+        val res: Future[Result] = Controller.resolve(FakeRequest())
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.business.routes.BusinessNameController.show.url)
       }

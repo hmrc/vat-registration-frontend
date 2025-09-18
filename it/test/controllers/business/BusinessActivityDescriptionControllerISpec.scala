@@ -19,7 +19,10 @@ package controllers.business
 import itutil.ControllerISpec
 import models.Business
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
 
@@ -30,7 +33,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.business.routes.BusinessActivityDescriptionController.show.url).get()
+      val response: Future[WSResponse] = buildClient(controllers.business.routes.BusinessActivityDescriptionController.show.url).get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -47,7 +50,7 @@ class BusinessActivityDescriptionControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.business.routes.BusinessActivityDescriptionController.submit.url)
+      val response: Future[WSResponse] = buildClient(controllers.business.routes.BusinessActivityDescriptionController.submit.url)
         .post(Map("description" -> Seq("foo")))
 
       whenReady(response) { res =>

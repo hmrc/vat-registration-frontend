@@ -18,6 +18,7 @@ package views.applicant
 
 import forms.TelephoneNumberForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.applicant.CaptureTelephoneNumber
 
@@ -35,7 +36,7 @@ class CaptureTelephoneNumberViewSpec extends VatRegViewSpec {
   "Capture Telephone Number Page" should {
     lazy val form = TelephoneNumberForm.form
     lazy val view = app.injector.instanceOf[CaptureTelephoneNumber].apply(testCall, form, None)
-    implicit lazy val doc = Jsoup.parse(view.body)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
     lazy val transactorView = app.injector.instanceOf[CaptureTelephoneNumber].apply(testCall, form, Some(name))
     lazy val transactorDoc = Jsoup.parse(transactorView.body)
 

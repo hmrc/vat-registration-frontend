@@ -28,27 +28,27 @@ trait ApplicantDetailsFixtures {
   val testFirstName = "testFirstName"
   val testLastName = "testLastName"
   val testApplicantNino = "AB123456C"
-  val testApplicantDob = LocalDate.of(2020, 1, 1)
-  val testRole = Some(Director)
-  val validCurrentAddress = Address(line1 = "Test Line1", line2 = Some("Test Line2"), postcode = Some("TE 1ST"), addressValidated = true)
-  val validPrevAddress = Address(line1 = "Test Line11", line2 = Some("Test Line22"), postcode = Some("TE1 1ST"), addressValidated = true)
+  val testApplicantDob: LocalDate = LocalDate.of(2020, 1, 1)
+  val testRole: Option[Director.type] = Some(Director)
+  val validCurrentAddress: Address = Address(line1 = "Test Line1", line2 = Some("Test Line2"), postcode = Some("TE 1ST"), addressValidated = true)
+  val validPrevAddress: Address = Address(line1 = "Test Line11", line2 = Some("Test Line22"), postcode = Some("TE1 1ST"), addressValidated = true)
 
   val testOverseasIdentifier = "1234567890"
   val testOverseasIdentifierCountry = "EE"
-  val testOverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
+  val testOverseasIdentifierDetails: OverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
   val testOverseasCountryName = "Estonia"
   val testCrn = "testCrn"
   val testChrn = "testChrn"
   val testCasc = "testCasc"
   val testCompanyName = "testCompanyName"
   val testCtUtr = "testCtUtr"
-  val testIncorpDate = LocalDate.of(2020, 2, 3)
+  val testIncorpDate: LocalDate = LocalDate.of(2020, 2, 3)
 
-  val emptyApplicantDetails = ApplicantDetails()
+  val emptyApplicantDetails: ApplicantDetails = ApplicantDetails()
 
   val testBpSafeId = "testBpId"
 
-  val testPersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, Some(testApplicantDob))
+  val testPersonalDetails: PersonalDetails = PersonalDetails(testFirstName, testLastName, Some(testApplicantNino), None, identifiersMatch = true, Some(testApplicantDob))
 
   val testLimitedCompany: IncorporatedEntity = IncorporatedEntity(
     testCrn,
@@ -63,7 +63,7 @@ trait ApplicantDetailsFixtures {
     Some(testBpSafeId)
   )
 
-  val completeApplicantDetails = ApplicantDetails(
+  val completeApplicantDetails: ApplicantDetails = ApplicantDetails(
     entity = Some(testLimitedCompany),
     personalDetails = Some(testPersonalDetails),
     currentAddress = Some(validCurrentAddress),
@@ -98,9 +98,7 @@ trait ApplicantDetailsFixtures {
     trn = None,
     registration = testRegistration,
     businessVerification = Some(BvPass),
-    bpSafeId = Some(testSafeId),
-    identifiersMatch = true
-  )
+    bpSafeId = Some(testSafeId))
 
   val testNetpSoleTrader: SoleTraderIdEntity = SoleTraderIdEntity(
     firstName = testFirstName,
@@ -111,9 +109,7 @@ trait ApplicantDetailsFixtures {
     trn = Some(testTrn),
     registration = testRegistration,
     businessVerification = Some(BvPass),
-    bpSafeId = Some(testSafeId),
-    identifiersMatch = true
-  )
+    bpSafeId = Some(testSafeId))
 
   val soleTraderApplicantDetails: ApplicantDetails = ApplicantDetails(
     entity = Some(testSoleTrader),

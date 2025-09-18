@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import models._
 import models.api.{Address, Partnership, ScotPartnership}
 import models.external.{BvPass, IncorporatedEntity, MinorEntity, PartnershipIdEntity}
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.twirl.api.HtmlFormat
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
@@ -28,11 +28,11 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryList
 
 class AboutTheBusinessSummaryBuilderSpec extends VatRegSpec {
 
-  val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
-  val builder = app.injector.instanceOf[AboutTheBusinessSummaryBuilder]
+  val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
+  val builder: AboutTheBusinessSummaryBuilder = app.injector.instanceOf[AboutTheBusinessSummaryBuilder]
 
-  val messagesApi = app.injector.instanceOf[MessagesApi]
-  implicit val messages = messagesApi.preferred(Seq(Lang("en")))
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val sectionId = "cya.aboutTheBusiness"

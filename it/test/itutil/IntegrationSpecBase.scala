@@ -27,16 +27,16 @@ trait IntegrationSpecBase extends AnyWordSpec
   with GuiceOneServerPerSuite with ScalaFutures with IntegrationPatience with Matchers
   with WiremockHelper with BeforeAndAfterEach with BeforeAndAfterAll {
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     resetWiremock()
   }
 
-  override def beforeAll() = {
+  override def beforeAll(): Unit = {
     super.beforeAll()
     startWiremock()
   }
 
-  override def afterAll() = {
+  override def afterAll(): Unit = {
     stopWiremock()
     super.afterAll()
   }

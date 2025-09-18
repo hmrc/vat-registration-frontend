@@ -33,7 +33,7 @@ import scala.concurrent.Future
 trait MockSoleTraderIdService extends MockitoSugar {
   self: Suite =>
 
-  val mockSoleTraderIdService = mock[SoleTraderIdentificationService]
+  val mockSoleTraderIdService: SoleTraderIdentificationService = mock[SoleTraderIdentificationService]
 
   def mockStartSoleTraderJourney(config: SoleTraderIdJourneyConfig,
                                  partyType: PartyType)

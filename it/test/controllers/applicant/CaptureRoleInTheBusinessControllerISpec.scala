@@ -103,7 +103,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient("/role-in-the-business").post(Map("value" -> "boardMember")))
+        val res: WSResponse = await(buildClient("/role-in-the-business").post(Map("value" -> "boardMember")))
 
         res.status mustBe BAD_REQUEST
       }
@@ -121,7 +121,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
+      val res: WSResponse = await(buildClient("/role-in-the-business").post(Map("value" -> "director")))
 
       res.status mustBe SEE_OTHER
       res.header("LOCATION") mustBe Some(routes.FormerNameController.show.url)
@@ -142,7 +142,7 @@ class CaptureRoleInTheBusinessControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient("/role-in-the-business").post(Map(
+      val res: WSResponse = await(buildClient("/role-in-the-business").post(Map(
         "value" -> "other",
         "otherRole" -> otherRole
       )))

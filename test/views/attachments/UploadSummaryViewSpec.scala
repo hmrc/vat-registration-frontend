@@ -18,11 +18,11 @@ package views.attachments
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import viewmodels.tasklist.{TLCompleted, TLFailed, TLInProgress, TLNotStarted, TaskListSectionRow}
+import org.jsoup.select.Elements
+import viewmodels.tasklist._
 import views.VatRegViewSpec
 import views.html.attachments.UploadDocumentsNewJourney
-
-import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.jdk.CollectionConverters.ListHasAsScala
 
 class UploadSummaryViewSpec extends VatRegViewSpec {
 
@@ -49,8 +49,8 @@ class UploadSummaryViewSpec extends VatRegViewSpec {
     }
 
     "have the correct list of attachments" in new ViewSetup {
-        val taskListElements = doc.select(".app-task-list__row td")
-        taskListElements.eachText().asScala.toList mustBe expectedItems
+        val taskListElements: Elements = doc.select(".app-task-list__row td")
+        taskListElements.eachText().asScala mustBe expectedItems
     }
   }
 }

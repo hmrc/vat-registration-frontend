@@ -23,14 +23,14 @@ import java.time.LocalDate
 
 class ThresholdSpec extends PlaySpec {
 
-  val testPrevDate = LocalDate.parse("2019-01-01")
-  val testDateIn12Months = LocalDate.parse("2020-01-01")
-  val testNextDate = LocalDate.parse("2019-01-02")
-  val validMinimalJson = Json.obj("mandatoryRegistration" -> true)
+  val testPrevDate: LocalDate = LocalDate.parse("2019-01-01")
+  val testDateIn12Months: LocalDate = LocalDate.parse("2020-01-01")
+  val testNextDate: LocalDate = LocalDate.parse("2019-01-02")
+  val validMinimalJson: JsObject = Json.obj("mandatoryRegistration" -> true)
 
-  val validJsonWithPrev30Days = validMinimalJson.as[JsObject] + ("thresholdPreviousThirtyDays" -> JsString(testPrevDate.toString))
-  val validJsonWith12Months = validJsonWithPrev30Days.as[JsObject] + ("thresholdInTwelveMonths" -> JsString(testDateIn12Months.toString))
-  val validFullJson = validJsonWith12Months.as[JsObject] + ("thresholdNextThirtyDays" -> JsString(testNextDate.toString))
+  val validJsonWithPrev30Days: JsObject = validMinimalJson.as[JsObject] + ("thresholdPreviousThirtyDays" -> JsString(testPrevDate.toString))
+  val validJsonWith12Months: JsObject = validJsonWithPrev30Days.as[JsObject] + ("thresholdInTwelveMonths" -> JsString(testDateIn12Months.toString))
+  val validFullJson: JsObject = validJsonWith12Months.as[JsObject] + ("thresholdNextThirtyDays" -> JsString(testNextDate.toString))
 
   "Threshold model" should {
     "parse from minimal valid json" in {

@@ -20,7 +20,10 @@ import itutil.ControllerISpec
 import models._
 import models.api.EligibilitySubmissionData
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class SupplyWorkersControllerISpec extends ControllerISpec {
 
@@ -32,7 +35,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/supply-of-workers").get()
+      val response: Future[WSResponse] = buildClient("/supply-of-workers").get()
       whenReady(response) { res =>
         res.status mustBe OK
       }
@@ -41,14 +44,14 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
       given()
         .user.isNotAuthorised
 
-      val response = buildClient("/supply-of-workers").get()
+      val response: Future[WSResponse] = buildClient("/supply-of-workers").get()
       whenReady(response) { res =>
         res.status mustBe INTERNAL_SERVER_ERROR
       }
     }
     "redirect on submit to populate backend not vat as model is incomplete" in new Setup {
-      val incompleteModel = fullModel.copy(businessDescription = None)
-      val toBeUpdatedModel = incompleteModel.copy(labourCompliance = Some(labourCompliance.copy(intermediaryArrangement = None)))
+      val incompleteModel: Business = fullModel.copy(businessDescription = None)
+      val toBeUpdatedModel: Business = incompleteModel.copy(labourCompliance = Some(labourCompliance.copy(intermediaryArrangement = None)))
 
       given()
         .user.isAuthorised()
@@ -58,7 +61,7 @@ class SupplyWorkersControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/supply-of-workers").post(Map("value" -> Seq("true")))
+      val response: Future[WSResponse] = buildClient("/supply-of-workers").post(Map("value" -> Seq("true")))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER

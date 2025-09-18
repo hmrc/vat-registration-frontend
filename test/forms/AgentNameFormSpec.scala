@@ -20,16 +20,16 @@ import testHelpers.VatRegSpec
 
 class AgentNameFormSpec extends VatRegSpec {
 
-  val form = app.injector.instanceOf[AgentNameForm]
+  val form: AgentNameForm = app.injector.instanceOf[AgentNameForm]
 
-  val testValidCharacters = Seq("A", "a", "Z", "z", "-", ",", ".", "1", "9", "\'", "\\", "/", "&", "a b")
-  val testInvalidCharacters = Seq("#", "$", "*", "(", ")", "~", "{", "}", ":", ";")
+  val testValidCharacters: Seq[String] = Seq("A", "a", "Z", "z", "-", ",", ".", "1", "9", "\'", "\\", "/", "&", "a b")
+  val testInvalidCharacters: Seq[String] = Seq("#", "$", "*", "(", ")", "~", "{", "}", ":", ";")
 
   "The Agent Name form" when {
     testValidCharacters.foreach { char =>
       s"the first name contains the valid character '$char'" must {
         "bind successfully" in {
-          val res = form.apply.bind(Map(
+          val res = form.apply().bind(Map(
             AgentNameForm.firstNameField -> char,
             AgentNameForm.lastNameField -> "test"
           ))
@@ -41,7 +41,7 @@ class AgentNameFormSpec extends VatRegSpec {
 
     "the first name is exactly 100 characters long" must {
       "bind successfully" in {
-        val res = form.apply.bind(Map(
+        val res = form.apply().bind(Map(
           AgentNameForm.firstNameField -> ('w' * 35).toString,
           AgentNameForm.lastNameField -> "test"
         ))
@@ -51,7 +51,7 @@ class AgentNameFormSpec extends VatRegSpec {
     }
     "the first name is too long" must {
       "return the correct error message" in {
-        val res = form.apply.bind(Map(
+        val res = form.apply().bind(Map(
           AgentNameForm.firstNameField -> "123456789012345678901234567890123456",
           AgentNameForm.lastNameField -> "test"
         ))
@@ -61,7 +61,7 @@ class AgentNameFormSpec extends VatRegSpec {
     }
     "the first name is empty" must {
       "return the correct error message" in {
-        val res = form.apply.bind(Map(
+        val res = form.apply().bind(Map(
           AgentNameForm.firstNameField -> "",
           AgentNameForm.lastNameField -> "test"
         ))
@@ -73,7 +73,7 @@ class AgentNameFormSpec extends VatRegSpec {
     testInvalidCharacters.foreach { char =>
       s"the first name contains the invalid character '$char''" must {
         "return the correct error message" in {
-          val res = form.apply.bind(Map(
+          val res = form.apply().bind(Map(
             AgentNameForm.firstNameField -> char,
             AgentNameForm.lastNameField -> "test"
           ))
@@ -86,7 +86,7 @@ class AgentNameFormSpec extends VatRegSpec {
     testValidCharacters.foreach { char =>
       s"the last name contains the valid character '$char'" must {
         "bind successfully" in {
-          val res = form.apply.bind(Map(
+          val res = form.apply().bind(Map(
             AgentNameForm.firstNameField -> "test",
             AgentNameForm.lastNameField -> char
           ))
@@ -98,7 +98,7 @@ class AgentNameFormSpec extends VatRegSpec {
 
     "the last name is exactly 35 characters long" must {
       "bind successfully" in {
-        val res = form.apply.bind(Map(
+        val res = form.apply().bind(Map(
           AgentNameForm.firstNameField -> "test",
           AgentNameForm.lastNameField -> ('w' * 35).toString
         ))
@@ -108,7 +108,7 @@ class AgentNameFormSpec extends VatRegSpec {
     }
     "the last name is too long" must {
       "return the correct error message" in {
-        val res = form.apply.bind(Map(
+        val res = form.apply().bind(Map(
           AgentNameForm.firstNameField -> "test",
           AgentNameForm.lastNameField -> "123456789012345678901234567890123456"
         ))
@@ -118,7 +118,7 @@ class AgentNameFormSpec extends VatRegSpec {
     }
     "the last name is empty" must {
       "return the correct error message" in {
-        val res = form.apply.bind(Map(
+        val res = form.apply().bind(Map(
           AgentNameForm.firstNameField -> "test",
           AgentNameForm.lastNameField -> ""
         ))
@@ -130,7 +130,7 @@ class AgentNameFormSpec extends VatRegSpec {
     testInvalidCharacters.foreach { char =>
       s"the last name contains the invalid character '$char''" must {
         "return the correct error message" in {
-          val res = form.apply.bind(Map(
+          val res = form.apply().bind(Map(
             AgentNameForm.firstNameField -> "test",
             AgentNameForm.lastNameField -> char
           ))

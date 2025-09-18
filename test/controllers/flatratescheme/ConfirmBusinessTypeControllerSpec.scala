@@ -31,7 +31,7 @@ import scala.concurrent.Future
 class ConfirmBusinessTypeControllerSpec extends ControllerSpec with FlatRateFixtures {
 
   trait Setup {
-    val view = app.injector.instanceOf[FrsConfirmBusinessSector]
+    val view: FrsConfirmBusinessSector = app.injector.instanceOf[FrsConfirmBusinessSector]
     val controller: ConfirmBusinessTypeController = new ConfirmBusinessTypeController(
       mockAuthClientConnector,
       mockSessionService,

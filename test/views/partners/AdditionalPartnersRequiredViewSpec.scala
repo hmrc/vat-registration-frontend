@@ -23,7 +23,7 @@ import views.html.partners.AdditionalPartnersRequired
 
 class AdditionalPartnersRequiredViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[AdditionalPartnersRequired]
+  val view: AdditionalPartnersRequired = app.injector.instanceOf[AdditionalPartnersRequired]
   implicit val doc: Document = Jsoup.parse(view().body)
 
   val title = "To add more partners, you must send us a completed VAT2 form - Register for VAT - GOV.UK"

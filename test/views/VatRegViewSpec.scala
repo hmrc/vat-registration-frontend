@@ -66,7 +66,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
       private def selectText(selector: String): List[String] =
         doc.select(selector).asScala.toList.map(_.text())
 
-      def heading: Option[String] = doc.select(h1).headOption.map(_.text)
+      def heading: Option[String] = doc.select(this.h1).headOption.map(_.text)
 
       def headingLevel2(n: Int): Option[String] = doc.select(h2).toList.map(_.text).lift(n-1)
 
@@ -98,7 +98,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def paras: List[String] = doc.select("main p").toList.map(_.text)
 
-      def para(n: Int): Option[String] = doc.select(p).toList.map(_.text).lift(n-1)
+      def para(n: Int): Option[String] = doc.select(this.p).toList.map(_.text).lift(n-1)
 
       def panelIndentHeading(n: Int): Option[String] = selectText(panelHeading).lift(n)
 
@@ -114,7 +114,7 @@ class VatRegViewSpec extends PlaySpec with GuiceOneAppPerSuite with I18nSupport 
 
       def link(n: Int): Option[Link] = doc.select(a).toList.map(l => Link(l.text, l.attr("href"))).lift(n - 1)
 
-      def submitButton: Option[String] = doc.select(button).headOption.map(_.text)
+      def submitButton: Option[String] = doc.select(this.button).headOption.map(_.text)
 
       def hintText: Option[String] = doc.select(hint).headOption.map(_.text)
 

@@ -35,31 +35,31 @@ trait VatMocks
     with MockRegistrationApiConnector {
   this: MockitoSugar =>
 
-  implicit lazy val mockAudit = mock[Audit]
-  implicit lazy val mockServicesConfig = mock[ServicesConfig]
+  implicit lazy val mockAudit: Audit = mock[Audit]
+  implicit lazy val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
 
   //Connectors
-  implicit lazy val mockVatRegistrationConnector = mock[VatRegistrationConnector]
-  implicit lazy val mockConfigConnector = mock[ConfigConnector]
-  implicit lazy val mockAddressLookupConnector = mock[AddressLookupConnector]
-  implicit lazy val mockBankAccountReputationConnector = mock[BankAccountReputationConnector]
-  implicit lazy val mockICLConnector = mock[ICLConnector]
+  implicit lazy val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
+  implicit lazy val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
+  implicit lazy val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
+  implicit lazy val mockBankAccountReputationConnector: BankAccountReputationConnector = mock[BankAccountReputationConnector]
+  implicit lazy val mockICLConnector: ICLConnector = mock[ICLConnector]
   //Services
-  implicit lazy val mockAddressLookupService = mock[AddressLookupService]
-  implicit lazy val mockVatRegistrationService = mock[VatRegistrationService]
-  implicit lazy val mockBankAccountReputationService = mock[BankAccountReputationService]
-  implicit lazy val movkVatApplicationService = mock[VatApplicationService]
-  implicit lazy val mockApplicantDetailsServiceOld = mock[ApplicantDetailsService]
-  implicit lazy val mockFlatRateService = mock[FlatRateService]
-  implicit lazy val mockAttachmentsService = mock[AttachmentsService]
+  implicit lazy val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
+  implicit lazy val mockVatRegistrationService: VatRegistrationService = mock[VatRegistrationService]
+  implicit lazy val mockBankAccountReputationService: BankAccountReputationService = mock[BankAccountReputationService]
+  implicit lazy val movkVatApplicationService: VatApplicationService = mock[VatApplicationService]
+  implicit lazy val mockApplicantDetailsServiceOld: ApplicantDetailsService = mock[ApplicantDetailsService]
+  implicit lazy val mockFlatRateService: FlatRateService = mock[FlatRateService]
+  implicit lazy val mockAttachmentsService: AttachmentsService = mock[AttachmentsService]
   lazy val mockSummaryService: SummaryService = mock[SummaryService]
 
-  val mockTimeService = mock[TimeService]
-  lazy val mockICLService = mock[ICLService]
-  val mockAuditConnector = mock[AuditConnector]
+  val mockTimeService: TimeService = mock[TimeService]
+  lazy val mockICLService: ICLService = mock[ICLService]
+  val mockAuditConnector: AuditConnector = mock[AuditConnector]
   lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
 
-  def resetMocks() {
+  def resetMocks(): Unit = {
     reset(
       mockSessionService,
       mockAudit,

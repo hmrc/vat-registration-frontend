@@ -21,7 +21,6 @@ import itutil.ControllerISpec
 import models.Entity
 import models.api._
 import org.jsoup.Jsoup
-import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
@@ -221,7 +220,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = await(buildClient(s"/partner/$requestedIndex/business-type-in-partnership").post(Map("value" -> "55")))
+      val response: WSResponse = await(buildClient(s"/partner/$requestedIndex/business-type-in-partnership").post(Map("value" -> "55")))
 
       response.status mustBe SEE_OTHER
       response.header(HeaderNames.LOCATION) mustBe
@@ -237,7 +236,7 @@ class BusinessPartnerEntityTypeControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = await(buildClient(s"/partner/$requestedIndex/business-type-in-partnership").post(Map("value" -> "55")))
+      val response: WSResponse = await(buildClient(s"/partner/$requestedIndex/business-type-in-partnership").post(Map("value" -> "55")))
 
       response.status mustBe SEE_OTHER
       response.header(HeaderNames.LOCATION) mustBe

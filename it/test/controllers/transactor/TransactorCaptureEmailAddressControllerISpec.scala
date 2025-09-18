@@ -50,7 +50,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(url).get)
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
 
@@ -151,7 +151,7 @@ class TransactorCaptureEmailAddressControllerISpec extends ControllerISpec {
         given().user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient(url).post("")
+        val res: Future[WSResponse] = buildClient(url).post("")
         whenReady(res) { res =>
           res.status mustBe BAD_REQUEST
         }

@@ -74,7 +74,7 @@ class ManageRegistrationsViewSpec extends VatRegViewSpec with VatRegistrationFix
         doc.select("th").text() mustBe s"${ExpectedMessages.referenceHeading} ${ExpectedMessages.dateHeading} ${ExpectedMessages.statusHeading}"
       }
       "have a link to start the selected journey" in new ViewSetup {
-        val link = doc.select(tableLinkSelector)
+        val link: Elements = doc.select(tableLinkSelector)
         link.text mustBe testApplicationReference
         link.attr("href") mustBe controllers.routes.JourneyController.continueJourney(Some(testRegId)).url
       }

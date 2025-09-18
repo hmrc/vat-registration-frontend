@@ -17,12 +17,12 @@
 package forms
 
 import helpers.FormInspectors._
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import testHelpers.VatRegSpec
 
 class BusinessTelephoneNumberFormSpec extends VatRegSpec {
 
-  val testForm = BusinessTelephoneNumberForm.form
+  val testForm: Form[String] = BusinessTelephoneNumberForm.form
   val telephone_empty_error_key = "validation.business.telephoneNumber.missing"
   val telephone_invalid_error_key = "validation.business.telephoneNumber.invalid"
   val telephone_min_length_error_key = "validation.business.telephoneNumber.minlength"

@@ -19,6 +19,7 @@ package itutil
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, Json}
@@ -34,19 +35,19 @@ trait WiremockHelper {
 
   import WiremockHelper._
 
-  val wmConfig = wireMockConfig().port(wiremockPort)
+  val wmConfig: WireMockConfiguration = wireMockConfig().port(wiremockPort)
   val wireMockServer = new WireMockServer(wmConfig)
 
-  def startWiremock() = {
+  def startWiremock(): Unit = {
     configureFor(wiremockHost, wiremockPort)
     wireMockServer.start()
   }
 
-  def stopWiremock() = wireMockServer.stop()
+  def stopWiremock(): Unit = wireMockServer.stop()
 
-  def resetWiremock() = WireMock.reset()
+  def resetWiremock(): Unit = WireMock.reset()
 
-  def stubGet(url: String, status: Integer, body: String) =
+  def stubGet(url: String, status: Integer, body: String): StubMapping =
     stubFor(get(urlMatching(url))
       .willReturn(
         aResponse().
@@ -55,7 +56,7 @@ trait WiremockHelper {
       )
     )
 
-  def stubPost(url: String, status: Integer, responseBody: String) =
+  def stubPost(url: String, status: Integer, responseBody: String): StubMapping =
     stubFor(post(urlMatching(url))
       .willReturn(
         aResponse().
@@ -64,7 +65,7 @@ trait WiremockHelper {
       )
     )
 
-  def stubPut(url: String, status: Integer, responseBody: String) =
+  def stubPut(url: String, status: Integer, responseBody: String): StubMapping =
     stubFor(put(urlMatching(url))
       .willReturn(
         aResponse().
@@ -73,7 +74,7 @@ trait WiremockHelper {
       )
     )
 
-  def stubPatch(url: String, status: Integer, responseBody: String) =
+  def stubPatch(url: String, status: Integer, responseBody: String): StubMapping =
     stubFor(patch(urlMatching(url))
       .willReturn(
         aResponse().
@@ -82,7 +83,7 @@ trait WiremockHelper {
       )
     )
 
-  def stubDelete(url: String, status: Integer, responseBody: String) =
+  def stubDelete(url: String, status: Integer, responseBody: String): StubMapping =
     stubFor(delete(urlMatching(url))
       .willReturn(
         aResponse().

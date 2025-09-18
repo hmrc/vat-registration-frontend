@@ -32,7 +32,7 @@ import scala.concurrent.Future
 trait MockTransactorDetailsService extends MockitoSugar {
   self: Suite =>
 
-  val mockTransactorDetailsService = mock[TransactorDetailsService]
+  val mockTransactorDetailsService: TransactorDetailsService = mock[TransactorDetailsService]
 
   def mockGetTransactorDetails(profile: CurrentProfile)(response: TransactorDetails): OngoingStubbing[Future[TransactorDetails]] =
     when(mockTransactorDetailsService.getTransactorDetails(

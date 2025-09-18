@@ -18,16 +18,17 @@ package views.vatapplication
 
 import forms.VoluntaryStartDateNoChoiceForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.vatapplication.VoluntaryStartDateNoChoice
 
 class VoluntaryStartDateNoChoiceViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[VoluntaryStartDateNoChoice]
-  val form = app.injector.instanceOf[VoluntaryStartDateNoChoiceForm]
+  val view: VoluntaryStartDateNoChoice = app.injector.instanceOf[VoluntaryStartDateNoChoice]
+  val form: VoluntaryStartDateNoChoiceForm = app.injector.instanceOf[VoluntaryStartDateNoChoiceForm]
   val exampleDate = "example date"
 
-  implicit val doc = Jsoup.parse(view(form(), exampleDate).body)
+  implicit val doc: Document = Jsoup.parse(view(form(), exampleDate).body)
 
   object ExpectedMessages {
     val heading = "What do you want the business’s VAT start date to be"

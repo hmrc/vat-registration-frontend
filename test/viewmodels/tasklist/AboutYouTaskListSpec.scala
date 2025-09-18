@@ -26,7 +26,7 @@ import testHelpers.VatRegSpec
 
 class AboutYouTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = AboutYouTaskList
+  val section: AboutYouTaskList.type = AboutYouTaskList
   implicit val profile: CurrentProfile = currentProfile
 
   "the personal details row" when {

@@ -22,7 +22,7 @@ import testHelpers.VatRegSpec
 class RemoveOtherBusinessFormSpec extends VatRegSpec {
 
   val testOtherBusinessName = "testOtherBusinessName"
-  val formValue = RemoveOtherBusinessForm(testOtherBusinessName).removeOtherBusinessKey
+  val formValue: String = RemoveOtherBusinessForm(testOtherBusinessName).removeOtherBusinessKey
   val testRemoveOtherBusiness = "true"
 
   "RemoveOtherBusinessForm" must {

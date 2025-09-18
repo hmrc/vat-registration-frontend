@@ -23,7 +23,7 @@ import views.html.components.TaskListRow
 
 class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture {
 
-  val rowComponent = app.injector.instanceOf[TaskListRow]
+  val rowComponent: TaskListRow = app.injector.instanceOf[TaskListRow]
 
   implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
@@ -33,7 +33,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
   val rowAriaLabel = "test row aria"
   val testUrl = "testUrl"
 
-  def testPrerequisite(checksPass: Boolean) = TaskListRowBuilder(
+  def testPrerequisite(checksPass: Boolean): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => prereqMessageKey,
     url = _ => _ => testUrl,
     tagId = prereqAriaLabel,
@@ -41,7 +41,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
     prerequisites = _ => Seq()
   )
 
-  def testRow(prerequisitesMet: Boolean) = TaskListRowBuilder(
+  def testRow(prerequisitesMet: Boolean): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => rowMessageKey,
     url = _ => _ => testUrl,
     tagId = rowAriaLabel,

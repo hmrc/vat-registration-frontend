@@ -37,7 +37,7 @@ class RemoveUploadedDocumentViewSpec extends VatRegViewSpec with VatRegistration
   }
 
   val removeLink: Call = controllers.fileupload.routes.RemoveUploadedDocumentController.submit(testReference)
-  val testList = List(DocumentUploadSummaryRow("test-document", removeLink))
+  val testList: List[DocumentUploadSummaryRow] = List(DocumentUploadSummaryRow("test-document", removeLink))
 
   val view: RemoveUploadedDocument = app.injector.instanceOf[RemoveUploadedDocument]
   implicit val doc: Document = Jsoup.parse(view(RemoveUploadedDocumentForm(testDocumentName).form, testReference, testDocumentName).body)

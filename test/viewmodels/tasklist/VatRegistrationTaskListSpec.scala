@@ -21,14 +21,15 @@ import fixtures.VatRegistrationFixture
 import models._
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, StoringWithinUk, VatApplication}
+import services.BusinessService
 import testHelpers.VatRegSpec
 
 import java.time.LocalDate
 
 class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
-  val section = VatRegistrationTaskList
+  val section: VatRegistrationTaskList.type = VatRegistrationTaskList
 
-  val businessService = mockBusinessService
+  val businessService: BusinessService = mockBusinessService
 
   val completedVatApplicationWithGoodsAndServicesSection: VatApplication = validVatApplication.copy(
     overseasCompliance = Some(OverseasCompliance(

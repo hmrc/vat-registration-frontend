@@ -31,7 +31,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
   val pageUrl: String = routes.DocumentUploadSummaryController.show.url
   val continueUrl: String = routes.DocumentUploadSummaryController.continue.url
 
-  val testUpscanDetails = List(
+  val testUpscanDetails: List[UpscanDetails] = List(
     UpscanDetails(
       attachmentType = PrimaryIdentityEvidence,
       reference = "tes-reference",
@@ -39,7 +39,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
       uploadDetails = Some(UploadDetails("test-file", "image/gif", LocalDateTime.now(), "checksum", 100))
     )
   )
-  val testUpscanDetailsWithMissingUploadDetails = List(
+  val testUpscanDetailsWithMissingUploadDetails: List[UpscanDetails] = List(
     UpscanDetails(attachmentType = PrimaryIdentityEvidence, reference = "tes-reference", fileStatus = Ready)
   )
 
@@ -53,7 +53,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
   s"GET $pageUrl" when {
     "the user has 1 or more documents uploaded" must {
       "return OK with the view" in new Setup {
-        given
+        given()
           .user.isAuthorised()
           .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
           .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
@@ -61,13 +61,13 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe OK
       }
 
       "return server error if upload details missing" in new Setup {
-        given
+        given()
           .user.isAuthorised()
           .upscanApi.fetchAllUpscanDetails(testUpscanDetailsWithMissingUploadDetails)
           .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
@@ -75,7 +75,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe INTERNAL_SERVER_ERROR
       }
@@ -84,7 +84,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
   s"POST $continueUrl" must {
     "redirect to Upload Document page if not all required attachments are uploaded" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
         .attachmentsApi.getIncompleteAttachments(List(VAT5L))
@@ -99,7 +99,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
     }
 
     "redirect to Supply 1614A page if 1614 info is required but incomplete" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L))
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
@@ -114,7 +114,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
     }
 
     "redirect to Supply Supporting Documents page if they are required but none are present" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(Attachment1614a))
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
@@ -129,7 +129,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
     }
 
     "redirect to Task List page if all option to tax conditions are met" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails :+ attachmentDetails(VAT5L) :+ attachmentDetails(LandPropertyOtherDocs))
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
@@ -147,7 +147,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
   s"POST $pageUrl" must {
     "redirect to Upload Supporting Document page if Yes is selected" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
-      given
+      given()
         .user.isAuthorised()
 
       val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "true")))
@@ -158,7 +158,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
     "redirect to Task list page if No is selected" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
-      given
+      given()
         .user.isAuthorised()
 
       val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "false")))
@@ -169,7 +169,7 @@ class DocumentUploadSummaryControllerISpec extends ControllerISpec {
 
     "return a 400 if nothing is selected" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
-      given
+      given()
         .user.isAuthorised()
         .upscanApi.fetchAllUpscanDetails(testUpscanDetails)
         .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])

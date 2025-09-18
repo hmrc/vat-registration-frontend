@@ -18,14 +18,17 @@ package views.transactor
 
 import forms.DeclarationCapacityForm
 import forms.DeclarationCapacityForm._
+import models.DeclarationCapacityAnswer
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.transactor.DeclarationCapacityView
 
 class DeclarationCapacityViewSpec extends VatRegViewSpec {
-  val form = DeclarationCapacityForm()
-  val view = app.injector.instanceOf[DeclarationCapacityView]
-  implicit val doc = Jsoup.parse(view(form).body)
+  val form: Form[DeclarationCapacityAnswer] = DeclarationCapacityForm()
+  val view: DeclarationCapacityView = app.injector.instanceOf[DeclarationCapacityView]
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
     val heading = "What is your role with the business you are registering for VAT?"

@@ -21,6 +21,7 @@ import models.Entity
 import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class PartnerSummaryControllerISpec extends ControllerISpec {
@@ -37,7 +38,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -52,7 +53,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).getElementsByAttributeValue("type", "radio").size() mustBe 0
@@ -70,7 +71,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).getElementsByAttributeValue("type", "radio").size() mustBe 2
@@ -92,7 +93,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe OK
         Jsoup.parse(res.body).getElementsByAttributeValue("type", "radio").size() mustBe 2
@@ -113,7 +114,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(pageUrl).post(Map("value" -> "")))
+          val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -128,7 +129,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(pageUrl).post(Map("value" -> "")))
+          val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "")))
 
           res.status mustBe BAD_REQUEST
         }
@@ -143,7 +144,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(pageUrl).post(Map("value" -> "true")))
+          val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "true")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(entities.size + 1).url)
@@ -162,7 +163,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
           insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-          val res = await(buildClient(pageUrl).post(Map("value" -> "false")))
+          val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "false")))
 
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -186,7 +187,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(pageUrl).post(Map("value" -> "true")))
+        val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> "true")))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.AdditionalPartnerEntityController.show.url)
@@ -201,7 +202,7 @@ class PartnerSummaryControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(continueUrl).post(Map("" -> Seq(""))))
+      val res: WSResponse = await(buildClient(continueUrl).post(Map("" -> Seq(""))))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.PartnerEntityTypeController.showPartnerType(2).url)

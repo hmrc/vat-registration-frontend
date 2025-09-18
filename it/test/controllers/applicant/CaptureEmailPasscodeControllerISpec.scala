@@ -23,7 +23,6 @@ import models.{ApplicantDetails, Contact}
 import play.api.libs.json.{Format, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.InternalServerException
 
 
 class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
@@ -43,7 +42,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.show.url).get)
+      val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.show.url).get())
 
       res.status mustBe OK
     }
@@ -57,7 +56,7 @@ class CaptureEmailPasscodeControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.show.url).get)
+      val res: WSResponse = await(buildClient(routes.CaptureEmailPasscodeController.show.url).get())
       res.status mustBe INTERNAL_SERVER_ERROR
     }
   }

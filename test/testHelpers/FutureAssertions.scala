@@ -22,19 +22,19 @@ import org.scalatestplus.play.PlaySpec
 import play.api.http.Status
 import play.api.mvc.Result
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait FutureAssertions extends ScalaFutures {
   self: TestSuite with PlaySpec =>
 
 
-  implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   import play.api.test.Helpers._
 
   implicit class FutureUnit(fu: Future[Unit]) {
 
-    def completedSuccessfully: Assertion = whenReady(fu)(_ mustBe (()))
+    def completedSuccessfully: Assertion = whenReady(fu)(_ mustBe ())
 
   }
 

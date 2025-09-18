@@ -16,12 +16,13 @@
 
 package forms
 
-import models.api.vatapplication.{StoringOverseas, StoringWithinUk}
+import models.api.vatapplication.{StoringGoodsForDispatch, StoringOverseas, StoringWithinUk}
+import play.api.data.Form
 import testHelpers.VatRegSpec
 
 class StoringGoodsFormSpec extends VatRegSpec {
 
-  val form = app.injector.instanceOf[StoringGoodsForm].form
+  val form: Form[StoringGoodsForDispatch] = app.injector.instanceOf[StoringGoodsForm].form
 
   val fieldName = "value"
   val uk = "UK"

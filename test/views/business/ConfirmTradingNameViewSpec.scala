@@ -18,15 +18,17 @@ package views.business
 
 import forms.ConfirmTradingNameForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.business.ConfirmTradingNameView
 
 class ConfirmTradingNameViewSpec extends VatRegViewSpec {
 
   val testCompanyName = "testCompanyName"
-  val form = ConfirmTradingNameForm.form
-  val view = app.injector.instanceOf[ConfirmTradingNameView]
-  implicit val doc = Jsoup.parse(view(form, testCompanyName).body)
+  val form: Form[Boolean] = ConfirmTradingNameForm.form
+  val view: ConfirmTradingNameView = app.injector.instanceOf[ConfirmTradingNameView]
+  implicit val doc: Document = Jsoup.parse(view(form, testCompanyName).body)
 
   object ExpectedContent {
     val heading = "Is this your trading name?"

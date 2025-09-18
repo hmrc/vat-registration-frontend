@@ -18,6 +18,7 @@ package forms
 
 import helpers.FormInspectors._
 import models.FRSDateChoice
+import play.api.data.Form
 import testHelpers.VatRegSpec
 
 import java.time.LocalDate
@@ -26,7 +27,7 @@ class FlatRateFormSpec extends VatRegSpec {
   val minDate: LocalDate = LocalDate.of(2018, 5, 1)
   val now: LocalDate = LocalDate.of(2018, 5, 28)
   val maxDate: LocalDate = now.plusMonths(3)
-  val testform = FRSStartDateForm.form(minDate, maxDate)
+  val testform: Form[(FRSDateChoice.Value, Option[LocalDate])] = FRSStartDateForm.form(minDate, maxDate)
 
   "FRSStartDateForm form" should {
     "be valid" when {

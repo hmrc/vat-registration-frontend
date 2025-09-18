@@ -16,15 +16,17 @@
 
 package views.flatratescheme
 
-import forms.genericForms.YesOrNoFormFactory
+import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.flatratescheme.JoinFrs
 
 class JoinFrsViewSpec extends VatRegViewSpec {
 
-  val form = YesOrNoFormFactory.form()("frs.join")
-  val view = app.injector.instanceOf[JoinFrs]
+  val form: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.join")
+  val view: JoinFrs = app.injector.instanceOf[JoinFrs]
 
   object ExpectedContent {
     val heading = "Does the business want to register for the Flat Rate Scheme?"
@@ -41,7 +43,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
 
     object Details {
       val summary = "Show me an example"
-      val content = "A dry cleaners on the Flat rate Scheme does £20,000 worth of work in a quarter. It charges 20% VAT " +
+      val content: String = "A dry cleaners on the Flat rate Scheme does £20,000 worth of work in a quarter. It charges 20% VAT " +
         "and its sales, including £4,000 for VAT, total £24,000. " +
         "This type of business pays a VAT flat rate of 12% of total sales, which is £2,880. This is less than the £4,000 " +
         "it charged for VAT and it can keep the £1,120 difference."
@@ -64,7 +66,7 @@ class JoinFrsViewSpec extends VatRegViewSpec {
     val continue = "Save and continue"
   }
 
-  implicit val doc = Jsoup.parse(view(form).body)
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   "The Join FRS page" must {
     "have a back link" in new ViewSetup {

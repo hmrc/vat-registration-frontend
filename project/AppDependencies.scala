@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import play.sbt.PlayImport._
-import sbt._
+import play.sbt.PlayImport.*
+
+import sbt.*
 
 object AppDependencies {
 
   private val hmrcMongoVersion = "2.7.0"
-  private val bootstrapVersion = "8.6.0"
+  private val bootstrapVersion = "10.1.0"
   private val partialsVersion = "9.1.0"
   private val cachingClientVersion = "11.2.0"
   private val formMappingVersion = "2.0.0"

@@ -22,7 +22,7 @@ import play.api.http.Status.{CONFLICT, CREATED, FORBIDDEN}
 import play.api.libs.json.Json
 import play.api.mvc.Request
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, Upstream4xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import utils.LoggingUtil
 
 import javax.inject.{Inject, Singleton}
@@ -45,10 +45,10 @@ class RequestEmailVerificationPasscodeConnector @Inject()(httpClient: HttpClient
       .map {
         case HttpResponse(CREATED, _, _) => RequestEmailPasscodeSuccessful
       }.recover {
-        case Upstream4xxResponse(_, CONFLICT, _, _) =>
+        case error @ UpstreamErrorResponse(_, CONFLICT, _, _) if UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
           infoLog(s"[RequestEmailVerificationPasscodeConnector][requestEmailVerificationPasscode] email already verified")
           AlreadyVerifiedEmailAddress
-        case Upstream4xxResponse(_, FORBIDDEN, _, _) =>
+        case error @ UpstreamErrorResponse(_, FORBIDDEN, _, _) if UpstreamErrorResponse.Upstream4xxResponse.unapply(error).isDefined =>
           warnLog(s"[RequestEmailVerificationPasscodeConnector][requestEmailVerificationPasscode] max emails exceeded")
           MaxEmailsExceeded
         case error =>

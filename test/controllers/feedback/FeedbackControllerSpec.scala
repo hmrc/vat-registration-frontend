@@ -17,8 +17,11 @@
 package controllers.feedback
 
 import play.api.http.Status
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
+
+import scala.concurrent.Future
 
 class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
 
@@ -34,7 +37,7 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
     val fakeRequest = FakeRequest("GET", "/")
 
     "return feedback page" in new Setup {
-      val result = controller.feedbackShow(fakeRequest)
+      val result: Future[Result] = controller.feedbackShow(fakeRequest)
       result isA Status.SEE_OTHER
 
       redirectLocation(result).map { url =>
@@ -44,7 +47,7 @@ class FeedbackControllerSpec extends ControllerSpec with FutureAssertions {
     }
 
     "capture the referrer in the session on initial session on the feedback load" in new Setup {
-      val result = controller.feedbackShow(fakeRequest.withHeaders("Referer" -> "Blah"))
+      val result: Future[Result] = controller.feedbackShow(fakeRequest.withHeaders("Referer" -> "Blah"))
       result isA Status.SEE_OTHER
     }
   }

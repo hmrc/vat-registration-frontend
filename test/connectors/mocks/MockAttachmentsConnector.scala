@@ -30,7 +30,7 @@ import play.api.mvc.Request
 trait MockAttachmentsConnector extends MockitoSugar {
   self: Suite =>
 
-  val mockAttachmentsConnector = mock[AttachmentsConnector]
+  val mockAttachmentsConnector: AttachmentsConnector = mock[AttachmentsConnector]
 
   def mockGetAttachmentsList(regId: String)(response: Future[List[AttachmentType]]): OngoingStubbing[Future[List[AttachmentType]]] =
     when(mockAttachmentsConnector.getAttachmentList(ArgumentMatchers.eq(regId))(ArgumentMatchers.any(), ArgumentMatchers.any[Request[_]]))

@@ -45,7 +45,7 @@ class TransactorIdControllerISpec extends ControllerISpec {
     "identifiersMatch" -> true
   )
 
-  override val testPersonalDetails = PersonalDetails(
+  override val testPersonalDetails: PersonalDetails = PersonalDetails(
     firstName = testFirstName,
     lastName = testLastName,
     nino = Some(testApplicantNino),

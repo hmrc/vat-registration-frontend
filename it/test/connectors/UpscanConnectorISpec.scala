@@ -28,7 +28,7 @@ import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, SessionId, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException, SessionId, UpstreamErrorResponse}
 
 class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures with FeatureToggleSupport {
 
@@ -145,7 +145,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
   "deleteUpscanDetails" must {
     "delete and return true" in {
-      given
+      given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -158,7 +158,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     }
 
     "return an exception if delete fails" in {
-      given
+      given()
         .audit.writesAudit()
         .audit.writesAuditMerged()
 
@@ -196,7 +196,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
 
     "return an exception if fetch fails" in {
       stubGet(upscanFilesUrl, INTERNAL_SERVER_ERROR, JsArray(List(testUpscanDetailsJson)).toString())
-      intercept[Upstream5xxResponse](await(connector.fetchAllUpscanDetails(testRegId)))
+      intercept[UpstreamErrorResponse](await(connector.fetchAllUpscanDetails(testRegId)))
     }
   }
 }

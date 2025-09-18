@@ -20,15 +20,17 @@ import itutil.ControllerISpec
 import models.TransactorDetails
 import models.api.{Address, Country}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
   val url = "/your-address/international"
-  val testForeignCountry = Country(Some("NO"), Some("Norway"))
-  val testShortForeignAddress = Address(testLine1, Some(testLine2), country = Some(testForeignCountry))
-  val testForeignAddress = Address("testLine1", Some("testLine2"), Some("testLine3"), Some("testLine4"), Some("testLine5"), Some("AB12 3YZ"), country = Some(testForeignCountry))
+  val testForeignCountry: Country = Country(Some("NO"), Some("Norway"))
+  val testShortForeignAddress: Address = Address(testLine1, Some(testLine2), country = Some(testForeignCountry))
+  val testForeignAddress: Address = Address("testLine1", Some("testLine2"), Some("testLine3"), Some("testLine4"), Some("testLine5"), Some("AB12 3YZ"), country = Some(testForeignCountry))
 
   "GET /your-address/international" when {
     "when reading from the backend" must {
@@ -39,13 +41,13 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
       }
 
       "return OK and pre-populate the page" in new Setup {
-        val trDetails = TransactorDetails(address = Some(testShortForeignAddress))
+        val trDetails: TransactorDetails = TransactorDetails(address = Some(testShortForeignAddress))
 
         given()
           .user.isAuthorised()
@@ -53,11 +55,11 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe OK
 
-        val doc = Jsoup.parse(res.body)
+        val doc: Document = Jsoup.parse(res.body)
         doc.select("input[id=line1]").`val`() mustBe testLine1
         doc.select("input[id=line2]").`val`() mustBe testLine2
         doc.select("option[value=Norway]").hasAttr("selected") mustBe true
@@ -74,7 +76,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> testLine1,
         "line2" -> testLine2,
         "country" -> "Norway"
@@ -91,7 +93,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
         "line2" -> "testLine2",
         "line3" -> "testLine3",
@@ -110,7 +112,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line2" -> "testLine2",
         "line3" -> "testLine3",
         "line4" -> "testLine4",
@@ -127,7 +129,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
         "line2" -> "testLine2",
         "line3" -> "testLine3",
@@ -144,7 +146,7 @@ class TransactorInternationalAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "line1" -> "testLine1",
         "line2" -> "testLine2",
         "line3" -> "testLine3",

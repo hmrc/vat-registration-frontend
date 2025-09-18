@@ -34,7 +34,7 @@ class IncorpIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with F
   lazy val connector: IncorpIdConnector = app.injector.instanceOf[IncorpIdConnector]
   val testIncorpId = "testIncorpId"
 
-  val testJourneyConfig = IncorpIdJourneyConfig(
+  val testJourneyConfig: IncorpIdJourneyConfig = IncorpIdJourneyConfig(
     continueUrl = "/test",
     deskProServiceId = "vrs",
     signOutUrl = "/signOutUrl",

@@ -22,9 +22,11 @@ import models.api.vatapplication.VatApplication
 import models.{FRSDateChoice, FlatRateScheme}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class StartDateControllerISpec extends ControllerISpec {
 
@@ -63,14 +65,14 @@ class StartDateControllerISpec extends ControllerISpec {
 
   val eligibilityData: EligibilitySubmissionData = testEligibilitySubmissionData.copy(calculatedDate = Some(edrDate))
 
-  def differentDate(date: LocalDate) = Map(
+  def differentDate(date: LocalDate): Map[String, Seq[String]] = Map(
     "frsStartDateRadio" -> Seq(FRSDateChoice.DifferentDate.toString),
     "frsStartDate.day" -> Seq(date.getDayOfMonth.toString),
     "frsStartDate.month" -> Seq(date.getMonthValue.toString),
     "frsStartDate.year" -> Seq(date.getYear.toString)
   )
 
-  def registrationDate = Map(
+  def registrationDate: Map[String, Seq[String]] = Map(
     "frsStartDateRadio" -> Seq(FRSDateChoice.VATDate.toString)
   )
 
@@ -84,7 +86,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
+      val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -101,7 +103,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
+      val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -117,7 +119,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
+      val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.show.url).get()
 
       whenReady(response) { res =>
         res.status mustBe OK
@@ -137,7 +139,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+        val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(testDate))
 
         whenReady(response) { res =>
@@ -155,7 +157,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+        val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(registrationDate)
 
         whenReady(response) { res =>
@@ -171,7 +173,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+        val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(oneDayBeforeVatStartDate))
 
         whenReady(response) { res =>
@@ -193,7 +195,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+        val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(testDate))
 
         whenReady(response) { res =>
@@ -212,7 +214,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+        val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(registrationDate)
 
         whenReady(response) { res =>
@@ -229,7 +231,7 @@ class StartDateControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val response = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
+        val response: Future[WSResponse] = buildClient(controllers.flatratescheme.routes.StartDateController.submit.url)
           .post(differentDate(oneDayBeforeEdrDate))
 
         whenReady(response) { res =>

@@ -18,6 +18,7 @@ package views.vatapplication
 
 import forms.TaxRepForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.Html
 import views.VatRegViewSpec
 import views.html.vatapplication.TaxRepresentative
@@ -27,7 +28,7 @@ class TaxRepresentativeViewSpec extends VatRegViewSpec {
   val taxRepPage: TaxRepresentative = app.injector.instanceOf[TaxRepresentative]
 
   lazy val view: Html = taxRepPage(TaxRepForm.form)
-  implicit val doc = Jsoup.parse(view.body)
+  implicit val doc: Document = Jsoup.parse(view.body)
 
   object ExpectedContent {
     val heading = "Do you want to appoint a UK tax representative for the business?"

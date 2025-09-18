@@ -33,12 +33,12 @@ class HomeAddressControllerISpec extends ControllerISpec {
   val email = "test@test.com"
   val nino = "SR123456C"
   val role = "Director"
-  val dob = LocalDate.of(1998, 7, 12)
+  val dob: LocalDate = LocalDate.of(1998, 7, 12)
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
 
-  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
+  val currentAddress: Address = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
 
   "GET redirectToAlf" must {
@@ -50,7 +50,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
+      val response: Future[WSResponse] = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -65,7 +65,7 @@ class HomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
+      val response: Future[WSResponse] = buildClient(applicantRoutes.HomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")

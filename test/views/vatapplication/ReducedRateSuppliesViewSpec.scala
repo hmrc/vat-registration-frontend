@@ -18,6 +18,7 @@ package views.vatapplication
 
 import forms.ReducedRateSuppliesForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.vatapplication.ReducedRateSupplies
 
@@ -32,7 +33,7 @@ class ReducedRateSuppliesViewSpec extends VatRegViewSpec {
   "ReducedRated Supplies Page" must {
     val form = ReducedRateSuppliesForm.form
     val view = app.injector.instanceOf[ReducedRateSupplies].apply(form)
-    implicit val doc = Jsoup.parse(view.body)
+    implicit val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in new ViewSetup {
       doc.title() mustBe title

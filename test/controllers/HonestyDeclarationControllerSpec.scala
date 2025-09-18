@@ -22,7 +22,6 @@ import play.api.test.FakeRequest
 import services.mocks.MockVatRegistrationService
 import testHelpers.ControllerSpec
 import views.html.HonestyDeclaration
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

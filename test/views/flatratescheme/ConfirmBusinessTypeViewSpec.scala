@@ -18,14 +18,15 @@ package views.flatratescheme
 
 import fixtures.FlatRateFixtures
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.flatratescheme.FrsConfirmBusinessSector
 
 class ConfirmBusinessTypeViewSpec extends VatRegViewSpec with FlatRateFixtures {
 
-  val view = app.injector.instanceOf[FrsConfirmBusinessSector]
+  val view: FrsConfirmBusinessSector = app.injector.instanceOf[FrsConfirmBusinessSector]
 
-  implicit val doc = Jsoup.parse(view(testBusinessTypeDetails.label).body)
+  implicit val doc: Document = Jsoup.parse(view(testBusinessTypeDetails.label).body)
 
   "confirm business type" must {
     "have the correct title" in new ViewSetup {

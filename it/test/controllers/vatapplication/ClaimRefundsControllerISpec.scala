@@ -22,7 +22,10 @@ import models.api.vatapplication.VatApplication
 import models.{NonUk, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class ClaimRefundsControllerISpec extends ControllerISpec {
 
@@ -39,7 +42,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient("/claim-vat-refunds").get()
+      val res: Future[WSResponse] = buildClient("/claim-vat-refunds").get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -53,7 +56,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient("/claim-vat-refunds").get()
+      val res: Future[WSResponse] = buildClient("/claim-vat-refunds").get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -73,7 +76,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -90,7 +93,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
+        val res: WSResponse = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
@@ -105,7 +108,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
+        val res: WSResponse = await(buildClient("/claim-vat-refunds").post(Map("value" -> "true")))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.ErrorController.missingAnswer.url)
@@ -120,7 +123,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -141,7 +144,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -162,7 +165,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -181,7 +184,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post(Map("value" -> "true"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -198,7 +201,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post(Map("value" -> "false"))
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post(Map("value" -> "false"))
 
         whenReady(res) { result =>
           result.status mustBe SEE_OTHER
@@ -211,7 +214,7 @@ class ClaimRefundsControllerISpec extends ControllerISpec {
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = buildClient("/claim-vat-refunds").post("")
+        val res: Future[WSResponse] = buildClient("/claim-vat-refunds").post("")
 
         whenReady(res) { result =>
           result.status mustBe BAD_REQUEST

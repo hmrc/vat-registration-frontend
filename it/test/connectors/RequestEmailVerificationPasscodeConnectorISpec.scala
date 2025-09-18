@@ -22,7 +22,7 @@ import itutil.IntegrationSpecBase
 import models.external.{AlreadyVerifiedEmailAddress, RequestEmailPasscodeSuccessful}
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.{InternalServerException, Upstream5xxResponse}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureToggleSupport {
 
@@ -61,7 +61,7 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
 
         stubPost("/register-for-vat/test-only/api/request-passcode", INTERNAL_SERVER_ERROR, "")
 
-        intercept[Upstream5xxResponse] {
+        intercept[UpstreamErrorResponse] {
           await(connector.requestEmailVerificationPasscode(testEmail))
         }
 
@@ -98,7 +98,7 @@ class RequestEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase
 
         stubPost("/email-verification/request-passcode", INTERNAL_SERVER_ERROR, "")
 
-        intercept[Upstream5xxResponse] {
+        intercept[UpstreamErrorResponse] {
           await(connector.requestEmailVerificationPasscode(testEmail))
         }
 

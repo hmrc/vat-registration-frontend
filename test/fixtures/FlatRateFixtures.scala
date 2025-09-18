@@ -22,15 +22,15 @@ import java.time.LocalDate
 
 trait FlatRateFixtures {
 
-  val flatRatePercentage = BigDecimal(3.14)
-  val frsDate = LocalDate.of(2017, 10, 10)
+  val flatRatePercentage: BigDecimal = BigDecimal(3.14)
+  val frsDate: LocalDate = LocalDate.of(2017, 10, 10)
 
   val testBusinessTypeLabel = "test"
   val testBusinessTypeLabelCy = "test"
   val testBusinessCategory = "id"
-  val testBusinessTypeDetails = FrsBusinessType("id", testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(10))
+  val testBusinessTypeDetails: FrsBusinessType = FrsBusinessType("id", testBusinessTypeLabel, testBusinessTypeLabelCy, BigDecimal(10))
 
-  val validFlatRate = FlatRateScheme(
+  val validFlatRate: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(true),
     Some(5003),
@@ -44,7 +44,7 @@ trait FlatRateFixtures {
 
   val defaultFlatRate: BigDecimal = 16.5
 
-  val frs1KReg = FlatRateScheme(
+  val frs1KReg: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(true),
     Some(1000L),
@@ -56,7 +56,7 @@ trait FlatRateFixtures {
     Some(false)
   )
 
-  val frs1KNreg = FlatRateScheme(
+  val frs1KNreg: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(true),
     None,
@@ -67,7 +67,7 @@ trait FlatRateFixtures {
     Some(defaultFlatRate)
   )
 
-  val frsPerReg = FlatRateScheme(
+  val frsPerReg: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(false),
     Some(1000000L),
@@ -78,7 +78,7 @@ trait FlatRateFixtures {
     Some(defaultFlatRate)
   )
 
-  val frsPerNconf = FlatRateScheme(
+  val frsPerNconf: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(false),
     Some(1000000L),
@@ -89,7 +89,7 @@ trait FlatRateFixtures {
     Some(defaultFlatRate)
   )
 
-  val frsPerNconfN = FlatRateScheme(
+  val frsPerNconfN: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(false),
     Some(1000000L),
@@ -100,11 +100,11 @@ trait FlatRateFixtures {
     Some(defaultFlatRate)
   )
 
-  val frsNoJoin = FlatRateScheme(
+  val frsNoJoin: FlatRateScheme = FlatRateScheme(
     Some(false)
   )
 
-  val frsNoJoinWithDetails = FlatRateScheme(
+  val frsNoJoinWithDetails: FlatRateScheme = FlatRateScheme(
     Some(false),
     Some(true),
     Some(1000000L),
@@ -116,14 +116,14 @@ trait FlatRateFixtures {
     Some(false)
   )
 
-  val incompleteFlatRate = FlatRateScheme(
+  val incompleteFlatRate: FlatRateScheme = FlatRateScheme(
     Some(true),
     Some(true)
   )
 
-  val businessCategory = "019"
+  val businessCategory: String = "019"
 
-  val testFlatRate = FlatRateScheme(
+  val testFlatRate: FlatRateScheme = FlatRateScheme(
     joinFrs = Some(true),
     overBusinessGoods = Some(true),
     estimateTotalSales = Some(30000L),
@@ -134,7 +134,7 @@ trait FlatRateFixtures {
     percent = None
   )
 
-  val businessTypes = Seq(
+  val businessTypes: Seq[FrsGroup] = Seq(
     FrsGroup(
       label = "Test 1",
       labelCy = "Test 1",

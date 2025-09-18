@@ -31,7 +31,7 @@ import java.time.LocalDate
 
 class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
   class Setup {
-    val govukSummaryList = app.injector.instanceOf[GovukSummaryList]
+    val govukSummaryList: GovukSummaryList = app.injector.instanceOf[GovukSummaryList]
     implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
     val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
     implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
@@ -137,7 +137,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res = Builder.build(testVatScheme)(messages)
+      val res: HtmlFormat.Appendable = Builder.build(testVatScheme)(messages)
 
       res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
@@ -202,7 +202,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res = Builder.build(testVatScheme)(messages)
+      val res: HtmlFormat.Appendable = Builder.build(testVatScheme)(messages)
 
       res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
@@ -253,7 +253,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         ).flatten
       )
 
-      val res = Builder.build(testVatScheme)(messages)
+      val res: HtmlFormat.Appendable = Builder.build(testVatScheme)(messages)
 
       res mustBe HtmlFormat.fill(List(govukSummaryList(expectedSummaryList)))
     }
@@ -267,7 +267,7 @@ class TransactorDetailsSummaryBuilderSpec extends VatRegSpec {
         transactorDetails = None
       )
 
-      val res = Builder.build(testVatScheme)(messages)
+      val res: HtmlFormat.Appendable = Builder.build(testVatScheme)(messages)
 
       res mustBe HtmlFormat.fill(List(govukSummaryList(SummaryList(Nil))))
     }

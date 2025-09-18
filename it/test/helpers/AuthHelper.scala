@@ -17,6 +17,7 @@
 package helpers
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames
 import play.api.libs.crypto.CookieSigner
 import play.api.libs.ws.WSCookie
@@ -47,15 +48,15 @@ trait AuthHelper {
     ) ++ additionalData
   }
 
-  def getSessionCookie(additionalData: Map[String, String] = Map(), userId: String = defaultUser) = {
+  def getSessionCookie(additionalData: Map[String, String] = Map(), userId: String = defaultUser): String = {
     SessionCookieBaker.cookieValue(cookieData(additionalData, userId))
   }
 
-  def stubSuccessfulLogin(userId: String = defaultUser, withSignIn: Boolean = false) = {
+  def stubSuccessfulLogin(userId: String = defaultUser, withSignIn: Boolean = false): StubMapping = {
 
     if (withSignIn) {
       val continueUrl = "/wibble"
-      stubFor(get(urlEqualTo(s"/gg/sign-in?continue=${continueUrl}"))
+      stubFor(get(urlEqualTo(s"/gg/sign-in?continue=$continueUrl"))
         .willReturn(aResponse()
           .withStatus(303)
           .withHeader(HeaderNames.SET_COOKIE, getSessionCookie())
@@ -67,7 +68,7 @@ trait AuthHelper {
         .willReturn(ok("""{}""")))
   }
 
-  def setupSimpleAuthMocks(userId: String = defaultUser) = {
+  def setupSimpleAuthMocks(userId: String = defaultUser): StubMapping = {
     stubFor(post(urlMatching("/write/audit"))
       .willReturn(
         aResponse().
@@ -88,7 +89,7 @@ trait SessionCookieBaker {
 
   val cookieKey = "gvBoGdgzqG1AarzF1LY0zQ=="
 
-  def cookieValue(sessionData: Map[String, String]) = {
+  def cookieValue(sessionData: Map[String, String]): String = {
     def encode(data: Map[String, String]): PlainText = {
       val encoded = data.map {
         case (k, v) => URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")

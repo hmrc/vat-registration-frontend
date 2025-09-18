@@ -26,14 +26,14 @@ import play.api.Application
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json, Writes}
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import java.util.Base64
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -44,10 +44,10 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
   trait Setup {
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-    val repo = app.injector.instanceOf[SessionRepository]
+    val repo: SessionRepository = app.injector.instanceOf[SessionRepository]
     val defaultTimeout: FiniteDuration = 2 seconds
 
-    customAwait(repo.ensureIndexes)(defaultTimeout)
+    customAwait(repo.ensureIndexes())(defaultTimeout)
     customAwait(repo.collection.countDocuments().head())(defaultTimeout)
 
     def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
@@ -81,16 +81,17 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
 
   private val ws: WSClient = app.injector.instanceOf(classOf[WSClient])
 
-  def buildClient(path: String, reference: Option[String] = None)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie(reference = reference))= {
+  def buildClient(path: String, reference: Option[String] = None)
+                 (implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie(reference = reference)): WSRequest = {
     val removeRegisterWithPath = path.replace("""/register-for-vat""", "")
     ws.url(s"http://localhost:$port/register-for-vat$removeRegisterWithPath").withFollowRedirects(false).withHttpHeaders(headers, "Csrf-Token" -> "nocheck")
   }
 
-  def buildInternalClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie()) = {
+  def buildInternalClient(path: String)(implicit headers: (String, String) = HeaderNames.COOKIE -> SessionCookieBaker.getSessionCookie()): WSRequest = {
     ws.url(s"http://localhost:$port/internal$path").withFollowRedirects(false).withHttpHeaders(headers, "Csrf-Token" -> "nocheck")
   }
 
-  val encryptedRegIdList1 = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
+  val encryptedRegIdList1: String = Base64.getEncoder.encodeToString("99,98".getBytes("UTF-8"))
 
   def additionalConfig: Map[String, String] = Map(
     "mongodb.uri" -> s"mongodb://127.0.0.1:27017/test?rm.monitorRefreshMS=1000&rm.failover=default"

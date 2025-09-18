@@ -23,7 +23,7 @@ import views.html.ApplicationProgressSaved
 class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   val applicationProgressSavedView: ApplicationProgressSaved =
-    fakeApplication.injector.instanceOf[ApplicationProgressSaved]
+    fakeApplication().injector.instanceOf[ApplicationProgressSaved]
 
   val testController = new ApplicationProgressSavedController(
     movkVatApplicationService,

@@ -18,13 +18,15 @@ package views.vatapplication
 
 import forms.SellOrMoveNipForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.vatapplication.SellOrMoveNip
 
 class SellOrMoveNipViewSpec extends VatRegViewSpec {
-  val form = SellOrMoveNipForm.form
-  val view = app.injector.instanceOf[SellOrMoveNip]
-  implicit val doc = Jsoup.parse(view(form).body)
+  val form: Form[(Boolean, Option[BigDecimal])] = SellOrMoveNipForm.form
+  val view: SellOrMoveNip = app.injector.instanceOf[SellOrMoveNip]
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
     val heading = "Does the business expect to do any of the following in the next 12 months?"

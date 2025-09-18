@@ -17,6 +17,7 @@
 package views.applicant
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.applicant.EmailVerified
 
@@ -29,7 +30,7 @@ class EmailVerifiedViewSpec extends VatRegViewSpec {
   "Email Verified Page" should {
     val view = app.injector.instanceOf[EmailVerified].apply(testCall)
 
-    implicit val doc = Jsoup.parse(view.body)
+    implicit val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in new ViewSetup {
       doc.title() mustBe title

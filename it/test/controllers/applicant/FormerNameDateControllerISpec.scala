@@ -137,7 +137,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(url).post(Map(
+      val response: Future[WSResponse] = buildClient(url).post(Map(
         "formerNameDate.day" -> testFormerNameDate.getDayOfMonth.toString,
         "formerNameDate.month" -> testFormerNameDate.getMonthValue.toString,
         "formerNameDate.year" -> testFormerNameDate.getYear.toString
@@ -158,7 +158,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(url).post(Map(
+      val response: Future[WSResponse] = buildClient(url).post(Map(
         "formerNameDate.day" -> "",
         "formerNameDate.month" -> "",
         "formerNameDate.year" -> ""
@@ -179,7 +179,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(url).post(Map(
+      val response: Future[WSResponse] = buildClient(url).post(Map(
         "formerNameDate.day" -> "",
         "formerNameDate.month" -> "",
         "formerNameDate.year" -> ""
@@ -200,7 +200,7 @@ class FormerNameDateControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(url).post(Map(
+      val response: Future[WSResponse] = buildClient(url).post(Map(
         "formerNameDate.day" -> "",
         "formerNameDate.month" -> "",
         "formerNameDate.year" -> ""

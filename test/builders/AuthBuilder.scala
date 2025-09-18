@@ -29,20 +29,20 @@ trait AuthBuilder extends SessionBuilder with AuthMock {
   val userId = "testUserId"
 
   def requestWithAuthorisedUser[T <: AnyContent](action: Action[AnyContent], request: FakeRequest[T])
-                                                (test: Future[Result] => Any) {
+                                                (test: Future[Result] => Any): Unit = {
     mockAuthenticated()
     val result = action(updateRequestWithSession(request))
     test(result)
   }
 
-  def requestWithAuthorisedUser(action: Action[AnyContent])(test: Future[Result] => Any) {
+  def requestWithAuthorisedUser(action: Action[AnyContent])(test: Future[Result] => Any): Unit = {
     val userId = "testUserId"
     mockAuthenticated()
     val result = action(buildRequestWithSession(userId))
     test(result)
   }
 
-  def withAuthorisedUser(action: Action[AnyContent], useBasicAuth: Boolean = false)(test: Future[Result] => Any) {
+  def withAuthorisedUser(action: Action[AnyContent], useBasicAuth: Boolean = false)(test: Future[Result] => Any): Unit = {
     val userId = "testUserId"
     if (useBasicAuth) mockAuthenticatedBasic else mockAuthenticated()
     val result = action(buildRequestWithSession(userId))
@@ -57,14 +57,14 @@ trait AuthBuilder extends SessionBuilder with AuthMock {
   }
 
   def submitWithUnauthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded])
-                                (test: Future[Result] => Any) {
+                                (test: Future[Result] => Any): Unit = {
     mockNotAuthenticated()
     val result = action.apply(updateRequestFormWithSession(request, ""))
     test(result)
   }
 
   def submitWithAuthorisedUser(action: Action[AnyContent], request: FakeRequest[AnyContentAsFormUrlEncoded], useBasicAuth: Boolean = true)
-                              (test: Future[Result] => Any) {
+                              (test: Future[Result] => Any): Unit = {
     if (useBasicAuth) mockAuthenticatedBasic else mockAuthenticated()
     val result = action.apply(updateRequestFormWithSession(request, userId))
     test(result)

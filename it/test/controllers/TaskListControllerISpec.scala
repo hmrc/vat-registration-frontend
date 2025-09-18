@@ -22,11 +22,13 @@ import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.Assertion
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import java.time.LocalDate
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class TaskListControllerISpec extends ControllerISpec {
 
@@ -105,7 +107,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
   }
 
-  def sectionMustExist(n: Int)(heading: String, rows: List[String])(implicit doc: Document) = {
+  def sectionMustExist(n: Int)(heading: String, rows: List[String])(implicit doc: Document): Assertion = {
     val sectionHeadingSelector = ".app-task-list__section"
     val rowSelector = "ul.app-task-list__items"
 
@@ -116,9 +118,9 @@ class TaskListControllerISpec extends ControllerISpec {
 
   "GET /application-progress" when {
     "redirect to application reference page if it hasn't been captured" in new Setup {
-      val scheme = emptyUkCompanyVatScheme
+      val scheme: VatScheme = emptyUkCompanyVatScheme
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -126,18 +128,19 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationReferenceController.show.url)
     }
+
     "redirect to honesty declaration page if it hasn't been captured" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref")
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -145,14 +148,15 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
     }
+
     "return OK and render all relevant rows when all data is present" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
@@ -160,7 +164,7 @@ class TaskListControllerISpec extends ControllerISpec {
         entities = Some(List(Entity(Some(testSoleTrader), Partnership, isLeadPartner = Some(true), None, None, None, None)))
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -168,8 +172,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
@@ -183,7 +187,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "return OK and not render lead partner details row for non-partnership party type even when all data is present in the BE" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData),
@@ -191,7 +195,7 @@ class TaskListControllerISpec extends ControllerISpec {
         entities = Some(List(Entity(Some(testSoleTrader), Individual, isLeadPartner = Some(true), None, None, None, None)))
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -199,8 +203,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
@@ -213,7 +217,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show the transactor section when all data is present" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
@@ -221,7 +225,7 @@ class TaskListControllerISpec extends ControllerISpec {
         transactorDetails = Some(validTransactorDetails)
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -229,8 +233,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
@@ -248,7 +252,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show the transactor section without address tasklist when in agent flow" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
@@ -256,7 +260,7 @@ class TaskListControllerISpec extends ControllerISpec {
         transactorDetails = Some(validTransactorDetails)
       )
 
-      given
+      given()
         .user.isAuthorised(arn = Some(testArn))
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -264,8 +268,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
@@ -282,7 +286,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show the lead partner section when the user is a partnership" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(partyType = Partnership)),
@@ -297,7 +301,7 @@ class TaskListControllerISpec extends ControllerISpec {
         ))
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .attachmentsApi.getAttachments(attachments = List(IdentityEvidence))
@@ -305,8 +309,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(1)(ExpectedMessages.section1.heading, List(ExpectedMessages.section1.row1))
@@ -320,14 +324,14 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show business activities section with correct states when pre-requisites are not complete" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
         applicantDetails = Some(validFullApplicantDetails),
         transactorDetails = Some(validTransactorDetails)
       )
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
@@ -337,8 +341,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
@@ -349,7 +353,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show business activities section with business details section complete" in new Setup {
-      val scheme = fullVatScheme.copy(
+      val scheme: VatScheme = fullVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
@@ -364,7 +368,7 @@ class TaskListControllerISpec extends ControllerISpec {
         transactorDetails = Some(validTransactorDetails),
         entities = Some(validEntities)
       )
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
@@ -373,8 +377,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
@@ -385,7 +389,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show business activities section with business details and activities section complete" in new Setup {
-      val scheme = fullVatScheme.copy(
+      val scheme: VatScheme = fullVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
@@ -396,7 +400,7 @@ class TaskListControllerISpec extends ControllerISpec {
         )),
         transactorDetails = Some(validTransactorDetails)
       )
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
@@ -405,8 +409,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(5)(s"5. ${ExpectedMessages.aboutTheBusinessSection.heading}", List(
@@ -417,7 +421,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show vat registration section with correct states when pre-requisites are not met" in new Setup {
-      val scheme = emptyUkCompanyVatScheme.copy(
+      val scheme: VatScheme = emptyUkCompanyVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
@@ -425,7 +429,7 @@ class TaskListControllerISpec extends ControllerISpec {
         transactorDetails = Some(validTransactorDetails)
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
@@ -435,8 +439,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}", List(
@@ -449,7 +453,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show vat registration section when pre-requisites met but no registration tasks started" in new Setup {
-      val scheme = fullVatScheme.copy(
+      val scheme: VatScheme = fullVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(isTransactor = true)),
@@ -461,7 +465,7 @@ class TaskListControllerISpec extends ControllerISpec {
         transactorDetails = Some(validTransactorDetails)
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
@@ -471,8 +475,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(6)(s"6. ${ExpectedMessages.vatRegistrationSection.heading}", List(
@@ -485,7 +489,7 @@ class TaskListControllerISpec extends ControllerISpec {
     }
 
     "show vat registration section when pre-requisites and all tasks completed" in new Setup {
-      val scheme = fullVatScheme.copy(
+      val scheme: VatScheme = fullVatScheme.copy(
         applicationReference = Some("ref"),
         confirmInformationDeclaration = Some(true),
         eligibilitySubmissionData = Some(testEligibilitySubmissionData),
@@ -508,7 +512,7 @@ class TaskListControllerISpec extends ControllerISpec {
         transactorDetails = Some(validTransactorDetails)
       )
 
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getRegistration(scheme)
         .registrationApi.getSection[Business](scheme.business)
@@ -518,8 +522,8 @@ class TaskListControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get)
-      implicit val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      implicit val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       sectionMustExist(5)(s"5. ${ExpectedMessages.vatRegistrationSection.heading}", List(

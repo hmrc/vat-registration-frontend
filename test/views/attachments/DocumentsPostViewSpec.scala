@@ -17,19 +17,20 @@
 package views.attachments
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.attachments.DocumentsPost
 
 class DocumentsPostViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[DocumentsPost]
-  implicit val doc = Jsoup.parse(view().body)
+  val view: DocumentsPost = app.injector.instanceOf[DocumentsPost]
+  implicit val doc: Document = Jsoup.parse(view().body)
 
   object ExpectedContent {
     val heading = "We need you to send the documents to the following HMRC address"
     val title = s"$heading - Register for VAT - GOV.UK"
     val para1 = "For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form."
-    val address = "VAT Registration Applications" + " BT VAT" + " HM Revenue and Customs" + " BX9 1WR" + " United Kingdom"
+    val address: String = "VAT Registration Applications" + " BT VAT" + " HM Revenue and Customs" + " BX9 1WR" + " United Kingdom"
     val continue = "Continue"
   }
 

@@ -27,7 +27,7 @@ import views.html.fileupload.DocumentUploadSummary
 
 class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
 
-  val view = app.injector.instanceOf[DocumentUploadSummary]
+  val view: DocumentUploadSummary = app.injector.instanceOf[DocumentUploadSummary]
 
   val testReference = "reference"
   val testDocument = "test-document"
@@ -40,7 +40,7 @@ class DocumentUploadSummaryViewSpec extends VatRegViewSpec with VatRegistrationF
 
   val removeLink: Call = controllers.fileupload.routes.RemoveUploadedDocumentController.submit(testReference)
 
-  val testList = List(DocumentUploadSummaryRow(testDocument, removeLink))
+  val testList: List[DocumentUploadSummaryRow] = List(DocumentUploadSummaryRow(testDocument, removeLink))
 
   "The document upload summary view" must {
     implicit val doc: Document = Jsoup.parse(view(DocumentUploadSummaryForm.form, testList, testList.size, supplySupportingDocuments = false).body)

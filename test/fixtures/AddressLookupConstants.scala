@@ -29,11 +29,11 @@ object AddressLookupConstants {
   val testDeskproServiceName = "VATREG"
   val testTimeoutUrl = "timeoutUrl"
 
-  val testAppLevelMessages = AppLevelMessagesModel(
+  val testAppLevelMessages: AppLevelMessagesModel = AppLevelMessagesModel(
     navTitle = "test nav title"
   )
 
-  val testLookupMessages = LookupPageMessagesModel(
+  val testLookupMessages: LookupPageMessagesModel = LookupPageMessagesModel(
     title = Some("test lookup page title"),
     heading = Some("test lookup page heading"),
     filterLabel = None,
@@ -44,7 +44,7 @@ object AddressLookupConstants {
     manualAddressLinkText = None
   )
 
-  val testEditMessages = EditPageMessagesModel(
+  val testEditMessages: EditPageMessagesModel = EditPageMessagesModel(
     title = Some("test edit page title"),
     heading = Some("test edit page heading"),
     line1Label = None,
@@ -56,7 +56,7 @@ object AddressLookupConstants {
     submitLabel = None
   )
 
-  val testSelectMessages = SelectPageMessagesModel(
+  val testSelectMessages: SelectPageMessagesModel = SelectPageMessagesModel(
     title = Some("test select page title"),
     heading = Some("test select page heading"),
     headingWithPostcode = None,
@@ -66,7 +66,7 @@ object AddressLookupConstants {
     editAddressLinkText = None
   )
 
-  val testConfirmMessages = ConfirmPageMessagesModel(
+  val testConfirmMessages: ConfirmPageMessagesModel = ConfirmPageMessagesModel(
     title = Some("test confirm page title"),
     heading = Some("test confirm page heading"),
     infoMessage = None,
@@ -77,7 +77,7 @@ object AddressLookupConstants {
     confirmChangeText = None
   )
 
-  val internationalMessagesModel = InternationalAddressMessagesModel(
+  val internationalMessagesModel: InternationalAddressMessagesModel = InternationalAddressMessagesModel(
     appLevelLabels = testAppLevelMessages,
     lookupPageLabels = testLookupMessages,
     selectPageLabels = testSelectMessages,
@@ -85,7 +85,7 @@ object AddressLookupConstants {
     confirmPageLabels = testConfirmMessages
   )
 
-  val testAlfConfig = AddressLookupConfigurationModel(
+  val testAlfConfig: AddressLookupConfigurationModel = AddressLookupConfigurationModel(
     version = 2,
     options = AddressLookupOptionsModel(
       continueUrl = SafeRedirectUrl(testContinueUrl),

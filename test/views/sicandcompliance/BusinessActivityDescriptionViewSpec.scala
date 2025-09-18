@@ -18,14 +18,16 @@ package views.sicandcompliance
 
 import forms.BusinessActivityDescriptionForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.sicandcompliance.BusinessActivityDescription
 
 class BusinessActivityDescriptionViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[BusinessActivityDescription]
-  val form = BusinessActivityDescriptionForm.form
-  implicit val doc = Jsoup.parse(view(form).body)
+  val view: BusinessActivityDescription = app.injector.instanceOf[BusinessActivityDescription]
+  val form: Form[String] = BusinessActivityDescriptionForm.form
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
     val heading = "What does the business do?"

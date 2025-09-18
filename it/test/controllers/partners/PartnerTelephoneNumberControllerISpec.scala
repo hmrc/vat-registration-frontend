@@ -22,7 +22,6 @@ import itutil.ControllerISpec
 import models.Entity
 import models.api.{EligibilitySubmissionData, Individual, ScotPartnership, UkCompany}
 import org.jsoup.Jsoup
-import org.scalatest.Assertion
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse

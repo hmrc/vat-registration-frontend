@@ -22,7 +22,7 @@ import fixtures.AddressLookupConstants
 import models.external.addresslookup.AddressLookupConfigurationModel
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.Call
 import testHelpers.VatRegSpec
 
@@ -32,8 +32,8 @@ import play.api.test.FakeRequest
 
 class AddressLookupServiceSpec extends VatRegSpec {
 
-  implicit val appConfig = app.injector.instanceOf[FrontendAppConfig]
-  implicit val messagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val fakeRequest: Request[_] = FakeRequest()
 
   object Config extends AddressLookupConfiguration {
@@ -43,7 +43,7 @@ class AddressLookupServiceSpec extends VatRegSpec {
 
   object Service extends AddressLookupService(mockAddressLookupConnector, Config)
 
-  implicit val messages = messagesApi.preferred(Seq(Lang("en")))
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
   "getByAddressId" should {
     "return an ScrsAddress" when {

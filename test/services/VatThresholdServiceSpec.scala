@@ -20,8 +20,7 @@ import config.FrontendAppConfig
 import models.VatThreshold
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito.MockitoSugar.mock
-import play.api.mvc.{AnyContentAsEmpty, Request}
+import play.api.mvc.Request
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException

@@ -24,7 +24,7 @@ import views.html.otherbusinessinvolvements.OtherBusinessInvolvement
 
 class OtherBusinessInvolvementViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[OtherBusinessInvolvement]
+  val view: OtherBusinessInvolvement = app.injector.instanceOf[OtherBusinessInvolvement]
   implicit val doc: Document = Jsoup.parse(view(OtherBusinessInvolvementForm.form, isVatGroup = false).body)
 
   object ExpectedContent {

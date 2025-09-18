@@ -34,18 +34,18 @@ class PreviousAddressControllerISpec extends ControllerISpec {
   val email = "test@t.test"
   val nino = "SR123456C"
   val role = "03"
-  val dob = LocalDate.of(1998, 7, 12)
+  val dob: LocalDate = LocalDate.of(1998, 7, 12)
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
 
-  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
+  val currentAddress: Address = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
   val pageUrl: String = routes.PreviousAddressController.show.url
 
   s"GET $pageUrl" must {
     "redirect user back to the Current Address route if address missing" in new Setup {
-      implicit val format = ApplicantDetails.apiFormat(UkCompany)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(currentAddress = None)), testRegId, None)
@@ -60,7 +60,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "render the page for a transactor" in new Setup {
-      implicit val format = ApplicantDetails.apiFormat(UkCompany)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None)))
@@ -77,7 +77,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "render the page with prepop" in new Setup {
-      implicit val format = ApplicantDetails.apiFormat(UkCompany)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(previousAddress = Some(address), noPreviousAddress = Some(false))))
@@ -95,7 +95,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
   s"POST $pageUrl" must {
     "redirect to International Address capture if the user is a NETP" in new Setup {
-      implicit val format = ApplicantDetails.apiFormat(NETP)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
@@ -107,7 +107,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(pageUrl)
+      val res: WSResponse = await(buildClient(pageUrl)
         .post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
@@ -115,7 +115,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "redirect to International Address capture if the user is a Non UK Company" in new Setup {
-      implicit val format = ApplicantDetails.apiFormat(NonUkNonEstablished)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NonUkNonEstablished)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testMinorEntity))))
@@ -127,14 +127,14 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
+      val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.InternationalPreviousAddressController.show.url)
     }
 
     "redirect to previous address controller if the overseas user is established in UK" in new Setup {
-      implicit val format = ApplicantDetails.apiFormat(NETP)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
@@ -143,7 +143,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
+      val res: WSResponse = await(buildClient(pageUrl).post(Map("value" -> Seq("false"))))
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(routes.PreviousAddressController.previousAddress.url)
@@ -159,7 +159,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(pageUrl).post(Map("value" -> Seq("true")))
+      val response: Future[WSResponse] = buildClient(pageUrl).post(Map("value" -> Seq("true")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -175,7 +175,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(pageUrl).post(Map("value" -> ""))
+      val response: Future[WSResponse] = buildClient(pageUrl).post(Map("value" -> ""))
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
@@ -191,7 +191,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(routes.PreviousAddressController.previousAddress.url).get()
+      val response: Future[WSResponse] = buildClient(routes.PreviousAddressController.previousAddress.url).get()
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
@@ -207,7 +207,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(routes.PreviousAddressController.previousAddress.url).get()
+      val response: Future[WSResponse] = buildClient(routes.PreviousAddressController.previousAddress.url).get()
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
@@ -225,7 +225,7 @@ class PreviousAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(pageUrl).post(Map("value" -> ""))
+      val response: Future[WSResponse] = buildClient(pageUrl).post(Map("value" -> ""))
 
       whenReady(response) { res =>
         res.status mustBe BAD_REQUEST

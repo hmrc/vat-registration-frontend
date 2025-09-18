@@ -40,7 +40,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "a reference already exists in the users' registration" must {
       "return OK with a pre-filled form" in new Setup {
         implicit val key: ApiKey[String] = applicationReferenceKey
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection(Some(testAppRef))
 
@@ -55,7 +55,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "a reference doesn't exist in the users'registration" must {
       "return OK with a pre-filled form" in new Setup {
         implicit val key: ApiKey[String] = applicationReferenceKey
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.getSection(None)
 
@@ -73,7 +73,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
     "submitted with valid reference value" must {
       "successfully redirect to honesty_declaration page" in new Setup {
         implicit val key: ApiKey[String] = applicationReferenceKey
-        given
+        given()
           .user.isAuthorised()
           .registrationApi.replaceSection(testAppRef)
 
@@ -90,7 +90,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
 
     "submitted with valid a missing reference value" must {
       "return a BAD_REQUEST" in new Setup {
-        given.user.isAuthorised()
+        given().user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("")
@@ -103,7 +103,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
 
     "submitted with an invalid reference number, too long" must {
       "return a BAD_REQUEST" in new Setup {
-        given.user.isAuthorised()
+        given().user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("w" * 101)
@@ -116,7 +116,7 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
 
     "submitted with an invalid reference number, invalid characters" must {
       "return a BAD_REQUEST" in new Setup {
-        given.user.isAuthorised()
+        given().user.isAuthorised()
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val response: Future[WSResponse] = buildClient(url).post("«test»")

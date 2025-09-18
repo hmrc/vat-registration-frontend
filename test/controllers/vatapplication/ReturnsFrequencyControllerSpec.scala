@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
 class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
 
-  class Setup() {
+  class Setup {
     val returnFrequencyView: ReturnFrequency = app.injector.instanceOf[ReturnFrequency]
     val testController = new ReturnsFrequencyController(
       mockSessionService, mockAuthClientConnector, movkVatApplicationService, mockVatRegistrationService, returnFrequencyView

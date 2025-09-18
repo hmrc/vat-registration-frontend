@@ -25,7 +25,6 @@ import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
-import play.api.mvc.Request
 
 class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -88,7 +87,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
         stubPost(createPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.createJourney(testJourneyConfig, Partnership))
+        val res: String = await(connector.createJourney(testJourneyConfig, Partnership))
 
         res mustBe testJourneyUrl
       }
@@ -120,7 +119,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
         stubPost(createLtdPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.createJourney(testJourneyConfig, LtdPartnership))
+        val res: String = await(connector.createJourney(testJourneyConfig, LtdPartnership))
 
         res mustBe testJourneyUrl
       }
@@ -152,7 +151,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
         stubPost(createScotPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.createJourney(testJourneyConfig, ScotPartnership))
+        val res: String = await(connector.createJourney(testJourneyConfig, ScotPartnership))
 
         res mustBe testJourneyUrl
       }
@@ -184,7 +183,7 @@ class PartnershipIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
         stubPost(createScotLtdPartnershipJourneyUrl, CREATED, Json.stringify(Json.obj("journeyStartUrl" -> testJourneyUrl)))
 
-        val res = await(connector.createJourney(testJourneyConfig, ScotLtdPartnership))
+        val res: String = await(connector.createJourney(testJourneyConfig, ScotLtdPartnership))
 
         res mustBe testJourneyUrl
       }

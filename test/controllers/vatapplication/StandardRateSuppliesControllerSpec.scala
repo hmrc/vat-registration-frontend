@@ -19,7 +19,7 @@ package controllers.vatapplication
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
-import forms.{ReducedRateSuppliesForm, StandardRateSuppliesForm}
+import forms.StandardRateSuppliesForm
 import models.api.vatapplication.VatApplication
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

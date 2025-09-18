@@ -20,7 +20,10 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class WarehouseNumberControllerISpec extends ControllerISpec {
 
@@ -34,7 +37,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -51,7 +54,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -60,7 +63,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
     }
 
     "Return OK with prepop when there is a value for 'fulfilmentWarehouseNumber' in backend" in new Setup {
-      val valApplication = VatApplication(overseasCompliance =
+      val valApplication: VatApplication = VatApplication(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
 
       given()
@@ -69,7 +72,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -80,7 +83,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to the fulfilment warehouse name page when the answer is a valid number" in new Setup {
-      val valApplication = VatApplication(overseasCompliance =
+      val valApplication: VatApplication = VatApplication(overseasCompliance =
         Some(testOverseasCompliance.copy(fulfilmentWarehouseNumber = Some(testWarehouseNumber))))
 
       given()
@@ -90,7 +93,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseNumber" -> testWarehouseNumber))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseNumber" -> testWarehouseNumber))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -104,7 +107,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseNumber" -> "1234567890123456789012345678901"))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseNumber" -> "1234567890123456789012345678901"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
@@ -118,7 +121,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseNumber" -> ""))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseNumber" -> ""))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
@@ -132,7 +135,7 @@ class WarehouseNumberControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseNumber" -> "/"))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseNumber" -> "/"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST

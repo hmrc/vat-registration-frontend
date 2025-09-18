@@ -16,17 +16,19 @@
 
 package views.flatratescheme
 
-import forms.genericForms.YesOrNoFormFactory
+import forms.genericForms.{YesOrNoAnswer, YesOrNoFormFactory}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import views.VatRegViewSpec
 import views.html.flatratescheme.YourFlatRate
 
 class FrsYourFlatRateViewSpec extends VatRegViewSpec {
 
   val testPercentFormat = "9.5"
-  val form = YesOrNoFormFactory.form()("frs.registerForWithSector")
-  val view = app.injector.instanceOf[YourFlatRate]
-  implicit val doc = Jsoup.parse(view("", testPercentFormat,form).body)
+  val form: Form[YesOrNoAnswer] = YesOrNoFormFactory.form()("frs.registerForWithSector")
+  val view: YourFlatRate = app.injector.instanceOf[YourFlatRate]
+  implicit val doc: Document = Jsoup.parse(view("", testPercentFormat,form).body)
 
     val heading = s"The business’s VAT flat rate is $testPercentFormat%"
     val h2 = "Do you want the business to join the Flat Rate Scheme?"

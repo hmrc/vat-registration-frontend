@@ -34,7 +34,7 @@ class Supply1614AControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return OK with a blank form if no data is stored" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](None)
 
@@ -46,7 +46,7 @@ class Supply1614AControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'Yes' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(true))))
 
@@ -61,7 +61,7 @@ class Supply1614AControllerISpec extends ControllerISpec {
     }
 
     "return OK with 'No' pre-populated" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false))))
 
@@ -78,7 +78,7 @@ class Supply1614AControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "remove old supplyVat1614h answer and uploaded file and redirect to Upload 1614A page if 'yes' is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(true))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(true)))
@@ -94,7 +94,7 @@ class Supply1614AControllerISpec extends ControllerISpec {
     }
 
     "remove old supplyVat1614a uploaded file and redirect to Supply 1614H page if 'no' is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Attachments](Some(Attachments(supplyVat1614a = Some(true), supplyVat1614h = Some(false))))
         .registrationApi.replaceSection[Attachments](Attachments(supplyVat1614a = Some(false), supplyVat1614h = Some(false)))
@@ -110,7 +110,7 @@ class Supply1614AControllerISpec extends ControllerISpec {
     }
 
     "return BAD_REQUEST if no option is selected" in new Setup {
-      given
+      given()
         .user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)

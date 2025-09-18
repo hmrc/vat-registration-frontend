@@ -28,12 +28,12 @@ class DocumentUploadErrorControllerISpec extends ControllerISpec {
   s"GET $pageUrl" when {
     "the user has 1 or more documents uploaded" must {
       "return OK with the view" in new Setup {
-        given
+        given()
           .user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(pageUrl).get)
+        val res: WSResponse = await(buildClient(pageUrl).get())
 
         res.status mustBe OK
       }

@@ -41,7 +41,7 @@ trait VatSpec extends PlaySpec with MockitoSugar with VatRegistrationFixture wit
 
   val dummyCacheMap: CacheMap = CacheMap("", Map.empty)
 
-  override protected def beforeEach() {
+  override protected def beforeEach(): Unit = {
     resetMocks()
   }
 

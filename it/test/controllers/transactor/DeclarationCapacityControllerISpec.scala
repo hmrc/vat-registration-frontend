@@ -30,7 +30,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
   val url: String = controllers.transactor.routes.DeclarationCapacityController.show.url
 
   val testOtherRole = "testOtherRole"
-  val testDetails = TransactorDetails(
+  val testDetails: TransactorDetails = TransactorDetails(
     declarationCapacity = Some(DeclarationCapacityAnswer(OtherDeclarationCapacity, Some("testOtherRole")))
   )
 
@@ -78,7 +78,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         declarationCapacity -> other,
         otherRole -> "testOtherRole"
       )))
@@ -93,7 +93,7 @@ class DeclarationCapacityControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(""))
+      val res: WSResponse = await(buildClient(url).post(""))
 
       res.status mustBe BAD_REQUEST
     }

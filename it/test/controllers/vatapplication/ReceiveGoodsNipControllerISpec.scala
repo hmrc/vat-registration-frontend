@@ -22,12 +22,15 @@ import models.api.vatapplication.VatApplication
 import models.{ConditionalValue, NIPTurnover, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class ReceiveGoodsNipControllerISpec extends ControllerISpec {
   val testAmount: BigDecimal = 123456
   lazy val url: String = controllers.vatapplication.routes.ReceiveGoodsNipController.show.url
-  val testNIPCompliance: NIPTurnover = NIPTurnover(None, Some(ConditionalValue(true, Some(testAmount))))
+  val testNIPCompliance: NIPTurnover = NIPTurnover(None, Some(ConditionalValue(answer = true, Some(testAmount))))
 
   "show Northern Ireland Receive page" should {
     "return OK with no prepop when there is no value for 'receiveGoods' in the backend" in new Setup {
@@ -36,7 +39,7 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/receive-goods-nip").get()
+      val response: Future[WSResponse] = buildClient("/receive-goods-nip").get()
       whenReady(response) { res =>
         res.status mustBe OK
       }
@@ -64,11 +67,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         partyType = NETP,
         fixedEstablishmentInManOrUk = false
       )))
-        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(answer = true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      val response: Future[WSResponse] = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ClaimRefundsController.show.url)
@@ -82,11 +85,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
         partyType = NonUkNonEstablished,
         fixedEstablishmentInManOrUk = false
       )))
-        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(answer = true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      val response: Future[WSResponse] = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ClaimRefundsController.show.url)
@@ -97,11 +100,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
-        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(answer = true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      val response: Future[WSResponse] = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ClaimRefundsController.show.url)
@@ -112,11 +115,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(answer = true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
+      val response: Future[WSResponse] = buildClient("/receive-goods-nip").post(Map("value" -> Seq("true"), "northernIrelandReceiveGoods" -> Seq("123456")))
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.vatapplication.routes.ClaimRefundsController.show.url)
@@ -127,11 +130,11 @@ class ReceiveGoodsNipControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
-        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(true, Some(testAmount)))))))
+        .registrationApi.replaceSection[VatApplication](VatApplication(northernIrelandProtocol = Some(NIPTurnover(goodsToEU = None, goodsFromEU = Some(ConditionalValue(answer = true, Some(testAmount)))))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient("/receive-goods-nip").post(Map.empty[String, String])
+      val response: Future[WSResponse] = buildClient("/receive-goods-nip").post(Map.empty[String, String])
       whenReady(response) { res =>
         res.status mustBe BAD_REQUEST
       }

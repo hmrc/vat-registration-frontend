@@ -22,9 +22,7 @@ import testHelpers.VatRegSpec
 
 class VerifyBusinessTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = VerifyBusinessTaskList
-
-
+  val section: VerifyBusinessTaskList.type = VerifyBusinessTaskList
 
   "The checks for the business info row" when {
     "the Applicant block is undefined" must {

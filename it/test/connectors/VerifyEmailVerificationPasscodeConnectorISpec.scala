@@ -19,11 +19,10 @@ package connectors
 import featuretoggle.FeatureSwitch.StubEmailVerification
 import featuretoggle.FeatureToggleSupport
 import itutil.IntegrationSpecBase
-import models.external.{EmailAlreadyVerified, EmailVerifiedSuccessfully, PasscodeMismatch, PasscodeNotFound, UnknownResponse}
+import models.external._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import support.AppAndStubs
-import uk.gov.hmrc.http.InternalServerException
 
 class VerifyEmailVerificationPasscodeConnectorISpec extends IntegrationSpecBase with AppAndStubs with FeatureToggleSupport {
 

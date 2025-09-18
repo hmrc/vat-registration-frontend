@@ -32,7 +32,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return OK" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -48,7 +48,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
     }
 
     "return OK when there is an answer to prepop" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
         .registrationApi.getSection[Business](Some(Business(otherBusinessInvolvement = Some(true))))
@@ -66,7 +66,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
 
   s"POST $url" must {
     "redirect to the task list page after deleting old OBI answers if the answer is no" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -84,7 +84,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
     }
 
     "redirect to other business involvement if the answer is yes" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
@@ -101,7 +101,7 @@ class OtherBusinessInvolvementControllerISpec extends ControllerISpec {
     }
 
     "fail with bad request for submission without a selection" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[Business](None)
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))

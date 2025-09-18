@@ -17,6 +17,7 @@
 package views.vatapplication
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.api.data.Forms.{boolean, single}
 import views.VatRegViewSpec
@@ -24,9 +25,9 @@ import views.html.vatapplication.SendEUGoodsView
 
 class SendEUGoodsViewSpec extends VatRegViewSpec {
 
-  val form = Form(single("value" -> boolean))
-  val view = app.injector.instanceOf[SendEUGoodsView]
-  implicit val doc = Jsoup.parse(view(form).body)
+  val form: Form[Boolean] = Form(single("value" -> boolean))
+  val view: SendEUGoodsView = app.injector.instanceOf[SendEUGoodsView]
+  implicit val doc: Document = Jsoup.parse(view(form).body)
 
   object ExpectedContent {
     val heading = "Does the business intend to send goods direct to customers from within the EU?"

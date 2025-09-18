@@ -19,6 +19,7 @@ package controllers.sicandcompliance
 import featuretoggle.FeatureSwitch.StubIcl
 import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
+import models.api.SicCode
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import testHelpers.{ControllerSpec, FutureAssertions}
@@ -85,7 +86,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
   "saveIclSicCodes" should {
     "redirect and save" when {
       "returning from ICL with multiple codes" in new Setup {
-        val codes = List(sicCode, sicCode)
+        val codes: List[SicCode] = List(sicCode, sicCode)
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
         when(mockBusinessService.submitSicCodes(any())(any(), any(), any()))
@@ -101,7 +102,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       }
 
       "returning from ICL with multiple codes including compliance" in new Setup {
-        val codes = List(sicCode, sicCode.copy(code = "81222"))
+        val codes: List[SicCode] = List(sicCode, sicCode.copy(code = "81222"))
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
         when(mockBusinessService.submitSicCodes(any())(any(), any(), any()))
@@ -117,7 +118,7 @@ class SicControllerSpec extends ControllerSpec with FutureAssertions with VatReg
       }
 
       "returning from ICL with one code" in new Setup {
-        val codes = List(sicCode)
+        val codes: List[SicCode] = List(sicCode)
 
         when(mockICLService.getICLSICCodes()(any[HeaderCarrier](), any(), any())).thenReturn(Future.successful(codes))
         when(mockBusinessService.submitSicCodes(any())(any(), any(), any()))

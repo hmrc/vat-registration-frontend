@@ -26,7 +26,6 @@ import play.api.libs.json.{JsObject, JsResultException, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
 import uk.gov.hmrc.http.InternalServerException
-import play.api.mvc.Request
 
 class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITRegistrationFixtures {
 
@@ -117,7 +116,7 @@ class MinorEntityIdConnectorISpec extends IntegrationSpecBase with AppAndStubs w
 
   val testOverseasIdentifier = "1234567890"
   val testOverseasIdentifierCountry = "EE"
-  val testOverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
+  val testOverseasIdentifierDetails: OverseasIdentifierDetails = OverseasIdentifierDetails(testOverseasIdentifier, testOverseasIdentifierCountry)
 
   val testNonUkCompanyResponse: JsObject = Json.obj(
     "ctutr" -> testCrn,

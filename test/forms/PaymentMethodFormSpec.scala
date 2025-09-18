@@ -16,13 +16,13 @@
 
 package forms
 
-import models.api.vatapplication.{BACS, BankGIRO, CHAPS, StandingOrder}
-import play.api.data.FormError
+import models.api.vatapplication.{BACS, BankGIRO, CHAPS, PaymentMethod, StandingOrder}
+import play.api.data.{Form, FormError}
 import testHelpers.VatRegSpec
 
 class PaymentMethodFormSpec extends VatRegSpec {
 
-  val form = PaymentMethodForm()
+  val form: Form[PaymentMethod] = PaymentMethodForm()
 
   "the AASPaymentMethod form" when {
     "binding a value" should {

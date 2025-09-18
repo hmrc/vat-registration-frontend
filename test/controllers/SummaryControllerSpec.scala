@@ -51,8 +51,8 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
 
     mockAuthenticated()
     mockWithCurrentProfile(Some(currentProfile))
-    val mockAttachmentTaskList = AttachmentsTaskList
-    val mockTaskListSections = TaskListSections
+    val mockAttachmentTaskList: AttachmentsTaskList.type = AttachmentsTaskList
+    val mockTaskListSections: TaskListSections.type = TaskListSections
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(routes.SummaryController.show)
@@ -104,7 +104,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result.redirectsTo(controllers.routes.TaskListController.show.url)
@@ -125,7 +125,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result.redirectsTo(controllers.routes.ApplicationSubmissionController.show.url)
@@ -145,7 +145,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result.redirectsTo(controllers.routes.SubmissionInProgressController.show.url)
@@ -165,7 +165,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result.redirectsTo(controllers.errors.routes.ErrorController.alreadySubmitted.url)
@@ -186,7 +186,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.submissionRetryable.url
@@ -208,7 +208,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.submissionFailed.url
@@ -229,7 +229,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
 
-      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody(), useBasicAuth = false) {
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
         (result: Future[Result]) =>
           await(result).header.status mustBe Status.SEE_OTHER
           result redirectsTo controllers.errors.routes.ErrorController.contact.url

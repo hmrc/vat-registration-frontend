@@ -24,8 +24,8 @@ import testHelpers.VatRegSpec
 import java.time.LocalDate
 
 class ApplicantDetailsSpec extends VatRegSpec {
-  val currentAddress = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
-  val previousAddress = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
+  val currentAddress: Address = Address(line1 = "TestLine1", line2 = Some("TestLine2"), postcode = Some("TE 1ST"), addressValidated = true)
+  val previousAddress: Address = Address(line1 = "TestLine11", line2 = Some("TestLine22"), postcode = Some("TE1 1ST"), addressValidated = true)
 
   "apiReads" should {
     "return a correct full ApplicantDetails view model with max data" in {

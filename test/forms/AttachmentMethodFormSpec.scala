@@ -21,7 +21,7 @@ import testHelpers.VatRegSpec
 
 class AttachmentMethodFormSpec extends VatRegSpec {
 
-  val form = app.injector.instanceOf[AttachmentMethodForm]
+  val form: AttachmentMethodForm = app.injector.instanceOf[AttachmentMethodForm]
 
   "The attachment method form" must {
     "bind" when {

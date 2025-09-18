@@ -16,12 +16,12 @@
 
 package forms
 
-import models.{English, Welsh}
-import play.api.data.FormError
+import models.{English, Language, Welsh}
+import play.api.data.{Form, FormError}
 import testHelpers.VatRegSpec
 
 class VatCorrespondenceFormSpec extends VatRegSpec {
-  val form = VatCorrespondenceForm()
+  val form: Form[Language] = VatCorrespondenceForm()
 
   "vatCorrespondenceForm" must {
 

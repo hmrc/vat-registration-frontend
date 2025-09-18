@@ -19,21 +19,25 @@ package views.vatapplication
 import forms.vatapplication.VoluntaryDateForm
 import models.DateSelection
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.data.Form
 import services.TimeService
 import views.VatRegViewSpec
 import views.html.vatapplication.StartDateIncorp
 
+import java.time.LocalDate
+
 class StartDateIncorpViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[StartDateIncorp]
-  val timeService = app.injector.instanceOf[TimeService]
-  val dateMin = timeService.today
-  val dateMax = timeService.today
-  val form = VoluntaryDateForm.form(dateMin, dateMax).fill((DateSelection.specific_date, Some(dateMin)))
-  val registeredDate = timeService.dynamicFutureDateExample()
+  val view: StartDateIncorp = app.injector.instanceOf[StartDateIncorp]
+  val timeService: TimeService = app.injector.instanceOf[TimeService]
+  val dateMin: LocalDate = timeService.today
+  val dateMax: LocalDate = timeService.today
+  val form: Form[(DateSelection.Value, Option[LocalDate])] = VoluntaryDateForm.form(dateMin, dateMax).fill((DateSelection.specific_date, Some(dateMin)))
+  val registeredDate: String = timeService.dynamicFutureDateExample()
   val incorpDateAfter = true
-  val dateExample = timeService.dynamicFutureDateExample()
-  implicit val doc = Jsoup.parse(view(form, registeredDate, incorpDateAfter, dateExample).body)
+  val dateExample: String = timeService.dynamicFutureDateExample()
+  implicit val doc: Document = Jsoup.parse(view(form, registeredDate, incorpDateAfter, dateExample).body)
 
   object ExpectedContent {
     val heading = "What do you want the business’s VAT start date to be?"

@@ -17,6 +17,7 @@
 package services
 
 import config.FrontendAppConfig
+import models.api.VatScheme
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -26,6 +27,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import viewmodels.SummaryCheckYourAnswersBuilder
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+
 import scala.concurrent.Future
 
 class SummaryServiceSpec extends VatRegSpec {
@@ -45,7 +47,7 @@ class SummaryServiceSpec extends VatRegSpec {
 
   "getRegistrationSummary" should {
     "map a valid VatScheme object to a Summary object" in new Setup {
-      val testVatScheme = validVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson))
+      val testVatScheme: VatScheme = validVatScheme.copy(eligibilityJson = Some(fullEligibilityDataJson))
       when(mockVatRegistrationService.getVatScheme(any(), any(), any()))
         .thenReturn(Future.successful(testVatScheme))
       when(mockSummaryCheckYourAnswersBuilder.generateSummaryAccordion(ArgumentMatchers.eq(testVatScheme))(ArgumentMatchers.eq(messages), ArgumentMatchers.eq(appConfig), ArgumentMatchers.any()))

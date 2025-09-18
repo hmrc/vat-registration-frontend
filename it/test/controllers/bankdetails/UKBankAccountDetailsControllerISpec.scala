@@ -21,6 +21,8 @@ import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
 import models.{BankAccount, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
@@ -30,25 +32,25 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
   "GET /account-details" must {
     "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get())
+      val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
     }
     "return OK with a pre-populated form from backend" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(bankAccount))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get())
-      val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       doc.select("input[id=accountName]").`val`() mustBe testBankName
@@ -56,14 +58,14 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       doc.select("input[id=sortCode]").`val`() mustBe testSortCode
     }
     "return OK with a pre-populated form from the backend" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](Some(bankAccount))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).get())
-      val doc = Jsoup.parse(res.body)
+      val res: WSResponse = await(buildClient(url).get())
+      val doc: Document = Jsoup.parse(res.body)
 
       res.status mustBe OK
       doc.select("input[id=accountName]").`val`() mustBe testBankName
@@ -75,7 +77,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
   "POST /account-details" when {
     "bank details and Bank Account Reputation states are invalid" must {
       "return BAD_REQUEST" in new Setup {
-        given
+        given()
           .user.isAuthorised()
           .bankAccountReputation.fails
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
@@ -83,7 +85,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "accountName" -> testBankName,
           "accountNumber" -> testAccountNumber,
           "sortCode" -> testSortCode
@@ -94,7 +96,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
 
     "redirect to the Tasklist if the account details are valid" in new Setup {
-      given
+      given()
         .user.isAuthorised()
         .bankAccountReputation.passes
         .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
@@ -103,7 +105,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = await(buildClient(url).post(Map(
+      val res: WSResponse = await(buildClient(url).post(Map(
         "accountName" -> testBankName,
         "accountNumber" -> testAccountNumber,
         "sortCode" -> testSortCode
@@ -115,14 +117,14 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
     "bank details are incorrect" must {
       "return BAD_REQUEST" in new Setup {
-        given
+        given()
           .user.isAuthorised()
           .bankAccountReputation.fails
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res = await(buildClient(url).post(Map(
+        val res: WSResponse = await(buildClient(url).post(Map(
           "accountName" -> "",
           "accountNumber" -> "",
           "sortCode" -> ""

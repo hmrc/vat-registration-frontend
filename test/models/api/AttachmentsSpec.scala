@@ -16,16 +16,16 @@
 
 package models.api
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import testHelpers.VatRegSpec
 
 class AttachmentsSpec extends VatRegSpec {
 
-  val minimalModel = Attachments(method = None)
-  val validMinimalJson = Json.obj()
+  val minimalModel: Attachments = Attachments(method = None)
+  val validMinimalJson: JsObject = Json.obj()
 
-  val fullModel = Attachments(method = Some(Post))
-  val validFullJson = Json.obj("method" -> "3")
+  val fullModel: Attachments = Attachments(method = Some(Post))
+  val validFullJson: JsObject = Json.obj("method" -> "3")
 
   "the attachments model" must {
     "deserialize from minimal valid json" in {

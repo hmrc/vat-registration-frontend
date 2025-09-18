@@ -22,7 +22,10 @@ import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
 import models.{NonUk, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class VatExemptionControllerISpec extends ControllerISpec {
 
@@ -37,7 +40,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -52,7 +55,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -67,7 +70,7 @@ class VatExemptionControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK

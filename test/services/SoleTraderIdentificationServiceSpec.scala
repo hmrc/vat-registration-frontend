@@ -17,7 +17,9 @@
 package services
 
 import connectors.mocks.MockSoleTraderIdConnector
-import models.api.Individual
+import models.PersonalDetails
+import models.api.{Individual, PartyType}
+import models.external.SoleTraderIdEntity
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.InternalServerException
@@ -36,8 +38,8 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     val testJourneyUrl = "/testJourneyUrl"
     val regime = "VATC"
     val businessVerificationStatus = true
-    val partyType = Individual
-    val testJourneyConfig = SoleTraderIdJourneyConfig(
+    val partyType: PartyType = Individual
+    val testJourneyConfig: SoleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
       continueUrl = testContinueUrl,
       deskProServiceId = testDeskproId,
       signOutUrl = testSignOutUrl,
@@ -58,7 +60,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     "return a journeyId when provided with config" in new Setup {
       mockStartSoleTraderJourney(testJourneyConfig, partyType)(Future.successful(testJourneyUrl))
 
-      val res = await(Service.startSoleTraderJourney(testJourneyConfig, partyType))
+      val res: String = await(Service.startSoleTraderJourney(testJourneyConfig, partyType))
 
       res mustBe testJourneyUrl
     }
@@ -75,7 +77,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     "return a journeyId when provided with config" in new Setup {
       mockStartIndividualJourney(testJourneyConfig, None)(Future.successful(testJourneyUrl))
 
-      val res = await(Service.startIndividualJourney(testJourneyConfig))
+      val res: String = await(Service.startIndividualJourney(testJourneyConfig))
 
       res mustBe testJourneyUrl
     }
@@ -92,7 +94,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     "return sole trader details" in new Setup {
       mockRetrieveSoleTraderDetails(testJourneyUrl)(Future.successful((testPersonalDetails, testSoleTrader)))
 
-      val res = await(Service.retrieveSoleTraderDetails(testJourneyUrl))
+      val res: (PersonalDetails, SoleTraderIdEntity) = await(Service.retrieveSoleTraderDetails(testJourneyUrl))
 
       res mustBe((testPersonalDetails, testSoleTrader))
     }
@@ -102,7 +104,7 @@ class SoleTraderIdentificationServiceSpec extends VatRegSpec
     "return individual details" in new Setup {
       mockRetrieveIndividualDetails(testJourneyUrl)(Future.successful(testPersonalDetails))
 
-      val res = await(Service.retrieveIndividualDetails(testJourneyUrl))
+      val res: PersonalDetails = await(Service.retrieveIndividualDetails(testJourneyUrl))
 
       res mustBe testPersonalDetails
     }

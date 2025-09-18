@@ -23,7 +23,7 @@ import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -45,12 +45,12 @@ class VatRegistrationServiceSpec extends VatRegSpec with MockRegistrationApiConn
     )
   }
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     mockFetchRegId(testRegId)
   }
 
-  val json = Json.parse(
+  val json: JsValue = Json.parse(
     s"""
        |{
        |  "IncorporationInfo":{
@@ -118,7 +118,7 @@ class VatRegistrationServiceSpec extends VatRegSpec with MockRegistrationApiConn
       )(any[HeaderCarrier])
       ).thenReturn(Future.successful(Success))
 
-      await(service.submitRegistration) mustBe Success
+      await(service.submitRegistration()) mustBe Success
     }
   }
 }

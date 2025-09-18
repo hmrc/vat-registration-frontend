@@ -18,15 +18,16 @@ package views.partners
 
 import forms.PartnerScottishPartnershipNameForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.partners.PartnerScottishPartnershipName
 
 class PartnerScottishPartnershipNameViewSpec extends VatRegViewSpec {
 
   //  val testPartnershipName = "testPartnershipName"
-  val form = PartnerScottishPartnershipNameForm
-  val view = app.injector.instanceOf[PartnerScottishPartnershipName]
-  implicit val doc = Jsoup.parse(view(form(), 2).body)
+  val form: PartnerScottishPartnershipNameForm.type = PartnerScottishPartnershipNameForm
+  val view: PartnerScottishPartnershipName = app.injector.instanceOf[PartnerScottishPartnershipName]
+  implicit val doc: Document = Jsoup.parse(view(form(), 2).body)
 
   object ExpectedContent {
     val heading = "What is the name of the partnership?"

@@ -20,7 +20,7 @@ import common.enums.AddressLookupJourneyIdentifier._
 import config.{AddressLookupConfiguration, FrontendAppConfig}
 import itutil.IntegrationSpecBase
 import models.api.{Address, Country}
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import services.AddressLookupService
@@ -34,7 +34,7 @@ class AddressLookupConnectorISpec extends IntegrationSpecBase with AppAndStubs {
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-  implicit val messages = messagesApi.preferred(Seq(Lang("en")))
+  implicit val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
 
   "getting an address out of Address Lookup Frontend" should {
     "obtain expected address from JSON response from ALF" when {

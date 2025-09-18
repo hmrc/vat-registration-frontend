@@ -20,7 +20,10 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
@@ -36,7 +39,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -51,7 +54,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -68,7 +71,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("value" -> "true"))
+      val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "true"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -83,7 +86,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("value" -> "false"))
+      val res: Future[WSResponse] = buildClient(url).post(Map("value" -> "false"))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -98,7 +101,7 @@ class SendGoodsOverseasControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("value" -> ""))
+      val res: Future[WSResponse] = buildClient(url).post(Map("value" -> ""))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST

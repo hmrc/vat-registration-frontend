@@ -37,7 +37,7 @@ class AddressSpec extends VatRegSpec with Inspectors {
           | "id": "testId"
           |}""".stripMargin)
 
-      implicit val alReads = Address.addressLookupReads
+      implicit val alReads: Address.addressLookupReads.type = Address.addressLookupReads
       validJson.validate[Address] mustBe JsSuccess(
         Address(
           line1 = "line 1",
@@ -64,7 +64,7 @@ class AddressSpec extends VatRegSpec with Inspectors {
           | "id": "testId"
           |}""".stripMargin)
 
-      implicit val alReads = Address.addressLookupReads
+      implicit val alReads: Address.addressLookupReads.type = Address.addressLookupReads
       validJson.validate[Address] mustBe JsSuccess(
         Address(
           line1 = "line 1",
@@ -87,8 +87,8 @@ class AddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", postcode = Some("BN3 1JU"), addressValidated = false))
+      implicit val alReads: Address.addressLookupReads.type = Address.addressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", postcode = Some("BN3 1JU")))
     }
 
 
@@ -103,8 +103,8 @@ class AddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), country = Some(testCountry.copy(name = None)), addressValidated = false))
+      implicit val alReads: Address.addressLookupReads.type = Address.addressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), country = Some(testCountry.copy(name = None))))
     }
 
     "read from valid minimal Json - no postcode - country code present" in {
@@ -119,8 +119,8 @@ class AddressSpec extends VatRegSpec with Inspectors {
           | }
           |}""".stripMargin)
 
-      implicit val alReads = Address.addressLookupReads
-      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), country = Some(testCountry), addressValidated = false))
+      implicit val alReads: Address.addressLookupReads.type = Address.addressLookupReads
+      validJson.validate[Address] mustBe JsSuccess(Address("line 1", Some("line 2"), country = Some(testCountry)))
     }
 
   }

@@ -33,7 +33,7 @@ class MissingAnswerViewSpec extends VatRegViewSpec {
 
   val sectionHeadingKey = "tasklist.eligibilty.regReason"
 
-  val view = app.injector.instanceOf[MissingAnswer]
+  val view: MissingAnswer = app.injector.instanceOf[MissingAnswer]
   implicit val doc: Document = Jsoup.parse(view(sectionHeadingKey).body)
 
   "The missing answer page" must {

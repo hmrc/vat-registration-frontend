@@ -17,22 +17,24 @@
 package views
 
 import forms.InternationalAddressForm
+import models.api.Address
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.data.Form
 import play.api.mvc.Call
 import views.html.CaptureInternationalAddress
 
 class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
 
-  val testTransactorName = Some("John")
+  val testTransactorName: Option[String] = Some("John")
 
-  val view = app.injector.instanceOf[CaptureInternationalAddress]
-  val form = app.injector.instanceOf[InternationalAddressForm].form()
+  val view: CaptureInternationalAddress = app.injector.instanceOf[CaptureInternationalAddress]
+  val form: Form[Address] = app.injector.instanceOf[InternationalAddressForm].form()
 
   object ExpectedMessages {
     val title = "Enter your home address"
     val heading = "Enter your home address"
-    val thirdPartyHeading = "Enter " + testTransactorName.get + "’s home address"
+    val thirdPartyHeading: String = "Enter " + testTransactorName.get + "’s home address"
     val line1 = "Address line 1"
     val line2 = "Address line 2"
     val line3 = "Address line 3 (optional)"
@@ -48,8 +50,8 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
     val saveAndContinue = "Save and continue"
   }
 
-  val transactorDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.3pt.heading", name = testTransactorName).body)
-  implicit val doc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.heading", name = None).body)
+  val transactorDoc: Document = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.3pt.heading", name = testTransactorName).body)
+  implicit val doc: Document = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.home.heading", name = None).body)
 
   "the Capture International Address page" should {
     "have the correct page title" in new ViewSetup {
@@ -86,7 +88,7 @@ class CaptureInternationalAddressViewSpec extends VatRegViewSpec {
       doc.hintText mustBe Some(ExpectedMessages.postcodeHint)
     }
     "have the correct heading and hint text when on the ppob page" in new ViewSetup {
-      val ppobDoc = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.ppob.heading", name = testTransactorName, isPpob = true).body)
+      val ppobDoc: Document = Jsoup.parse(view(form, Seq(), submitAction = Call("GET", "/"), headingKey = "internationalAddress.ppob.heading", name = testTransactorName, isPpob = true).body)
       ppobDoc.heading mustBe Some(ExpectedMessages.ppobHeading)
       ppobDoc.hintText mustBe Some(ExpectedMessages.ppobHint)
     }

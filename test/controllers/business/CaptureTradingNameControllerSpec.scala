@@ -17,23 +17,19 @@
 package controllers.business
 
 import fixtures.VatRegistrationFixture
-import models.CurrentProfile
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest
 import services.mocks.TimeServiceMock
 import testHelpers.{ControllerSpec, FutureAssertions}
-import uk.gov.hmrc.http.HeaderCarrier
 import views.html.business.CaptureTradingNameView
 
 import scala.concurrent.Future
 
 class CaptureTradingNameControllerSpec extends ControllerSpec with VatRegistrationFixture with TimeServiceMock with FutureAssertions {
-  val fakeRequest = FakeRequest(controllers.business.routes.CaptureTradingNameController.show)
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest(controllers.business.routes.CaptureTradingNameController.show)
 
   class Setup {
-    val view = app.injector.instanceOf[CaptureTradingNameView]
+    val view: CaptureTradingNameView = app.injector.instanceOf[CaptureTradingNameView]
     val testController = new CaptureTradingNameController(
       mockSessionService,
       mockAuthClientConnector,

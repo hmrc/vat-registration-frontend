@@ -41,7 +41,7 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     val hiddenText = s"To pay by Direct Debit, complete this VAT registration to get the VAT Registration Number. The business can then $linkText"
   }
 
-  val view = app.injector.instanceOf[AasPaymentMethod]
+  val view: AasPaymentMethod = app.injector.instanceOf[AasPaymentMethod]
 
   def asDocument(form: Form[PaymentMethod]): Document = Jsoup.parse(view(form).body)
 
@@ -61,7 +61,7 @@ class PaymentMethodViewSpec extends VatRegViewSpec {
     }
 
     "have the correct content for each option" in new ViewSetup()(asDocument(PaymentMethodForm())) {
-      val validOptions = Map(
+      val validOptions: Map[String, String] = Map(
         "bacs" -> ExpectedMessages.bacs,
         "giro" -> ExpectedMessages.giro,
         "chaps" -> ExpectedMessages.chaps,

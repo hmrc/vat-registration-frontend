@@ -29,7 +29,7 @@ class CaptureTradingNameViewSpec extends VatRegViewSpec {
     val heading = "What is your trading name?"
     val title = s"$heading - Register for VAT - GOV.UK"
     val summary = "What is a trading name?"
-    val content = "A business can trade using a name that’s different from their registered name. This is also known as a ‘trading name’. " +
+    val content: String = "A business can trade using a name that’s different from their registered name. This is also known as a ‘trading name’. " +
       "Some businesses choose a different trading name to help with branding or getting a domain name for their website."
     val label = "Enter the trading name"
     val hint = "You cannot include ‘limited’, ‘Ltd’, ‘limited liability partnership’, ‘LLP’, ‘public limited company’ or ‘plc’"

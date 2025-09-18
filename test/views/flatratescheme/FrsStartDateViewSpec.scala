@@ -19,6 +19,7 @@ package views.flatratescheme
 import forms.FRSStartDateForm
 import models.FRSDateChoice
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.flatratescheme.FrsStartDate
 
@@ -26,11 +27,11 @@ import java.time.LocalDate
 
 class FrsStartDateViewSpec extends VatRegViewSpec {
 
-  val view = app.injector.instanceOf[FrsStartDate]
-  val startDate = LocalDate.of(2021, 6, 30)
-  val endDate = LocalDate.of(2021, 8, 30)
+  val view: FrsStartDate = app.injector.instanceOf[FrsStartDate]
+  val startDate: LocalDate = LocalDate.of(2021, 6, 30)
+  val endDate: LocalDate = LocalDate.of(2021, 8, 30)
 
-  implicit val doc = Jsoup.parse(view(
+  implicit val doc: Document = Jsoup.parse(view(
     FRSStartDateForm.form(minDate = startDate, maxDate = endDate),
     startDate.toString
   ).body)

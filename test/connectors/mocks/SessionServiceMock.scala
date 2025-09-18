@@ -33,8 +33,6 @@ trait SessionServiceMock {
 
   lazy val mockSessionService: SessionService = mock[SessionService]
 
-  import cats.syntax.applicative._
-
   def mockSessionFetchAndGet[T](key: String, model: Option[T]): OngoingStubbing[Future[Option[T]]] =
     when(mockSessionService.fetchAndGet[T](ArgumentMatchers.contains(key))(any(), any())).thenReturn(Future.successful(model))
 

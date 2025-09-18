@@ -22,7 +22,10 @@ import models._
 import models.api._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
@@ -33,7 +36,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, sicCodeMapping)
 
-    val response = buildClient("/choose-standard-industry-classification-codes").get()
+    val response: Future[WSResponse] = buildClient("/choose-standard-industry-classification-codes").get()
     whenReady(response) { res =>
       res.status mustBe OK
     }
@@ -46,7 +49,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, sicCodeMapping)
 
-    val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
+    val mockedPostToICL: Future[WSResponse] = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
     whenReady(mockedPostToICL) { res =>
       res.status mustBe SEE_OTHER
@@ -60,7 +63,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, sicCodeMapping)
 
-    val mockedPostToICL = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
+    val mockedPostToICL: Future[WSResponse] = buildClient("/choose-standard-industry-classification-codes").post(Map("" -> Seq()))
 
     whenReady(mockedPostToICL) { res =>
       res.status mustBe SEE_OTHER
@@ -68,7 +71,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
   }
 
   "Returning from ICL with 1 SIC code (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
-    val sicCode = SicCode("23456", "This is a fake description", "")
+    val sicCode: SicCode = SicCode("23456", "This is a fake description", "")
 
     val expectedUpdateToBusiness: Business = fullModel.copy(
       businessActivities = Some(List(sicCode)),
@@ -85,15 +88,15 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, iclSicCodeMapping)
 
-    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    val fetchResultsResponse: Future[WSResponse] = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
     }
   }
 
   "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
-    val sicCode1 = SicCode("23456", "This is a fake description", "")
-    val sicCode2 = SicCode("12345", "This is another code", "")
+    val sicCode1: SicCode = SicCode("23456", "This is a fake description", "")
+    val sicCode2: SicCode = SicCode("12345", "This is another code", "")
 
     given()
       .user.isAuthorised()
@@ -104,15 +107,15 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, iclSicCodeMapping)
 
-    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    val fetchResultsResponse: Future[WSResponse] = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
     }
   }
 
   "Returning from ICL with multiple SIC codes (non compliance) should fetch sic codes, save in keystore and return a SEE_OTHER for SoleTrader" in new Setup {
-    val sicCode1 = SicCode("23456", "This is a fake description", "")
-    val sicCode2 = SicCode("12345", "This is another code", "")
+    val sicCode1: SicCode = SicCode("23456", "This is a fake description", "")
+    val sicCode2: SicCode = SicCode("12345", "This is another code", "")
 
     given()
       .user.isAuthorised()
@@ -123,14 +126,14 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, iclSicCodeMapping)
 
-    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    val fetchResultsResponse: Future[WSResponse] = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
     }
   }
 
   "Returning from ICL with a single SIC codes (compliance) should fetch sic codes, save in keystore and return a SEE_OTHER" in new Setup {
-    val sicCode1 = SicCode("01610", "This is a compliance activity", "")
+    val sicCode1: SicCode = SicCode("01610", "This is a compliance activity", "")
 
     given()
       .user.isAuthorised()
@@ -141,7 +144,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertIntoDb(sessionString, iclSicCodeMapping)
 
-    val fetchResultsResponse = buildClient("/save-sic-codes").get()
+    val fetchResultsResponse: Future[WSResponse] = buildClient("/save-sic-codes").get()
     whenReady(fetchResultsResponse) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.sicandcompliance.routes.BusinessActivitiesResolverController.resolve.url)
@@ -157,7 +160,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-    val response = buildClient("/number-of-workers-supplied").get()
+    val response: Future[WSResponse] = buildClient("/number-of-workers-supplied").get()
     whenReady(response) { res =>
       res.status mustBe OK
       val document = Jsoup.parse(res.body)
@@ -171,7 +174,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-    val response = buildClient("/tell-us-more-about-the-business").get()
+    val response: Future[WSResponse] = buildClient("/tell-us-more-about-the-business").get()
     whenReady(response) { res =>
       res.status mustBe 200
     }
@@ -183,7 +186,7 @@ class SicControllerISpec extends ControllerISpec with RequestsFinder {
 
     insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-    val response = buildClient("/tell-us-more-about-the-business").post(Map("" -> Seq("")))
+    val response: Future[WSResponse] = buildClient("/tell-us-more-about-the-business").post(Map("" -> Seq("")))
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.business.routes.SupplyWorkersController.show.url)

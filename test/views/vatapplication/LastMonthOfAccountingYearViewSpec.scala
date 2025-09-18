@@ -18,6 +18,7 @@ package views.vatapplication
 
 import forms.AnnualStaggerForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import views.VatRegViewSpec
 import views.html.vatapplication.LastMonthOfAccountingYear
 
@@ -44,7 +45,7 @@ class LastMonthOfAccountingYearViewSpec extends VatRegViewSpec {
 
     val view = app.injector.instanceOf[LastMonthOfAccountingYear].apply(AnnualStaggerForm.form)
 
-    implicit val doc = Jsoup.parse(view.body)
+    implicit val doc: Document = Jsoup.parse(view.body)
 
     "have the right title" in new ViewSetup {
       doc.title() mustBe title

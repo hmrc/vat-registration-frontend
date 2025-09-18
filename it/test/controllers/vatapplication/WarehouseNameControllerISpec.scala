@@ -20,7 +20,10 @@ import itutil.ControllerISpec
 import models.api.vatapplication.{OverseasCompliance, StoringWithinUk, VatApplication}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class WarehouseNameControllerISpec extends ControllerISpec {
 
@@ -34,7 +37,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -51,7 +54,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -68,7 +71,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).get()
+      val res: Future[WSResponse] = buildClient(url).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
@@ -90,7 +93,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseName" -> testWarehouseName))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseName" -> testWarehouseName))
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
@@ -104,7 +107,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseName" -> ""))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseName" -> ""))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST
@@ -118,7 +121,7 @@ class WarehouseNameControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res = buildClient(url).post(Map("warehouseName" -> "|"))
+      val res: Future[WSResponse] = buildClient(url).post(Map("warehouseName" -> "|"))
 
       whenReady(res) { result =>
         result.status mustBe BAD_REQUEST

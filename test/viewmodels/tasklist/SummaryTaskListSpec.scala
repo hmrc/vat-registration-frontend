@@ -26,6 +26,7 @@ import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+import services.{AttachmentsService, BusinessService}
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -33,10 +34,10 @@ import scala.concurrent.Future
 class SummaryTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
   
   implicit val fakeRequest: Request[_] = FakeRequest()
-  val summaryTaskList = SummaryTaskList
-  val vatRegistrationTaskList = VatRegistrationTaskList
-  val businessService = mockBusinessService
-  val attachmentsService = mockAttachmentsService
+  val summaryTaskList: SummaryTaskList.type = SummaryTaskList
+  val vatRegistrationTaskList: VatRegistrationTaskList.type = VatRegistrationTaskList
+  val businessService: BusinessService = mockBusinessService
+  val attachmentsService: AttachmentsService = mockAttachmentsService
 
   "check for summary task list row" when {
     "prerequisites are not complete" must {

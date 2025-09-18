@@ -26,7 +26,7 @@ import scala.concurrent.Future
 class BusinessActivityDescriptionControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture {
 
   class Setup {
-    val view = app.injector.instanceOf[BusinessActivityDescription]
+    val view: BusinessActivityDescription = app.injector.instanceOf[BusinessActivityDescription]
     val controller = new BusinessActivityDescriptionController(
       mockAuthClientConnector,
       mockSessionService,

@@ -22,7 +22,7 @@ import testHelpers.VatRegSpec
 
 class RegistrationReasonTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
 
-  val section = RegistrationReasonTaskList
+  val section: RegistrationReasonTaskList.type = RegistrationReasonTaskList
 
   "registrationReasonRow checks" when {
     "the eligibility block is undefined" must {

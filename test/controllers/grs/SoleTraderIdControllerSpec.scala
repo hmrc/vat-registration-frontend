@@ -19,6 +19,7 @@ package controllers.grs
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.external.soletraderid.{JourneyLabels, SoleTraderIdJourneyConfig, TranslationLabels}
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import services.mocks.{MockApplicantDetailsService, MockEntityService, MockSoleTraderIdService, MockVatRegistrationService}
 import testHelpers.ControllerSpec
@@ -38,7 +39,7 @@ class SoleTraderIdControllerSpec extends ControllerSpec
     val testJourneyId = "testJourneyId"
     val testJourneyUrl = "/test-journey-url"
 
-    val soleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
+    val soleTraderIdJourneyConfig: SoleTraderIdJourneyConfig = SoleTraderIdJourneyConfig(
       continueUrl = appConfig.soleTraderCallbackUrl,
       deskProServiceId = "vrs",
       signOutUrl = appConfig.feedbackUrl,
@@ -78,7 +79,7 @@ class SoleTraderIdControllerSpec extends ControllerSpec
         partyType = Individual
       )(Future.successful(testJourneyUrl))
 
-      val res = Controller.startJourney()(FakeRequest())
+      val res: Future[Result] = Controller.startJourney()(FakeRequest())
 
       status(res) mustBe SEE_OTHER
       redirectLocation(res) mustBe Some(testJourneyUrl)
@@ -107,7 +108,7 @@ class SoleTraderIdControllerSpec extends ControllerSpec
         mockSaveApplicantDetails(testSoleTrader)(emptyApplicantDetails.copy(entity = Some(testSoleTrader)))
         mockPartyType(Future.successful(partyType))
 
-        val res = Controller.callback(testJourneyId)(FakeRequest())
+        val res: Future[Result] = Controller.callback(testJourneyId)(FakeRequest())
 
         status(res) mustBe SEE_OTHER
         redirectLocation(res) must contain(controllers.routes.TaskListController.show.url)

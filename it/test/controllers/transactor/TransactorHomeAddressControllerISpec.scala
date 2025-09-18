@@ -20,9 +20,11 @@ import itutil.ControllerISpec
 import models.TransactorDetails
 import models.api.{Address, Country}
 import play.api.http.HeaderNames
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class TransactorHomeAddressControllerISpec extends ControllerISpec {
 
@@ -30,14 +32,14 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
   val email = "test@test.com"
   val nino = "SR123456C"
   val role = "Director"
-  val dob = LocalDate.of(1998, 7, 12)
+  val dob: LocalDate = LocalDate.of(1998, 7, 12)
   val addrLine1 = "8 Case Dodo"
   val addrLine2 = "seashore next to the pebble beach"
   val postcode = "TE1 1ST"
   val name = "Johnny Test"
   val telephone = "1234"
 
-  val currentAddress = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
+  val currentAddress: Address = Address(line1 = testLine1, line2 = Some(testLine2), postcode = Some("TE 1ST"), addressValidated = true)
 
 
   "GET redirectToAlf" must {
@@ -48,7 +50,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(routes.TransactorHomeAddressController.redirectToAlf.url).get()
+      val response: Future[WSResponse] = buildClient(routes.TransactorHomeAddressController.redirectToAlf.url).get()
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some("continueUrl")
@@ -82,7 +84,7 @@ class TransactorHomeAddressControllerISpec extends ControllerISpec {
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val response = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
+      val response: Future[WSResponse] = buildClient(routes.TransactorHomeAddressController.addressLookupCallback(id = addressId).url).get()
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
