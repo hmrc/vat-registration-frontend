@@ -93,7 +93,7 @@ class AboutTheBusinessSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       s"$sectionId.homeAddress",
       business.ppobAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished if !fixedEstablishment =>
+        case Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished if !fixedEstablishment =>
           Some(controllers.business.routes.InternationalPpobAddressController.show.url)
         case _ =>
           Some(controllers.business.routes.PpobAddressController.startJourney.url)

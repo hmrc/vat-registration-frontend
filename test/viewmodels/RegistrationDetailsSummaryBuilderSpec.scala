@@ -21,7 +21,7 @@ import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import helpers.FormInspectors.convertToAnyShouldWrapper
 import models.api.vatapplication.{Annual, Monthly, OverseasCompliance, StoringWithinUk}
-import models.api.{NETP, UkCompany, VatScheme}
+import models.api.{Individual, NETP, UkCompany, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import models.{ConditionalValue, FrsBusinessType}
 import org.mockito.ArgumentMatchers.any
@@ -153,7 +153,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
     "returns a registration detail summary list for NETP" in new Setup {
       val testVatScheme: VatScheme = emptyVatScheme.copy(
         eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-          partyType = NETP,
+          partyType = Individual,
           fixedEstablishmentInManOrUk = false
         )),
         vatApplication = Some(validVatApplication.copy(
@@ -395,7 +395,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           vatApplication = Some(validVatApplication.copy(
@@ -447,7 +447,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           vatApplication = Some(validVatApplication.copy(
@@ -497,7 +497,7 @@ class RegistrationDetailsSummaryBuilderSpec extends VatRegSpec {
             labourCompliance = Some(complianceWithLabour.copy(supplyWorkers = Some(false)))
           )),
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           vatApplication = Some(validVatApplication.copy(

@@ -105,7 +105,7 @@ class TransactorDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLi
       s"$sectionId.homeAddress",
       transactorDetails.address.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished if !fixedEstablishment =>
+        case (Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished) if !fixedEstablishment =>
           Some(controllers.transactor.routes.TransactorInternationalAddressController.show.url)
         case _ =>
           Some(controllers.transactor.routes.TransactorHomeAddressController.redirectToAlf.url)

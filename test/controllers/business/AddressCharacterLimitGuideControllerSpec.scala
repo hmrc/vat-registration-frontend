@@ -67,9 +67,9 @@ class AddressCharacterLimitGuideControllerSpec extends ControllerSpec
   "submit" must {
     val testCases = Table(
       ("Description", "PartyType", "FixedEstablishment", "ExpectedRedirect"),
-      ("NETP without fixed establishment", NETP, false, controllers.business.routes.InternationalPpobAddressController.show.url),
+      ("NETP without fixed establishment", Individual, false, controllers.business.routes.InternationalPpobAddressController.show.url),
       ("NonUkNonEstablished without fixed establishment", NonUkNonEstablished, false, controllers.business.routes.InternationalPpobAddressController.show.url),
-      ("NETP with fixed establishment", NETP, true, controllers.business.routes.PpobAddressController.startJourney.url),
+      ("NETP with fixed establishment", Individual, true, controllers.business.routes.PpobAddressController.startJourney.url),
       ("NonUkNonEstablished with fixed establishment", NonUkNonEstablished, true, controllers.business.routes.PpobAddressController.startJourney.url),
       ("UK Company", UkCompany, true, controllers.business.routes.PpobAddressController.startJourney.url),
       ("Solo trader", Individual, true, controllers.business.routes.PpobAddressController.startJourney.url),

@@ -94,14 +94,14 @@ class PreviousAddressControllerISpec extends ControllerISpec {
   }
 
   s"POST $pageUrl" must {
-    "redirect to International Address capture if the user is a NETP" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
+    "redirect to International Address capture if the user is a NETP (Individual with no fixed establishment in UK)" in new Setup {
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testNetpSoleTrader)))
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-        partyType = NETP,
+        partyType = Individual,
         fixedEstablishmentInManOrUk = false
       )))
 
@@ -134,12 +134,12 @@ class PreviousAddressControllerISpec extends ControllerISpec {
     }
 
     "redirect to previous address controller if the overseas user is established in UK" in new Setup {
-      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(NETP)
+      implicit val format: Format[ApplicantDetails] = ApplicantDetails.apiFormat(Individual)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails.copy(noPreviousAddress = None, entity = Some(testNetpSoleTrader))))
         .registrationApi.replaceSection[ApplicantDetails](validFullApplicantDetails.copy(noPreviousAddress = Some(false), entity = Some(testNetpSoleTrader)))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = NETP)))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(partyType = Individual)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 

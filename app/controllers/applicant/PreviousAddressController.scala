@@ -21,7 +21,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.ApplicantDetailsService._
 import services._
@@ -84,7 +84,7 @@ class PreviousAddressController @Inject()(val authConnector: AuthConnector,
                   Future.successful(Redirect(controllers.routes.TaskListController.show))
                 } else {
                   vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).map {
-                    case (NETP | NonUkNonEstablished, false) =>
+                    case (Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished, false) =>
                       Redirect(routes.InternationalPreviousAddressController.show)
                     case _ =>
                       Redirect(routes.PreviousAddressController.previousAddress)

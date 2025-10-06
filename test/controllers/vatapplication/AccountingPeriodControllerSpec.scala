@@ -19,7 +19,7 @@ package controllers.vatapplication
 import _root_.models._
 import fixtures.VatRegistrationFixture
 import forms.vatapplication.AccountingPeriodForm
-import models.api.NETP
+import models.api.{Individual, NETP}
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -122,7 +122,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
       when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
-        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)))
+        .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = Individual, fixedEstablishmentInManOrUk = false)))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
         "value" -> AccountingPeriodForm.marStaggerKey

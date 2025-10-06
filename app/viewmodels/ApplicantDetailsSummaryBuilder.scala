@@ -137,7 +137,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       if (isTransactor) s"$sectionId.transactor.homeAddress" else s"$sectionId.self.homeAddress",
       applicantDetails.currentAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished if !fixedEstablishment =>
+        case Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished if !fixedEstablishment =>
           Some(applicantRoutes.InternationalHomeAddressController.show.url)
         case _ =>
           Some(applicantRoutes.HomeAddressController.redirectToAlf.url)
@@ -154,7 +154,7 @@ class ApplicantDetailsSummaryBuilder @Inject()(govukSummaryList: GovukSummaryLis
       if (isTransactor) s"$sectionId.transactor.previousAddress" else s"$sectionId.self.previousAddress",
       applicantDetails.previousAddress.map(Address.normalisedSeq),
       partyType match {
-        case NETP | NonUkNonEstablished if !fixedEstablishment =>
+        case Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished if !fixedEstablishment =>
           Some(applicantRoutes.InternationalPreviousAddressController.show.url)
         case _ =>
           Some(applicantRoutes.PreviousAddressController.show.url)

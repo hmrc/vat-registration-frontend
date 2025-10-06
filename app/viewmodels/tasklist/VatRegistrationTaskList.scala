@@ -19,9 +19,10 @@ package viewmodels.tasklist
 import config.FrontendAppConfig
 import models._
 import models.api.vatapplication.{AnnualStagger, OverseasCompliance, StoringWithinUk, VatApplication}
-import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
+import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, PartyType, Trust, UkCompany, VatScheme}
 import play.api.i18n.Messages
 import services.BusinessService
+
 import javax.inject.Singleton
 
 @Singleton
@@ -54,7 +55,8 @@ object VatRegistrationTaskList {
         )
       } ++ {
         scheme.partyType match {
-          case Some(NETP) | Some(NonUkNonEstablished) if scheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
+          case Some(Individual) | Some(UkCompany) | Some(NonUkNonEstablished) | Some(Partnership) |
+               Some(LtdLiabilityPartnership) | Some(Trust) | Some(NonUkNonEstablished) if scheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
             scheme.vatApplication.flatMap(_.overseasCompliance).map(checkOverseasCompliance).getOrElse(Nil)
           case _ => Nil
         }
@@ -144,7 +146,7 @@ object VatRegistrationTaskList {
   }
 
   private def resolveBankDetailsRow(vatScheme: VatScheme, businessService: BusinessService)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig) = {
-    if (Seq(NETP, NonUkNonEstablished).exists(vatScheme.partyType.contains) && vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk)) {
+    if (Seq(Individual, NonUkNonEstablished).exists(vatScheme.partyType.contains) && vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk)) {
       None
     } else {
       Some(bankAccountDetailsRow(businessService))
@@ -206,7 +208,7 @@ object VatRegistrationTaskList {
         )
         case _ => None
       },
-      if (Seq(NETP, NonUkNonEstablished).exists(partyType.contains) && !fixedEstablishment) Some(vatApplication.hasTaxRepresentative.isDefined) else None
+      if (Seq(Individual, NonUkNonEstablished).exists(partyType.contains) && !fixedEstablishment) Some(vatApplication.hasTaxRepresentative.isDefined) else None
     )
   }.flatten
 }

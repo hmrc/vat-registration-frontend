@@ -136,7 +136,8 @@ object AboutYouTaskList {
 
   private def resolveAddressRowUrl(vatScheme: VatScheme): String = {
     vatScheme.partyType match {
-      case Some(NETP) | Some(NonUkNonEstablished) if vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
+      case (Some(Individual) | Some(UkCompany) | Some(NonUkNonEstablished) | Some(Partnership) |
+            Some(LtdLiabilityPartnership) | Some(Trust)) if vatScheme.eligibilitySubmissionData.exists(!_.fixedEstablishmentInManOrUk) =>
         controllers.applicant.routes.InternationalHomeAddressController.show.url
       case _ =>
         controllers.applicant.routes.HomeAddressController.redirectToAlf.url
