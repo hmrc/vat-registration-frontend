@@ -22,7 +22,7 @@ import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
 import models._
 import models.api.vatapplication._
-import models.api.{NETP, NonUkNonEstablished, PartyType, VatScheme}
+import models.api.{Individual, NETP, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -228,7 +228,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     )
 
   private def netpSection(vatApplication: VatApplication, partyType: PartyType, fixedEstablishment: Boolean)(implicit messages: Messages): List[SummaryListRow] =
-    if ((partyType == NETP || partyType == NonUkNonEstablished) && !fixedEstablishment) {
+    if ((partyType == Individual || partyType == NonUkNonEstablished) && !fixedEstablishment) {
       List(
         sendGoodsOverseas(vatApplication),
         sendGoodsToEu(vatApplication),

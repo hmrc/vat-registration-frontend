@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.AccountingPeriodForm
 import models.api.vatapplication.QuarterlyStagger
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{Individual, NETP, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.vatapplication.AccountingPeriodView
@@ -58,7 +58,7 @@ class AccountingPeriodController @Inject()(val sessionService: SessionService,
             vatRegistrationService.getEligibilitySubmissionData.flatMap { eligibilityData =>
               vatApplicationService.saveVatApplication(success) map { _ =>
                 eligibilityData.partyType match {
-                  case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
+                  case (Individual | NonUkNonEstablished) if !eligibilityData.fixedEstablishmentInManOrUk =>
                     Redirect(controllers.vatapplication.routes.TaxRepController.show)
                   case _ =>
                     Redirect(controllers.routes.TaskListController.show)

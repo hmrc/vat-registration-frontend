@@ -361,7 +361,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val validEntitiesNETP: List[Entity] = List[Entity](
     Entity(
       details = Some(validSoleTraderIdEntity),
-      partyType = NETP,
+      partyType = Individual,
       isLeadPartner = Some(true),
       optScottishPartnershipName = None,
       address = Some(testAddress),
@@ -370,7 +370,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
     ),
     Entity(
       details = Some(validSoleTraderIdEntity),
-      partyType = NETP,
+      partyType = Individual,
       isLeadPartner = Some(false),
       optScottishPartnershipName = None,
       address = Some(testAddress),
@@ -413,7 +413,7 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
 
   val fullVatSchemeAttachmentNETP: VatScheme = fullVatSchemeAttachment.copy(
     eligibilitySubmissionData = Some(testEligibilitySubmissionData.copy(
-      partyType = NETP,
+      partyType = Individual,
       fixedEstablishmentInManOrUk = false,
       registrationReason = NonUk
     )),

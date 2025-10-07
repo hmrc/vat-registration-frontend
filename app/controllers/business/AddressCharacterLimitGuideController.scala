@@ -22,10 +22,11 @@ import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import views.html.business.AddressCharacterLimitGuideView
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import services.VatRegistrationService
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust, UkCompany}
 
 @Singleton
 class AddressCharacterLimitGuideController @Inject()(val authConnector: AuthConnector,
@@ -46,7 +47,7 @@ class AddressCharacterLimitGuideController @Inject()(val authConnector: AuthConn
     implicit request => implicit profile =>
       vatRegistrationService.getEligibilitySubmissionData.map { data =>
         (data.partyType, data.fixedEstablishmentInManOrUk) match {
-          case (NETP | NonUkNonEstablished, false) => Redirect(controllers.business.routes.InternationalPpobAddressController.show)
+          case (Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished, false) => Redirect(controllers.business.routes.InternationalPpobAddressController.show)
           case _ => Redirect(controllers.business.routes.PpobAddressController.startJourney)
         }
       }

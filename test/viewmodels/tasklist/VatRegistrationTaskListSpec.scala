@@ -74,7 +74,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
           sectionRow.url mustBe expectedUrl
         }
 
-        verifyNotStartedFlow(NETP, controllers.vatapplication.routes.ImportsOrExportsController.show.url)
+        verifyNotStartedFlow(Individual, controllers.vatapplication.routes.ImportsOrExportsController.show.url)
         verifyNotStartedFlow(UkCompany, controllers.vatapplication.routes.ImportsOrExportsController.show.url)
       }
     }
@@ -162,7 +162,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "resolve to None if registration reason available but not eligible for registration date flow" in {
         section.resolveVATRegistrationDateRow(emptyVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             registrationReason = NonUk,
             fixedEstablishmentInManOrUk = false
           ))
@@ -240,7 +240,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return TLCompleted" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = true
           )),
           business = Some(validBusiness.copy(
@@ -477,7 +477,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
         val schema = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
             registrationReason = NonUk,
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
@@ -504,7 +504,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return TLInProgress" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
@@ -527,7 +527,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return TLCompleted" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
@@ -588,7 +588,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return task list not started with correct url" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
@@ -613,7 +613,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return list not started with correct url" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
@@ -638,7 +638,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return task list in progress" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(
@@ -663,7 +663,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       "return task list completed" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData.copy(
-            partyType = NETP,
+            partyType = Individual,
             fixedEstablishmentInManOrUk = false
           )),
           business = Some(validBusiness.copy(

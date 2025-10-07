@@ -18,7 +18,7 @@ package controllers.bankdetails
 
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.{EligibilitySubmissionData, NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, Individual, NETP, NonUkNonEstablished}
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -45,7 +45,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(
-        partyType = NETP,
+        partyType = Individual,
         fixedEstablishmentInManOrUk = false
       )))
         .registrationApi.getSection[BankAccount](None)
