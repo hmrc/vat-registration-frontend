@@ -16,22 +16,30 @@
 
 package views
 
+import featuretoggle.FeatureSwitch.NewVRSApplConfirmJourney
+import featuretoggle.{FeatureSwitch, FeatureToggleSupport}
 import models._
 import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito.when
 import views.html.ApplicationSubmissionConfirmation
 
-class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
+class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with FeatureToggleSupport {
 
   val refNum = "VRS 1234 1234 1234"
+  val refNumNew = "1234 1234 1234"
   val testEmail = "testEmail@mail.gov.uk"
 
   object ExpectedContent {
     val title = "Your application has been submitted - Register for VAT - GOV.UK"
     val heading = "Your application has been submitted"
     val ackRef = "Your reference number VRS 1234 1234 1234"
+    val ackRefNew = "VAT Application number: 1234 1234 1234"
+
     val emailPara = s"We have emailed the information on this page to $testEmail."
+    val emailParaNew = s"The information on this page has been sent to $testEmail."
+
     val heading2 = "What happens next"
     val listItem1 = "We’ve received your application and we will write to you with a decision within 40 working days."
     val listItem1Doc = "After we receive copies of your documents, we’ll write to you with a decision on your application within 40 working days."
@@ -59,6 +67,8 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
   val viewInstance: ApplicationSubmissionConfirmation = app.injector.instanceOf[ApplicationSubmissionConfirmation]
 
   "Application submission confirmation page" must {
+    disable(NewVRSApplConfirmJourney)
+
     lazy val view = viewInstance(refNum, None, attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
@@ -72,6 +82,8 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
 
     "have the correct subheadings" in new ViewSetup {
       doc.headingLevel2(1) mustBe Some(ExpectedContent.heading2)
+
+      println(s"************isEnabled-->${isEnabled(FeatureSwitch.NewVRSApplConfirmJourney)}")
       doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
     }
 
@@ -96,7 +108,51 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec {
     }
   }
 
+  "New Application submission confirmation page in " must {
+    lazy val view = viewInstance(refNum, None, attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = ForwardLook)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the correct title" in {
+      doc.title must include(ExpectedContent.title)
+    }
+
+    "have the correct heading" in new ViewSetup {
+      doc.heading mustBe Some(ExpectedContent.heading)
+    }
+
+    "have the correct subheadings" in new ViewSetup {
+      doc.headingLevel2(1) mustBe Some(ExpectedContent.heading2)
+
+      println(s"************isEnabled-->${isEnabled(FeatureSwitch.NewVRSApplConfirmJourney)}")
+      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRefNew
+    }
+
+    "have the correct paragraph" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.emailParaNew)
+    }
+
+    /*"have the correct list" in new ViewSetup {
+      doc.orderedList(1) mustBe List(ExpectedContent.listItem1, ExpectedContent.listItem2)
+    }
+
+    "have the correct inset text" in new ViewSetup {
+      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText)
+    }
+
+    "have the correct link" in new ViewSetup {
+      doc.link(1) mustBe Some(Link(ExpectedContent.insetLinkText, ExpectedContent.insetLink))
+    }
+
+    "have the correct continue button" in new ViewSetup {
+      doc.submitButton mustBe Some(ExpectedContent.buttonText)
+    }*/
+  }
+
   "Application submission confirmation page with Post attachment method" must {
+    println(s"************isEnabled-->${isEnabled(FeatureSwitch.NewVRSApplConfirmJourney)}")
+
+    disable(NewVRSApplConfirmJourney)
+
     lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 

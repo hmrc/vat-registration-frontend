@@ -64,11 +64,11 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
     "Bind successfully for a valid specific date selection" in {
       val data = Map(
         "value"  -> "specific_date",
-        "startDate.day"   -> "5",
+        "startDate.day"   -> "15",
         "startDate.month" -> "1",
         "startDate.year"  -> "2022"
       )
-      form.bind(data).get mustBe((specific_date, Some(LocalDate.of(2022, 1, 5))))
+      form.bind(data).get mustBe((specific_date, Some(LocalDate.of(2022, 1, 15))))
     }
 
     "Fail to bind successfully for no selection" in {

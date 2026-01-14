@@ -706,11 +706,48 @@ pages.summary.continue                                      = Confirm and submit
 # Application Submission Confirmation page
 pages.application.submission.confirmation.heading                   = Your application has been submitted
 pages.application.submission.confirmation.reference                 = Your reference number
+
+pages.application.submission.confirmation.applNumber                = VAT application number:
+pages.application.submission.confirmation.info                      = You will need this number to access your VAT account.
+pages.application.submission.confirmation.info.agent.post           = Give this number to the business. They need it to access their VAT account.
+pages.application.submission.confirmation.info.agent.digital        = Give this number to the business. They will need it to access their online VAT account.
+pages.application.submission.confirmation.inset.msg                 = The VAT application number is different to the VAT registration number.
+
+# Trading before - Section
+pages.application.submission.confirmation.heading3                              = Trading before you are registered for VAT
+pages.application.submission.confirmation.trading.p1                            = VAT cannot be included on the business’s invoices until it has a VAT registration number but prices can be increased to account for the VAT that will be owed. The extra that has been charged for VAT can then be used to pay HMRC.
+pages.application.submission.confirmation.trading.howToRegisterLink             = Visit <a href="{0}" target="_blank">Register for VAT</a> to find out more about ‘Accounting for VAT while you wait for your VAT registration number’.
+pages.application.submission.confirmation.trading.p1.post.individual            = VAT cannot be included on your invoices until you have a VAT registration number but prices can be increased to account for the VAT that will be owed. The extra that has been charged for VAT can then be used to pay HMRC.
+pages.application.submission.confirmation.trading.p1.digital.individual.togc    = VAT cannot be included on your invoices until it has a VAT registration number but prices can be increased to account for the VAT that will be owed. The extra that has been charged for VAT can then be used to pay HMRC. Visit <a href="{0}" target="_blank">Register for VAT</a> to find out more about ‘Accounting for VAT while you wait for your VAT registration number’.
+pages.application.submission.confirmation.trading.p1.digital.individual         = You cannot include VAT on your invoices until you get your VAT registration number but you can increase prices to account for the VAT that will be owed. The extra you have charged for VAT can then be used to pay HMRC.
+pages.application.submission.confirmation.trading.p2.togc                       = If a company, or part of a company, has been sold and <a href="{0}" target="_blank">treated as a transfer of a going concern</a> (TOGC) then no VAT is chargeable, subject to certain conditions.
+
+# Section - "info to mail"
 pages.application.submission.confirmation.emailedTo                 = We have emailed the information on this page to {0}.
+pages.application.submission.confirmation.emailedTo.new             = The information on this page has been sent to {0}.
+
+# Section - "What you must do now" - as-is
 pages.application.submission.confirmation.doc.heading               = What you must do now
 pages.application.submission.confirmation.doc.para                  = We’ve received your application. So we can process it,
 pages.application.submission.confirmation.doc.linkPost              = post us a cover letter and copies of your documents
 pages.application.submission.confirmation.doc.linkPost.3pt          = post us a cover letter and copies of the required documents
+
+# Section - "What you must do now" - new-Agent/Individual
+pages.application.submission.confirmation.doc.para1.agent           = We have received the business’s online application. So we can process it,
+pages.application.submission.confirmation.doc.para1.individual      = We have received your online application. So we can process it,
+pages.application.submission.confirmation.doc.linkPost.new          = post us a cover letter and copies of the required documents.
+pages.application.submission.confirmation.doc.para2.agent           = To avoid delays to the application, post the business’s documents to us using the postal address on this screen as soon as possible.
+pages.application.submission.confirmation.doc.para2.individual      = To avoid delays to the application, post your documents to us using the postal address on this screen as soon as possible.
+
+# Section - "Postal address"
+pages.application.submission.confirmation.postal.heading            = Postal address
+pages.application.submission.confirmation.postal.p1                 = VAT Registration Applications
+pages.application.submission.confirmation.postal.p2                 = BT VAT
+pages.application.submission.confirmation.postal.p3                 = HM Revenue and Customs
+pages.application.submission.confirmation.postal.p4                 = BX9 1WR
+pages.application.submission.confirmation.postal.p5                 = United Kingdom
+
+# Section - "What happens next" - As-is
 pages.application.submission.confirmation.heading2                  = What happens next
 pages.application.submission.confirmation.list.decisionDoc          = After we receive copies of your documents, we’ll write to you with a decision on your application within 40 working days.
 pages.application.submission.confirmation.list.decisionNoDoc        = We’ve received your application and we will write to you with a decision within 40 working days.
@@ -734,6 +771,21 @@ pages.application.submission.confirmation.insetLink.togc.3pt            = accoun
 pages.application.submission.confirmation.list.software.togc            = You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’.
 pages.application.submission.confirmation.list.software.togc.3pt        = The business should wait until its VAT registration is confirmed before getting software to follow the rules for ‘Making Tax Digital for VAT’.
 
+# Section - "What happens next" - New
+# Para1
+pages.application.submission.confirmation.list.decisionDoc.post.agent           = After we receive the business’s documents, we will write to you (the agent or third party) with a decision on the application in 40 working days.
+pages.application.submission.confirmation.list.decisionDoc.post.individual      = After we receive your documents, we will write to you with a decision on the application in 40 working days.
+pages.application.submission.confirmation.list.decisionDoc.digital.agent        = After we receive the business’s documents, we will send you a decision on the application in 40 working days.
+pages.application.submission.confirmation.list.decisionDoc.digital.individual   = After we receive your documents, we will write to you with a decision on your application in 40 working days.
+
+# Para2
+pages.application.submission.confirmation.list.software.post.agent               = Do not start using accounting software to manage the business’s VAT records and file returns until VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.post.agent.vatGroup      = The VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.post.individual          = Do not start using accounting software to manage your VAT records and file returns until VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.post.individual.vatGroup = A VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.digital.agent               = Do not start using accounting software to manage the business’s VAT records and file returns until VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.digital.individual          = Do not start using accounting software to manage your VAT records and file returns until VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.digital.individual.vatGroup = A VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
 
 # Progress Saved Page
 pages.application.progress.saved.heading                            = Your application has been saved for 7 days

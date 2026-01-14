@@ -284,6 +284,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val govukHowToRegister: String = "https://www.gov.uk/register-for-vat/how-register-for-vat"
 
+  lazy val govukTogcVatNotice: String = "https://www.gov.uk/guidance/transfer-a-business-as-a-going-concern-and-vat-notice-7009"
+
   lazy val businessDescriptionMaxLength: Int = servicesConfig.getInt("constants.businessDescriptionMaxLength")
 
   lazy val findOutAboutEoriUrl: String = servicesConfig.getString("urls.findOutAboutEori")
@@ -320,4 +322,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val maxObiLimit: Int = servicesConfig.getInt("obiMaxLimit")
 
   def isTTMayJunJourneyEnabled: Boolean = isEnabled(SubmitDeadline)
+  def isNewVRSConfirmJourneyEnabled: Boolean = isEnabled(NewVRSApplConfirmJourney)
 }

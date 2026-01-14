@@ -28,6 +28,8 @@
         formWithCSRF: FormWithCSRF,
         govukPanel: GovukPanel,
         orderedList: orderedList,
+        bulletsList: bullets,
+        panelIndent: panelIndent,
         link: link,
         govukInsetText: GovukInsetText,
         button: button,
@@ -44,53 +46,150 @@
 )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
-
+    @** Green Panel **@
     @govukPanel(Panel(
         title = Text(messages("pages.application.submission.confirmation.heading")),
         headingLevel = 1,
-        content = HtmlContent(referenceNumber)
+        content = HtmlContent(greenPanelContent)
     ))
 
-    @p{ @messages("pages.application.submission.confirmation.emailedTo", email) }
+    @** Inset Section for clarity on VAT application number vs. VAT registration number **@
+    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @govukInsetText(InsetText(
+            content = HtmlContent(insetTextAboutApplRef)
+        ))
+    }
 
-    @{
-        attachmentMethod match {
-            case Some(Post) if attachmentsListExists => guidancePost
-            case _ =>
+    @** info to email **@
+    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @p{@messages("pages.application.submission.confirmation.emailedTo.new", email) }
+    } else {
+        @p{@messages("pages.application.submission.confirmation.emailedTo", email) }
+    }
+
+
+    @** Section: What you must do now  ** --> Only for POST **@
+    @if(isAttachmentMethodPost){
+        @h2(messages("pages.application.submission.confirmation.doc.heading"))
+        @if(appConfig.isNewVRSConfirmJourneyEnabled){
+            @guidancePostNew
+        } else {
+            @guidancePost
         }
     }
 
+    @** Section: Postal address ** --> Only for POST **@
+    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @if(isAttachmentMethodPost) {
+            @postalAddressContent
+        }
+    }
+
+    @** Section: What happens next **@
     @h2(messages("pages.application.submission.confirmation.heading2"))
+    @{whatHappensNextContent}
 
-    @{
-        attachmentMethod match {
-            case Some(Post) if attachmentsListExists =>
-                orderedList(
-                    messages("pages.application.submission.confirmation.list.decisionDoc"),
-                    messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt")
-                )
-            case _ =>
-                orderedList(
-                    messages("pages.application.submission.confirmation.list.decisionNoDoc"),
-                    messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt")
-                )
-        }
+    @** Last-Section: Trading before you are registered for VAT **@
+    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @tradingDetail
+    } else {
+        @govukInsetText(InsetText(
+            content = HtmlContent(insetText)
+        ))
     }
-
-    @govukInsetText(InsetText(
-        content = HtmlContent(insetText)
-    ))
 
     @form(action = controllers.routes.ApplicationSubmissionController.submit) {
         @button("pages.application.submission.confirmation.button", showSaveProgressButton = false)
     }
 }
 
+@** Common Functions **@
+
+@greenPanelContent = {
+    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @messages("pages.application.submission.confirmation.applNumber")<br/>@strong(Html(acknowledgementReference))<br/><br/>
+        @if(isTransactor){
+            @messages(s"pages.application.submission.confirmation.info.agent$attachMethod")
+        } else {
+            @messages("pages.application.submission.confirmation.info")
+        }
+    } else {
+        @messages("pages.application.submission.confirmation.reference")<br>@strong(Html(acknowledgementReference))
+    }
+}
+
+@insetTextAboutApplRef = {
+    @p{@messages("pages.application.submission.confirmation.inset.msg")}
+}
+
+@guidancePostNew = {
+    @p{
+        @println(s"Usertype:$userType")
+        @messages(s"pages.application.submission.confirmation.doc.para1$userType")
+        @link(controllers.attachments.routes.PostalCoverSheetController.show.url, "pages.application.submission.confirmation.doc.linkPost.new", isExternal = true).
+    }
+    @p{
+        @messages(s"pages.application.submission.confirmation.doc.para2$userType")
+    }
+}
+
 @guidancePost = {
-    @h2(messages("pages.application.submission.confirmation.doc.heading"))
     @p {
         @messages("pages.application.submission.confirmation.doc.para")
         @link(controllers.attachments.routes.PostalCoverSheetController.show.url, s"pages.application.submission.confirmation.doc.linkPost$opt3pt", isExternal = true).
+    }
+}
+
+@postalAddressContent = {
+    @h2(messages("pages.application.submission.confirmation.postal.heading"))
+    @p{@messages("pages.application.submission.confirmation.postal.p1")<br/>
+        @messages("pages.application.submission.confirmation.postal.p2")<br/>
+        @messages("pages.application.submission.confirmation.postal.p3")<br/>
+        @messages("pages.application.submission.confirmation.postal.p4")<br/>
+        @messages("pages.application.submission.confirmation.postal.p5")}
+}
+
+@whatHappensNextContent = {
+    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @p{@messages(s"pages.application.submission.confirmation.list.decisionDoc$attachMethod$userType")}
+        @p{@messages(s"pages.application.submission.confirmation.list.software$attachMethod$userType$vatGroupType")}
+    } else {
+        @if(isAttachmentMethodPost){
+            @orderedList(messages("pages.application.submission.confirmation.list.decisionDoc"),
+                         messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt"))
+        } else {
+            @orderedList(messages("pages.application.submission.confirmation.list.decisionNoDoc"),
+                         messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt"))
+        }
+    }
+}
+
+
+@tradingDetail = {
+    @h2(messages("pages.application.submission.confirmation.heading3"))
+    @** p1 logic **@
+    @if(isTransactor || (!isAttachmentMethodPost & !isTransactor & isVatGroup)){
+        @p{@messages("pages.application.submission.confirmation.trading.p1")
+            @if(isTogcAppl){
+                @Html(messages("pages.application.submission.confirmation.trading.howToRegisterLink", appConfig.govukHowToRegister))
+            }
+        }
+    } else if (!isTransactor){
+        @if(isAttachmentMethodPost){
+            @p{@messages("pages.application.submission.confirmation.trading.p1.post.individual")}
+        } else {
+            @if(isTogcAppl){
+                @p{@Html(messages("pages.application.submission.confirmation.trading.p1.digital.individual.togc", appConfig.govukHowToRegister))}
+            } else {
+                @p{@messages("pages.application.submission.confirmation.trading.p1.digital.individual")}
+            }
+        }
+    }
+    @** p2 logic **@
+    @if(isTogcAppl){
+        @p{@Html(messages("pages.application.submission.confirmation.trading.p2.togc", appConfig.govukTogcVatNotice))}
+    } else {
+        @p{@Html(messages("pages.application.submission.confirmation.trading.howToRegisterLink", appConfig.govukHowToRegister))}
     }
 }
 
@@ -101,14 +200,31 @@
     }
 }
 
-@referenceNumber = {
-    @messages("pages.application.submission.confirmation.reference")
-        <br>
-    @strong(Html(acknowledgementReference))
-}
 
 @opt3pt = @{
     if(isTransactor) ".3pt" else ""
+}
+
+@userType = @{
+    if(isTransactor) ".agent" else ".individual"
+}
+
+@isAttachmentMethodPost = @{
+    attachmentMethod match {
+        case Some(Post) if(attachmentsListExists) =>  true
+        case _ => false
+    }
+}
+
+@attachMethod = @{
+    if(isAttachmentMethodPost) ".post" else ".digital"
+}
+
+@vatGroupType = @{
+    registrationReason match {
+        case GroupRegistration => ".vatGroup"
+        case _ => ""
+    }
 }
 
 @optRegReason = @{
@@ -118,3 +234,24 @@
         case _ => ""
     }
 }
+
+@isTogcAppl = @{
+    registrationReason match {
+        case TransferOfAGoingConcern => true
+        case _ => false
+    }
+}
+
+@isVatGroup = @{
+    registrationReason match {
+        case GroupRegistration => true
+        case _ => false
+    }
+}
+
+
+@println(s"NewVRSConfirmJourney: ${appConfig.isNewVRSConfirmJourneyEnabled}")
+@println(s"Agent :  $isTransactor")
+@println(s"Postal: $attachmentsListExists")
+@println(s"attachmentMethod: $attachmentMethod")
+@println(s"isAttachmentMethodPost: $isAttachmentMethodPost")

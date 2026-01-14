@@ -706,11 +706,48 @@ pages.summary.continue                                      = Cadarnhau a chyflw
 # Application Submission Confirmation page
 pages.application.submission.confirmation.heading                   = Mae’ch cais wedi’i gyflwyno
 pages.application.submission.confirmation.reference                 = Eich cyfeirnod
+
+pages.application.submission.confirmation.applNumber                = Rhif y cais TAW:
+pages.application.submission.confirmation.info                      = Bydd angen y rhif hwn arnoch i gael mynediad at eich cyfrif TAW.
+pages.application.submission.confirmation.info.agent.post           = Rhowch y rhif hwn i’r busnes. Mae angen y rhif hwn ar y busnes i gael mynediad i’w gyfrif TAW.
+pages.application.submission.confirmation.info.agent.digital        = Rhowch y rhif hwn i’r busnes. Mae angen y rhif hwn ar y busnes i gael mynediad i’w gyfrif TAW.
+pages.application.submission.confirmation.inset.msg                 = Mae rhif y cais TAW yn wahanol i’r rhif cofrestru TAW.
+
+# Trading before - Section
+pages.application.submission.confirmation.heading3                              = Masnachu cyn i chi gofrestru ar gyfer TAW
+pages.application.submission.confirmation.trading.p1                            = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF.
+pages.application.submission.confirmation.trading.howToRegisterLink             = Ewch i’r dudalen <a href="{0}" target="_blank">‘Cofrestru ar gyfer TAW’</a> i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
+pages.application.submission.confirmation.trading.p1.post.individual            = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF.
+pages.application.submission.confirmation.trading.p1.digital.individual.togc    = AWAITING FOR WELSH
+pages.application.submission.confirmation.trading.p1.digital.individual         = Ni allwch gynnwys TAW ar eich anfonebau hyd nes eich bod yn cael eich rhif cofrestru TAW, ond gallwch godi’ch prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol i dalu CThEF.
+pages.application.submission.confirmation.trading.p2.togc                       = AWAITING FOR WELSH
+
+# Section - "info to mail"
 pages.application.submission.confirmation.emailedTo                 = Rydym wedi anfon e-bost at {0} sy’n cynnwys yr wybodaeth ar y dudalen hon.
+pages.application.submission.confirmation.emailedTo.new             = AWAITING FOR WELSH.
+
+# Section - "What you must do now" - as-is
 pages.application.submission.confirmation.doc.heading               = Yr hyn y mae’n rhaid i chi ei wneud nawr
 pages.application.submission.confirmation.doc.para                  = Mae’ch cais wedi dod i law. Er mwyn i ni allu prosesu’r cais,
 pages.application.submission.confirmation.doc.linkPost              = postiwch lythyr eglurhaol a chopïau o’ch dogfennau atom
 pages.application.submission.confirmation.doc.linkPost.3pt          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom
+
+# Section - "What you must do now" - new-Agent/Individual
+pages.application.submission.confirmation.doc.para1.agent           =
+pages.application.submission.confirmation.doc.para1.individual      =
+pages.application.submission.confirmation.doc.linkPost.new          =
+pages.application.submission.confirmation.doc.para2.agent           =
+pages.application.submission.confirmation.doc.para2.individual      =
+
+# Section - "Postal address"
+pages.application.submission.confirmation.postal.heading            =
+pages.application.submission.confirmation.postal.p1                 =
+pages.application.submission.confirmation.postal.p2                 =
+pages.application.submission.confirmation.postal.p3                 =
+pages.application.submission.confirmation.postal.p4                 =
+pages.application.submission.confirmation.postal.p5                 =
+
+# Section - "What happens next" - As-is
 pages.application.submission.confirmation.heading2                  = Yr hyn sy’n digwydd nesaf
 pages.application.submission.confirmation.list.decisionDoc          = Ar ôl i ni gael copïau o’ch dogfennau, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais cyn pen 40 diwrnod gwaith.
 pages.application.submission.confirmation.list.decisionNoDoc        = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad cyn pen 40 diwrnod gwaith.
@@ -733,6 +770,22 @@ pages.application.submission.confirmation.insetLink.togc                = cyfrif
 pages.application.submission.confirmation.insetLink.togc.3pt            = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
 pages.application.submission.confirmation.list.software.togc            = Dylech aros nes i ni gadarnhau eich cofrestriad TAW cyn i chi gael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
 pages.application.submission.confirmation.list.software.togc.3pt        = Dylai’r busnes aros nes i’w gofrestriad TAW gael ei gadarnhau cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
+
+# Section - "What happens next" - New
+# Para1
+pages.application.submission.confirmation.list.decisionDoc.post.agent           =
+pages.application.submission.confirmation.list.decisionDoc.post.individual      =
+pages.application.submission.confirmation.list.decisionDoc.digital.agent        =
+pages.application.submission.confirmation.list.decisionDoc.digital.individual   =
+
+# Para2
+pages.application.submission.confirmation.list.software.post.agent               =
+pages.application.submission.confirmation.list.software.post.agent.vatGroup      =
+pages.application.submission.confirmation.list.software.post.individual          =
+pages.application.submission.confirmation.list.software.post.individual.vatGroup =
+pages.application.submission.confirmation.list.software.digital.agent               =
+pages.application.submission.confirmation.list.software.digital.individual          =
+pages.application.submission.confirmation.list.software.digital.individual.vatGroup =
 
 # Progress Saved Page
 pages.application.progress.saved.heading                            = Cedwir eich cais am 7 diwrnod
