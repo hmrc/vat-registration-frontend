@@ -322,5 +322,5 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val maxObiLimit: Int = servicesConfig.getInt("obiMaxLimit")
 
   def isTTMayJunJourneyEnabled: Boolean = isEnabled(SubmitDeadline)
-  def isNewVRSConfirmJourneyEnabled: Boolean = isEnabled(NewVRSApplConfirmJourney)
+  def isNewVRSApplConfirmJourneyEnabled: Boolean = isEnabled(NewVRSApplConfirmJourney)
 }

@@ -109,7 +109,7 @@ object FeatureSwitch {
   }
 
   case object NewVRSApplConfirmJourney extends FeatureSwitch {
-    val name: String = "feature-switch.newVRSConfirmationJourney"
+    val name: String = "feature-switch.newVRSApplConfirmationJourney"
     val displayText: String = "New VRS Application Confirmation Journey"
   }
 

@@ -52,7 +52,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
           acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
           prefix = acknowledgementRef.take(prefixLength)
           groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
-          formattedRef = if(appConfig.isNewVRSConfirmJourneyEnabled) { groups mkString separator } else { prefix +: groups mkString separator }
+          formattedRef = if(appConfig.isNewVRSApplConfirmJourneyEnabled) { groups mkString separator } else { prefix +: groups mkString separator }
           isTransactor <- vatRegistrationService.isTransactor
 
           optEmail <- if (isTransactor) {
@@ -63,7 +63,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
           eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
           email = optEmail.getOrElse(throw new InternalServerException("[ApplicationSubmissionController] missing user email"))
         }
-        yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor, eligibilitySubmissionData.registrationReason))
+        yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor, eligibilitySubmissionData.registrationReason, appConfig.isNewVRSApplConfirmJourneyEnabled))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {

@@ -42,7 +42,8 @@
         attachmentsListExists: Boolean,
         email: String,
         isTransactor: Boolean,
-        registrationReason: RegistrationReason
+        registrationReason: RegistrationReason,
+        isNewApplConfirmJourneyEnabled: Boolean = false
 )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("pages.application.submission.confirmation.heading")))) {
@@ -54,14 +55,14 @@
     ))
 
     @** Inset Section for clarity on VAT application number vs. VAT registration number **@
-    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+    @if(isNewApplConfirmJourneyEnabled){
         @govukInsetText(InsetText(
             content = HtmlContent(insetTextAboutApplRef)
         ))
     }
 
     @** info to email **@
-    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+    @if(isNewApplConfirmJourneyEnabled){
         @p{@messages("pages.application.submission.confirmation.emailedTo.new", email) }
     } else {
         @p{@messages("pages.application.submission.confirmation.emailedTo", email) }
@@ -71,7 +72,7 @@
     @** Section: What you must do now  ** --> Only for POST **@
     @if(isAttachmentMethodPost){
         @h2(messages("pages.application.submission.confirmation.doc.heading"))
-        @if(appConfig.isNewVRSConfirmJourneyEnabled){
+        @if(isNewApplConfirmJourneyEnabled){
             @guidancePostNew
         } else {
             @guidancePost
@@ -79,7 +80,7 @@
     }
 
     @** Section: Postal address ** --> Only for POST **@
-    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+    @if(isNewApplConfirmJourneyEnabled){
         @if(isAttachmentMethodPost) {
             @postalAddressContent
         }
@@ -90,7 +91,7 @@
     @{whatHappensNextContent}
 
     @** Last-Section: Trading before you are registered for VAT **@
-    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+    @if(isNewApplConfirmJourneyEnabled){
         @tradingDetail
     } else {
         @govukInsetText(InsetText(
@@ -106,7 +107,7 @@
 @** Common Functions **@
 
 @greenPanelContent = {
-    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+    @if(isNewApplConfirmJourneyEnabled){
         @messages("pages.application.submission.confirmation.applNumber")<br/>@strong(Html(acknowledgementReference))<br/><br/>
         @if(isTransactor){
             @messages(s"pages.application.submission.confirmation.info.agent$attachMethod")
@@ -124,7 +125,6 @@
 
 @guidancePostNew = {
     @p{
-        @println(s"Usertype:$userType")
         @messages(s"pages.application.submission.confirmation.doc.para1$userType")
         @link(controllers.attachments.routes.PostalCoverSheetController.show.url, "pages.application.submission.confirmation.doc.linkPost.new", isExternal = true).
     }
@@ -150,7 +150,7 @@
 }
 
 @whatHappensNextContent = {
-    @if(appConfig.isNewVRSConfirmJourneyEnabled){
+    @if(isNewApplConfirmJourneyEnabled){
         @p{@messages(s"pages.application.submission.confirmation.list.decisionDoc$attachMethod$userType")}
         @p{@messages(s"pages.application.submission.confirmation.list.software$attachMethod$userType$vatGroupType")}
     } else {
@@ -248,10 +248,3 @@
         case _ => false
     }
 }
-
-
-@println(s"NewVRSConfirmJourney: ${appConfig.isNewVRSConfirmJourneyEnabled}")
-@println(s"Agent :  $isTransactor")
-@println(s"Postal: $attachmentsListExists")
-@println(s"attachmentMethod: $attachmentMethod")
-@println(s"isAttachmentMethodPost: $isAttachmentMethodPost")
