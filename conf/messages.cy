@@ -718,13 +718,13 @@ pages.application.submission.confirmation.heading3                              
 pages.application.submission.confirmation.trading.p1                            = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF.
 pages.application.submission.confirmation.trading.howToRegisterLink             = Ewch i’r dudalen <a href="{0}" target="_blank">‘Cofrestru ar gyfer TAW’</a> i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
 pages.application.submission.confirmation.trading.p1.post.individual            = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF.
-pages.application.submission.confirmation.trading.p1.digital.individual.togc    = AWAITING FOR WELSH
+pages.application.submission.confirmation.trading.p1.digital.individual.togc    = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF. Ewch i’r dudalen <a href="{0}" target="_blank">‘Cofrestru ar gyfer TAW’</a> i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
 pages.application.submission.confirmation.trading.p1.digital.individual         = Ni allwch gynnwys TAW ar eich anfonebau hyd nes eich bod yn cael eich rhif cofrestru TAW, ond gallwch godi’ch prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol i dalu CThEF.
-pages.application.submission.confirmation.trading.p2.togc                       = AWAITING FOR WELSH
+pages.application.submission.confirmation.trading.p2.togc                       = Os yw cwmni, neu ran o gwmni, wedi cael ei werthu ac yn cael ei <a href="{0}" target="_blank">drin fel trosglwyddiad o fusnes byw (TOGC)</a> yna, does dim TAW yn daladwy, yn dibynnu ar amodau penodol.
 
 # Section - "info to mail"
 pages.application.submission.confirmation.emailedTo                 = Rydym wedi anfon e-bost at {0} sy’n cynnwys yr wybodaeth ar y dudalen hon.
-pages.application.submission.confirmation.emailedTo.new             = AWAITING FOR WELSH.
+pages.application.submission.confirmation.emailedTo.new             = Mae’r wybodaeth ar y dudalen hon wedi’i anfon at {0}.
 
 # Section - "What you must do now" - as-is
 pages.application.submission.confirmation.doc.heading               = Yr hyn y mae’n rhaid i chi ei wneud nawr
@@ -733,19 +733,19 @@ pages.application.submission.confirmation.doc.linkPost              = postiwch l
 pages.application.submission.confirmation.doc.linkPost.3pt          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom
 
 # Section - "What you must do now" - new-Agent/Individual
-pages.application.submission.confirmation.doc.para1.agent           =
-pages.application.submission.confirmation.doc.para1.individual      =
-pages.application.submission.confirmation.doc.linkPost.new          =
-pages.application.submission.confirmation.doc.para2.agent           =
-pages.application.submission.confirmation.doc.para2.individual      =
+pages.application.submission.confirmation.doc.para1.agent           = Rydym wedi cael ffurflen gais ar-lein y busnes. Er mwyn i ni allu prosesu’r cais,
+pages.application.submission.confirmation.doc.para1.individual      = Rydym wedi cael ffurflen gais ar-lein y busnes. Er mwyn i ni allu prosesu’r cais,
+pages.application.submission.confirmation.doc.linkPost.new          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom.
+pages.application.submission.confirmation.doc.para2.agent           = I osgoi oedi wrth wneud y cais, anfonwch y dogfennau busnes atom gan ddefnyddio’r cyfeiriad post sydd ar y sgrin hon cyn gynted â phosibl.
+pages.application.submission.confirmation.doc.para2.individual      = I osgoi oedi wrth wneud y cais, anfonwch y dogfennau busnes atom gan ddefnyddio’r cyfeiriad post sydd ar y sgrin hon cyn gynted â phosibl.
 
 # Section - "Postal address"
-pages.application.submission.confirmation.postal.heading            =
-pages.application.submission.confirmation.postal.p1                 =
-pages.application.submission.confirmation.postal.p2                 =
-pages.application.submission.confirmation.postal.p3                 =
-pages.application.submission.confirmation.postal.p4                 =
-pages.application.submission.confirmation.postal.p5                 =
+pages.application.submission.confirmation.postal.heading            = Cyfeiriad post
+pages.application.submission.confirmation.postal.p1                 = Ceisiadau am Gofrestriad TAW/VAT Registration Applications
+pages.application.submission.confirmation.postal.p2                 = BT VAT
+pages.application.submission.confirmation.postal.p3                 = Cyllid a Thollau EF/HM Revenue and Customs
+pages.application.submission.confirmation.postal.p4                 = BX9 1WR
+pages.application.submission.confirmation.postal.p5                 = Deyrnas Unedig
 
 # Section - "What happens next" - As-is
 pages.application.submission.confirmation.heading2                  = Yr hyn sy’n digwydd nesaf
@@ -773,19 +773,19 @@ pages.application.submission.confirmation.list.software.togc.3pt        = Dylai�
 
 # Section - "What happens next" - New
 # Para1
-pages.application.submission.confirmation.list.decisionDoc.post.agent           =
-pages.application.submission.confirmation.list.decisionDoc.post.individual      =
-pages.application.submission.confirmation.list.decisionDoc.digital.agent        =
-pages.application.submission.confirmation.list.decisionDoc.digital.individual   =
+pages.application.submission.confirmation.list.decisionDoc.post.agent           = Ar ôl i ni gael copïau o ddogfennau’r busnes, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais cyn pen 40 diwrnod gwaith.
+pages.application.submission.confirmation.list.decisionDoc.post.individual      = Ar ôl i’ch dogfennau ddod i law, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais cyn pen 40 diwrnod gwaith.
+pages.application.submission.confirmation.list.decisionDoc.digital.agent        = Ar ôl i’ch dogfennau ddod i law, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais cyn pen 40 diwrnod gwaith.
+pages.application.submission.confirmation.list.decisionDoc.digital.individual   = Ar ôl i’ch dogfennau ddod i law, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais cyn pen 40 diwrnod gwaith.
 
 # Para2
-pages.application.submission.confirmation.list.software.post.agent               =
-pages.application.submission.confirmation.list.software.post.agent.vatGroup      =
-pages.application.submission.confirmation.list.software.post.individual          =
-pages.application.submission.confirmation.list.software.post.individual.vatGroup =
-pages.application.submission.confirmation.list.software.digital.agent               =
-pages.application.submission.confirmation.list.software.digital.individual          =
-pages.application.submission.confirmation.list.software.digital.individual.vatGroup =
+pages.application.submission.confirmation.list.software.post.agent               = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli cofnodion TAW y busnes na chyflwyno Ffurflenni TAW cyn i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.post.agent.vatGroup      = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.post.individual          = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli’ch cofnodion TAW na chyflwyno Ffurflenni TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.post.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.digital.agent               = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli cofnodion TAW y busnes na chyflwyno Ffurflenni TAW cyn i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.digital.individual          = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli’ch cofnodion TAW na chyflwyno Ffurflenni TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.digital.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 
 # Progress Saved Page
 pages.application.progress.saved.heading                            = Cedwir eich cais am 7 diwrnod
