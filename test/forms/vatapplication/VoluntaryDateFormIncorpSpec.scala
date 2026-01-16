@@ -66,9 +66,9 @@ class VoluntaryDateFormIncorpSpec extends VatRegSpec {
         "value"  -> "specific_date",
         "startDate.day"   -> "15",
         "startDate.month" -> "1",
-        "startDate.year"  -> "2022"
+        "startDate.year"  -> "2024"
       )
-      form.bind(data).get mustBe((specific_date, Some(LocalDate.of(2022, 1, 15))))
+      form.bind(data).get mustBe((specific_date, Some(LocalDate.of(2024, 1, 15))))
     }
 
     "Fail to bind successfully for no selection" in {
