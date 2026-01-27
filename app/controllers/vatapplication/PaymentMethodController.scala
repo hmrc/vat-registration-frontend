@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.PaymentMethodForm
 import models.api.vatapplication.AASDetails
-import models.api.{NETP, NonUkNonEstablished}
+import models.api.{Individual, LtdLiabilityPartnership, NonUkNonEstablished, Partnership, Trust, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService, VatApplicationService, VatRegistrationService}
 import views.html.vatapplication.AasPaymentMethod
@@ -59,7 +59,7 @@ class PaymentMethodController @Inject()(val authConnector: AuthClientConnector,
             vatRegistrationService.getEligibilitySubmissionData.flatMap { eligibilityData =>
               vatApplicationService.saveVatApplication(paymentMethod).map { _ =>
                 eligibilityData.partyType match {
-                  case NETP | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
+                  case Individual | Partnership | LtdLiabilityPartnership | Trust | UkCompany | NonUkNonEstablished if !eligibilityData.fixedEstablishmentInManOrUk =>
                     Redirect(controllers.vatapplication.routes.TaxRepController.show)
                   case _ =>
                     Redirect(controllers.routes.TaskListController.show)
