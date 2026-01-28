@@ -18,7 +18,7 @@ package controllers.vatapplication
 
 import forms.PaymentMethodForm._
 import itutil.ControllerISpec
-import models.api.{EligibilitySubmissionData, NETP}
+import models.api.{EligibilitySubmissionData, Individual, NETP}
 import models.api.vatapplication._
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
@@ -130,7 +130,7 @@ class PaymentMethodControllerISpec extends ControllerISpec {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[EligibilitySubmissionData](
-          Some(testEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)), testRegId
+          Some(testEligibilitySubmissionData.copy(partyType = Individual, fixedEstablishmentInManOrUk = false)), testRegId
         )
         .registrationApi.replaceSection(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS)))))
         .registrationApi.getSection[VatApplication](Some(testFullVatApplication.copy(annualAccountingDetails = Some(AASDetails(Some(MonthlyPayment), Some(BACS))))))
