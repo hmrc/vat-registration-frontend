@@ -85,6 +85,8 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
         }
+
+        verifyAudit()
       }
     }
 

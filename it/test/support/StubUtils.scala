@@ -125,7 +125,11 @@ trait StubUtils {
               )
             )
           )
-        )
+        ),
+        "optionalCredentials" ->
+          Json.obj(
+            "providerId" -> "12345-credId",
+            "providerType" -> "GovernmmentGateway")
       )
 
     def isAuthorised(arn: Option[String] = None)(implicit requestHolder: RequestHolder): PreconditionBuilder = {

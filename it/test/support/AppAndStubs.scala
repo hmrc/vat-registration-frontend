@@ -37,6 +37,7 @@ import scala.language.postfixOps
 import java.util.Base64
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import com.github.tomakehurst.wiremock.client.WireMock._
 
 trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with IntegrationPatience with PatienceConfiguration {
   me: Suite with TestSuite =>
@@ -62,6 +63,16 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
       val mappingAsJson = mapping.map { case (id, value) => id -> Json.toJson(value) }
       customAwait(repo.upsert(CacheMap(sessionId, mappingAsJson)))(defaultTimeout)
     }
+
+    def verifyPost(uri: String, optBody: Option[String] = None): Unit = {
+      val uriMapping = postRequestedFor(urlEqualTo(uri))
+      val postRequest = optBody match {
+        case Some(body) => uriMapping.withRequestBody(equalTo(body))
+        case None => uriMapping
+      }
+      verify(postRequest)
+    }
+    def verifyAudit(): Unit = verifyPost("/write/audit")
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
