@@ -28,6 +28,7 @@ object AppDependencies {
   private val catsVersion = "2.10.0"
   private val playJsonJodaVersion = "3.0.2"
   private val playHmrcFrontendVersion = "12.10.0"
+  private val enumVersion = "1.9.0"
 
 
   val compileDependencies: Seq[ModuleID] = Seq(
@@ -38,15 +39,17 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "http-caching-client-play-30"            % cachingClientVersion,
     "uk.gov.hmrc"       %% "play-conditional-form-mapping-play-30"  % formMappingVersion,
     "org.typelevel"     %% "cats-core"                              % catsVersion,
+    "com.beachape"      %% "enumeratum-play"                        % enumVersion,
+    "com.beachape"      %% "enumeratum-play-json"                   % enumVersion,
     "org.playframework" %% "play-json-joda"                         % playJsonJodaVersion,
     "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30"             % playHmrcFrontendVersion
   )
 
   val testDependencies: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc.mongo"     %% "hmrc-mongo-test-play-30"  % hmrcMongoVersion,
-    "org.scalamock"         %% "scalamock"                % "6.0.0",
-    "com.vladsch.flexmark"  % "flexmark-all"              % "0.64.8",
-    "uk.gov.hmrc"           %% "bootstrap-test-play-30"   % bootstrapVersion,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-30" % hmrcMongoVersion,
+    "org.scalamock" %% "scalamock" % "6.0.0",
+    "com.vladsch.flexmark" % "flexmark-all" % "0.64.8",
+    "uk.gov.hmrc" %% "bootstrap-test-play-30" % bootstrapVersion,
   ).map(_ % Test)
 
   def apply(): Seq[ModuleID] = compileDependencies ++ testDependencies
