@@ -14,27 +14,13 @@
  * limitations under the License.
  */
 
-package bars.model.response
+package models.api.bars
 
-import enumeratum._
-import enumeratum.PlayInsensitiveJsonEnum
+sealed trait BarsTypeOfBankAccount
 
-sealed trait BarsAssessmentType extends EnumEntry with EnumEntry.Uncapitalised
+object BarsTypesOfBankAccount {
 
-object BarsAssessmentType
-  extends Enum[BarsAssessmentType] with PlayInsensitiveJsonEnum[BarsAssessmentType] {
+  case object Personal extends BarsTypeOfBankAccount
+  case object Business extends BarsTypeOfBankAccount
 
-  val values = findValues
-
-  case object Yes extends BarsAssessmentType
-
-  case object No extends BarsAssessmentType
-
-  case object Error extends BarsAssessmentType
-
-  case object Indeterminate extends BarsAssessmentType
-
-  case object Inapplicable extends BarsAssessmentType
-
-  case object Partial extends BarsAssessmentType
 }

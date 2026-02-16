@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.request
 
-final case class BarsAddress(
-  lines:    List[String],   // One to four lines; cumulative length must be between 1 and 140 characters.
-  town:     Option[String], // Must be between 1 and 35 characters long
-  postcode: Option[String] // Must be between 5 and 8 characters long, all uppercase. The internal space character can be omitted.
+import play.api.libs.json.{Json, OFormat}
+
+final case class BarsVerifyBusinessRequest(
+  account:  BarsBankAccount,
+  business: BarsBusiness
 )
+
+object BarsVerifyBusinessRequest {
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val format: OFormat[BarsVerifyBusinessRequest] = Json.format
+
+}

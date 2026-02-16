@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package bars.model.response
+package models.api.bars.response
 
 import java.time.Instant
 
@@ -22,8 +22,7 @@ sealed trait BarsError {
   val barsResponse: BarsResponse
 }
 
-sealed trait BarsValidateError       extends BarsError
-sealed trait SortCodeOnDenyListError extends BarsValidateError
+sealed trait SortCodeOnDenyListError extends BarsError
 sealed trait BarsVerifyError         extends BarsError
 
 final case class SortCodeOnDenyListErrorResponse(barsResponse: SortCodeOnDenyList) extends SortCodeOnDenyListError

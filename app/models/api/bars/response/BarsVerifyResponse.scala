@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package bars.model.response
+package models.api.bars.response
 
 import play.api.libs.json.{Json, OFormat}
 

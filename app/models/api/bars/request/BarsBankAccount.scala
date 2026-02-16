@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.request
 
+import org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{Json, OFormat}
 
-final case class BarsVerifyBusinessRequest(
-  account:  BarsBankAccount,
-  business: BarsBusiness
+final case class BarsBankAccount(
+  sortCode:      String,
+  accountNumber: String
 )
 
-object BarsVerifyBusinessRequest {
+object BarsBankAccount {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsVerifyBusinessRequest] = Json.format
+  implicit val format: OFormat[BarsBankAccount] = Json.format
 
+  /** * frontend validation should probably be responsible for ensuring sortCode and accountNumber are of the correct
+    * form (and accepted by BARs), but for some services this isn't the case
+    */
+  def normalise(sortCode: String, accountNumber: String): BarsBankAccount =
+    BarsBankAccount(sortCode.filter(_.isDigit), leftPad(accountNumber))
+
+  private def leftPad(accountNumber: String): String =
+    StringUtils.leftPad(accountNumber, 8, "0")
 }

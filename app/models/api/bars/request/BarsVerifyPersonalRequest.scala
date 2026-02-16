@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.request
 
 import play.api.libs.json.{Json, OFormat}
 

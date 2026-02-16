@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.request
 
-import org.apache.commons.lang3.StringUtils
 import play.api.libs.json.{Json, OFormat}
 
-final case class BarsBankAccount(
-  sortCode:      String,
-  accountNumber: String
-)
+final case class BarsSubject(
+  title:     Option[String], // e.g. "Mr" etc; must >= 2 character and <= 35 characters long
+  name:      Option[String], // Must be between 1 and 70 characters long
+  firstName: Option[String], // Must be between 1 and 35 characters long
+  lastName:  Option[String], // Must be between 1 and 35 characters long
+  dob:       Option[String]  // date of birth: ISO-8601 YYYY-MM-DD
+) {
+  require(
+    (name.isEmpty && firstName.isDefined && lastName.isDefined) ||
+      (name.isDefined && firstName.isEmpty && lastName.isEmpty)
+  )
+}
 
-object BarsBankAccount {
+object BarsSubject {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsBankAccount] = Json.format
+  implicit val format: OFormat[BarsSubject] = Json.format
 
-  /** * frontend validation should probably be responsible for ensuring sortCode and accountNumber are of the correct
-    * form (and accepted by BARs), but for some services this isn't the case
-    */
-  def normalise(sortCode: String, accountNumber: String): BarsBankAccount =
-    BarsBankAccount(sortCode.filter(_.isDigit), leftPad(accountNumber))
-
-  private def leftPad(accountNumber: String): String =
-    StringUtils.leftPad(accountNumber, 8, "0")
 }

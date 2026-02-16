@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.request
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class BarsSubject(
-  title:     Option[String], // e.g. "Mr" etc; must >= 2 character and <= 35 characters long
-  name:      Option[String], // Must be between 1 and 70 characters long
-  firstName: Option[String], // Must be between 1 and 35 characters long
-  lastName:  Option[String], // Must be between 1 and 35 characters long
-  dob:       Option[String]  // date of birth: ISO-8601 YYYY-MM-DD
-) {
-  require(
-    (name.isEmpty && firstName.isDefined && lastName.isDefined) ||
-      (name.isDefined && firstName.isEmpty && lastName.isEmpty)
-  )
-}
+final case class BarsBusiness(
+  companyName: String // Must be between 1 and 70 characters long
+)
 
-object BarsSubject {
+object BarsBusiness {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsSubject] = Json.format
+  implicit val format: OFormat[BarsBusiness] = Json.format
 
 }

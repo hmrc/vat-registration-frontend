@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package bars.model.response
+package models.api.bars.response
 
-import bars.model.response.BarsAssessmentType._
+import models.api.bars.response.BarsAssessmentType._
 
 sealed trait BarsResponse
 
 final case class VerifyResponse(barsVerifyResponse: BarsVerifyResponse) extends BarsResponse
 
-final case class SortCodeOnDenyList(error: BarsError) extends BarsResponse
+final case class SortCodeOnDenyList(error: BarsErrorResponse) extends BarsResponse
 
 
 object VerifyResponse {
-
-  import cats.syntax.eq._
 
   object verifySuccess {
     def unapply(response: VerifyResponse): Boolean = {

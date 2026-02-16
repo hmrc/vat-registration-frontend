@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.request
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class BarsBusiness(
-  companyName: String // Must be between 1 and 70 characters long
-)
+final case class BarsValidateRequest(account: BarsBankAccount)
 
-object BarsBusiness {
-
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsBusiness] = Json.format
-
+object BarsValidateRequest {
+  implicit val format: OFormat[BarsValidateRequest] = Json.format
 }

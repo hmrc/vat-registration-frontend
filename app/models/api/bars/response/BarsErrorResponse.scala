@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package bars.model.request
+package models.api.bars.response
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class BarsValidateRequest(account: BarsBankAccount)
+final case class BarsErrorResponse(code: String, desc: String)
 
-object BarsValidateRequest {
-  implicit val format: OFormat[BarsValidateRequest] = Json.format
+object BarsErrorResponse {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val format: OFormat[BarsErrorResponse] = Json.format
 }
+

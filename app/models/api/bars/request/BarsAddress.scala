@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package bars.model.response
+package models.api.bars.request
 
-case class UpstreamBarsException(
-                                  status: Int,
-                                  errorCode: Option[String],
-                                  rawMessage: String
-                                ) extends Exception(s"BARS error: status=$status, code=$errorCode, message=$rawMessage")
-
+final case class BarsAddress(
+  lines:    List[String],   // One to four lines; cumulative length must be between 1 and 140 characters.
+  town:     Option[String], // Must be between 1 and 35 characters long
+  postcode: Option[String] // Must be between 5 and 8 characters long, all uppercase. The internal space character can be omitted.
+)
