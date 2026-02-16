@@ -16,13 +16,9 @@
 
 package bars.model.response
 
-import play.api.libs.json.{Json, OFormat}
+case class UpstreamBarsException(
+                                  status: Int,
+                                  errorCode: Option[String],
+                                  rawMessage: String
+                                ) extends Exception(s"BARS error: status=$status, code=$errorCode, message=$rawMessage")
 
-final case class BarsErrorResponse(code: String, desc: String)
-
-object BarsErrorResponse {
-
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsErrorResponse] = Json.format
-
-}
