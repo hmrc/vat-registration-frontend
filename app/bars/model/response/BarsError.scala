@@ -26,11 +26,6 @@ sealed trait BarsValidateError       extends BarsError
 sealed trait SortCodeOnDenyListError extends BarsValidateError
 sealed trait BarsVerifyError         extends BarsError
 
-final case class AccountNumberNotWellFormattedValidateResponse(barsResponse: ValidateResponse) extends BarsValidateError
-final case class SortCodeNotPresentOnEiscdValidateResponse(barsResponse: ValidateResponse)     extends BarsValidateError
-final case class SortCodeDoesNotSupportDirectDebitValidateResponse(barsResponse: ValidateResponse)
-    extends BarsValidateError
-
 final case class SortCodeOnDenyListErrorResponse(barsResponse: SortCodeOnDenyList) extends SortCodeOnDenyListError
 
 final case class AccountNumberNotWellFormatted(barsResponse: BarsResponse)           extends BarsVerifyError
