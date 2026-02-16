@@ -125,6 +125,29 @@ trait StubUtils {
               )
             )
           )
+        ),
+        "optionalCredentials" ->
+          Json.obj(
+            "providerId" -> "12345-credId",
+            "providerType" -> "GovernmmentGateway")
+      )
+
+    def authoriseDataWithoutCred(arn: Option[String]): JsValue =
+      Json.obj(
+        "internalId" -> "1",
+        "affinityGroup" -> Organisation.toString,
+        "allEnrolments" -> arn.fold(Json.arr())(ref =>
+          Json.arr(
+            Json.obj(
+              "key" -> "HMRC-AS-AGENT",
+              "identifiers" -> Json.arr(
+                Json.obj(
+                  "key" -> "AgentReferenceNumber",
+                  "value" -> ref
+                )
+              )
+            )
+          )
         )
       )
 
@@ -134,6 +157,16 @@ trait StubUtils {
       stubFor(
         post(urlPathEqualTo("/auth/authorise"))
           .willReturn(ok(authoriseData(arn).toString())))
+
+      builder
+    }
+
+    def isAuthorisedWithoutCredentials(arn: Option[String] = None)(implicit requestHolder: RequestHolder): PreconditionBuilder = {
+      requestHolder.request = SessionCookieBaker.requestWithSession(requestHolder.request, "anyUserId")
+
+      stubFor(
+        post(urlPathEqualTo("/auth/authorise"))
+          .willReturn(ok(authoriseDataWithoutCred(arn).toString())))
 
       builder
     }

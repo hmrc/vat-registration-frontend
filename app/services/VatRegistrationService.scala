@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,25 @@ import models._
 import models.api._
 import models.error.MissingAnswerException
 import play.api.i18n.MessagesApi
-import play.api.libs.json.{Format, Reads}
+import play.api.libs.json.{Format, Json, Reads}
 import play.api.mvc.Request
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 
 @Singleton
 class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector,
                                        registrationApiConnector: RegistrationApiConnector,
-                                       val sessionService: SessionService
-                                      )(implicit ec: ExecutionContext) {
+                                       val sessionService: SessionService,
+                                       val auditConnector: AuditConnector,
+                                       val authConnector: AuthConnector
+                                      ) (implicit ec: ExecutionContext) extends AuthorisedFunctions {
 
   val missingRegReasonSection = "tasklist.eligibilty.regReason"
 
@@ -97,4 +102,18 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
 
   def isTransactor(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[Boolean] =
     getEligibilitySubmissionData.map(_.isTransactor)
+
+  def raiseAuditEvent(implicit hc: HeaderCarrier, profile: CurrentProfile): Future[Unit] = {
+    logger.info("Raising an explicit audit event for StartRegistration!")
+    authorised().retrieve(Retrievals.credentials) {
+      case Some(credential) =>
+        val auditEventDetail = Json.obj(
+          "authProviderId" -> credential.providerId,
+          "journeyId" -> profile.registrationId
+        )
+        Future.successful(auditConnector.sendExplicitAudit("StartRegistration", auditEventDetail))
+      case _ =>
+        throw new InternalServerException("Missing credentials for startRegistration auditing")
+    }
+  }
 }

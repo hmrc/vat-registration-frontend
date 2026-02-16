@@ -85,6 +85,22 @@ class ApplicationReferenceControllerISpec extends ControllerISpec
           res.status mustBe SEE_OTHER
           res.header(HeaderNames.LOCATION) mustBe Some(routes.HonestyDeclarationController.show.url)
         }
+        verifyAudit()
+      }
+    }
+
+    "submitted without auth.credentials" must {
+      "redirect to INTERNAL_SERVER_ERROR" in new Setup {
+        implicit val key: ApiKey[String] = applicationReferenceKey
+        given()
+          .user.isAuthorisedWithoutCredentials()
+          .registrationApi.replaceSection(testAppRef)
+
+        val response: Future[WSResponse] = buildClient(url).post(Map("value" -> testAppRef))
+
+        whenReady(response) { res =>
+          res.status mustBe INTERNAL_SERVER_ERROR
+        }
       }
     }
 
