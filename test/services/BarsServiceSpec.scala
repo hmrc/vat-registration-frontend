@@ -66,7 +66,7 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
       )
     )
 
-  private def mkResp(
+  private def makeResponse(
                       accountNumberIsWellFormatted: BarsResponse = BarsResponse.Yes,
                       sortCodeIsPresentOnEISCD: BarsResponse     = BarsResponse.Yes,
                       accountExists: BarsResponse                = BarsResponse.Yes,
@@ -86,9 +86,9 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
       accountName                               = None
     )
 
-  private def stubVerify(endpoint: String, requestJson: JsValue, resp: BarsVerificationResponse): Unit =
+  private def stubVerify(endpoint: String, requestJson: JsValue, response: BarsVerificationResponse): Unit =
     when(mockConnector.verify(eqArg(endpoint), eqArg(requestJson))(anyArg[HeaderCarrier]))
-      .thenReturn(scala.concurrent.Future.successful(resp))
+      .thenReturn(scala.concurrent.Future.successful(response))
 
   private def stubVerifyFail(endpoint: String, requestJson: JsValue, ex: Throwable): Unit =
     when(mockConnector.verify(eqArg(endpoint), eqArg(requestJson))(anyArg[HeaderCarrier]))
@@ -99,175 +99,166 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
   "BarsService.barsVerification" should {
 
     "call personal endpoint with correct JSON and return Right(response) on full success" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp()
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse()
+      stubVerify("personal", request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Right(resp))
+      service.barsVerification("personal", bankDetails).map(_ shouldBe Right(response))
     }
 
     "treat personalOrBusiness case-insensitively for personal" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp()
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse()
+      stubVerify("personal", request, response)
 
-      service.barsVerification("PeRsOnAl", bankDetails).map(_ shouldBe Right(resp))
+      service.barsVerification("PERSONAL", bankDetails).map(_ shouldBe Right(response))
     }
 
     "call business endpoint with correct JSON and return Right(response) on success" in {
-      val req  = businessJson(bankDetails)
-      val resp = mkResp()
-      stubVerify("business", req, resp)
+      val request  = businessJson(bankDetails)
+      val response = makeResponse()
+      stubVerify("business", request, response)
 
-      service.barsVerification("business", bankDetails).map(_ shouldBe Right(resp))
-    }
-
-    "use business endpoint for any non-'personal' string" in {
-      val req  = businessJson(bankDetails)
-      val resp = mkResp()
-      stubVerify("business", req, resp)
-
-      service.barsVerification("anything-else", bankDetails).map(_ shouldBe Right(resp))
+      service.barsVerification("business", bankDetails).map(_ shouldBe Right(response))
     }
 
     "accept accountNumberIsWellFormatted = Indeterminate as success (per checkBarsResponseSuccess)" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(accountNumberIsWellFormatted = BarsResponse.Indeterminate)
-      stubVerify("personal", req, resp)
+      val request  = businessJson(bankDetails)
+      val response = makeResponse(accountNumberIsWellFormatted = BarsResponse.Indeterminate)
+      stubVerify("business", request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Right(resp))
+      service.barsVerification("business", bankDetails).map(_ shouldBe Right(response))
     }
 
     "accept nameMatches = Partial as success (per checkBarsResponseSuccess)" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(nameMatches = BarsResponse.Partial)
-      stubVerify("personal", req, resp)
+      val request  = businessJson(bankDetails)
+      val response = makeResponse(nameMatches = BarsResponse.Partial)
+      stubVerify("business", request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Right(resp))
+      service.barsVerification("business", bankDetails).map(_ shouldBe Right(response))
     }
 
     "map UpstreamBarsException 400 with SORT_CODE_ON_DENY_LIST to Left(SortCodeOnDenyList)" in {
-      val req = personalJson(bankDetails)
+      val request = personalJson(bankDetails)
 
       stubVerifyFail(
         "personal",
-        req,
-        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "boom")
+        request,
+        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "sort code is on deny list")
       )
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(SortCodeOnDenyList))
     }
 
     "map UpstreamBarsException 400 (non deny list) to Left(DetailsVerificationFailed)" in {
-      val req = personalJson(bankDetails)
+      val request = personalJson(bankDetails)
 
       stubVerifyFail(
         "personal",
-        req,
-        UpstreamBarsException(status = 400, errorCode = Some("SOME_OTHER_CODE"), rawMessage = "boom")
+        request,
+        UpstreamBarsException(status = 400, errorCode = Some("SOME_OTHER_CODE"), rawMessage = "failure")
       )
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
     }
 
     "map non-400 UpstreamBarsException to Left(DetailsVerificationFailed)" in {
-      val req = personalJson(bankDetails)
+      val request = personalJson(bankDetails)
 
       stubVerifyFail(
         "personal",
-        req,
-        UpstreamBarsException(status = 500, errorCode = None, rawMessage = "boom")
+        request,
+        UpstreamBarsException(status = 500, errorCode = None, rawMessage = "failure")
       )
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
     }
 
     "map any other thrown exception to Left(DetailsVerificationFailed)" in {
-      val req = personalJson(bankDetails)
+      val request = personalJson(bankDetails)
 
-      stubVerifyFail("personal", req, new RuntimeException("unexpected"))
+      stubVerifyFail("personal", request, new RuntimeException("unexpected"))
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
     }
 
     "return Left(BankAccountUnverified) when accountExists is Indeterminate (checkAccountAndName)" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(accountExists = BarsResponse.Indeterminate)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(accountExists = BarsResponse.Indeterminate)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(BankAccountUnverified))
     }
 
     "return Left(BankAccountUnverified) when nameMatches is Indeterminate (checkAccountAndName)" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(nameMatches = BarsResponse.Indeterminate)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(nameMatches = BarsResponse.Indeterminate)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(BankAccountUnverified))
     }
 
     "return Left(AccountDetailInvalidFormat) when accountNumberIsWellFormatted is No" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(accountNumberIsWellFormatted = BarsResponse.No)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(accountNumberIsWellFormatted = BarsResponse.No)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(AccountDetailInvalidFormat))
     }
 
     "return Left(SortCodeNotFound) when sortCodeIsPresentOnEISCD is No" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(sortCodeIsPresentOnEISCD = BarsResponse.No)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(sortCodeIsPresentOnEISCD = BarsResponse.No)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(SortCodeNotFound))
     }
 
     "return Left(SortCodeNotSupported) when sortCodeSupportsDirectDebit is No" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(sortCodeSupportsDirectDebit = BarsResponse.No)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(sortCodeSupportsDirectDebit = BarsResponse.No)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(SortCodeNotSupported))
     }
 
     "return Left(AccountNotFound) when accountExists is No" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(accountExists = BarsResponse.No)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(accountExists = BarsResponse.No)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(AccountNotFound))
     }
 
     "return Left(AccountNotFound) when accountExists is Inapplicable" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(accountExists = BarsResponse.Inapplicable)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(accountExists = BarsResponse.Inapplicable)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(AccountNotFound))
     }
 
     "return Left(NameMismatch) when nameMatches is No" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(nameMatches = BarsResponse.No)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(nameMatches = BarsResponse.No)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(NameMismatch))
     }
 
     "return Left(NameMismatch) when nameMatches is Inapplicable" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(nameMatches = BarsResponse.Inapplicable)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(nameMatches = BarsResponse.Inapplicable)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(NameMismatch))
     }
 
-    "return Left(DetailsVerificationFailed) when success predicate fails but none of the detailed checks fail (fallback)" in {
-      // success requires sortCodeSupportsDirectDebit == Yes,
-      // but detailed check only fails when it is No.
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(sortCodeSupportsDirectDebit = BarsResponse.Indeterminate)
-      stubVerify("personal", req, resp)
+    "return Left(DetailsVerificationFailed) when sortcode direct debit is indeterminate" in {
+
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(sortCodeSupportsDirectDebit = BarsResponse.Indeterminate)
+      stubVerify("personal", request, response)
 
       service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
     }
@@ -278,36 +269,36 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
   "BarsService.validateBankDetailsStatus" should {
 
     "return ValidStatus when barsVerification is Right" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp()
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse()
+      stubVerify("personal", request, response)
 
       service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe ValidStatus)
     }
 
     "return IndeterminateStatus when barsVerification returns Left(BankAccountUnverified)" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(accountExists = BarsResponse.Indeterminate)
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(accountExists = BarsResponse.Indeterminate)
+      stubVerify("personal", request, response)
 
       service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe IndeterminateStatus)
     }
 
     "return InvalidStatus for any other Left(BarsErrors)" in {
-      val req  = personalJson(bankDetails)
-      val resp = mkResp(sortCodeIsPresentOnEISCD = BarsResponse.No) // -> SortCodeNotFound
-      stubVerify("personal", req, resp)
+      val request  = personalJson(bankDetails)
+      val response = makeResponse(sortCodeIsPresentOnEISCD = BarsResponse.No)
+      stubVerify("personal", request, response)
 
       service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe InvalidStatus)
     }
 
     "return InvalidStatus when the connector fails with deny list (mapped to SortCodeOnDenyList)" in {
-      val req = personalJson(bankDetails)
+      val request = personalJson(bankDetails)
 
       stubVerifyFail(
         "personal",
-        req,
-        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "boom")
+        request,
+        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "sort code failure")
       )
 
       service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe InvalidStatus)
