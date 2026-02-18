@@ -16,7 +16,6 @@
 
 package connectors
 
-import config.FrontendAppConfig
 import models.bars.{BarsVerificationResponse, UpstreamBarsException}
 import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
@@ -30,14 +29,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 case class BarsConnector @Inject() (
-                                     config: FrontendAppConfig,
+                                     config: ServicesConfig,
                                      http: HttpClientV2
                                    )(implicit ec: ExecutionContext)
   extends HttpReadsInstances
     with Logging {
+  private val barsBaseUrl: String = config.baseUrl("bars")
+
 
   def verify(endpoint: String, requestJson: JsValue)(implicit hc: HeaderCarrier): Future[BarsVerificationResponse] = {
-    val url = s"${config.verifyBankDetailsUrl(endpoint)}"
+    val url = s"$barsBaseUrl/verify/$endpoint"
 
     http
       .post(url"$url")
