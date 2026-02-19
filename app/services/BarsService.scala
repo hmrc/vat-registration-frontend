@@ -33,7 +33,6 @@ case class BarsService @Inject()(
                                   barsConnector: BarsConnector
                                 )(implicit ec: ExecutionContext) {
 
-  // --- Validation helpers ---
   private val checkAccountAndName = (accountExists: BarsResponse, nameMatches: BarsResponse) => {
     if (accountExists == BarsResponse.Indeterminate || nameMatches == BarsResponse.Indeterminate) {
       Left(BankAccountUnverified)
@@ -71,37 +70,31 @@ case class BarsService @Inject()(
       (response.nameMatches == BarsResponse.Yes || response.nameMatches == BarsResponse.Partial) &&
       response.sortCodeSupportsDirectDebit == BarsResponse.Yes
 
-  /**
-   * Calls BARS verification (personal or business) and returns:
-   * - Right(verificationResponse) on success
-   * - Left(mappedError) on failure
-   */
-  def barsVerification(
-                        personalOrBusiness: String,
+
+   private def barsVerification(
+                        bankAccountType: BankAccountType,
                         bankDetails: BankAccountDetails
                       )(implicit hc: HeaderCarrier): Future[Either[BarsErrors, BarsVerificationResponse]] = {
 
-    val endpointAndRequest: (String, JsValue) =
-      if (personalOrBusiness.toLowerCase == "personal") {
-        "personal" -> Json.toJson(
-          BarsPersonalRequest(
-            BarsAccount(bankDetails.sortCode, bankDetails.number),
-            BarsSubject(bankDetails.name)
-          )
-        )
-      } else {
-        "business" -> Json.toJson(
-          BarsBusinessRequest(
-            BarsAccount(bankDetails.sortCode, bankDetails.number),
-            BarsBusiness(bankDetails.name)
-          )
-        )
-      }
-
-    val (endpoint, requestJson) = endpointAndRequest
+     val requestJson: JsValue = bankAccountType match {
+       case BankAccountType.Personal =>
+         Json.toJson(
+           BarsPersonalRequest(
+             BarsAccount(bankDetails.sortCode, bankDetails.number),
+             BarsSubject(bankDetails.name)
+           )
+         )
+       case BankAccountType.Business =>
+         Json.toJson(
+           BarsBusinessRequest(
+             BarsAccount(bankDetails.sortCode, bankDetails.number),
+             BarsBusiness(bankDetails.name)
+           )
+         )
+     }
 
     val verificationFuture: Future[Either[BarsErrors, BarsVerificationResponse]] =
-      barsConnector.verify(endpoint, requestJson)
+      barsConnector.verify(bankAccountType, requestJson)
         .map(Right(_))
         .recover {
           case e: UpstreamBarsException if e.status == 400 && e.errorCode.contains("SORT_CODE_ON_DENY_LIST") =>
@@ -113,8 +106,7 @@ case class BarsService @Inject()(
         }
 
     verificationFuture.map {
-      case Left(err) =>
-        Left(err)
+      case Left(error) => Left(error)
 
       case Right(verificationResponse) =>
         if (checkBarsResponseSuccess(verificationResponse)) {
@@ -134,15 +126,11 @@ case class BarsService @Inject()(
     }
   }
 
-  /**
-   * This is the “drop-in replacement” shape for your controller:
-   * turns BARS verification outcome into your three statuses.
-   */
-  def validateBankDetailsStatus(
-                                 personalOrBusiness: String,
+  def verifyBankDetails(
+                                 bankaccountType: BankAccountType,
                                  bankDetails: BankAccountDetails
                                )(implicit hc: HeaderCarrier): Future[BankAccountDetailsStatus] =
-    barsVerification(personalOrBusiness, bankDetails).map {
+    barsVerification(bankaccountType, bankDetails).map {
       case Right(_) =>
         ValidStatus
 

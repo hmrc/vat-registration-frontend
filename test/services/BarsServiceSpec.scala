@@ -18,8 +18,7 @@ package services
 
 import connectors.BarsConnector
 import models.BankAccountDetails
-import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
-import models.bars.BarsErrors._
+import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
 import org.mockito.ArgumentMatchers.{any => anyArg, eq => eqArg}
 import org.mockito.Mockito.when
@@ -39,8 +38,6 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
 
   private val mockConnector: BarsConnector = mock[BarsConnector]
   private val service = BarsService(mockConnector)
-
-  // ---- fixtures ----
 
   private val bankDetails: BankAccountDetails =
     BankAccountDetails(
@@ -67,12 +64,12 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
     )
 
   private def makeResponse(
-                      accountNumberIsWellFormatted: BarsResponse = BarsResponse.Yes,
-                      sortCodeIsPresentOnEISCD: BarsResponse     = BarsResponse.Yes,
-                      accountExists: BarsResponse                = BarsResponse.Yes,
-                      nameMatches: BarsResponse                  = BarsResponse.Yes,
-                      sortCodeSupportsDirectDebit: BarsResponse  = BarsResponse.Yes
-                    ): BarsVerificationResponse =
+                            accountNumberIsWellFormatted: BarsResponse = BarsResponse.Yes,
+                            sortCodeIsPresentOnEISCD: BarsResponse     = BarsResponse.Yes,
+                            accountExists: BarsResponse                = BarsResponse.Yes,
+                            nameMatches: BarsResponse                  = BarsResponse.Yes,
+                            sortCodeSupportsDirectDebit: BarsResponse  = BarsResponse.Yes
+                          ): BarsVerificationResponse =
     BarsVerificationResponse(
       accountNumberIsWellFormatted              = accountNumberIsWellFormatted,
       sortCodeIsPresentOnEISCD                  = sortCodeIsPresentOnEISCD,
@@ -86,222 +83,174 @@ class BarsServiceSpec extends AsyncWordSpec with Matchers with MockitoSugar with
       accountName                               = None
     )
 
-  private def stubVerify(endpoint: String, requestJson: JsValue, response: BarsVerificationResponse): Unit =
-    when(mockConnector.verify(eqArg(endpoint), eqArg(requestJson))(anyArg[HeaderCarrier]))
+  private def stubVerify(accountType: BankAccountType, requestJson: JsValue, response: BarsVerificationResponse): Unit =
+    when(mockConnector.verify(eqArg(accountType), eqArg(requestJson))(anyArg[HeaderCarrier]))
       .thenReturn(scala.concurrent.Future.successful(response))
 
-  private def stubVerifyFail(endpoint: String, requestJson: JsValue, ex: Throwable): Unit =
-    when(mockConnector.verify(eqArg(endpoint), eqArg(requestJson))(anyArg[HeaderCarrier]))
+  private def stubVerifyFail(accountType: BankAccountType, requestJson: JsValue, ex: Throwable): Unit =
+    when(mockConnector.verify(eqArg(accountType), eqArg(requestJson))(anyArg[HeaderCarrier]))
       .thenReturn(scala.concurrent.Future.failed(ex))
 
-  // ---- barsVerification tests ----
+  "BarsService.verifyBankDetails" should {
 
-  "BarsService.barsVerification" should {
-
-    "call personal endpoint with correct JSON and return Right(response) on full success" in {
+    "make a verification request with a personal account with correct JSON and return ValidStatus on full success" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse()
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Right(response))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map { status =>
+        status shouldBe ValidStatus
+      }
     }
 
-    "treat personalOrBusiness case-insensitively for personal" in {
-      val request  = personalJson(bankDetails)
-      val response = makeResponse()
-      stubVerify("personal", request, response)
-
-      service.barsVerification("PERSONAL", bankDetails).map(_ shouldBe Right(response))
-    }
-
-    "call business endpoint with correct JSON and return Right(response) on success" in {
+    "make a verification request with a business account with correct SON and return ValidStatus on full success" in {
       val request  = businessJson(bankDetails)
       val response = makeResponse()
-      stubVerify("business", request, response)
+      stubVerify(BankAccountType.Business, request, response)
 
-      service.barsVerification("business", bankDetails).map(_ shouldBe Right(response))
+      service.verifyBankDetails(BankAccountType.Business, bankDetails).map { status =>
+        status shouldBe ValidStatus
+      }
     }
 
-    "accept accountNumberIsWellFormatted = Indeterminate as success (per checkBarsResponseSuccess)" in {
+    "accept accountNumberIsWellFormatted = Indeterminate as success (ValidStatus)" in {
       val request  = businessJson(bankDetails)
       val response = makeResponse(accountNumberIsWellFormatted = BarsResponse.Indeterminate)
-      stubVerify("business", request, response)
+      stubVerify(BankAccountType.Business, request, response)
 
-      service.barsVerification("business", bankDetails).map(_ shouldBe Right(response))
+      service.verifyBankDetails(BankAccountType.Business, bankDetails).map(_ shouldBe ValidStatus)
     }
 
-    "accept nameMatches = Partial as success (per checkBarsResponseSuccess)" in {
+    "accept nameMatches = Partial as success (ValidStatus)" in {
       val request  = businessJson(bankDetails)
       val response = makeResponse(nameMatches = BarsResponse.Partial)
-      stubVerify("business", request, response)
+      stubVerify(BankAccountType.Business, request, response)
 
-      service.barsVerification("business", bankDetails).map(_ shouldBe Right(response))
+      service.verifyBankDetails(BankAccountType.Business, bankDetails).map(_ shouldBe ValidStatus)
     }
 
-    "map UpstreamBarsException 400 with SORT_CODE_ON_DENY_LIST to Left(SortCodeOnDenyList)" in {
+    "return InvalidStatus when connector fails with 400 deny list" in {
       val request = personalJson(bankDetails)
 
       stubVerifyFail(
-        "personal",
+        BankAccountType.Personal,
         request,
-        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "sort code is on deny list")
+        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "deny list")
       )
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(SortCodeOnDenyList))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "map UpstreamBarsException 400 (non deny list) to Left(DetailsVerificationFailed)" in {
+    "return InvalidStatus when connector fails with 400 non deny list" in {
       val request = personalJson(bankDetails)
 
       stubVerifyFail(
-        "personal",
+        BankAccountType.Personal,
         request,
         UpstreamBarsException(status = 400, errorCode = Some("SOME_OTHER_CODE"), rawMessage = "failure")
       )
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "map non-400 UpstreamBarsException to Left(DetailsVerificationFailed)" in {
+    "return InvalidStatus when connector fails with non-400 UpstreamBarsException" in {
       val request = personalJson(bankDetails)
 
       stubVerifyFail(
-        "personal",
+        BankAccountType.Personal,
         request,
         UpstreamBarsException(status = 500, errorCode = None, rawMessage = "failure")
       )
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "map any other thrown exception to Left(DetailsVerificationFailed)" in {
+    "return InvalidStatus when connector throws any other exception" in {
       val request = personalJson(bankDetails)
 
-      stubVerifyFail("personal", request, new RuntimeException("unexpected"))
+      stubVerifyFail(BankAccountType.Personal, request, new RuntimeException("unexpected"))
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(BankAccountUnverified) when accountExists is Indeterminate (checkAccountAndName)" in {
+    "return IndeterminateStatus when accountExists is Indeterminate" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(accountExists = BarsResponse.Indeterminate)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(BankAccountUnverified))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe IndeterminateStatus)
     }
 
-    "return Left(BankAccountUnverified) when nameMatches is Indeterminate (checkAccountAndName)" in {
+    "return IndeterminateStatus when nameMatches is Indeterminate" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(nameMatches = BarsResponse.Indeterminate)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(BankAccountUnverified))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe IndeterminateStatus)
     }
 
-    "return Left(AccountDetailInvalidFormat) when accountNumberIsWellFormatted is No" in {
+    "return InvalidStatus when accountNumberIsWellFormatted is No" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(accountNumberIsWellFormatted = BarsResponse.No)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(AccountDetailInvalidFormat))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(SortCodeNotFound) when sortCodeIsPresentOnEISCD is No" in {
+    "return InvalidStatus when sortCodeIsPresentOnEISCD is No" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(sortCodeIsPresentOnEISCD = BarsResponse.No)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(SortCodeNotFound))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(SortCodeNotSupported) when sortCodeSupportsDirectDebit is No" in {
+    "return InvalidStatus when sortCodeSupportsDirectDebit is No" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(sortCodeSupportsDirectDebit = BarsResponse.No)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(SortCodeNotSupported))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(AccountNotFound) when accountExists is No" in {
+    "return InvalidStatus when accountExists is No" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(accountExists = BarsResponse.No)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(AccountNotFound))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(AccountNotFound) when accountExists is Inapplicable" in {
+    "return InvalidStatus when accountExists is Inapplicable" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(accountExists = BarsResponse.Inapplicable)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(AccountNotFound))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(NameMismatch) when nameMatches is No" in {
+    "return InvalidStatus when nameMatches is No" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(nameMatches = BarsResponse.No)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(NameMismatch))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(NameMismatch) when nameMatches is Inapplicable" in {
+    "return InvalidStatus when nameMatches is Inapplicable" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(nameMatches = BarsResponse.Inapplicable)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(NameMismatch))
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
 
-    "return Left(DetailsVerificationFailed) when sortcode direct debit is indeterminate" in {
-
+    "return InvalidStatus when sortCodeSupportsDirectDebit is Indeterminate" in {
       val request  = personalJson(bankDetails)
       val response = makeResponse(sortCodeSupportsDirectDebit = BarsResponse.Indeterminate)
-      stubVerify("personal", request, response)
+      stubVerify(BankAccountType.Personal, request, response)
 
-      service.barsVerification("personal", bankDetails).map(_ shouldBe Left(DetailsVerificationFailed))
-    }
-  }
-
-  // ---- validateBankDetailsStatus tests ----
-
-  "BarsService.validateBankDetailsStatus" should {
-
-    "return ValidStatus when barsVerification is Right" in {
-      val request  = personalJson(bankDetails)
-      val response = makeResponse()
-      stubVerify("personal", request, response)
-
-      service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe ValidStatus)
-    }
-
-    "return IndeterminateStatus when barsVerification returns Left(BankAccountUnverified)" in {
-      val request  = personalJson(bankDetails)
-      val response = makeResponse(accountExists = BarsResponse.Indeterminate)
-      stubVerify("personal", request, response)
-
-      service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe IndeterminateStatus)
-    }
-
-    "return InvalidStatus for any other Left(BarsErrors)" in {
-      val request  = personalJson(bankDetails)
-      val response = makeResponse(sortCodeIsPresentOnEISCD = BarsResponse.No)
-      stubVerify("personal", request, response)
-
-      service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe InvalidStatus)
-    }
-
-    "return InvalidStatus when the connector fails with deny list (mapped to SortCodeOnDenyList)" in {
-      val request = personalJson(bankDetails)
-
-      stubVerifyFail(
-        "personal",
-        request,
-        UpstreamBarsException(status = 400, errorCode = Some("SORT_CODE_ON_DENY_LIST"), rawMessage = "sort code failure")
-      )
-
-      service.validateBankDetailsStatus("personal", bankDetails).map(_ shouldBe InvalidStatus)
+      service.verifyBankDetails(BankAccountType.Personal, bankDetails).map(_ shouldBe InvalidStatus)
     }
   }
 }

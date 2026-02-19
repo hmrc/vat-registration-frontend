@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.bars.{BarsVerificationResponse, UpstreamBarsException}
+import models.bars.{BankAccountType, BarsVerificationResponse, UpstreamBarsException}
 import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.writeableOf_JsValue
@@ -35,8 +35,8 @@ case class BarsConnector @Inject() (
   extends HttpReadsInstances
     with Logging {
 
-  def verify(endpoint: String, requestJson: JsValue)(implicit hc: HeaderCarrier): Future[BarsVerificationResponse] = {
-    val url = s"${config.verifyBankDetailsUrl(endpoint)}"
+  def verify(barsEndpoint: BankAccountType, requestJson: JsValue)(implicit hc: HeaderCarrier): Future[BarsVerificationResponse] = {
+    val url = s"${config.verifyBankDetailsUrl(barsEndpoint.asBars)}"
 
     http
       .post(url"$url")
