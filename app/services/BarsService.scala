@@ -20,9 +20,9 @@ import com.google.inject.{Inject, Singleton}
 import connectors.BarsConnector
 import models.BankAccountDetails
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
-import models.bars.BarsErrors
 import models.bars.BarsErrors._
 import models.bars._
+import play.api.Logging
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -31,113 +31,57 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 case class BarsService @Inject()(
                                   barsConnector: BarsConnector
-                                )(implicit ec: ExecutionContext) {
+                                )(implicit ec: ExecutionContext) extends Logging {
 
-  private val checkAccountAndName = (accountExists: BarsResponse, nameMatches: BarsResponse) => {
-    if (accountExists == BarsResponse.Indeterminate || nameMatches == BarsResponse.Indeterminate) {
-      Left(BankAccountUnverified)
-    } else {
-      Right(())
-    }
+  def verifyBankDetails(bankAccountType: BankAccountType, bankDetails: BankAccountDetails)(implicit hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
+    val requestBody: JsValue = buildJsonRequestBody(bankAccountType, bankDetails)
+
+    logger.info(s"Verifying bank details for account type: $bankAccountType")
+
+    val callBARS: Future[Either[BarsErrors, BarsVerificationResponse]] = barsConnector.verify(bankAccountType, requestBody)
+      .map(checkVerificationResult)
+      .recover {
+        case _ =>
+          logger.error(s"Unexpected error verifying bank details for account type: $bankAccountType")
+          Left(DetailsVerificationFailed)
+      }
+
+    callBARS.map(handleResponse)
   }
 
-  private val checkAccountNumberFormat = (accountNumberIsWellFormatted: BarsResponse) =>
-    if (accountNumberIsWellFormatted == BarsResponse.No) Left(AccountDetailInvalidFormat) else Right(())
-
-  private val checkSortCodeExistsOnEiscd = (sortCodeIsPresentOnEISCD: BarsResponse) =>
-    if (sortCodeIsPresentOnEISCD == BarsResponse.No) Left(SortCodeNotFound) else Right(())
-
-  private val checkSortCodeDirectDebitSupport = (sortCodeSupportsDirectDebit: BarsResponse) =>
-    if (sortCodeSupportsDirectDebit == BarsResponse.No) Left(SortCodeNotSupported) else Right(())
-
-  private val checkAccountExists = (accountExists: BarsResponse) =>
-    if (accountExists == BarsResponse.No || accountExists == BarsResponse.Inapplicable) Left(AccountNotFound) else Right(())
-
-  private val checkNameMatches = (nameMatches: BarsResponse, accountExists: BarsResponse) =>
-    if (
-      nameMatches == BarsResponse.No || nameMatches == BarsResponse.Inapplicable ||
-        (nameMatches == BarsResponse.Indeterminate && accountExists != BarsResponse.Indeterminate)
-    ) {
-      Left(NameMismatch)
-    } else {
-      Right(())
+  def checkVerificationResult(successResponse: BarsVerificationResponse
+                             ): Either[BarsErrors, BarsVerificationResponse] =
+    if (successResponse.isSuccessful) {
+      logger.info("BARS verification returned a successful response")
+      Right(successResponse)
+    }
+    else {
+      val error = successResponse.check.fold(identity, _ => DetailsVerificationFailed)
+      logger.warn(s"BARS verification returned an unsuccessful response: $error")
+      Left(error)
     }
 
-  private val checkBarsResponseSuccess = (response: BarsVerificationResponse) =>
-    (response.accountNumberIsWellFormatted == BarsResponse.Yes || response.accountNumberIsWellFormatted == BarsResponse.Indeterminate) &&
-      response.sortCodeIsPresentOnEISCD == BarsResponse.Yes &&
-      response.accountExists == BarsResponse.Yes &&
-      (response.nameMatches == BarsResponse.Yes || response.nameMatches == BarsResponse.Partial) &&
-      response.sortCodeSupportsDirectDebit == BarsResponse.Yes
-
-
-   private def barsVerification(
-                        bankAccountType: BankAccountType,
-                        bankDetails: BankAccountDetails
-                      )(implicit hc: HeaderCarrier): Future[Either[BarsErrors, BarsVerificationResponse]] = {
-
-     val requestJson: JsValue = bankAccountType match {
-       case BankAccountType.Personal =>
-         Json.toJson(
-           BarsPersonalRequest(
-             BarsAccount(bankDetails.sortCode, bankDetails.number),
-             BarsSubject(bankDetails.name)
-           )
-         )
-       case BankAccountType.Business =>
-         Json.toJson(
-           BarsBusinessRequest(
-             BarsAccount(bankDetails.sortCode, bankDetails.number),
-             BarsBusiness(bankDetails.name)
-           )
-         )
-     }
-
-    val verificationFuture: Future[Either[BarsErrors, BarsVerificationResponse]] =
-      barsConnector.verify(bankAccountType, requestJson)
-        .map(Right(_))
-        .recover {
-          case e: UpstreamBarsException if e.status == 400 && e.errorCode.contains("SORT_CODE_ON_DENY_LIST") =>
-            Left(SortCodeOnDenyList)
-          case e: UpstreamBarsException if e.status == 400 =>
-            Left(DetailsVerificationFailed)
-          case _ =>
-            Left(DetailsVerificationFailed)
-        }
-
-    verificationFuture.map {
-      case Left(error) => Left(error)
-
-      case Right(verificationResponse) =>
-        if (checkBarsResponseSuccess(verificationResponse)) {
-          Right(verificationResponse) 
-        } else {
-          val validated: Either[BarsErrors, Unit] = for {
-            _ <- checkAccountAndName(verificationResponse.accountExists, verificationResponse.nameMatches)
-            _ <- checkAccountNumberFormat(verificationResponse.accountNumberIsWellFormatted)
-            _ <- checkSortCodeExistsOnEiscd(verificationResponse.sortCodeIsPresentOnEISCD)
-            _ <- checkSortCodeDirectDebitSupport(verificationResponse.sortCodeSupportsDirectDebit)
-            _ <- checkAccountExists(verificationResponse.accountExists)
-            _ <- checkNameMatches(verificationResponse.nameMatches, verificationResponse.accountExists)
-          } yield () 
-
-          Left(validated.fold(identity, _ => DetailsVerificationFailed))
-        }
-    }
+  def handleResponse(response: Either[BarsErrors, BarsVerificationResponse]): BankAccountDetailsStatus = response match {
+    case Right(_) =>
+      logger.info("Bank account details successfully verified")
+      ValidStatus
+    case Left(BankAccountUnverified) =>
+      logger.warn("Bank account details could not be verified — returning indeterminate status")
+      IndeterminateStatus
+    case Left(error) =>
+      logger.error(s"Bank account verification failed due to a service error: $error")
+      InvalidStatus
   }
 
-  def verifyBankDetails(
-                                 bankaccountType: BankAccountType,
-                                 bankDetails: BankAccountDetails
-                               )(implicit hc: HeaderCarrier): Future[BankAccountDetailsStatus] =
-    barsVerification(bankaccountType, bankDetails).map {
-      case Right(_) =>
-        ValidStatus
-
-      case Left(BankAccountUnverified) =>
-        IndeterminateStatus
-
-      case Left(_) =>
-        InvalidStatus
+  def buildJsonRequestBody(bankAccountType: BankAccountType, bankDetails: BankAccountDetails): JsValue =
+    bankAccountType match {
+      case BankAccountType.Personal =>
+        Json.toJson(
+          BarsPersonalRequest(BarsAccount(bankDetails.sortCode, bankDetails.number), BarsSubject(bankDetails.name))
+        )
+      case BankAccountType.Business =>
+        Json.toJson(
+          BarsBusinessRequest(BarsAccount(bankDetails.sortCode, bankDetails.number), BarsBusiness(bankDetails.name))
+        )
     }
 }

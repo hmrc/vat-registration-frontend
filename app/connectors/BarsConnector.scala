@@ -30,44 +30,31 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 case class BarsConnector @Inject() (
                                      config: FrontendAppConfig,
-                                     http: HttpClientV2
+                                     http:   HttpClientV2
                                    )(implicit ec: ExecutionContext)
   extends HttpReadsInstances
     with Logging {
 
   def verify(barsEndpoint: BankAccountType, requestJson: JsValue)(implicit hc: HeaderCarrier): Future[BarsVerificationResponse] = {
-    val url = s"${config.verifyBankDetailsUrl(barsEndpoint.asBars)}"
+    val url = config.verifyBankDetailsUrl(barsEndpoint)
 
     http
       .post(url"$url")
       .withBody(requestJson)
       .execute[Either[UpstreamErrorResponse, BarsVerificationResponse]]
       .flatMap {
-        case Right(verificationData) => Future.successful(verificationData)
+        case Right(verificationData) =>
+          Future.successful(verificationData)
 
         case Left(errorResponse) =>
-          logger.warn(s"BARS verification failed with UpstreamErrorResponse: $errorResponse")
-
-          // Safely extract JSON from message string
-          val errorCode: Option[String] = {
-            val pattern = "\\{.*\\}".r
-            pattern.findFirstIn(errorResponse.message).flatMap { jsonStr =>
-              try {
-                (Json.parse(jsonStr) \ "code").asOpt[String]
-              } catch {
-                case _: Exception => None
-              }
-            }
-          }
-
+          logger.warn(s"BARS verification failed with status ${errorResponse.statusCode}: ${errorResponse.message}")
           Future.failed(
             UpstreamBarsException(
               status     = errorResponse.statusCode,
-              errorCode  = errorCode,
+              errorCode  = None,
               rawMessage = errorResponse.message
             )
           )
       }
   }
-
 }

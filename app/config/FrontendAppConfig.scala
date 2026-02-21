@@ -22,6 +22,7 @@ import featuretoggle.FeatureSwitch._
 import featuretoggle.FeatureToggleSupport
 import models.VatThreshold
 import models.api._
+import models.bars.BankAccountType
 import play.api.Configuration
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.InternalServerException
@@ -108,9 +109,9 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/validate-bank-details"
     else s"$bankAccountReputationHost/validate/bank-details"
 
-  def verifyBankDetailsUrl(bankAccountType: String): String =
-    if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/verify-$bankAccountType"
-    else s"$bankAccountReputationHost/verify/$bankAccountType"
+  def verifyBankDetailsUrl(bankAccountType: BankAccountType): String =
+    if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/verify/${bankAccountType.asBars}"
+    else s"$bankAccountReputationHost/verify/${bankAccountType.asBars}"
 
   def fixedEstablishmentUrl: String =
     s"$eligibilityUrl/fixed-establishment"
