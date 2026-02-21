@@ -20,7 +20,6 @@ import connectors.BarsConnector
 import models.BankAccountDetails
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars.BarsErrors._
-import models.bars.BarsResponse.Indeterminate
 import models.bars._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

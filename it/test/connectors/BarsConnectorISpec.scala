@@ -18,7 +18,7 @@ package connectors
 
 import itFixtures.ITRegistrationFixtures
 import itutil.IntegrationSpecBase
-import models.bars.{BankAccountType, BarsAccount, BarsBusiness, BarsBusinessRequest, BarsPersonalRequest, BarsResponse, BarsSubject, BarsVerificationResponse, UpstreamBarsException}
+import models.bars._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import support.AppAndStubs
@@ -29,16 +29,16 @@ class BarsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITReg
   val connector: BarsConnector = app.injector.instanceOf[BarsConnector]
 
   val stubbedBarsSuccessResponse: BarsVerificationResponse = BarsVerificationResponse(
-    accountNumberIsWellFormatted             = BarsResponse.Yes,
-    sortCodeIsPresentOnEISCD                 = BarsResponse.Yes,
-    sortCodeBankName                         = Some("Test Bank"),
-    accountExists                            = BarsResponse.Yes,
-    nameMatches                              = BarsResponse.Yes,
-    sortCodeSupportsDirectDebit              = BarsResponse.Yes,
-    sortCodeSupportsDirectCredit             = BarsResponse.Yes,
+    accountNumberIsWellFormatted = BarsResponse.Yes,
+    sortCodeIsPresentOnEISCD = BarsResponse.Yes,
+    sortCodeBankName = Some("Test Bank"),
+    accountExists = BarsResponse.Yes,
+    nameMatches = BarsResponse.Yes,
+    sortCodeSupportsDirectDebit = BarsResponse.Yes,
+    sortCodeSupportsDirectCredit = BarsResponse.Yes,
     nonStandardAccountDetailsRequiredForBacs = None,
-    iban                                     = None,
-    accountName                              = None
+    iban = None,
+    accountName = None
   )
 
   def requestJson(bankAccountType: BankAccountType): JsValue = bankAccountType match {

@@ -19,7 +19,7 @@ package connectors
 import config.FrontendAppConfig
 import models.bars.{BankAccountType, BarsVerificationResponse, UpstreamBarsException}
 import play.api.Logging
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReadsInstances, StringContextOps, UpstreamErrorResponse}
@@ -28,10 +28,10 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-case class BarsConnector @Inject() (
-                                     config: FrontendAppConfig,
-                                     http:   HttpClientV2
-                                   )(implicit ec: ExecutionContext)
+case class BarsConnector @Inject()(
+                                    config: FrontendAppConfig,
+                                    http: HttpClientV2
+                                  )(implicit ec: ExecutionContext)
   extends HttpReadsInstances
     with Logging {
 
@@ -50,8 +50,8 @@ case class BarsConnector @Inject() (
           logger.warn(s"BARS verification failed with status ${errorResponse.statusCode}: ${errorResponse.message}")
           Future.failed(
             UpstreamBarsException(
-              status     = errorResponse.statusCode,
-              errorCode  = None,
+              status = errorResponse.statusCode,
+              errorCode = None,
               rawMessage = errorResponse.message
             )
           )
