@@ -22,6 +22,7 @@ import common.enums.VatRegStatus
 import models.api._
 import models.external.upscan.UpscanDetails
 import models.ApiKey
+import models.bars.BankAccountType
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -48,6 +49,8 @@ trait StubUtils {
     def icl: ICL = ICL()
 
     def bankAccountReputation: BankAccountReputationServiceStub = BankAccountReputationServiceStub()
+
+    def bars: BarsStub = BarsStub()
 
     def audit: AuditStub = AuditStub()
 
@@ -300,6 +303,43 @@ trait StubUtils {
 
     def isDown: PreconditionBuilder = {
       stubFor(post(urlMatching("/validate/bank-details"))
+        .willReturn(
+          serverError()
+        ))
+      builder
+    }
+  }
+  case class BarsStub()(implicit builder: PreconditionBuilder) {
+
+    def verifySucceeds(bankAccountType: BankAccountType): PreconditionBuilder = {
+      stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
+        .willReturn(
+          aResponse().withStatus(200).withBody(
+            s"""
+               |{
+               |  "accountNumberIsWellFormatted": "yes",
+               |  "sortCodeIsPresentOnEISCD": "yes",
+               |  "sortCodeBankName": "Test Bank",
+               |  "accountExists": "yes",
+               |  "nameMatches": "yes",
+               |  "sortCodeSupportsDirectDebit": "yes",
+               |  "sortCodeSupportsDirectCredit": "yes"
+               |}
+            """.stripMargin)
+        ))
+      builder
+    }
+
+    def verifyFails(bankAccountType: BankAccountType, status: Int): PreconditionBuilder = {
+      stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
+        .willReturn(
+          aResponse().withStatus(status).withBody("Bad request")
+        ))
+      builder
+    }
+
+    def isDown(bankAccountType: BankAccountType): PreconditionBuilder = {
+      stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
         .willReturn(
           serverError()
         ))
