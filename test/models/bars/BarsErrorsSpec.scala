@@ -24,18 +24,18 @@ class BarsErrorsSpec extends AnyWordSpec with Matchers {
   "BarsErrors.values" should {
 
     "contain all error variants exactly once" in {
-      BarsErrors.values.toSet shouldBe Set(
-        BarsErrors.BankAccountUnverified,
-        BarsErrors.AccountDetailInvalidFormat,
-        BarsErrors.SortCodeNotFound,
-        BarsErrors.SortCodeNotSupported,
-        BarsErrors.AccountNotFound,
-        BarsErrors.NameMismatch,
-        BarsErrors.SortCodeOnDenyList,
-        BarsErrors.DetailsVerificationFailed
+      BarsError.values.toSet shouldBe Set(
+        BarsError.BankAccountUnverified,
+        BarsError.AccountDetailInvalidFormat,
+        BarsError.SortCodeNotFound,
+        BarsError.SortCodeNotSupported,
+        BarsError.AccountNotFound,
+        BarsError.NameMismatch,
+        BarsError.SortCodeOnDenyList,
+        BarsError.DetailsVerificationFailed
       )
 
-      BarsErrors.values.distinct.size shouldBe BarsErrors.values.size
+      BarsError.values.distinct.size shouldBe BarsError.values.size
     }
   }
 }

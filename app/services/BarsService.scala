@@ -20,57 +20,51 @@ import com.google.inject.{Inject, Singleton}
 import connectors.BarsConnector
 import models.BankAccountDetails
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
-import models.bars.BarsErrors._
 import models.bars._
+import models.bars.BarsError._
 import play.api.Logging
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Json, JsValue}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-case class BarsService @Inject()(
-                                  barsConnector: BarsConnector
-                                )(implicit ec: ExecutionContext) extends Logging {
+case class BarsService @Inject() (
+    barsConnector: BarsConnector
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
-  def verifyBankDetails(bankAccountType: BankAccountType, bankDetails: BankAccountDetails)(implicit hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
+  def verifyBankDetails(bankAccountType: BankAccountType, bankDetails: BankAccountDetails)(implicit
+      hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
     val requestBody: JsValue = buildJsonRequestBody(bankAccountType, bankDetails)
 
     logger.info(s"Verifying bank details for account type: $bankAccountType")
 
-    val callBARS: Future[Either[BarsErrors, BarsVerificationResponse]] = barsConnector.verify(bankAccountType, requestBody)
+    val callBars: Future[Either[BarsError, BarsVerificationResponse]] = barsConnector
+      .verify(bankAccountType, requestBody)
       .map(checkVerificationResult)
-      .recover {
-        case _ =>
-          logger.error(s"Unexpected error verifying bank details for account type: $bankAccountType")
-          Left(DetailsVerificationFailed)
+      .recover { case e =>
+        logger.error(s"Unexpected error when verifying bank details for '$bankAccountType' account type: ${e.getMessage}")
+        Left(DetailsVerificationFailed)
       }
 
-    callBARS.map(handleResponse)
+    callBars.map(handleResponse)
   }
 
-  def checkVerificationResult(successResponse: BarsVerificationResponse
-                             ): Either[BarsErrors, BarsVerificationResponse] =
+  def checkVerificationResult(successResponse: BarsVerificationResponse): Either[BarsError, BarsVerificationResponse] =
     if (successResponse.isSuccessful) {
       logger.info("BARS verification returned a successful response")
       Right(successResponse)
-    }
-    else {
+    } else {
       val error = successResponse.check.fold(identity, _ => DetailsVerificationFailed)
       logger.warn(s"BARS verification returned an unsuccessful response: $error")
       Left(error)
     }
 
-  def handleResponse(response: Either[BarsErrors, BarsVerificationResponse]): BankAccountDetailsStatus = response match {
-    case Right(_) =>
-      logger.info("Bank account details successfully verified")
-      ValidStatus
-    case Left(BankAccountUnverified) =>
-      logger.warn("Bank account details could not be verified — returning indeterminate status")
-      IndeterminateStatus
-    case Left(error) =>
-      logger.error(s"Bank account verification failed due to a service error: $error")
-      InvalidStatus
+  def handleResponse(response: Either[BarsError, BarsVerificationResponse]): BankAccountDetailsStatus = response match {
+    case Right(_)                    => ValidStatus
+    case Left(BankAccountUnverified) => IndeterminateStatus
+    case Left(_)                     => InvalidStatus
   }
 
   def buildJsonRequestBody(bankAccountType: BankAccountType, bankDetails: BankAccountDetails): JsValue =

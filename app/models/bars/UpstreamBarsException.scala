@@ -17,7 +17,7 @@
 package models.bars
 
 case class UpstreamBarsException(
-                                  status: Int,
-                                  errorCode: Option[String],
-                                  rawMessage: String
-                                ) extends Exception(s"BARS error: status=$status, code=$errorCode, message=$rawMessage")
+    status: Int,
+    errorCode: Option[String],
+    rawMessage: String
+) extends Exception(s"BARS error: status=$status, code=$errorCode, message=$rawMessage")

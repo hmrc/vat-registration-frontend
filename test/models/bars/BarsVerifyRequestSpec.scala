@@ -18,7 +18,7 @@ package models.bars
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.{Json, JsSuccess}
 
 class BarsVerifyRequestSpec extends AnyWordSpec with Matchers {
 
@@ -113,7 +113,7 @@ class BarsVerifyRequestSpec extends AnyWordSpec with Matchers {
   "BarsBusinessRequest" should {
 
     val model = BarsBusinessRequest(
-      account  = BarsAccount(sortCode = "123456", accountNumber = "12345678"),
+      account = BarsAccount(sortCode = "123456", accountNumber = "12345678"),
       business = BarsBusiness(companyName = "Acme Corp")
     )
 

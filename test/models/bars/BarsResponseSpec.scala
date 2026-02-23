@@ -36,7 +36,7 @@ class BarsResponseSpec extends AnyWordSpec with Matchers {
 
       cases.foreach { case (str, expected) =>
         Json.fromJson[BarsResponse](JsString(str.toUpperCase)) shouldBe JsSuccess(expected)
-        Json.fromJson[BarsResponse](JsString(str))           shouldBe JsSuccess(expected)
+        Json.fromJson[BarsResponse](JsString(str)) shouldBe JsSuccess(expected)
       }
     }
 
@@ -46,8 +46,8 @@ class BarsResponseSpec extends AnyWordSpec with Matchers {
 
     "return JsError when JSON is not a string" in {
       Json.fromJson[BarsResponse](JsNumber(1)) shouldBe JsError("Expected String")
-      Json.fromJson[BarsResponse](JsNull)      shouldBe JsError("Expected String")
-      Json.fromJson[BarsResponse](Json.obj())  shouldBe JsError("Expected String")
+      Json.fromJson[BarsResponse](JsNull) shouldBe JsError("Expected String")
+      Json.fromJson[BarsResponse](Json.obj()) shouldBe JsError("Expected String")
     }
   }
 

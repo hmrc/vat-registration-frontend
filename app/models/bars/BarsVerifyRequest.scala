@@ -47,4 +47,3 @@ case class BarsSubject(name: String)
 object BarsSubject {
   implicit val format: OFormat[BarsSubject] = Json.format[BarsSubject]
 }
-
