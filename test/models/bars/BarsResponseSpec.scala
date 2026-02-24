@@ -25,7 +25,7 @@ class BarsResponseSpec extends AnyWordSpec with Matchers {
   "BarsResponse.format.reads" should {
 
     "parse known values case-insensitively" in {
-      val cases = Seq(
+      val cases = Set(
         "yes"           -> BarsResponse.Yes,
         "no"            -> BarsResponse.No,
         "partial"       -> BarsResponse.Partial,
@@ -54,7 +54,7 @@ class BarsResponseSpec extends AnyWordSpec with Matchers {
   "BarsResponse.format.writes" should {
 
     "write lowercase string values" in {
-      val cases = Seq(
+      val cases = Set(
         BarsResponse.Yes           -> "yes",
         BarsResponse.No            -> "no",
         BarsResponse.Partial       -> "partial",
@@ -71,7 +71,7 @@ class BarsResponseSpec extends AnyWordSpec with Matchers {
 
   "BarsResponse.values" should {
     "contain all response variants" in {
-      BarsResponse.values.toSet shouldBe Set(
+      BarsResponse.values shouldBe Set(
         BarsResponse.Yes,
         BarsResponse.No,
         BarsResponse.Partial,

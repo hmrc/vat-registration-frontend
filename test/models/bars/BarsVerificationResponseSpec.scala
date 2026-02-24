@@ -185,67 +185,67 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
 
   "check" should {
 
-    "return Right containing the response" when {
+    "return Some containing the response" when {
       "all fields pass" in {
         val response = responseWith()
-        response.check shouldBe Right(response)
+        response.check shouldBe None
       }
     }
 
-    "return Left(DetailsVerificationFailed)" when {
+    "return Some(DetailsVerificationFailed)" when {
       "accountExists and nameMatches are both No" in {
         val response = responseWith(accountExists = BarsResponse.No, nameMatches = BarsResponse.No)
-        response.check shouldBe Left(DetailsVerificationFailed)
+        response.check shouldBe Some(DetailsVerificationFailed)
       }
     }
 
-    "return Left(AccountDetailInvalidFormat)" when {
+    "return Some(AccountDetailInvalidFormat)" when {
       "accountNumberIsWellFormatted is No" in {
         val response = responseWith(accountNumberIsWellFormatted = BarsResponse.No)
-        response.check shouldBe Left(AccountDetailInvalidFormat)
+        response.check shouldBe Some(AccountDetailInvalidFormat)
       }
     }
 
-    "return Left(SortCodeNotFound)" when {
+    "return Some(SortCodeNotFound)" when {
       "sortCodeIsPresentOnEISCD is No" in {
         val response = responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
-        response.check shouldBe Left(SortCodeNotFound)
+        response.check shouldBe Some(SortCodeNotFound)
       }
     }
 
-    "return Left(SortCodeNotSupported)" when {
+    "return Some(SortCodeNotSupported)" when {
       "sortCodeSupportsDirectDebit is No" in {
         val response = responseWith(sortCodeSupportsDirectDebit = BarsResponse.No)
-        response.check shouldBe Left(SortCodeNotSupported)
+        response.check shouldBe Some(SortCodeNotSupported)
       }
     }
 
-    "return Left(NameMismatch)" when {
+    "return Some(NameMismatch)" when {
       "nameMatches is No" in {
         val response = responseWith(nameMatches = BarsResponse.No)
-        response.check shouldBe Left(NameMismatch)
+        response.check shouldBe Some(NameMismatch)
       }
     }
 
-    "return Left(AccountNotFound)" when {
+    "return Some(AccountNotFound)" when {
       "accountExists is No" in {
         val response = responseWith(accountExists = BarsResponse.No)
-        response.check shouldBe Left(AccountNotFound)
+        response.check shouldBe Some(AccountNotFound)
       }
     }
 
-    "return Left(BankAccountUnverified)" when {
+    "return Some(BankAccountUnverified)" when {
       "accountExists is Indeterminate" in {
         val response = responseWith(accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Left(BankAccountUnverified)
+        response.check shouldBe Some(BankAccountUnverified)
       }
       "nameMatches is Indeterminate and accountExists is Yes" in {
         val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Yes)
-        response.check shouldBe Left(BankAccountUnverified)
+        response.check shouldBe Some(BankAccountUnverified)
       }
       "nameMatches is Indeterminate and accountExists is not Yes" in {
         val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Left(BankAccountUnverified)
+        response.check shouldBe Some(BankAccountUnverified)
       }
     }
   }

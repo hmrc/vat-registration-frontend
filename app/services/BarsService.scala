@@ -56,7 +56,7 @@ case class BarsService @Inject() (
       logger.info("BARS verification returned a successful response")
       Right(successResponse)
     } else {
-      val error = successResponse.check.fold(identity, _ => DetailsVerificationFailed)
+      val error = successResponse.check.getOrElse(DetailsVerificationFailed)
       logger.warn(s"BARS verification returned an unsuccessful response: $error")
       Left(error)
     }

@@ -39,47 +39,48 @@ case class BarsVerificationResponse(
       (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial) &&
       sortCodeSupportsDirectDebit == BarsResponse.Yes
 
-  def check: Either[BarsError, BarsVerificationResponse] = {
-    val validated: Either[BarsError, Unit] = for {
-      _ <- checkAccountAndName(accountExists, nameMatches)
-      _ <- checkAccountNumberFormat(accountNumberIsWellFormatted)
-      _ <- checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD)
-      _ <- checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit)
-      _ <- checkAccountExists(accountExists)
-      _ <- checkNameMatches(nameMatches, accountExists)
-    } yield ()
+  def check: Option[BarsError] =
+    Seq(
+      checkAccountAndName(accountExists, nameMatches),
+      checkAccountNumberFormat(accountNumberIsWellFormatted),
+      checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD),
+      checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit),
+      checkAccountExists(accountExists),
+      checkNameMatches(nameMatches, accountExists)
+    ).flatten.headOption
 
-    validated.map(_ => this)
-  }
+  private def checkAccountAndName(accountExists: BarsResponse, nameMatches: BarsResponse): Option[BarsError] =
+    if (accountExists == BarsResponse.No && nameMatches == BarsResponse.No)
+      Some(DetailsVerificationFailed)
+    else None
 
-  private def checkAccountAndName(accountExists: BarsResponse, nameMatches: BarsResponse): Either[BarsError, Unit] =
-    if (accountExists == BarsResponse.No && nameMatches == BarsResponse.No) Left(DetailsVerificationFailed)
-    else Right(())
+  private def checkAccountNumberFormat(accountNumberIsWellFormatted: BarsResponse): Option[BarsError] =
+    if (accountNumberIsWellFormatted == BarsResponse.No)
+      Some(AccountDetailInvalidFormat)
+    else None
 
-  private def checkAccountNumberFormat(accountNumberIsWellFormatted: BarsResponse): Either[BarsError, Unit] =
-    if (accountNumberIsWellFormatted == BarsResponse.No) Left(AccountDetailInvalidFormat)
-    else Right(())
+  private def checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD: BarsResponse): Option[BarsError] =
+    if (sortCodeIsPresentOnEISCD == BarsResponse.No)
+      Some(SortCodeNotFound)
+    else None
 
-  private def checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD: BarsResponse): Either[BarsError, Unit] =
-    if (sortCodeIsPresentOnEISCD == BarsResponse.No) Left(SortCodeNotFound)
-    else Right(())
+  private def checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit: BarsResponse): Option[BarsError] =
+    if (sortCodeSupportsDirectDebit == BarsResponse.No)
+      Some(SortCodeNotSupported)
+    else None
 
-  private def checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit: BarsResponse): Either[BarsError, Unit] =
-    if (sortCodeSupportsDirectDebit == BarsResponse.No) Left(SortCodeNotSupported)
-    else Right(())
-
-  private def checkAccountExists(accountExists: BarsResponse): Either[BarsError, Unit] =
+  private def checkAccountExists(accountExists: BarsResponse): Option[BarsError] =
     accountExists match {
-      case BarsResponse.No            => Left(AccountNotFound)
-      case BarsResponse.Indeterminate => Left(BankAccountUnverified)
-      case _                          => Right(())
+      case BarsResponse.No            => Some(AccountNotFound)
+      case BarsResponse.Indeterminate => Some(BankAccountUnverified)
+      case _                          => None
     }
 
-  private def checkNameMatches(nameMatches: BarsResponse, accountExists: BarsResponse): Either[BarsError, Unit] =
+  private def checkNameMatches(nameMatches: BarsResponse, accountExists: BarsResponse): Option[BarsError] =
     nameMatches match {
-      case BarsResponse.No                                                 => Left(NameMismatch)
-      case BarsResponse.Indeterminate if accountExists == BarsResponse.Yes => Left(BankAccountUnverified)
-      case _                                                               => Right(())
+      case BarsResponse.No                                                 => Some(NameMismatch)
+      case BarsResponse.Indeterminate if accountExists == BarsResponse.Yes => Some(BankAccountUnverified)
+      case _                                                               => None
     }
 }
 

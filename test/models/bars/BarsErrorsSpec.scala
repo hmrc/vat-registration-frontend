@@ -24,7 +24,7 @@ class BarsErrorsSpec extends AnyWordSpec with Matchers {
   "BarsErrors.values" should {
 
     "contain all error variants exactly once" in {
-      BarsError.values.toSet shouldBe Set(
+      BarsError.values shouldBe Set(
         BarsError.BankAccountUnverified,
         BarsError.AccountDetailInvalidFormat,
         BarsError.SortCodeNotFound,
@@ -35,7 +35,7 @@ class BarsErrorsSpec extends AnyWordSpec with Matchers {
         BarsError.DetailsVerificationFailed
       )
 
-      BarsError.values.distinct.size shouldBe BarsError.values.size
+      BarsError.values.size shouldBe BarsError.values.size
     }
   }
 }

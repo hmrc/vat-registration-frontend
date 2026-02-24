@@ -28,7 +28,7 @@ object BarsError {
   case object SortCodeOnDenyList         extends BarsError
   case object DetailsVerificationFailed  extends BarsError
 
-  val values: Seq[BarsError] = Seq(
+  val values: Set[BarsError] = Set(
     BankAccountUnverified,
     AccountDetailInvalidFormat,
     SortCodeNotFound,

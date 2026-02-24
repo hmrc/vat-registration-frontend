@@ -128,7 +128,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         service.checkVerificationResult(successResponse) shouldBe Right(successResponse)
       }
 
-      "the name matches partially" in {
+      "the name is a partial match" in {
         val response = successResponse.copy(nameMatches = BarsResponse.Partial)
         service.checkVerificationResult(response) shouldBe Right(response)
       }

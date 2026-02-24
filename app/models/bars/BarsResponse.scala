@@ -28,8 +28,8 @@ object BarsResponse {
   case object Inapplicable  extends BarsResponse
   case object Error         extends BarsResponse
 
-  val values: Seq[BarsResponse] =
-    Seq(Yes, No, Partial, Indeterminate, Inapplicable, Error)
+  val values: Set[BarsResponse] =
+    Set(Yes, No, Partial, Indeterminate, Inapplicable, Error)
 
   implicit val format: Format[BarsResponse] = new Format[BarsResponse] {
 
