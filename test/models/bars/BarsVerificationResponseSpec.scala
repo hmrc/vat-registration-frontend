@@ -42,52 +42,61 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
     accountName = None
   )
 
-  "BarsResponse reads" when {
+  "BarsResponse reads" should {
 
-    "given a valid lowercase string" should {
-      "deserialise 'yes' to Yes" in {
+    "deserialise to Yes" when {
+      "given 'yes'" in {
         JsString("yes").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Yes)
       }
-      "deserialise 'no' to No" in {
-        JsString("no").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.No)
-      }
-      "deserialise 'partial' to Partial" in {
-        JsString("partial").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Partial)
-      }
-      "deserialise 'indeterminate' to Indeterminate" in {
-        JsString("indeterminate").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Indeterminate)
-      }
-      "deserialise 'inapplicable' to Inapplicable" in {
-        JsString("inapplicable").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Inapplicable)
-      }
-      "deserialise 'error' to Error" in {
-        JsString("error").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Error)
-      }
-    }
-
-    "given an uppercase string" should {
-      "be case-insensitive and deserialise 'YES' to Yes" in {
+      "given 'YES' (case-insensitive)" in {
         JsString("YES").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Yes)
       }
     }
 
-    "given an unrecognised string" should {
-      "return a JsError" in {
-        JsString("unknown").validate[BarsResponse].isError shouldBe true
+    "deserialise to No" when {
+      "given 'no'" in {
+        JsString("no").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.No)
       }
     }
 
-    "given a non-string JSON value" should {
-      "return a JsError" in {
+    "deserialise to Partial" when {
+      "given 'partial'" in {
+        JsString("partial").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Partial)
+      }
+    }
+
+    "deserialise to Indeterminate" when {
+      "given 'indeterminate'" in {
+        JsString("indeterminate").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Indeterminate)
+      }
+    }
+
+    "deserialise to Inapplicable" when {
+      "given 'inapplicable'" in {
+        JsString("inapplicable").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Inapplicable)
+      }
+    }
+
+    "deserialise to Error" when {
+      "given 'error'" in {
+        JsString("error").validate[BarsResponse] shouldBe JsSuccess(BarsResponse.Error)
+      }
+    }
+
+    "return a JsError" when {
+      "given an unrecognised string" in {
+        JsString("unknown").validate[BarsResponse].isError shouldBe true
+      }
+      "given a non-string JSON value" in {
         JsNumber(1).validate[BarsResponse].isError shouldBe true
       }
     }
   }
 
-  "BarsVerificationResponse" when {
+  "BarsVerificationResponse" should {
 
-    "reading from JSON" should {
-      "deserialise a full response with all optional fields present" in {
+    "deserialise successfully" when {
+      "given a full response with all optional fields present" in {
         val json = Json.parse(
           """{
             |  "accountNumberIsWellFormatted": "yes",
@@ -105,7 +114,7 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
         json.validate[BarsVerificationResponse].isSuccess shouldBe true
       }
 
-      "deserialise a minimal response with all optional fields absent" in {
+      "given a minimal response with all optional fields absent" in {
         val json = Json.parse(
           """{
             |  "accountNumberIsWellFormatted": "yes",
@@ -118,151 +127,123 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
         )
         json.validate[BarsVerificationResponse].isSuccess shouldBe true
       }
+    }
 
-      "return a JsError when a required field is missing" in {
+    "return a JsError" when {
+      "a required field is missing" in {
         val json = Json.parse("""{"accountNumberIsWellFormatted":"yes"}""")
         json.validate[BarsVerificationResponse].isError shouldBe true
       }
     }
 
-    "round-tripping through JSON" should {
-      "serialise and deserialise back to the same response" in {
+    "both read and write successfully" when {
+      "serialised and deserialised back to the same response" in {
         val response = responseWith()
         Json.toJson(response).validate[BarsVerificationResponse].asOpt shouldBe Some(response)
       }
     }
   }
 
-  "isSuccessful" when {
+  "isSuccessful" should {
 
-    "all fields pass" should {
-      "return true" in {
+    "return true" when {
+      "all fields pass" in {
         responseWith().isSuccessful shouldBe true
       }
-    }
-
-    "accountNumberIsWellFormatted is Indeterminate" should {
-      "return true — indeterminate is accepted" in {
+      "accountNumberIsWellFormatted is Indeterminate" in {
         responseWith(accountNumberIsWellFormatted = BarsResponse.Indeterminate).isSuccessful shouldBe true
       }
-    }
-
-    "nameMatches is Partial" should {
-      "return true — partial match is accepted" in {
+      "nameMatches is Partial" in {
         responseWith(nameMatches = BarsResponse.Partial).isSuccessful shouldBe true
       }
     }
 
-    "accountNumberIsWellFormatted is No" should {
-      "return false" in {
+    "return false" when {
+      "accountNumberIsWellFormatted is No" in {
         responseWith(accountNumberIsWellFormatted = BarsResponse.No).isSuccessful shouldBe false
       }
-    }
-
-    "sortCodeIsPresentOnEISCD is No" should {
-      "return false" in {
+      "sortCodeIsPresentOnEISCD is No" in {
         responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No).isSuccessful shouldBe false
       }
-    }
-
-    "accountExists is No" should {
-      "return false" in {
+      "accountExists is No" in {
         responseWith(accountExists = BarsResponse.No).isSuccessful shouldBe false
       }
-    }
-
-    "accountExists is Indeterminate" should {
-      "return false" in {
+      "accountExists is Indeterminate" in {
         responseWith(accountExists = BarsResponse.Indeterminate).isSuccessful shouldBe false
       }
-    }
-
-    "nameMatches is No" should {
-      "return false" in {
+      "nameMatches is No" in {
         responseWith(nameMatches = BarsResponse.No).isSuccessful shouldBe false
       }
-    }
-
-    "nameMatches is Indeterminate" should {
-      "return false" in {
+      "nameMatches is Indeterminate" in {
         responseWith(nameMatches = BarsResponse.Indeterminate).isSuccessful shouldBe false
       }
-    }
-
-    "sortCodeSupportsDirectDebit is No" should {
-      "return false" in {
+      "sortCodeSupportsDirectDebit is No" in {
         responseWith(sortCodeSupportsDirectDebit = BarsResponse.No).isSuccessful shouldBe false
       }
     }
   }
 
-  "check" when {
+  "check" should {
 
-    "all fields pass" should {
-      "return Right containing the response" in {
+    "return Right containing the response" when {
+      "all fields pass" in {
         val response = responseWith()
         response.check shouldBe Right(response)
       }
     }
 
-    "accountExists and nameMatches are both No" should {
-      "return Left(DetailsVerificationFailed) — short-circuits at the first check" in {
+    "return Left(DetailsVerificationFailed)" when {
+      "accountExists and nameMatches are both No" in {
         val response = responseWith(accountExists = BarsResponse.No, nameMatches = BarsResponse.No)
         response.check shouldBe Left(DetailsVerificationFailed)
       }
     }
 
-    "accountNumberIsWellFormatted is No" should {
-      "return Left(AccountDetailInvalidFormat)" in {
+    "return Left(AccountDetailInvalidFormat)" when {
+      "accountNumberIsWellFormatted is No" in {
         val response = responseWith(accountNumberIsWellFormatted = BarsResponse.No)
         response.check shouldBe Left(AccountDetailInvalidFormat)
       }
     }
 
-    "sortCodeIsPresentOnEISCD is No" should {
-      "return Left(SortCodeNotFound)" in {
+    "return Left(SortCodeNotFound)" when {
+      "sortCodeIsPresentOnEISCD is No" in {
         val response = responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
         response.check shouldBe Left(SortCodeNotFound)
       }
     }
 
-    "sortCodeSupportsDirectDebit is No" should {
-      "return Left(SortCodeNotSupported)" in {
+    "return Left(SortCodeNotSupported)" when {
+      "sortCodeSupportsDirectDebit is No" in {
         val response = responseWith(sortCodeSupportsDirectDebit = BarsResponse.No)
         response.check shouldBe Left(SortCodeNotSupported)
       }
     }
 
-    "accountExists is No" should {
-      "return Left(AccountNotFound)" in {
-        val response = responseWith(accountExists = BarsResponse.No)
-        response.check shouldBe Left(AccountNotFound)
-      }
-    }
-
-    "accountExists is Indeterminate" should {
-      "return Left(BankAccountUnverified)" in {
-        val response = responseWith(accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Left(BankAccountUnverified)
-      }
-    }
-
-    "nameMatches is No" should {
-      "return Left(NameMismatch)" in {
+    "return Left(NameMismatch)" when {
+      "nameMatches is No" in {
         val response = responseWith(nameMatches = BarsResponse.No)
         response.check shouldBe Left(NameMismatch)
       }
     }
 
-    "nameMatches is Indeterminate and accountExists is Yes" should {
-      "return Left(BankAccountUnverified)" in {
-        val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Yes)
-        response.check shouldBe Left(BankAccountUnverified)
+    "return Left(AccountNotFound)" when {
+      "accountExists is No" in {
+        val response = responseWith(accountExists = BarsResponse.No)
+        response.check shouldBe Left(AccountNotFound)
       }
     }
 
-    "nameMatches is Indeterminate and accountExists is not Yes" should {
-      "return Left(BankAccountUnverified)" in {
+    "return Left(BankAccountUnverified)" when {
+      "accountExists is Indeterminate" in {
+        val response = responseWith(accountExists = BarsResponse.Indeterminate)
+        response.check shouldBe Left(BankAccountUnverified)
+      }
+      "nameMatches is Indeterminate and accountExists is Yes" in {
+        val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Yes)
+        response.check shouldBe Left(BankAccountUnverified)
+      }
+      "nameMatches is Indeterminate and accountExists is not Yes" in {
         val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Indeterminate)
         response.check shouldBe Left(BankAccountUnverified)
       }
