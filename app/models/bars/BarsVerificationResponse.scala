@@ -39,7 +39,7 @@ case class BarsVerificationResponse(
       (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial) &&
       sortCodeSupportsDirectDebit == BarsResponse.Yes
 
-  def check: Option[BarsError] =
+  def check: Seq[BarsError] =
     Seq(
       checkAccountAndName(accountExists, nameMatches),
       checkAccountNumberFormat(accountNumberIsWellFormatted),
@@ -47,7 +47,7 @@ case class BarsVerificationResponse(
       checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit),
       checkAccountExists(accountExists),
       checkNameMatches(nameMatches, accountExists)
-    ).flatten.headOption
+    ).flatten
 
   private def checkAccountAndName(accountExists: BarsResponse, nameMatches: BarsResponse): Option[BarsError] =
     if (accountExists == BarsResponse.No && nameMatches == BarsResponse.No)
@@ -71,14 +71,14 @@ case class BarsVerificationResponse(
 
   private def checkAccountExists(accountExists: BarsResponse): Option[BarsError] =
     accountExists match {
-      case BarsResponse.No            => Some(AccountNotFound)
-      case BarsResponse.Indeterminate => Some(BankAccountUnverified)
-      case _                          => None
+      case BarsResponse.No | BarsResponse.Inapplicable => Some(AccountNotFound)
+      case BarsResponse.Indeterminate                  => Some(BankAccountUnverified)
+      case _                                           => None
     }
 
   private def checkNameMatches(nameMatches: BarsResponse, accountExists: BarsResponse): Option[BarsError] =
     nameMatches match {
-      case BarsResponse.No                                                 => Some(NameMismatch)
+      case BarsResponse.No | BarsResponse.Inapplicable                     => Some(NameMismatch)
       case BarsResponse.Indeterminate if accountExists == BarsResponse.Yes => Some(BankAccountUnverified)
       case _                                                               => None
     }

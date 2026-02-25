@@ -171,11 +171,17 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       "accountExists is Indeterminate" in {
         responseWith(accountExists = BarsResponse.Indeterminate).isSuccessful shouldBe false
       }
+      "accountExists is Inapplicable" in {
+        responseWith(accountExists = BarsResponse.Inapplicable).isSuccessful shouldBe false
+      }
       "nameMatches is No" in {
         responseWith(nameMatches = BarsResponse.No).isSuccessful shouldBe false
       }
       "nameMatches is Indeterminate" in {
         responseWith(nameMatches = BarsResponse.Indeterminate).isSuccessful shouldBe false
+      }
+      "nameMatches is Inapplicable" in {
+        responseWith(nameMatches = BarsResponse.Inapplicable).isSuccessful shouldBe false
       }
       "sortCodeSupportsDirectDebit is No" in {
         responseWith(sortCodeSupportsDirectDebit = BarsResponse.No).isSuccessful shouldBe false
@@ -185,67 +191,74 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
 
   "check" should {
 
-    "return Some containing the response" when {
+    "return an empty Seq" when {
       "all fields pass" in {
-        val response = responseWith()
-        response.check shouldBe None
+        responseWith().check shouldBe empty
       }
     }
 
-    "return Some(DetailsVerificationFailed)" when {
+    "return Seq(DetailsVerificationFailed, AccountNotFound, NameMismatch)" when {
       "accountExists and nameMatches are both No" in {
         val response = responseWith(accountExists = BarsResponse.No, nameMatches = BarsResponse.No)
-        response.check shouldBe Some(DetailsVerificationFailed)
+        response.check shouldBe Seq(DetailsVerificationFailed, AccountNotFound, NameMismatch)
       }
     }
 
-    "return Some(AccountDetailInvalidFormat)" when {
+    "return Seq(AccountDetailInvalidFormat)" when {
       "accountNumberIsWellFormatted is No" in {
         val response = responseWith(accountNumberIsWellFormatted = BarsResponse.No)
-        response.check shouldBe Some(AccountDetailInvalidFormat)
+        response.check shouldBe Seq(AccountDetailInvalidFormat)
       }
     }
 
-    "return Some(SortCodeNotFound)" when {
+    "return Seq(SortCodeNotFound)" when {
       "sortCodeIsPresentOnEISCD is No" in {
         val response = responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
-        response.check shouldBe Some(SortCodeNotFound)
+        response.check shouldBe Seq(SortCodeNotFound)
       }
     }
 
-    "return Some(SortCodeNotSupported)" when {
+    "return Seq(SortCodeNotSupported)" when {
       "sortCodeSupportsDirectDebit is No" in {
         val response = responseWith(sortCodeSupportsDirectDebit = BarsResponse.No)
-        response.check shouldBe Some(SortCodeNotSupported)
+        response.check shouldBe Seq(SortCodeNotSupported)
       }
     }
 
-    "return Some(NameMismatch)" when {
-      "nameMatches is No" in {
-        val response = responseWith(nameMatches = BarsResponse.No)
-        response.check shouldBe Some(NameMismatch)
-      }
-    }
-
-    "return Some(AccountNotFound)" when {
+    "return Seq(AccountNotFound)" when {
       "accountExists is No" in {
         val response = responseWith(accountExists = BarsResponse.No)
-        response.check shouldBe Some(AccountNotFound)
+        response.check shouldBe Seq(AccountNotFound)
+      }
+      "accountExists is Inapplicable" in {
+        val response = responseWith(accountExists = BarsResponse.Inapplicable)
+        response.check shouldBe Seq(AccountNotFound)
       }
     }
 
-    "return Some(BankAccountUnverified)" when {
+    "return Seq(BankAccountUnverified)" when {
       "accountExists is Indeterminate" in {
         val response = responseWith(accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Some(BankAccountUnverified)
+        response.check shouldBe Seq(BankAccountUnverified)
       }
       "nameMatches is Indeterminate and accountExists is Yes" in {
         val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Yes)
-        response.check shouldBe Some(BankAccountUnverified)
+        response.check shouldBe Seq(BankAccountUnverified)
       }
-      "nameMatches is Indeterminate and accountExists is not Yes" in {
+      "nameMatches is Indeterminate and accountExists is Indeterminate" in {
         val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Some(BankAccountUnverified)
+        response.check shouldBe Seq(BankAccountUnverified, BankAccountUnverified)
+      }
+    }
+
+    "return Seq(NameMismatch)" when {
+      "nameMatches is No" in {
+        val response = responseWith(nameMatches = BarsResponse.No)
+        response.check shouldBe Seq(NameMismatch)
+      }
+      "nameMatches is Inapplicable" in {
+        val response = responseWith(nameMatches = BarsResponse.Inapplicable)
+        response.check shouldBe Seq(NameMismatch)
       }
     }
   }

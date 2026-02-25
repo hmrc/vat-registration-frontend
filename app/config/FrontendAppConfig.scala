@@ -110,8 +110,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
     else s"$bankAccountReputationHost/validate/bank-details"
 
   def verifyBankDetailsUrl(bankAccountType: BankAccountType): String =
-    if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/verify/${bankAccountType.asBars}"
-    else s"$bankAccountReputationHost/verify/${bankAccountType.asBars}"
+    s"$bankAccountReputationHost/verify/${bankAccountType.asBars}"
 
   def fixedEstablishmentUrl: String =
     s"$eligibilityUrl/fixed-establishment"
