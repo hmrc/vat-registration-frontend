@@ -247,7 +247,7 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       }
       "nameMatches is Indeterminate and accountExists is Indeterminate" in {
         val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Seq(BankAccountUnverified, BankAccountUnverified)
+        response.check shouldBe Seq(BankAccountUnverified)
       }
     }
 
