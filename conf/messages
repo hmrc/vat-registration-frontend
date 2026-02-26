@@ -2026,10 +2026,7 @@ partnerEmail.error.incorrect_length            = The email address must be 132 c
 
 
 # BANK ACCOUNT TYPE PAGE
-pages.businessOrPersonalAccount.heading = What type of bank account will you use for VAT repayments?
 BusinessOrPersonalBankAccount.title = What type of bank account will you use for VAT repayments?
-BusinessOrPersonalBankAccount.error.required = Select business or personal account
-validation.BusinessOrPersonalBankAccount.error = Select business or personal account
 pages.businessOrPersonalAccount.heading = What type of bank account will you use for VAT repayments?
 pages.businessOrPersonalAccount.option.business = Business account
 pages.businessOrPersonalAccount.option.personal = Personal account
