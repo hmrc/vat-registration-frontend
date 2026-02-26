@@ -968,10 +968,10 @@ pages.hasCompanyBankAccount.heading                   = Can you provide bank or 
 pages.hasCompanyBankAccount.para                      = If HMRC owes the business money, it will repay this directly to your account.
 pages.hasCompanyBankAccount.para2                     = BACS is normally used for VAT repayments because this is a faster and more secure payment method than a cheque.
 pages.hasCompanyBankAccount.para3                     = The account you select to receive VAT repayments must be:
-pages.hasCompanyBankAccount.bullet1                   = Used only for this business
-pages.hasCompanyBankAccount.bullet2                   = In the name of the individual or company registering for VAT
-pages.hasCompanyBankAccount.bullet3                   = Based in the UK
-pages.hasCompanyBankAccount.bullet4                   = Able to receive BACS payments
+pages.hasCompanyBankAccount.bullet1                   = used only for this business
+pages.hasCompanyBankAccount.bullet2                   = in the name of the individual or company registering for VAT
+pages.hasCompanyBankAccount.bullet3                   = based in the UK
+pages.hasCompanyBankAccount.bullet4                   = able to receive BACS payments
 validation.hasCompanyBankAccount.missing              = Select yes if you are able to provide bank or building society details for the business
 
 # No UK Bank Account Page
@@ -1324,8 +1324,6 @@ pages.businessLeadPartnerEntityType.missing              = Select the type of bu
 pages.businessLeadPartnerEntityType.missing.3pt          = Select the type of business the lead partner is within the partnership
 pages.businessPartnerEntityType.missing                  = Select the partner’s business type within the partnership
 pages.businessPartnerEntityType.heading                  = What type of business is the {0} partner within the partnership?
-
-
 
 # PARTNER SUMMARY PAGE
 partner.summary.heading                                  = You have added {0} member of the partnership
@@ -2023,11 +2021,3 @@ partnerEmail.link                              = HMRC Privacy Notice
 partnerEmail.error.incorrect_format            = Enter the email address in the correct format, like name@example.com
 partnerEmail.error.nothing_entered             = Enter the email address
 partnerEmail.error.incorrect_length            = The email address must be 132 characters or fewer
-
-
-# BANK ACCOUNT TYPE PAGE
-BusinessOrPersonalBankAccount.title = What type of bank account will you use for VAT repayments?
-pages.businessOrPersonalAccount.heading = What type of bank account will you use for VAT repayments?
-pages.businessOrPersonalAccount.option.business = Business account
-pages.businessOrPersonalAccount.option.personal = Personal account
-validation.businessOrPersonalBankAccount.missing = Select business or personal account
