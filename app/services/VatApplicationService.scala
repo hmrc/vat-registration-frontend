@@ -160,9 +160,11 @@ class VatApplicationService @Inject()(registrationApiConnector: RegistrationApiC
           "zeroRatedSupplies"         -> vatApp.zeroRatedSupplies,
           "turnoverNextTwelveMonths"  -> vatApp.turnoverEstimate,
           "acceptTurnOverEstimate"    -> vatApp.acceptTurnOverEstimate
+
         )
     auditConnector.sendExplicitAudit("TotalTaxableTurnover", auditEventDetail)
   }
+
 
   private def updateNipBlock[T <: NipAnswer](data: T, nipBefore: NIPTurnover): NIPTurnover =
     data match {

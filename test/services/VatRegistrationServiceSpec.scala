@@ -26,6 +26,7 @@ import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import testHelpers.VatRegSpec
+import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
@@ -37,11 +38,17 @@ class VatRegistrationServiceSpec extends VatRegSpec with MockRegistrationApiConn
   implicit val testRequest: FakeRequest[_] = FakeRequest().withHeaders(testHeaderKey -> testHeaderValue)
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
+  val authProviderId = "authProvider-Id-123123"
+  val credentials = Credentials(authProviderId, "testProviderType")
+
+
   class Setup {
     val service = new VatRegistrationService(
       mockVatRegistrationConnector,
       mockRegistrationApiConnector,
-      mockSessionService
+      mockSessionService,
+      mockAuditConnector,
+      mockAuthConnector
     )
   }
 

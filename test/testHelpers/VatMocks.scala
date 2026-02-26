@@ -23,6 +23,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.cache.SyncCacheApi
 import services._
 import services.mocks.{BusinessServiceMock, IncorpIdServiceMock}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -44,6 +45,8 @@ trait VatMocks
   implicit lazy val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
   implicit lazy val mockBankAccountReputationConnector: BankAccountReputationConnector = mock[BankAccountReputationConnector]
   implicit lazy val mockICLConnector: ICLConnector = mock[ICLConnector]
+  implicit lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
   //Services
   implicit lazy val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
   implicit lazy val mockVatRegistrationService: VatRegistrationService = mock[VatRegistrationService]

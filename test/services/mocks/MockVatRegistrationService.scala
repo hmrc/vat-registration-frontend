@@ -69,4 +69,5 @@ trait MockVatRegistrationService extends MockitoSugar {
       any[CurrentProfile],
       any[HeaderCarrier], any[Request[_]]
     )) thenReturn response
+
 }

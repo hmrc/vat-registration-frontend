@@ -1,9 +1,8 @@
 $govuk-assets-path: "/register-for-vat/assets/lib/govuk-frontend/dist/govuk/assets/";
 $hmrc-assets-path: "/register-for-vat/assets/lib/hmrc-frontend/hmrc/";
-$govuk-suppressed-warnings: "libsass";
-$govuk-suppressed-warnings: "legacy-organisation-colours";
+$govuk-suppressed-warnings: (libsass, legacy-organisation-colours);
 
-@import "lib/govuk-frontend/dist/govuk/all";
+@import "lib/govuk-frontend/dist/govuk/index";
 @import "lib/hmrc-frontend/hmrc/all";
 @import "accessible-autocomplete";
 
