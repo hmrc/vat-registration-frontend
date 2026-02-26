@@ -2027,4 +2027,3 @@ partnerEmail.link                              = HMRC Privacy Notice
 partnerEmail.error.incorrect_format            = Enter the email address in the correct format, like name@example.com
 partnerEmail.error.nothing_entered             = Enter the email address
 partnerEmail.error.incorrect_length            = The email address must be 132 characters or fewer
-

@@ -631,3 +631,8 @@ POST        /partner/:index/partner-telephone                         controller
 ## Partner Email Address Page
 GET         /partner/:index/email-address                             controllers.partners.PartnerCaptureEmailAddressController.show(index: Int)
 POST        /partner/:index/email-address                             controllers.partners.PartnerCaptureEmailAddressController.submit(index: Int)
+
+
+## Confirm if the Bank account is Business or Personal
+GET  /business-or-personal-bank-account                               controllers.bankdetails.BusinessOrPersonalBankAccountController.show
+POST /business-or-personal-bank-account                               controllers.bankdetails.BusinessOrPersonalBankAccountController.submit
