@@ -29,7 +29,7 @@ import java.time.LocalDate
 class VoluntaryStartDateNoChoiceControllerISpec extends ControllerISpec {
 
   val url = "/voluntary-vat-start-date"
-  val testDate: LocalDate = LocalDate.of(2022, 2, 16)
+  val testDate: LocalDate = LocalDate.now.minusYears(2)
 
   def fieldSelector(unit: String) = s"input[id=startDate.$unit]"
 
