@@ -46,7 +46,8 @@ trait ITRegistrationFixtures extends ApplicantDetailsFixture {
   val testBankName = "testName"
   val testSortCode = "123456"
   val testAccountNumber = "12345678"
-  val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
+  val testRollNumber = "AB/1212"
+  val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber), Some(ValidStatus))
   val bankAccount: BankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
   val emptyBankAccount: BankAccount = BankAccount(isProvided = true, None, None)
   val bankAccountNotProvidedNoReason: BankAccount = BankAccount(isProvided = false, None, None)

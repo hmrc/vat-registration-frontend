@@ -22,7 +22,7 @@ import forms.EnterBankAccountDetailsForm
 import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionService}
-import views.html.bankdetails.EnterCompanyBankAccountDetails
+import views.html.bankdetails.{EnterBankAccountDetails, EnterCompanyBankAccountDetails}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                                val bankAccountDetailsService: BankAccountDetailsService,
                                                val sessionService: SessionService,
-                                               view: EnterCompanyBankAccountDetails)
+                                               view: EnterBankAccountDetails)
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
                                                baseControllerComponents: BaseControllerComponents) extends BaseController {

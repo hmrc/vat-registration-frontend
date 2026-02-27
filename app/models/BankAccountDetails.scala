@@ -26,7 +26,11 @@ case class BankAccount(isProvided: Boolean,
                        reason: Option[NoUKBankAccount],
                        bankAccountType: Option[BankAccountType] = None)
 
-case class BankAccountDetails(name: String, number: String, sortCode: String, status: Option[BankAccountDetailsStatus] = None)
+case class BankAccountDetails(name: String,
+                              number: String,
+                              sortCode: String,
+                              rollNumber: Option[String] = None,
+                              status: Option[BankAccountDetailsStatus] = None)
 
 object BankAccountDetails {
   implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails] {
