@@ -40,12 +40,15 @@ object ChooseAccountTypeForm {
 
   val form: Form[BankAccountType] = Form(
     single(
-      BUSINESS_OR_PERSONAL_ACCOUNT_RADIO -> default(text, "").verifying(stopOnFail(
-        mandatory(errorMsg)
-      )).transform[BankAccountType](
-        s => BankAccountType.fromString(s).get,
-        _.asBars
-      )
+      BUSINESS_OR_PERSONAL_ACCOUNT_RADIO -> default(text, "")
+        .verifying(
+          stopOnFail(
+            mandatory(errorMsg)
+          ))
+        .transform[BankAccountType](
+          s => BankAccountType.fromString(s).get,
+          _.asBars
+        )
     )
   )
 }
@@ -55,6 +58,7 @@ object EnterBankAccountDetailsForm {
   val ACCOUNT_NAME   = "accountName"
   val ACCOUNT_NUMBER = "accountNumber"
   val SORT_CODE      = "sortCode"
+  val ROLL_NUMBER    = "rollNumber"
 
   val accountNameEmptyKey     = "validation.companyBankAccount.name.missing"
   val accountNameMaxLengthKey = "validation.companyBankAccount.name.maxLength"
@@ -63,6 +67,7 @@ object EnterBankAccountDetailsForm {
   val accountNumberInvalidKey = "validation.companyBankAccount.number.invalid"
   val sortCodeEmptyKey        = "validation.companyBankAccount.sortCode.missing"
   val sortCodeInvalidKey      = "validation.companyBankAccount.sortCode.invalid"
+  val rollNumberInvalidKey    = "validation.companyBankAccount.rollNumber.invalid"
 
   val invalidAccountReputationKey     = "sortCodeAndAccountGroup"
   val invalidAccountReputationMessage = "validation.companyBankAccount.invalidCombination"
@@ -71,6 +76,7 @@ object EnterBankAccountDetailsForm {
   private val accountNameMaxLength = 60
   private val accountNumberRegex   = """[0-9]{6,8}""".r
   private val sortCodeRegex        = """[0-9]{6}""".r
+  private val rollNumberRegex      = """^[A-Z0-9/\-. ]{1,18}$""".r
 
   val form = Form[BankAccountDetails](
     mapping(
@@ -93,11 +99,19 @@ object EnterBankAccountDetailsForm {
           stopOnFail(
             mandatory(sortCodeEmptyKey),
             matchesRegex(sortCodeRegex, sortCodeInvalidKey)
-          ))
-    )((accountName, accountNumber, sortCode) => BankAccountDetails.apply(accountName, accountNumber, sortCode, None))(bankAccountDetails =>
-      BankAccountDetails.unapply(bankAccountDetails).map { case (accountName, accountNumber, sortCode, _) =>
-        (accountName, accountNumber, sortCode)
-      })
+          )),
+      ROLL_NUMBER -> optional(
+        text
+          .transform(removeSpaces, identity[String])
+          .verifying(
+            matchesRegex(rollNumberRegex, rollNumberInvalidKey)
+          )
+      )
+    )((accountName, accountNumber, sortCode, rollNumber) => BankAccountDetails.apply(accountName, accountNumber, sortCode, rollNumber))(
+      bankAccountDetails =>
+        BankAccountDetails.unapply(bankAccountDetails).map { case (accountName, accountNumber, sortCode, rollNumber, _) =>
+          (accountName, accountNumber, sortCode, rollNumber)
+        })
   )
 
   val formWithInvalidAccountReputation: Form[BankAccountDetails] =
