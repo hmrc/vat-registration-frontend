@@ -1331,8 +1331,6 @@ pages.businessLeadPartnerEntityType.missing.3pt          = Select the type of bu
 pages.businessPartnerEntityType.missing                  = Select the partner’s business type within the partnership
 pages.businessPartnerEntityType.heading                  = What type of business is the {0} partner within the partnership?
 
-
-
 # PARTNER SUMMARY PAGE
 partner.summary.heading                                  = You have added {0} member of the partnership
 partner.summary.headingPlural                            = You have added {0} members of the partnership
@@ -2030,10 +2028,3 @@ partnerEmail.error.incorrect_format            = Enter the email address in the 
 partnerEmail.error.nothing_entered             = Enter the email address
 partnerEmail.error.incorrect_length            = The email address must be 132 characters or fewer
 
-
-# BANK ACCOUNT TYPE PAGE
-BusinessOrPersonalBankAccount.title = What type of bank account will you use for VAT repayments?
-pages.businessOrPersonalAccount.heading = What type of bank account will you use for VAT repayments?
-pages.businessOrPersonalAccount.option.business = Business account
-pages.businessOrPersonalAccount.option.personal = Personal account
-validation.businessOrPersonalBankAccount.missing = Select business or personal account
