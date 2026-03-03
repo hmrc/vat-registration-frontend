@@ -16,7 +16,8 @@
 
 package models
 
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.{Json, JsSuccess, JsError}
+import models.bars.BankAccountType
 import testHelpers.VatRegSpec
 
 class BankAccountDetailsSpec extends VatRegSpec {
@@ -35,6 +36,54 @@ class BankAccountDetailsSpec extends VatRegSpec {
       val expected = validUkBankAccount.copy(details = None, reason = None)
       Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
     }
-  }
 
+    "parse successfully from Json when bankAccountType is Business" in {
+      val expected = validUkBankAccount.copy(bankAccountType = Some(BankAccountType.Business))
+      Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
+    }
+
+    "parse successfully from Json when bankAccountType is Personal" in {
+      val expected = validUkBankAccount.copy(bankAccountType = Some(BankAccountType.Personal))
+      Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
+    }
+
+    "parse successfully from Json when bankAccountType is absent" in {
+      val expected = validUkBankAccount.copy(bankAccountType = None)
+      Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
+    }
+
+    "write bankAccountType as 'business' for Business" in {
+      val json = Json.toJson(validUkBankAccount.copy(bankAccountType = Some(BankAccountType.Business)))
+      (json \ "bankAccountType").as[String] mustBe "business"
+    }
+
+    "write bankAccountType as 'personal' for Personal" in {
+      val json = Json.toJson(validUkBankAccount.copy(bankAccountType = Some(BankAccountType.Personal)))
+      (json \ "bankAccountType").as[String] mustBe "personal"
+    }
+
+    "write bankAccountType from 'business' string" in {
+      val json = Json.obj(
+        "isProvided"      -> true,
+        "bankAccountType" -> "business"
+      )
+      json.validate[BankAccount].map(_.bankAccountType) mustBe JsSuccess(Some(BankAccountType.Business))
+    }
+
+    "write bankAccountType from 'personal' string" in {
+      val json = Json.obj(
+        "isProvided"      -> true,
+        "bankAccountType" -> "personal"
+      )
+      json.validate[BankAccount].map(_.bankAccountType) mustBe JsSuccess(Some(BankAccountType.Personal))
+    }
+
+    "fail to write bankAccountType from an unrecognised string" in {
+      val json = Json.obj(
+        "isProvided"      -> true,
+        "bankAccountType" -> "unknown"
+      )
+      json.validate[BankAccount].map(_.bankAccountType) mustBe a[JsError]
+    }
+  }
 }

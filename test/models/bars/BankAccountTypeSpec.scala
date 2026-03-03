@@ -18,6 +18,7 @@ package models.bars
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.{JsError, JsNumber, Json, JsString, JsSuccess}
 
 class BankAccountTypeSpec extends AnyWordSpec with Matchers {
 
@@ -58,6 +59,36 @@ class BankAccountTypeSpec extends AnyWordSpec with Matchers {
 
       "return None for an empty string" in {
         BankAccountType.fromString("") shouldBe None
+      }
+    }
+
+    "JSON writes" should {
+
+      "serialise Personal to 'personal'" in {
+        Json.toJson[BankAccountType](BankAccountType.Personal) shouldBe JsString("personal")
+      }
+
+      "serialise Business to 'business'" in {
+        Json.toJson[BankAccountType](BankAccountType.Business) shouldBe JsString("business")
+      }
+    }
+
+    "JSON reads" should {
+
+      "deserialise 'personal' to Personal" in {
+        JsString("personal").validate[BankAccountType] shouldBe JsSuccess(BankAccountType.Personal)
+      }
+
+      "deserialise 'business' to Business" in {
+        JsString("business").validate[BankAccountType] shouldBe JsSuccess(BankAccountType.Business)
+      }
+
+      "return a JsError for an unrecognised string" in {
+        JsString("corporate").validate[BankAccountType] shouldBe a[JsError]
+      }
+
+      "return a JsError for a non-string JSON value" in {
+        JsNumber(1).validate[BankAccountType] shouldBe a[JsError]
       }
     }
   }

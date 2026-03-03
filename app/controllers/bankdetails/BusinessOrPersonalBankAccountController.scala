@@ -19,6 +19,7 @@ package controllers.bankdetails
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.BusinessOrPersonalBankAccountForm
+import models.bars.BankAccountType
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionService}
 import views.html.bankdetails.BusinessOrPersonalBankAccountView
@@ -38,7 +39,8 @@ class BusinessOrPersonalBankAccountController @Inject()(
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request => implicit profile =>
       bankAccountDetailsService.fetchBankAccountDetails.map { bankDetails =>
-        val filledForm = bankDetails.map(_.isProvided).fold(BusinessOrPersonalBankAccountForm.form)(BusinessOrPersonalBankAccountForm.form.fill)
+        val filledForm = bankDetails.flatMap(_.bankAccountType)
+          .fold(BusinessOrPersonalBankAccountForm.form)(BusinessOrPersonalBankAccountForm.form.fill)
         Ok(view(filledForm))
       }
   }
@@ -47,15 +49,9 @@ class BusinessOrPersonalBankAccountController @Inject()(
     implicit request => implicit profile =>
       BusinessOrPersonalBankAccountForm.form.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
-        isProvided =>
-          bankAccountDetailsService.saveHasCompanyBankAccount(isProvided).map { _ =>
-            if (isProvided) {
-              //              This needs to be checked based on journey.
-              Redirect(routes.UkBankAccountDetailsController.show)
-            } else {
-              //              This needs to be checked based on journey.
-              Redirect(routes.NoUKBankAccountController.show)
-            }
+        bankAccountType =>
+          bankAccountDetailsService.saveBankAccountType(bankAccountType).map { _ =>
+            Redirect(routes.UkBankAccountDetailsController.show)
           }
       )
   }
