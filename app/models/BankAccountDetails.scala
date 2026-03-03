@@ -17,37 +17,35 @@
 package models
 
 import models.api.BankAccountDetailsStatus
+import models.bars.BankAccountType
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 case class BankAccount(isProvided: Boolean,
                        details: Option[BankAccountDetails],
-                       reason: Option[NoUKBankAccount])
+                       reason: Option[NoUKBankAccount],
+                       bankAccountType: Option[BankAccountType] = None)
 
-case class BankAccountDetails(name: String,
-                              number: String,
-                              sortCode: String,
-                              status: Option[BankAccountDetailsStatus] = None)
+case class BankAccountDetails(name: String, number: String, sortCode: String, status: Option[BankAccountDetailsStatus] = None)
 
 object BankAccountDetails {
   implicit val accountReputationWrites: OWrites[BankAccountDetails] = new OWrites[BankAccountDetails] {
-    override def writes(o: BankAccountDetails): JsObject = {
-      Json.obj("account" -> Json.obj(
-        "accountNumber" -> o.number,
-        "sortCode" -> o.sortCode.replace("-", "")
-      ))
-    }
+    override def writes(o: BankAccountDetails): JsObject =
+      Json.obj(
+        "account" -> Json.obj(
+          "accountNumber" -> o.number,
+          "sortCode"      -> o.sortCode.replace("-", "")
+        ))
   }
 
   val format: OFormat[BankAccountDetails] = Json.format[BankAccountDetails]
 
-  def bankSeq(bankAccount: BankAccountDetails): Seq[String] = {
+  def bankSeq(bankAccount: BankAccountDetails): Seq[String] =
     Seq(
       bankAccount.name,
       bankAccount.number,
       bankAccount.sortCode
     )
-  }
 }
 
 object BankAccount {
@@ -56,7 +54,8 @@ object BankAccount {
 
   implicit val format: Format[BankAccount] = (
     (__ \ "isProvided").format[Boolean] and
-    (__ \ "details").formatNullable[BankAccountDetails](BankAccountDetails.format) and
-    (__ \ "reason").formatNullable[NoUKBankAccount]
-  ) (BankAccount.apply, unlift(BankAccount.unapply))
+      (__ \ "details").formatNullable[BankAccountDetails](BankAccountDetails.format) and
+      (__ \ "reason").formatNullable[NoUKBankAccount] and
+      (__ \ "bankAccountType").formatNullable[BankAccountType]
+  )(BankAccount.apply, unlift(BankAccount.unapply))
 }

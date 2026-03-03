@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package services
 
 import connectors.mocks.MockRegistrationApiConnector
 import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
+import models.bars.BankAccountType
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.Assertion
@@ -68,14 +69,15 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
       val result: BankAccount = await(service.saveBankAccountDetails(fullBankAccount))
       result mustBe fullBankAccount
 
-      verify(mockRegistrationApiConnector, times(1)).replaceSection[BankAccount](eqTo(currentProfile.registrationId), any[BankAccount](), any())(any(), any(), any(), any())
+      verify(mockRegistrationApiConnector, times(1))
+        .replaceSection[BankAccount](eqTo(currentProfile.registrationId), any[BankAccount](), any())(any(), any(), any(), any())
     }
   }
 
   "saveHasCompanyBankAccount" should {
     "patch and return an already persisted completed ProvidedBankAccount" in new Setup {
       val existingProvidedBankAccountState: BankAccount =
-        BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
+        BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, Some(BankAccountType.Business))
 
       mockGetSection[BankAccount](testRegId, Some(existingProvidedBankAccountState))
       mockReplaceSection[BankAccount](testRegId, existingProvidedBankAccountState)
@@ -87,7 +89,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
     "patch and return an already persisted completed NoBankAccount with a reason" in new Setup {
       val existingNoBankAccountState: BankAccount =
-        BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
+        BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange), None)
 
       mockGetSection[BankAccount](testRegId, Some(existingNoBankAccountState))
       mockReplaceSection[BankAccount](testRegId, existingNoBankAccountState)
@@ -99,9 +101,9 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
     "return a new blank BankAccount model if the user changes answer" in new Setup {
       val existingNoBankAccountState: BankAccount =
-        BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
+        BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange), None)
       val clearedBankAccount: BankAccount =
-        BankAccount(isProvided = true, None, None)
+        BankAccount(isProvided = true, None, None, None)
 
       mockGetSection[BankAccount](testRegId, Some(existingNoBankAccountState))
       mockReplaceSection[BankAccount](testRegId, clearedBankAccount)
@@ -113,10 +115,9 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
     "return a new blank BankAccount model if no previous bank account state available" in new Setup {
       def verifyIncompleteBankAccount(service: BankAccountDetailsService, hasBankAccount: Boolean): Assertion = {
-        val incompleteBankAccount: BankAccount = BankAccount(hasBankAccount, None, None)
+        val incompleteBankAccount: BankAccount = BankAccount(hasBankAccount, None, None, None)
 
         mockGetSection[BankAccount](testRegId, None)
-
         mockReplaceSection[BankAccount](testRegId, incompleteBankAccount)
 
         await(service.saveHasCompanyBankAccount(hasBankAccount)) mustBe incompleteBankAccount
@@ -127,4 +128,66 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
     }
   }
 
+  "saveNoUkBankAccountDetails" should {
+    "save a BankAccount with reason and preserve existing bankAccountType" in new Setup {
+      val existing: BankAccount = BankAccount(isProvided = true, None, None, Some(BankAccountType.Business))
+      val expected: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange), Some(BankAccountType.Business))
+
+      mockGetSection[BankAccount](testRegId, Some(existing))
+      mockReplaceSection[BankAccount](testRegId, expected)
+
+      val result: BankAccount = await(service.saveNoUkBankAccountDetails(BeingSetupOrNameChange))
+
+      result mustBe expected
+    }
+
+    "save a BankAccount with reason and no bankAccountType when none exists" in new Setup {
+      val expected: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange), None)
+
+      mockGetSection[BankAccount](testRegId, None)
+      mockReplaceSection[BankAccount](testRegId, expected)
+
+      val result: BankAccount = await(service.saveNoUkBankAccountDetails(BeingSetupOrNameChange))
+
+      result mustBe expected
+    }
+  }
+
+  "saveBankAccountType" should {
+    "update bankAccountType on an existing BankAccount" in new Setup {
+      val existing: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
+      val expected: BankAccount = existing.copy(bankAccountType = Some(BankAccountType.Business))
+
+      mockGetSection[BankAccount](testRegId, Some(existing))
+      mockReplaceSection[BankAccount](testRegId, expected)
+
+      val result: BankAccount = await(service.saveBankAccountType(BankAccountType.Business))
+
+      result mustBe expected
+    }
+
+    "update bankAccountType to Personal on an existing BankAccount" in new Setup {
+      val existing: BankAccount =
+        BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, Some(BankAccountType.Business))
+      val expected: BankAccount = existing.copy(bankAccountType = Some(BankAccountType.Personal))
+
+      mockGetSection[BankAccount](testRegId, Some(existing))
+      mockReplaceSection[BankAccount](testRegId, expected)
+
+      val result: BankAccount = await(service.saveBankAccountType(BankAccountType.Personal))
+
+      result mustBe expected
+    }
+
+    "create a new BankAccount with bankAccountType if none exists" in new Setup {
+      val expected: BankAccount = BankAccount(isProvided = true, None, None, Some(BankAccountType.Business))
+
+      mockGetSection[BankAccount](testRegId, None)
+      mockReplaceSection[BankAccount](testRegId, expected)
+
+      val result: BankAccount = await(service.saveBankAccountType(BankAccountType.Business))
+
+      result mustBe expected
+    }
+  }
 }

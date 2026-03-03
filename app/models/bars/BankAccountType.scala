@@ -16,6 +16,8 @@
 
 package models.bars
 
+import play.api.libs.json._
+
 sealed trait BankAccountType { def asBars: String }
 
 object BankAccountType {
@@ -28,4 +30,12 @@ object BankAccountType {
       case "business" => Some(Business)
       case _          => None
     }
+
+  implicit val format: Format[BankAccountType] = Format(
+    Reads[BankAccountType] {
+      case JsString(s) => fromString(s).map(JsSuccess(_)).getOrElse(JsError(s"Unknown BankAccountType: $s"))
+      case other       => JsError(s"Expected JsString for BankAccountType, got: $other")
+    },
+    Writes[BankAccountType](t => JsString(t.asBars))
+  )
 }

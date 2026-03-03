@@ -18,6 +18,7 @@ package forms
 
 import forms.FormValidation._
 import models.BankAccountDetails
+import models.bars.BankAccountType
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints.maxLength
@@ -29,6 +30,23 @@ object HasCompanyBankAccountForm extends RequiredBooleanForm {
 
   val form = Form(
     single(HAS_COMPANY_BANK_ACCOUNT_RADIO -> requiredBoolean)
+  )
+}
+
+object BusinessOrPersonalBankAccountForm {
+
+  val BUSINESS_OR_PERSONAL_ACCOUNT_RADIO: String = "value"
+  val errorMsg = "validation.businessOrPersonalBankAccount.missing"
+
+  val form: Form[BankAccountType] = Form(
+    single(
+      BUSINESS_OR_PERSONAL_ACCOUNT_RADIO -> text
+        .verifying(errorMsg, s => BankAccountType.fromString(s).isDefined)
+        .transform[BankAccountType](
+          s => BankAccountType.fromString(s).get,
+          _.asBars
+        )
+    )
   )
 }
 
