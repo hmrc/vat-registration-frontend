@@ -19,6 +19,7 @@ package services
 import connectors.mocks.MockRegistrationApiConnector
 import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
 import models.bars.BankAccountType
+import models.bars.BankAccountType.Personal
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.Assertion
@@ -154,7 +155,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
   }
 
   "saveBankAccountType" should {
-    "update bankAccountType on an existing BankAccount" in new Setup {
+    "update bankAccountType on an existing BankAccount with no BankAccountType" in new Setup {
       val existing: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, None)
       val expected: BankAccount = existing.copy(bankAccountType = Some(BankAccountType.Business))
 
@@ -166,7 +167,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
       result mustBe expected
     }
 
-    "update bankAccountType to Personal on an existing BankAccount" in new Setup {
+    "update bankAccountType to Personal on an existing Business BankAccount" in new Setup {
       val existing: BankAccount =
         BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None, Some(BankAccountType.Business))
       val expected: BankAccount = existing.copy(bankAccountType = Some(BankAccountType.Personal))
