@@ -27,14 +27,13 @@ class HasCompanyBankAccountViewSpec extends VatRegViewSpec {
   implicit val doc: Document = Jsoup.parse(view(HasCompanyBankAccountForm.form).body)
   lazy val view: HasCompanyBankAccountView = app.injector.instanceOf[HasCompanyBankAccountView]
 
-  val heading = "Can you provide bank or building society details for VAT repayments to the business?"
+  val heading = "Are you able to provide bank or building society account details for the business?"
   val title = s"$heading - Register for VAT - GOV.UK"
-  val para = "If HMRC owes the business money, it will repay this directly to your account."
-  val para2 = "BACS is normally used for VAT repayments because this is a faster and more secure payment method than a cheque."
-  val para3 = "The account you select to receive VAT repayments must be:"
-  val bullet1 = "used only for this business"
-  val bullet2 = "in the name of the individual or company registering for VAT"
-  val bullet3 = "based in the UK"
+  val para = "If we owe the business money, we can repay this directly into your bank by BACS. This is faster and more secure than HMRC cheques."
+  val para2 = "The account does not have to be a dedicated business account but it must be:"
+  val bullet1 = "separate from a personal account"
+  val bullet2 = "in the name of the registered person or company"
+  val bullet3 = "in the UK"
   val bullet4 = "able to receive BACS payments"
   val yes = "Yes"
   val no = "No"
@@ -56,7 +55,6 @@ class HasCompanyBankAccountViewSpec extends VatRegViewSpec {
     "have correct text" in new ViewSetup {
       doc.para(1) mustBe Some(para)
       doc.para(2) mustBe Some(para2)
-      doc.para(3) mustBe Some(para3)
     }
 
     "have correct bullets" in new ViewSetup {
