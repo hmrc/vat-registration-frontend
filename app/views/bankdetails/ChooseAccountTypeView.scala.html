@@ -30,18 +30,18 @@
         inputRadio: components.inputRadio
 )
 
-@(form: Form[BankAccountType])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(chooseAccountTypeForm: Form[BankAccountType])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(form, messages("pages.chooseAccountType.heading")))) {
+@layout(pageTitle = Some(title(chooseAccountTypeForm, messages("pages.chooseAccountType.heading")))) {
 
-    @errorSummary(errors = form.errors)
+    @errorSummary(errors = chooseAccountTypeForm.errors)
 
     @h1("pages.chooseAccountType.heading")
 
     @formWithCSRF(action = controllers.bankdetails.routes.ChooseAccountTypeController.submit) {
 
         @inputRadio(
-            form = form,
+            form = chooseAccountTypeForm,
             legend = messages("pages.chooseAccountType.heading"),
             items = radios,
             legendAsHeading = false,
@@ -57,12 +57,12 @@
         RadioItem(
             content = Text(messages("pages.chooseAccountType.option.business")),
             value = Some(BankAccountType.Business.asBars),
-            checked = form("value").value.contains(BankAccountType.Business.asBars)
+            checked = chooseAccountTypeForm("value").value.contains(BankAccountType.Business.asBars)
         ),
         RadioItem(
             content = Text(messages("pages.chooseAccountType.option.personal")),
             value = Some(BankAccountType.Personal.asBars),
-            checked = form("value").value.contains(BankAccountType.Personal.asBars)
+            checked = chooseAccountTypeForm("value").value.contains(BankAccountType.Personal.asBars)
         )
     )
 }
