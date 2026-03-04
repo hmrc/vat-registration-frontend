@@ -33,10 +33,10 @@ object HasCompanyBankAccountForm extends RequiredBooleanForm {
   )
 }
 
-object BusinessOrPersonalBankAccountForm {
+object ChooseAccountTypeForm {
 
   val BUSINESS_OR_PERSONAL_ACCOUNT_RADIO: String = "value"
-  val errorMsg = "validation.businessOrPersonalBankAccount.missing"
+  val errorMsg = "validation.chooseAccountType.missing"
 
   val form: Form[BankAccountType] = Form(
     single(

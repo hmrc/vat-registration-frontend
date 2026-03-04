@@ -976,11 +976,10 @@ validation.hasCompanyBankAccount.missing              = select yes if you are ab
 
 
 # Bank Account Type Page
-BusinessOrPersonalBankAccount.title = What kind of bank or building society account will you use for VAT repayments?
-pages.businessOrPersonalAccount.heading = What kind of bank or building society account will you use for VAT repayments?
-pages.businessOrPersonalAccount.option.business = Business account
-pages.businessOrPersonalAccount.option.personal = Personal account
-validation.businessOrPersonalBankAccount.missing = Select business or personal account
+pages.chooseAccountType.heading                       = What kind of bank or building society account will you use for VAT repayments?
+pages.chooseAccountType.option.business               = Business account
+pages.chooseAccountType.option.personal               = Personal account
+validation.chooseAccountType.missing                  = Select business or personal account
 
 # No UK Bank Account Page
 pages.noUKBankAccount.heading                        = Why are you unable to provide bank account details for the business?
