@@ -57,7 +57,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
         hasBankAccount =>
           bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).map { _ =>
             if (hasBankAccount) {
-              Redirect(routes.BusinessOrPersonalBankAccountController.show)
+              Redirect(routes.UkBankAccountDetailsController.show)
             } else {
               Redirect(routes.NoUKBankAccountController.show)
             }

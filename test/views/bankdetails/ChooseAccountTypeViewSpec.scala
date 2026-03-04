@@ -16,16 +16,16 @@
 
 package views.bankdetails
 
-import forms.BusinessOrPersonalBankAccountForm
+import forms.ChooseAccountTypeForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.bankdetails.BusinessOrPersonalBankAccountView
+import views.html.bankdetails.ChooseAccountTypeView
 
-class BusinessOrPersonalBankAccountViewSpec extends VatRegViewSpec {
+class ChooseAccountTypeViewSpec extends VatRegViewSpec {
 
-  lazy val view: BusinessOrPersonalBankAccountView = app.injector.instanceOf[BusinessOrPersonalBankAccountView]
-  implicit val doc: Document                       = Jsoup.parse(view(BusinessOrPersonalBankAccountForm.form).body)
+  lazy val view: ChooseAccountTypeView = app.injector.instanceOf[ChooseAccountTypeView]
+  implicit val doc: Document           = Jsoup.parse(view(ChooseAccountTypeForm.form).body)
 
   val heading  = "What kind of bank or building society account will you use for VAT repayments?"
   val title    = s"$heading - Register for VAT - GOV.UK"
@@ -33,7 +33,7 @@ class BusinessOrPersonalBankAccountViewSpec extends VatRegViewSpec {
   val personal = "Personal account"
   val continue = "Save and continue"
 
-  "BusinessOrPersonalBankAccount Page" should {
+  "ChooseAccountTypeView Page" should {
     "have a back link" in new ViewSetup {
       doc.hasBackLink mustBe true
     }
@@ -60,7 +60,7 @@ class BusinessOrPersonalBankAccountViewSpec extends VatRegViewSpec {
 
     "display an error summary with the correct message when no option is selected" in new ViewSetup {
       val errorDoc: Document = Jsoup.parse(
-        view(BusinessOrPersonalBankAccountForm.form.withError("value", "validation.businessOrPersonalBankAccount.missing")).body
+        view(ChooseAccountTypeForm.form.withError("value", "validation.chooseAccountType.missing")).body
       )
       errorDoc.hasErrorSummary mustBe true
       errorDoc.errorSummaryLinks.head.text mustBe "Select business or personal account"
