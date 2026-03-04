@@ -122,7 +122,7 @@ object FormValidation {
 
   def removeSpaces(text: String): String = text.replaceAll(" ", "")
 
-  def cleanText(text: String): String = text.replaceAll("\\s+", "")
+  def removeWhiteSpaces(text: String): String = text.replaceAll("\\s+", "")
 
   def removeNewlineAndTrim(s: String): String = s.replaceAll("\r\n|\r|\n|\t", " ").trim
 
