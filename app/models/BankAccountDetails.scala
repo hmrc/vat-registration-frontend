@@ -46,10 +46,11 @@ object BankAccountDetails {
 
   def bankSeq(bankAccount: BankAccountDetails): Seq[String] =
     Seq(
-      bankAccount.name,
-      bankAccount.number,
-      bankAccount.sortCode
-    )
+      Some(bankAccount.name),
+      Some(bankAccount.number),
+      Some(bankAccount.sortCode),
+      bankAccount.rollNumber
+    ).flatten
 }
 
 object BankAccount {

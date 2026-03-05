@@ -76,7 +76,7 @@ object EnterBankAccountDetailsForm {
   private val accountNameMaxLength = 60
   private val accountNumberRegex   = """[0-9]{6,8}""".r
   private val sortCodeRegex        = """[0-9]{6}""".r
-  private val rollNumberRegex      = """^[A-Z0-9/\-. ]{1,18}$""".r
+  private val rollNumberMaxLength  = 30
 
   val form = Form[BankAccountDetails](
     mapping(
@@ -104,7 +104,7 @@ object EnterBankAccountDetailsForm {
         text
           .transform(removeSpaces, identity[String])
           .verifying(
-            matchesRegex(rollNumberRegex, rollNumberInvalidKey)
+            maxLength(rollNumberMaxLength, rollNumberInvalidKey)
           )
       )
     )((accountName, accountNumber, sortCode, rollNumber) => BankAccountDetails.apply(accountName, accountNumber, sortCode, rollNumber))(

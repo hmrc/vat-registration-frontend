@@ -19,7 +19,6 @@ package services
 import connectors.mocks.MockRegistrationApiConnector
 import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
 import models.bars.BankAccountType
-import models.bars.BankAccountType.Personal
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.Assertion
