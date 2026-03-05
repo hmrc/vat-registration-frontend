@@ -72,16 +72,14 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
   }
 
   def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
-                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BankAccount] = {
-    fetchBankAccountDetails.flatMap { existing =>
-      val bankAccount = BankAccount(
-        isProvided = false,
-        details = None,
-        reason = Some(reason),
-        bankAccountType = None
-      )
-      saveBankAccountDetails(bankAccount)
-    }
+                                (implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
+    val bankAccount = BankAccount(
+      isProvided = false,
+      details = None,
+      reason = Some(reason),
+      bankAccountType = None
+    )
+    saveBankAccountDetails(bankAccount)
   }
 
   def saveBankAccountType(bankAccountType: BankAccountType)
