@@ -31,7 +31,7 @@
 
 @(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(bankDetailsForm, messages("pages.bankDetails.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(bankDetailsForm, messages("pages.bankDetails.heading")))) {
 
     @errorSummary(errors = bankDetailsForm.errors)
 
