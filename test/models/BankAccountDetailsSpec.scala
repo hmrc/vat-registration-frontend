@@ -16,8 +16,8 @@
 
 package models
 
-import play.api.libs.json.{Json, JsSuccess, JsError}
 import models.bars.BankAccountType
+import play.api.libs.json.{JsError, Json, JsSuccess}
 import testHelpers.VatRegSpec
 
 class BankAccountDetailsSpec extends VatRegSpec {
@@ -34,6 +34,11 @@ class BankAccountDetailsSpec extends VatRegSpec {
 
     "parse successfully from Json when neither details or reason are present" in {
       val expected = validUkBankAccount.copy(details = None, reason = None)
+      Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
+    }
+
+    "parse successfully from Json when roll number is present in details" in {
+      val expected = validUkBankAccount.copy(details = Some(BankAccountDetails("testName", "12-34-56", "12345678", Some("AB/1212"))))
       Json.toJson(expected).validate[BankAccount] mustBe JsSuccess(expected)
     }
 

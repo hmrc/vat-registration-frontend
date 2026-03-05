@@ -51,7 +51,7 @@
             label = messages("pages.bankDetails.accountName.label"),
             classes = Some("govuk-input--width-10"),
             isPageHeading = false,
-            hint = Some(Html(messages(""))))
+            hint = Some(Html(messages("pages.bankDetails.accountName.hint"))))
 
         @inputText(form = bankDetailsForm,
             id = "accountNumber",
@@ -73,7 +73,7 @@
             id = "rollNumber",
             name = "rollNumber",
             label = messages("pages.bankDetails.rollNumber.label"),
-            classes = Some("govuk-input--width-10"),
+            classes = Some("govuk-input--width-20"),
             isPageHeading = false,
             hint = Some(Html(messages("pages.bankDetails.rollNumber.hint"))))
 
