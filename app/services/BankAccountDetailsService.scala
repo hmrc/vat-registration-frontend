@@ -78,7 +78,7 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
         isProvided = false,
         details = None,
         reason = Some(reason),
-        bankAccountType = existing.flatMap(_.bankAccountType)
+        bankAccountType = None
       )
       saveBankAccountDetails(bankAccount)
     }

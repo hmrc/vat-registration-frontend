@@ -130,22 +130,11 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
   }
 
   "saveNoUkBankAccountDetails" should {
-    "save a BankAccount with reason and preserve existing bankAccountType" in new Setup {
+    "save a BankAccount reason and remove bank account details" in new Setup {
       val existing: BankAccount = BankAccount(isProvided = true, None, None, Some(BankAccountType.Business))
-      val expected: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange), Some(BankAccountType.Business))
-
-      mockGetSection[BankAccount](testRegId, Some(existing))
-      mockReplaceSection[BankAccount](testRegId, expected)
-
-      val result: BankAccount = await(service.saveNoUkBankAccountDetails(BeingSetupOrNameChange))
-
-      result mustBe expected
-    }
-
-    "save a BankAccount with reason and no bankAccountType when none exists" in new Setup {
       val expected: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange), None)
 
-      mockGetSection[BankAccount](testRegId, None)
+      mockGetSection[BankAccount](testRegId, Some(existing))
       mockReplaceSection[BankAccount](testRegId, expected)
 
       val result: BankAccount = await(service.saveNoUkBankAccountDetails(BeingSetupOrNameChange))
