@@ -16,6 +16,7 @@
 
 package controllers.bankdetails
 
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.BankAccount
@@ -41,6 +42,20 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
       val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
+    }
+
+    "redirect to HasBankAccountController when feature switch is enabled" in new Setup {
+      enable(UseNewBarsVerify)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[BankAccount](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
     }
 
     "return OK with a pre-populated form when bankAccountType is Business" in new Setup {

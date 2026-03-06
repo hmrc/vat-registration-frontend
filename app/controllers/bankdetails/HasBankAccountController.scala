@@ -20,6 +20,8 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
 import models.api.{Individual, NETP, NonUkNonEstablished}
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
+import featuretoggle.FeatureToggleSupport.isEnabled
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
 import views.html.bankdetails.HasCompanyBankAccountView
@@ -56,10 +58,10 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
           Future.successful(BadRequest(view(formWithErrors))),
         hasBankAccount =>
           bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).map { _ =>
-            if (hasBankAccount) {
-              Redirect(routes.UkBankAccountDetailsController.show)
-            } else {
-              Redirect(routes.NoUKBankAccountController.show)
+             (hasBankAccount, isEnabled(UseNewBarsVerify)) match {
+               case (true, false) => Redirect(routes.UkBankAccountDetailsController.show)
+               case (true, true) => Redirect(routes.ChooseAccountTypeController.show)
+               case (false, _) => Redirect(routes.NoUKBankAccountController.show)
             }
           }
       )

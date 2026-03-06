@@ -18,6 +18,8 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
+import featuretoggle.FeatureToggleSupport.isEnabled
 import forms.ChooseAccountTypeForm
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionService}
@@ -36,11 +38,15 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
     extends BaseController {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    bankAccountDetailsService.fetchBankAccountDetails.map { bankDetails =>
-      val filledForm = bankDetails
-        .flatMap(_.bankAccountType)
-        .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
-      Ok(view(filledForm))
+    if (isEnabled(UseNewBarsVerify)) {
+      Future.successful(Redirect(routes.HasBankAccountController.show))
+    } else {
+      bankAccountDetailsService.fetchBankAccountDetails.map { bankDetails =>
+        val filledForm = bankDetails
+          .flatMap(_.bankAccountType)
+          .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
+        Ok(view(filledForm))
+      }
     }
   }
 
@@ -55,4 +61,5 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
           }
       )
   }
+
 }

@@ -16,6 +16,7 @@
 
 package controllers.bankdetails
 
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itutil.ControllerISpec
 import models.BankAccount
 import models.api.{EligibilitySubmissionData, Individual, NETP, NonUkNonEstablished}
@@ -126,7 +127,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
   }
 
   "POST /companys-bank-account" must {
-    "redirect to the UK bank page if the user has a bank account" in new Setup {
+    "redirect to the UK bank page if the user has a bank account and useNewBarsVerify switch is disabled" in new Setup {
       given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
@@ -140,6 +141,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
     }
+
     "redirect to the reason for no bank account page if the user doesn't have a bank account" in new Setup {
       given()
         .user.isAuthorised()
@@ -153,6 +155,22 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)
+    }
+
+    "redirect to the choose account type page if the user has a bank account and useNewBarsVerify switch is enabled" in new Setup {
+      enable(UseNewBarsVerify)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[BankAccount](None)
+        .registrationApi.replaceSection[BankAccount](BankAccount(isProvided = true, None, None))
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).post(Map("value" -> "true")))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.ChooseAccountTypeController.show.url)
     }
 
     "return BAD_REQUEST if has_bank_account option not selected" in new Setup {
