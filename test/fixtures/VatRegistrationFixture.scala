@@ -213,7 +213,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
 
   val validAasDetails: AASDetails = AASDetails(Some(QuarterlyPayment), Some(BACS))
 
-  val validUkBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None)
+  val validUkBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "12-34-56", "12345678")), None, None)
 
   val noUkBankAccount: BankAccount = BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))
 

@@ -31,7 +31,8 @@ object FeatureSwitch {
     VrsNewAttachmentJourney,
     TaxableTurnoverJourney,
     SubmitDeadline,
-    NewVRSApplConfirmJourney
+    NewVRSApplConfirmJourney,
+    UseNewBarsVerify
   )
 
   def apply(str: String): FeatureSwitch =
@@ -113,5 +114,9 @@ object FeatureSwitch {
     val displayText: String = "New VRS Application Confirmation Journey"
   }
 
+  case object UseNewBarsVerify extends FeatureSwitch {
+    val name: String = "feature-switch.useNewBarsVerify"
+    val displayText: String = "New BARS Bank Account Details Verification"
+  }
 
 }

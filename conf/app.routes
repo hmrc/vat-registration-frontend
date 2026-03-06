@@ -126,6 +126,10 @@ POST        /companys-bank-account                                    controller
 GET         /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.show
 POST        /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.submit
 
+## CHOOSE BUSINESS OR PERSONAL ACCOUNT TYPE
+GET         /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.show
+POST        /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.submit
+
 ## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
 GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show
 POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit

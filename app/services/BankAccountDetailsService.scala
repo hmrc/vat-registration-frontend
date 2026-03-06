@@ -18,6 +18,7 @@ package services
 
 import connectors.RegistrationApiConnector
 import models._
+import models.bars.BankAccountType
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -41,12 +42,12 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
   def saveHasCompanyBankAccount(hasBankAccount: Boolean)
                                (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BankAccount] = {
     val bankAccount = fetchBankAccountDetails map {
-      case Some(BankAccount(oldHasBankAccount, _, _)) if oldHasBankAccount != hasBankAccount =>
-        BankAccount(hasBankAccount, None, None)
+      case Some(BankAccount(oldHasBankAccount, _, _, _)) if oldHasBankAccount != hasBankAccount =>
+        BankAccount(hasBankAccount, None, None, None)
       case Some(bankAccountDetails) =>
         bankAccountDetails.copy(isProvided = hasBankAccount)
       case None =>
-        BankAccount(hasBankAccount, None, None)
+        BankAccount(hasBankAccount, None, None, None)
     }
 
     bankAccount flatMap saveBankAccountDetails
@@ -54,16 +55,20 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
 
   def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)
                                    (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[Boolean] = {
-    bankAccountRepService.validateBankDetails(accountDetails).flatMap {
-      case status@(ValidStatus | IndeterminateStatus) =>
-        val bankAccount = BankAccount(
-          isProvided = true,
-          details = Some(accountDetails.copy(status = Some(status))),
-          reason = None
-        )
-        saveBankAccountDetails(bankAccount) map (_ => true)
-      case InvalidStatus => Future.successful(false)
-    }
+    for {
+      existing <- fetchBankAccountDetails
+      result   <- bankAccountRepService.validateBankDetails(accountDetails).flatMap {
+        case status@(ValidStatus | IndeterminateStatus) =>
+          val bankAccount = BankAccount(
+            isProvided = true,
+            details = Some(accountDetails.copy(status = Some(status))),
+            reason = None,
+            bankAccountType = existing.flatMap(_.bankAccountType)
+          )
+          saveBankAccountDetails(bankAccount) map (_ => true)
+        case InvalidStatus => Future.successful(false)
+      }
+    } yield result
   }
 
   def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
@@ -71,8 +76,17 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
     val bankAccount = BankAccount(
       isProvided = false,
       details = None,
-      reason = Some(reason)
+      reason = Some(reason),
+      bankAccountType = None
     )
     saveBankAccountDetails(bankAccount)
+  }
+
+  def saveBankAccountType(bankAccountType: BankAccountType)
+                         (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BankAccount] = {
+    fetchBankAccountDetails.map {
+      case Some(existing) => existing.copy(bankAccountType = Some(bankAccountType))
+      case None           => BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(bankAccountType))
+    }.flatMap(saveBankAccountDetails)
   }
 }

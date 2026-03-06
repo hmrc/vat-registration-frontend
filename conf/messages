@@ -973,6 +973,13 @@ pages.hasCompanyBankAccount.bullet3                   = in the UK
 pages.hasCompanyBankAccount.bullet4                   = able to receive BACS payments
 validation.hasCompanyBankAccount.missing              = Select yes if you are able to provide bank or building society details for the business
 
+
+# Bank Account Type Page
+pages.chooseAccountType.heading                       = What kind of bank or building society account will you use for VAT repayments?
+pages.chooseAccountType.option.business               = Business account
+pages.chooseAccountType.option.personal               = Personal account
+validation.chooseAccountType.missing                  = Select business or personal account
+
 # No UK Bank Account Page
 pages.noUKBankAccount.heading                        = Why are you unable to provide bank account details for the business?
 pages.noUKBankAccount.beingSetup                     = It is being set up but is taking a while
@@ -2020,3 +2027,4 @@ partnerEmail.link                              = HMRC Privacy Notice
 partnerEmail.error.incorrect_format            = Enter the email address in the correct format, like name@example.com
 partnerEmail.error.nothing_entered             = Enter the email address
 partnerEmail.error.incorrect_length            = The email address must be 132 characters or fewer
+
