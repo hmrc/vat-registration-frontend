@@ -39,14 +39,14 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      Future.successful(Redirect(routes.HasBankAccountController.show))
-    } else {
       bankAccountDetailsService.fetchBankAccountDetails.map { bankDetails =>
         val filledForm = bankDetails
           .flatMap(_.bankAccountType)
           .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
         Ok(view(filledForm))
       }
+    } else {
+        Future.successful(Redirect(routes.HasBankAccountController.show))
     }
   }
 

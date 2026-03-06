@@ -32,20 +32,8 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
   val url = "/choose-account-type"
 
   "GET /choose-account-type" must {
-    "return OK with a blank form if the VAT scheme doesn't contain bank account type" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](None)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(url).get())
-
-      res.status mustBe OK
-    }
-
-    "redirect to HasBankAccountController when feature switch is enabled" in new Setup {
-      enable(UseNewBarsVerify)
+    "redirect to HasBankAccountController when feature switch is disabled" in new Setup {
+      disable(UseNewBarsVerify)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
@@ -56,7 +44,19 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
-      disable(UseNewBarsVerify)
+      enable(UseNewBarsVerify)
+    }
+
+    "return OK with a blank form if the VAT scheme doesn't contain bank account type" in new Setup {
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[BankAccount](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).get())
+
+      res.status mustBe OK
     }
 
     "return OK with a pre-populated form when bankAccountType is Business" in new Setup {
