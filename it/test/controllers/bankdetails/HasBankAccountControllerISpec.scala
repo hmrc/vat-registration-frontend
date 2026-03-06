@@ -128,6 +128,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
   "POST /companys-bank-account" must {
     "redirect to the UK bank page if the user has a bank account and useNewBarsVerify switch is disabled" in new Setup {
+      disable(UseNewBarsVerify)
       given()
         .user.isAuthorised()
         .registrationApi.getSection[BankAccount](None)
@@ -171,6 +172,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.ChooseAccountTypeController.show.url)
+      disable(UseNewBarsVerify)
     }
 
     "return BAD_REQUEST if has_bank_account option not selected" in new Setup {

@@ -56,6 +56,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+      disable(UseNewBarsVerify)
     }
 
     "return OK with a pre-populated form when bankAccountType is Business" in new Setup {
