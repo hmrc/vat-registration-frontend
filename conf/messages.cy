@@ -983,6 +983,11 @@ pages.noUKBankAccount.accountNotInBusinessName       = Nid yw’r cyfrif banc yn
 pages.noUKBankAccount.dontWantToProvide              = Nid wyf am roi manylion cyfrif banc y busnes
 pages.noUKBankAccount.error                          = Dewiswch pam na allwch roi manylion cyfrif banc ar gyfer y busnes
 
+# Bank Account Type Page
+pages.chooseAccountType.heading                       = Pa fath o gyfrif banc neu gyfrif cymdeithas adeiladu fyddwch yn ei ddefnyddio ar gyfer ad-daliadau TAW?
+pages.chooseAccountType.option.business               = Cyfrif busnes
+pages.chooseAccountType.option.personal               = Cyfrif personol
+
 # Bank Details page
 pages.bankDetails.heading                           = Beth yw manylion cyfrif banc neu gymdeithas adeiladu’r busnes?
 pages.bankDetails.p1                                = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEM yn defnyddio’r cyfrif hwn. Ni fyddwn yn cymryd arian ohono.
