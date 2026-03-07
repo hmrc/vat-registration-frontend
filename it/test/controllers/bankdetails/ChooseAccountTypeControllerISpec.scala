@@ -16,7 +16,6 @@
 
 package controllers.bankdetails
 
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.BankAccount
@@ -32,21 +31,6 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
   val url = "/choose-account-type"
 
   "GET /choose-account-type" must {
-    "redirect to HasBankAccountController when feature switch is disabled" in new Setup {
-      disable(UseNewBarsVerify)
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](None)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(url).get())
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
-      enable(UseNewBarsVerify)
-    }
-
     "return OK with a blank form if the VAT scheme doesn't contain bank account type" in new Setup {
       given()
         .user.isAuthorised()
