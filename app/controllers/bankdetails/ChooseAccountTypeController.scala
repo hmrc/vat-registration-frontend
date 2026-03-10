@@ -39,7 +39,7 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      bankAccountDetailsService.fetchBankAccountDetails.map { bankDetails =>
+      bankAccountDetailsService.getBankAccount.map { bankDetails =>
         val filledForm = bankDetails
           .flatMap(_.bankAccountType)
           .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)

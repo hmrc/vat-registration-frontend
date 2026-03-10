@@ -36,7 +36,9 @@
     @errorSummary(errors = bankDetailsForm.errors)
 
     @h1("pages.bankDetails.heading")
-    @p { @messages("pages.bankDetails.p1") }
+    @p {
+        @messages("pages.bankDetails.p1")
+    }
 
     @panelIndent {
         @messages("pages.bankDetails.info")
@@ -44,28 +46,36 @@
 
     @formWithCSRF(action = controllers.bankdetails.routes.UkBankAccountDetailsController.submit) {
         @inputText(form = bankDetailsForm,
-                     id = "accountName",
-                     name = "accountName",
-                     label = messages("pages.bankDetails.accountName.label"),
-                     classes = Some("govuk-input--width-10"),
-                     isPageHeading = false,
-                     hint = Some(Html(messages(""))))
+            id = "accountName",
+            name = "accountName",
+            label = messages("pages.bankDetails.accountName.label"),
+            classes = Some("govuk-input--width-10"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.accountName.hint"))))
 
         @inputText(form = bankDetailsForm,
-                     id = "accountNumber",
-                     name = "accountNumber",
-                     label = messages("pages.bankDetails.accountNumber.label"),
-                     classes = Some("govuk-input--width-10"),
-                     isPageHeading = false,
-                     hint = Some(Html(messages("pages.bankDetails.accountNumber.hint"))))
+            id = "accountNumber",
+            name = "accountNumber",
+            label = messages("pages.bankDetails.accountNumber.label"),
+            classes = Some("govuk-input--width-10"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.accountNumber.hint"))))
 
         @inputText(form = bankDetailsForm,
-                     id = "sortCode",
-                     name = "sortCode",
-                     label = messages("pages.bankDetails.sortCode.label"),
-                     classes = Some("govuk-input--width-5"),
-                     isPageHeading = false,
-                     hint = Some(Html(messages("pages.bankDetails.sortCode.hint"))))
+            id = "sortCode",
+            name = "sortCode",
+            label = messages("pages.bankDetails.sortCode.label"),
+            classes = Some("govuk-input--width-5"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.sortCode.hint"))))
+
+        @inputText(form = bankDetailsForm,
+            id = "rollNumber",
+            name = "rollNumber",
+            label = messages("pages.bankDetails.rollNumber.label"),
+            classes = Some("govuk-input--width-20"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.rollNumber.hint"))))
 
         @button("app.common.continue")
     }

@@ -40,7 +40,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
     implicit request =>
       implicit profile =>
         for {
-          optBankAccountDetails <- bankAccountDetailsService.fetchBankAccountDetails
+          optBankAccountDetails <- bankAccountDetailsService.getBankAccount
           form = optBankAccountDetails.flatMap(_.reason).fold(NoUKBankAccountForm.form)(NoUKBankAccountForm.form.fill)
         } yield Ok(noUKBankAccountView(form))
   }
