@@ -18,30 +18,28 @@ package services
 
 import connectors.RegistrationApiConnector
 import models._
-import models.bars.BankAccountType
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
-import play.api.libs.json.Json
+import models.bars.BankAccountType
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.mvc.Request
 
 @Singleton
-class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiConnector,
-                                          val bankAccountRepService: BankAccountReputationService) {
+class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector, val bankAccountRepService: BankAccountReputationService) {
 
-  def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] = {
+  def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
     regApiConnector.getSection[BankAccount](profile.registrationId)
-  }
 
-  def saveBankAccount(bankAccount: BankAccount)
-                            (implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
+  def saveBankAccount(bankAccount: BankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] =
     regApiConnector.replaceSection[BankAccount](profile.registrationId, bankAccount)
-  }
 
-  def saveHasCompanyBankAccount(hasBankAccount: Boolean)
-                               (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BankAccount] = {
+  def saveHasCompanyBankAccount(hasBankAccount: Boolean)(implicit
+      hc: HeaderCarrier,
+      profile: CurrentProfile,
+      ex: ExecutionContext,
+      request: Request[_]): Future[BankAccount] = {
     val bankAccount = getBankAccount map {
       case Some(BankAccount(oldHasBankAccount, _, _, _)) if oldHasBankAccount != hasBankAccount =>
         BankAccount(hasBankAccount, None, None, None)
@@ -54,12 +52,15 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
     bankAccount flatMap saveBankAccount
   }
 
-  def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)
-                                   (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[Boolean] = {
+  def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)(implicit
+      hc: HeaderCarrier,
+      profile: CurrentProfile,
+      ex: ExecutionContext,
+      request: Request[_]): Future[Boolean] =
     for {
       existing <- getBankAccount
-      result   <- bankAccountRepService.validateBankDetails(accountDetails).flatMap {
-        case status@(ValidStatus | IndeterminateStatus) =>
+      result <- bankAccountRepService.validateBankDetails(accountDetails).flatMap {
+        case status @ (ValidStatus | IndeterminateStatus) =>
           val bankAccount = BankAccount(
             isProvided = true,
             details = Some(accountDetails.copy(status = Some(status))),
@@ -70,10 +71,9 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
         case InvalidStatus => Future.successful(false)
       }
     } yield result
-  }
 
-  def saveNoUkBankAccountDetails(reason: NoUKBankAccount)
-                                (implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
+  def saveNoUkBankAccountDetails(
+      reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
     val bankAccount = BankAccount(
       isProvided = false,
       details = None,
@@ -83,11 +83,15 @@ class BankAccountDetailsService @Inject()(val regApiConnector: RegistrationApiCo
     saveBankAccount(bankAccount)
   }
 
-  def saveBankAccountType(bankAccountType: BankAccountType)
-                         (implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BankAccount] = {
-    getBankAccount.map {
-      case Some(existing) => existing.copy(bankAccountType = Some(bankAccountType))
-      case None           => BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(bankAccountType))
-    }.flatMap(saveBankAccount)
-  }
+  def saveBankAccountType(bankAccountType: BankAccountType)(implicit
+      hc: HeaderCarrier,
+      profile: CurrentProfile,
+      ex: ExecutionContext,
+      request: Request[_]): Future[BankAccount] =
+    getBankAccount
+      .map {
+        case Some(existing) => existing.copy(bankAccountType = Some(bankAccountType))
+        case None           => BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(bankAccountType))
+      }
+      .flatMap(saveBankAccount)
 }

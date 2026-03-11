@@ -99,7 +99,9 @@ class BankAccountDetailsSessionFormatSpec extends AnyWordSpec with Matchers {
       val differentFormat: Format[BankAccountDetails] =
         BankAccountDetailsSessionFormat.format(differentEncrypter)
 
-      Json.fromJson[BankAccountDetails](json)(differentFormat).isError mustBe true
+      intercept[SecurityException] {
+        Json.fromJson[BankAccountDetails](json)(differentFormat).get
+      }
     }
   }
 }
