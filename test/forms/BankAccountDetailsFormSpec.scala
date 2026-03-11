@@ -30,6 +30,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
     val validAccountName = s"${numStr}testAccountName"
     val validAccountNumber = "12345678"
     val validSortCode = "123456"
+    val validRollNumber = "AB/121212"
 
     "successfully bind data to the form with no errors and allow the return of a valid BankAccountDetails case class" in {
       val formData = Map(
@@ -210,6 +211,61 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
       boundForm.errors.head.message mustBe sortCodeEmptyKey
+    }
+
+    "successfully bind data with a valid roll number" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode,
+        ROLL_NUMBER    -> validRollNumber
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 0
+      boundForm.get.rollNumber mustBe Some("AB/121212")
+    }
+
+    "successfully bind data when roll number is empty string" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode,
+        ROLL_NUMBER    -> ""
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 0
+      boundForm.get.rollNumber mustBe None
+    }
+
+    "return a FormError when roll number exceeds max length" in {
+      val longRollNumber = "A" * 26
+
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode,
+        ROLL_NUMBER    -> longRollNumber
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ROLL_NUMBER
+      boundForm.errors.head.message mustBe rollNumberInvalidKey
+    }
+
+    "successfully bind roll number with spaces stripped" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode,
+        ROLL_NUMBER    -> "AB 121 212"
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 0
+      boundForm.get.rollNumber mustBe Some("AB121212")
     }
   }
 }
