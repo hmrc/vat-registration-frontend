@@ -18,10 +18,9 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.EnterBankAccountDetailsForm
 import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionService}
 import views.html.bankdetails.EnterCompanyBankAccountDetails
 
 import javax.inject.Inject
@@ -30,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConnector,
                                                val bankAccountDetailsService: BankAccountDetailsService,
                                                val sessionService: SessionService,
+                                               val lockService: LockService,
                                                view: EnterCompanyBankAccountDetails)
                                               (implicit appConfig: FrontendAppConfig,
                                                val executionContext: ExecutionContext,
@@ -38,10 +38,15 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        for {
-          bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
-          filledForm = bankDetails.flatMap(_.details).fold(enterBankAccountDetailsForm)(enterBankAccountDetailsForm.fill)
-        } yield Ok(view(filledForm))
+        lockService.getBarsAttemptsUsed(profile.registrationId).map(_ >= appConfig.knownFactsLockAttemptLimit).flatMap {
+          case true =>
+            Future.successful(Redirect(controllers.errors.routes.ThirdAttemptLockoutController.show))
+          case false =>
+            for {
+              bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+              filledForm = bankDetails.flatMap(_.details).fold(enterBankAccountDetailsForm)(enterBankAccountDetailsForm.fill)
+            } yield Ok(view(filledForm))
+        }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
@@ -51,13 +56,17 @@ class UkBankAccountDetailsController @Inject()(val authConnector: AuthClientConn
           formWithErrors =>
             Future.successful(BadRequest(view(formWithErrors))),
           accountDetails =>
-            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails).map { accountDetailsValid =>
+            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails).flatMap { accountDetailsValid =>
               if (accountDetailsValid) {
-                Redirect(controllers.routes.TaskListController.show.url)
-              }
-              else {
-                val invalidDetails = EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)
-                BadRequest(view(invalidDetails))
+                Future.successful(Redirect(controllers.routes.TaskListController.show.url))
+              } else {
+                lockService.incrementBarsAttempts(profile.registrationId).map { attempts =>
+                  if (attempts >= appConfig.knownFactsLockAttemptLimit) {
+                    Redirect(controllers.errors.routes.ThirdAttemptLockoutController.show)
+                  } else {
+                    Redirect(controllers.bankdetails.routes.AccountDetailsNotVerified.show)
+                  }
+                }
               }
             }
         )
