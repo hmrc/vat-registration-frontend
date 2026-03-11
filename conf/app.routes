@@ -631,3 +631,7 @@ POST        /partner/:index/partner-telephone                         controller
 ## Partner Email Address Page
 GET         /partner/:index/email-address                             controllers.partners.PartnerCaptureEmailAddressController.show(index: Int)
 POST        /partner/:index/email-address                             controllers.partners.PartnerCaptureEmailAddressController.submit(index: Int)
+
+# Lockout screens
+GET        /failed-third-attempt                                      controllers.errors.ThirdAttemptLockoutController.show
+GET        /failed-attempt                                            controllers.bankdetails.AccountDetailsNotVerified.show
