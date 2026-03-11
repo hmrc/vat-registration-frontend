@@ -16,6 +16,8 @@
 
 package views.bankdetails
 
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
+import featuretoggle.FeatureToggleSupport._
 import forms.EnterBankAccountDetailsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -39,8 +41,10 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
   val rollNumberHint = "You can find it on your card, statement or passbook"
   val buttonText = "Save and continue"
 
-  "Company Bank Details Page" should {
-    implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
+  implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
+
+  "Company Bank Details Page common elements" should {
+    disable(UseNewBarsVerify)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(title)
@@ -78,18 +82,24 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
       doc.hintWithMultiple(3) mustBe Some(sortCodeHint)
     }
 
-    "have the correct roll number label text" in {
-      doc.select(Selectors.label).get(3).text mustBe rollNumber
-    }
-
-    "have the correct roll number Hint text" in new ViewSetup() {
-      doc.hintWithMultiple(4) mustBe Some(rollNumberHint)
+    "not show the roll number field when UseNewBarsVerify is disabled" in new ViewSetup {
+      doc.select(Selectors.label).size mustBe 3
     }
 
     "have the correct continue button" in new ViewSetup {
       doc.submitButton mustBe Some(buttonText)
     }
+  }
 
+  "Company Bank Details Page roll number field" should {
+
+    "be visible when UseNewBarsVerify is enabled" in new ViewSetup {
+      enable(UseNewBarsVerify)
+      val enabledDoc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
+      enabledDoc.select(Selectors.label).get(3).text mustBe rollNumber
+      enabledDoc.hintWithMultiple(4) mustBe Some(rollNumberHint)
+      enabledDoc.select(Selectors.label).size mustBe 4
+    }
   }
 
 }

@@ -1009,7 +1009,7 @@ validation.companyBankAccount.number.invalid        = Account number must be bet
 validation.companyBankAccount.sortCode.missing      = Enter the account sort code
 validation.companyBankAccount.sortCode.invalid      = Enter a valid account sort code
 validation.companyBankAccount.invalidCombination    = Enter a valid bank account number and sort code
-validation.companyBankAccount.rollNumber.invalid    = Enter a valid roll number
+validation.companyBankAccount.rollNumber.invalid    = Building society roll number must be shorter
 
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?

@@ -40,7 +40,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
   implicit val request: Request[_] = FakeRequest()
 
-  "fetchBankAccountDetails" should {
+  "getBankAccountDetails" should {
 
     val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
@@ -61,7 +61,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
     }
   }
 
-  "saveBankAccountDetails" should {
+  "saveBankAccount" should {
     "return a BankAccount and save to the backend" in new Setup {
       val fullBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
