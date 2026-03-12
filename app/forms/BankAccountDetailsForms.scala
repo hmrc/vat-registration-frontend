@@ -113,16 +113,16 @@ object EnterBankAccountDetailsNewBarsForm {
   val SORT_CODE      = "sortCode"
   val ROLL_NUMBER    = "rollNumber"
 
-  val accountNameEmptyKey     = "validation.companyBankAccount.name.missing.new"
-  val accountNameMaxLengthKey = "validation.companyBankAccount.name.maxLength"
-  val accountNameInvalidKey   = "validation.companyBankAccount.name.invalid.new"
-  val accountNumberEmptyKey   = "validation.companyBankAccount.number.missing"
-  val accountNumberDigitKey   = "validation.companyBankAccount.number.digit.error"
-  val accountNumberInvalidKey = "validation.companyBankAccount.number.invalid"
-  val sortCodeEmptyKey        = "validation.companyBankAccount.sortCode.missing"
-  val sortCodeInvalidKey      = "validation.companyBankAccount.sortCode.invalid"
-  val sortCodeLengthKey       = "validation.companyBankAccount.sortCode.length"
-  val rollNumberInvalidKey    = "validation.companyBankAccount.rollNumber.invalid"
+  val accountNameEmptyKey        = "validation.companyBankAccount.name.missing.new"
+  val accountNameMaxLengthKey    = "validation.companyBankAccount.name.maxLength"
+  val accountNameInvalidKey      = "validation.companyBankAccount.name.invalid.new"
+  val accountNumberEmptyKey      = "validation.companyBankAccount.number.missing"
+  val accountNumberDigitErrorKey = "validation.companyBankAccount.number.digit.error"
+  val accountNumberInvalidKey    = "validation.companyBankAccount.number.invalid"
+  val sortCodeEmptyKey           = "validation.companyBankAccount.sortCode.missing"
+  val sortCodeInvalidKey         = "validation.companyBankAccount.sortCode.invalid"
+  val sortCodeDigitErrorKey      = "validation.companyBankAccount.sortCode.digit.error"
+  val rollNumberInvalidKey       = "validation.companyBankAccount.rollNumber.invalid"
 
   private val accountNameRegex         = """^[A-Za-z0-9 '\-./]{1,60}$""".r
   private val accountNameMaxLength     = 60
@@ -144,16 +144,16 @@ object EnterBankAccountDetailsNewBarsForm {
         .transform(removeSpaces, identity[String])
         .verifying(stopOnFail(
           mandatory(accountNumberEmptyKey),
-          matchesRegex(accountNumberDigitRegex, accountNumberInvalidKey),
-          matchesRegex(accountNumberLengthRegex, accountNumberDigitKey)
+          matchesRegex(accountNumberDigitRegex, accountNumberDigitErrorKey),
+          matchesRegex(accountNumberLengthRegex, accountNumberInvalidKey)
         )),
       SORT_CODE -> text
         .transform(removeSpaces, identity[String])
         .verifying(
           stopOnFail(
             mandatory(sortCodeEmptyKey),
-            matchesRegex(sortCodeDigitRegex, sortCodeInvalidKey),
-            matchesRegex(sortCodeLengthRegex, sortCodeLengthKey)
+            matchesRegex(sortCodeDigitRegex, sortCodeDigitErrorKey),
+            matchesRegex(sortCodeLengthRegex, sortCodeInvalidKey)
           )),
       ROLL_NUMBER -> optional(
         text

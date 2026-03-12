@@ -287,7 +287,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberDigitKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberInvalidKey
     }
 
     "return a FormError with the invalid characters error message when account number is 8 characters but contains letters" in {
@@ -302,7 +302,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberInvalidKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberDigitErrorKey
     }
 
     "return a FormError when sort code is empty" in {
@@ -330,7 +330,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeLengthKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeInvalidKey
     }
 
     "return a FormError with the invalid characters error message when sort code is 6 characters but contains letters" in {
@@ -345,7 +345,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeInvalidKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeDigitErrorKey
     }
 
     "successfully bind with a valid roll number" in {
