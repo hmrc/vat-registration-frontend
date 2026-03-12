@@ -16,27 +16,27 @@
 
 package forms
 
-import forms.EnterBankAccountDetailsForm._
 import models.BankAccountDetails
 import org.scalatestplus.play.PlaySpec
 
 class BankAccountDetailsFormSpec extends PlaySpec {
 
-  "EnterBankAccountDetailsForm" should {
+  val numStr             = 60
+  val validAccountName   = s"${numStr}testAccountName"
+  val validAccountNumber = "12345678"
+  val validSortCode      = "123456"
+  val validRollNumber    = "AB/121212"
+
+  "EnterBankAccountDetailsForm (useBarsVerify OFF)" should {
+    import forms.EnterBankAccountDetailsForm._
 
     val form = EnterBankAccountDetailsForm.form
 
-    val numStr = 60
-    val validAccountName = s"${numStr}testAccountName"
-    val validAccountNumber = "12345678"
-    val validSortCode = "123456"
-    val validRollNumber = "AB/121212"
-
     "successfully bind data to the form with no errors and allow the return of a valid BankAccountDetails case class" in {
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val validBankAccountDetails = BankAccountDetails(validAccountName, validAccountNumber, validSortCode)
@@ -45,15 +45,23 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.get mustBe validBankAccountDetails
     }
 
+    "successfully bind an account name containing all valid characters" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> "O'Brien-Smith J. A/B",
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode
+      )
+      form.bind(formData).errors mustBe empty
+    }
+
     "return a FormError when binding an empty account name to the form" in {
       val formData = Map(
-        ACCOUNT_NAME -> "",
+        ACCOUNT_NAME   -> "",
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
-
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NAME
       boundForm.errors.head.message mustBe accountNameEmptyKey
@@ -63,9 +71,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val exceedMaxLength = "AlPacinoLimitedAlPacinoLimitedAlPacinoLimitedAlPacinoLimitedAlPacinoLimited"
 
       val formData = Map(
-        ACCOUNT_NAME -> exceedMaxLength,
+        ACCOUNT_NAME   -> exceedMaxLength,
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -79,9 +87,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val invalidAccountName = "123#@~"
 
       val formData = Map(
-        ACCOUNT_NAME -> invalidAccountName,
+        ACCOUNT_NAME   -> invalidAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -93,9 +101,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
     "return a FormError when binding an empty account number to the form" in {
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> "",
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -109,9 +117,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val invalidAccountNumber = "ABCDE"
 
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> invalidAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -125,9 +133,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val invalidAccountNumber = "12345"
 
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> invalidAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -141,9 +149,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val invalidAccountNumber = "123456789"
 
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> invalidAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -157,9 +165,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val validAccountNumber = "123   456"
 
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> validSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -167,14 +175,25 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.size mustBe 0
     }
 
+    "return a FormError when sort code is empty" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> ""
+      )
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe SORT_CODE
+      boundForm.errors.head.message mustBe sortCodeEmptyKey
+    }
 
     "return a FormError when binding an invalid sort code part to the form" in {
       val invalidSortCode = "ABCDEF"
 
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> invalidSortCode
+        SORT_CODE      -> invalidSortCode
       )
 
       val boundForm = form.bind(formData)
@@ -183,37 +202,153 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.key mustBe SORT_CODE
       boundForm.errors.head.message mustBe sortCodeInvalidKey
     }
-    "return No FormError when binding a sort code with spaces ( ) part to the form" in {
-      val invalidSortCode = "02 03  06"
+  }
 
+  "EnterBankAccountDetailsNewBarsForm (useBarsVerify ON)" should {
+    import forms.EnterBankAccountDetailsNewBarsForm._
+    val form = EnterBankAccountDetailsNewBarsForm.form
+
+    "successfully bind valid data" in {
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> invalidSortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
-
-      boundForm.errors.size mustBe 0
+      boundForm.get mustBe BankAccountDetails(validAccountName, validAccountNumber, validSortCode)
     }
 
-    "return a single FormError when the sort code is missing" in {
-      val emptySortCode = ""
-
+    "return a FormError with the new missing account name error message when account name is empty" in {
       val formData = Map(
-        ACCOUNT_NAME -> validAccountName,
+        ACCOUNT_NAME   -> "",
         ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE -> emptySortCode
+        SORT_CODE      -> validSortCode
       )
 
       val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NAME
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNameEmptyKey
+    }
 
+    "return a FormError when account name exceeds 60 characters" in {
+      val exceedMaxLength = "AlPacinoLimitedAlPacinoLimitedAlPacinoLimitedAlPacinoLimitedAlPacinoLimited"
+
+      val formData = Map(
+        ACCOUNT_NAME   -> exceedMaxLength,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NAME
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNameMaxLengthKey
+    }
+
+    "return a FormError with the new invalid account name error message when account name contains invalid characters" in {
+      val invalidAccountName = "123#@~"
+
+      val formData = Map(
+        ACCOUNT_NAME   -> invalidAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NAME
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNameInvalidKey
+    }
+
+    "return a FormError when account number is empty" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> "",
+        SORT_CODE      -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NUMBER
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberEmptyKey
+    }
+
+    "return a FormError with the length error message when account number is fewer than 6 digits" in {
+      val invalidAccountNumber = "12345"
+
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> invalidAccountNumber,
+        SORT_CODE      -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NUMBER
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberDigitKey
+    }
+
+    "return a FormError with the invalid characters error message when account number is 8 characters but contains letters" in {
+      val invalidAccountNumber = "1234567A"
+
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> invalidAccountNumber,
+        SORT_CODE      -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe ACCOUNT_NUMBER
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.accountNumberInvalidKey
+    }
+
+    "return a FormError when sort code is empty" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> ""
+      )
+
+      val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe sortCodeEmptyKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeEmptyKey
     }
 
-    "successfully bind data with a valid roll number" in {
+    "return a FormError with the length error message when sort code is fewer than 6 digits" in {
+      val invalidSortCode = "12345"
+
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> invalidSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe SORT_CODE
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeLengthKey
+    }
+
+    "return a FormError with the invalid characters error message when sort code is 6 characters but contains letters" in {
+      val invalidSortCode = "ABCDEF"
+
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> invalidSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors.size mustBe 1
+      boundForm.errors.head.key mustBe SORT_CODE
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.sortCodeInvalidKey
+    }
+
+    "successfully bind with a valid roll number" in {
       val formData = Map(
         ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
@@ -222,11 +357,23 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       )
 
       val boundForm = form.bind(formData)
-      boundForm.errors.size mustBe 0
-      boundForm.get.rollNumber mustBe Some("AB/121212")
+      boundForm.errors mustBe empty
+      boundForm.get.rollNumber mustBe Some(validRollNumber)
     }
 
-    "successfully bind data when roll number is empty string" in {
+    "successfully bind when roll number is not provided" in {
+      val formData = Map(
+        ACCOUNT_NAME   -> validAccountName,
+        ACCOUNT_NUMBER -> validAccountNumber,
+        SORT_CODE      -> validSortCode
+      )
+
+      val boundForm = form.bind(formData)
+      boundForm.errors mustBe empty
+      boundForm.get.rollNumber mustBe None
+    }
+
+    "successfully bind when roll number is an empty string" in {
       val formData = Map(
         ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
@@ -235,11 +382,11 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       )
 
       val boundForm = form.bind(formData)
-      boundForm.errors.size mustBe 0
+      boundForm.errors mustBe empty
       boundForm.get.rollNumber mustBe None
     }
 
-    "return a FormError when roll number exceeds max length" in {
+    "return a FormError when roll number exceeds 25 characters" in {
       val longRollNumber = "A" * 26
 
       val formData = Map(
@@ -252,10 +399,10 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ROLL_NUMBER
-      boundForm.errors.head.message mustBe rollNumberInvalidKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsNewBarsForm.rollNumberInvalidKey
     }
 
-    "successfully bind roll number with spaces stripped" in {
+    "successfully bind and strip spaces from roll number before storing" in {
       val formData = Map(
         ACCOUNT_NAME   -> validAccountName,
         ACCOUNT_NUMBER -> validAccountNumber,
@@ -264,7 +411,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       )
 
       val boundForm = form.bind(formData)
-      boundForm.errors.size mustBe 0
+      boundForm.errors mustBe empty
       boundForm.get.rollNumber mustBe Some("AB121212")
     }
   }

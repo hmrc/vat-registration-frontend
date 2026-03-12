@@ -37,15 +37,18 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
         disable(UseNewBarsVerify)
-        given().user
-          .isAuthorised()
-          .registrationApi
-          .getSection[BankAccount](None)
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
+
         res.status mustBe OK
+        doc.select("input[id=accountName]").size() mustBe 1
+        doc.select("input[id=accountNumber]").size() mustBe 1
+        doc.select("input[id=sortCode]").size() mustBe 1
+        doc.select("input[id=rollNumber]").size() mustBe 0
       }
 
       "return OK with a form pre-populated from the backend when bank details exist" in new Setup {
@@ -61,6 +64,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         doc.select("input[id=accountName]").`val`() mustBe testBankName
         doc.select("input[id=accountNumber]").`val`() mustBe testAccountNumber
         doc.select("input[id=sortCode]").`val`() mustBe testSortCode
+        doc.select("input[id=rollNumber]").size() mustBe 0
       }
     }
 
@@ -115,9 +119,12 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
           .isAuthorised()
           .bankAccountReputation
           .passes
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
-          .registrationApi.replaceSection[BankAccount](bankAccount)
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+          .registrationApi
+          .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
+          .registrationApi
+          .replaceSection[BankAccount](bankAccount)
+          .registrationApi
+          .getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -161,8 +168,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         disable(UseNewBarsVerify)
         given().user
           .isAuthorised()
-          .bankAccountReputation
-          .fails
           .registrationApi
           .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
 
@@ -184,16 +189,17 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       "save bank details to session and redirect to Task List when form is valid" in new Setup {
         enable(UseNewBarsVerify)
-        given()
-          .user.isAuthorised()
+        given().user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(url).post(Map(
-          "accountName"   -> testBankName,
-          "accountNumber" -> testAccountNumber,
-          "sortCode"      -> testSortCode
-        )))
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
+            )))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -201,17 +207,18 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       "save bank details including roll number to session and redirect to Task List" in new Setup {
         enable(UseNewBarsVerify)
-        given()
-          .user.isAuthorised()
+        given().user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(url).post(Map(
-          "accountName"   -> testBankName,
-          "accountNumber" -> testAccountNumber,
-          "sortCode"      -> testSortCode,
-          "rollNumber"    -> testRollNumber
-        )))
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode,
+              "rollNumber"    -> testRollNumber
+            )))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
@@ -219,16 +226,34 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       "return BAD_REQUEST without calling BARS when form fields are empty" in new Setup {
         enable(UseNewBarsVerify)
-        given()
-          .user.isAuthorised()
+        given().user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(url).post(Map(
-          "accountName"   -> "",
-          "accountNumber" -> "",
-          "sortCode"      -> ""
-        )))
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> "",
+              "accountNumber" -> "",
+              "sortCode"      -> ""
+            )))
+
+        res.status mustBe BAD_REQUEST
+      }
+
+      "return BAD_REQUEST without calling BARS when account number is invalid" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> "invalid",
+              "sortCode"      -> testSortCode
+            )))
 
         res.status mustBe BAD_REQUEST
       }

@@ -1000,16 +1000,19 @@ pages.bankDetails.sortCode.label                    = Cod didoli
 pages.bankDetails.sortCode.hint                     = Mae’n rhaid iddo fod yn 6 digid o hyd
 pages.bankDetails.rollNumber.label                  = Rhif rôl y gymdeithas adeiladu (os oes gennych un)
 pages.bankDetails.rollNumber.hint                   = Bydd hwn i’w weld ar eich cerdyn, cyfriflen neu baslyfr
-validation.companyBankAccount.name.missing          = Nodwch enw’r cyfrif
+validation.companyBankAccount.name.missing.old      = Nodwch enw’r cyfrif
+validation.companyBankAccount.name.missing.new      = Nodwch yr enw sydd ar y cyfrif
 validation.companyBankAccount.name.maxLength        = Mae’n rhaid i enw’r cyfrif fod yn 60 o gymeriadau neu lai
-validation.companyBankAccount.name.invalid          = Mae’n rhaid i enw’r cyfrif gynnwys rhifau, y llythrennau a i z, a chymeriadau arbennig megis cysylltnodau, collnodau a chromfachau yn unig
+validation.companyBankAccount.name.invalid.old      = Mae’n rhaid i enw’r cyfrif gynnwys rhifau, y llythrennau a i z, a chymeriadau arbennig megis cysylltnodau, collnodau a chromfachau yn unig
+validation.companyBankAccount.name.invalid.new      = Enw sydd ar y cyfrif: mae’n rhaid i hyn beidio cynnwys cymeriadau arbennig
 validation.companyBankAccount.number.missing        = Nodwch rif y cyfrif
-validation.companyBankAccount.number.invalid        = Mae’n rhaid i rif y cyfrif fod rhwng 6 ac 8 digid
+validation.companyBankAccount.number.invalid        = Rhif y cyfrif: mae’n rhaid i hyn fod rhwng 6 ac 8 digid
+validation.companyBankAccount.number.digit.error    = Rhif y cyfrif: mae’n rhaid i hyn gynnwys rhifau yn unig
 validation.companyBankAccount.sortCode.missing      = Nodwch god didoli’r cyfrif
-validation.companyBankAccount.sortCode.invalid      = Nodwch god didoli dilys ar gyfer y cyfrif
+validation.companyBankAccount.sortCode.invalid      = Cod didoli: mae’n rhaid i hyn fod yn 6 digid
+validation.companyBankAccount.sortCode.digit.error  = Cod didoli: mae’n rhaid i hyn gynnwys rhifau yn unig
 validation.companyBankAccount.invalidCombination    = Nodwch rif cyfrif banc a chod didoli dilys
 validation.companyBankAccount.rollNumber.invalid    = Mae’n rhaid i rif rôl y gymdeithas adeiladu fod yn fyrrach
-
 
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Pa weithgaredd yw prif ffynhonnell incwm y busnes?

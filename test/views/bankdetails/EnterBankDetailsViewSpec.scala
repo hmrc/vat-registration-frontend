@@ -16,29 +16,35 @@
 
 package views.bankdetails
 
-import forms.EnterBankAccountDetailsForm
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
+import featuretoggle.FeatureToggleSupport._
+import forms.EnterBankAccountDetailsNewBarsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
-import views.html.bankdetails.EnterCompanyBankAccountDetails
+import views.html.bankdetails.EnterBankAccountDetails
 
-class CompanyBankDetailsViewSpec extends VatRegViewSpec {
+class EnterBankDetailsViewSpec extends VatRegViewSpec {
 
-  val view: EnterCompanyBankAccountDetails = app.injector.instanceOf[EnterCompanyBankAccountDetails]
+  val view: EnterBankAccountDetails = app.injector.instanceOf[EnterBankAccountDetails]
 
-  val title = "What are the business’s bank or building society account details?"
-  val heading = "What are the business’s bank or building society account details?"
-  val p1 = "HMRC VAT will only use this account to send VAT repayments. We will not take money from it."
+  val title = "What are the business’s account details?"
+  val heading = "What are the business’s account details?"
+  val p1 = "HMRC VAT will only use this information to send VAT repayments. Money will not be taken from the account you supply."
   val panelText = "You must tell us if your account details change."
-  val accountName = "Account name"
+  val accountName = "Name on the account"
   val accountNumber = "Account number"
   val accountNumberHint = "Must be between 6 and 8 digits long"
   val sortCode = "Sort code"
   val sortCodeHint = "Must be 6 digits long"
+  val rollNumber = "Building society roll number (if you have one)"
+  val rollNumberHint = "You can find it on your card, statement or passbook"
   val buttonText = "Save and continue"
 
-  "Company Bank Details Page" should {
-    implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
+  implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsNewBarsForm.form).body)
+
+  "Company Bank Details Page common elements" should {
+    disable(UseNewBarsVerify)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(title)
@@ -76,10 +82,16 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
       doc.hintWithMultiple(3) mustBe Some(sortCodeHint)
     }
 
+    "have Roll Number label text" in new ViewSetup {
+      doc.select(Selectors.label).get(3).text mustBe rollNumber
+    }
+
+    "have the correct Roll Number Hint text" in new ViewSetup {
+      doc.hintWithMultiple(4) mustBe Some(rollNumberHint)
+    }
+
     "have the correct continue button" in new ViewSetup {
       doc.submitButton mustBe Some(buttonText)
     }
-
   }
-
 }

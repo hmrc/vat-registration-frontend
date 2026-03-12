@@ -18,6 +18,7 @@
 @import play.api.data.Form
 @import config.FrontendAppConfig
 
+
 @this(
         layout: layouts.layout,
         h1: components.h1,
@@ -31,12 +32,14 @@
 
 @(bankDetailsForm: Form[BankAccountDetails])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(bankDetailsForm, messages("pages.bankDetails.heading.old")))) {
+@layout(pageTitle = Some(title(bankDetailsForm, messages("pages.bankDetails.heading.new")))) {
 
     @errorSummary(errors = bankDetailsForm.errors)
 
-    @h1("pages.bankDetails.heading.old")
-    @p { @messages("pages.bankDetails.p1.old") }
+    @h1("pages.bankDetails.heading.new")
+    @p {
+        @messages("pages.bankDetails.p1.new")
+    }
 
     @panelIndent {
         @messages("pages.bankDetails.info")
@@ -44,28 +47,36 @@
 
     @formWithCSRF(action = controllers.bankdetails.routes.UkBankAccountDetailsController.submit) {
         @inputText(form = bankDetailsForm,
-                     id = "accountName",
-                     name = "accountName",
-                     label = messages("pages.bankDetails.accountName.label.old"),
-                     classes = Some("govuk-input--width-10"),
-                     isPageHeading = false,
-                     hint = Some(Html(messages(""))))
+            id = "accountName",
+            name = "accountName",
+            label = messages("pages.bankDetails.accountName.label.new"),
+            classes = Some("govuk-input--width-20"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.accountName.hint"))))
 
         @inputText(form = bankDetailsForm,
-                     id = "accountNumber",
-                     name = "accountNumber",
-                     label = messages("pages.bankDetails.accountNumber.label"),
-                     classes = Some("govuk-input--width-10"),
-                     isPageHeading = false,
-                     hint = Some(Html(messages("pages.bankDetails.accountNumber.hint"))))
+            id = "accountNumber",
+            name = "accountNumber",
+            label = messages("pages.bankDetails.accountNumber.label"),
+            classes = Some("govuk-input--width-10"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.accountNumber.hint"))))
 
         @inputText(form = bankDetailsForm,
-                     id = "sortCode",
-                     name = "sortCode",
-                     label = messages("pages.bankDetails.sortCode.label"),
-                     classes = Some("govuk-input--width-5"),
-                     isPageHeading = false,
-                     hint = Some(Html(messages("pages.bankDetails.sortCode.hint"))))
+            id = "sortCode",
+            name = "sortCode",
+            label = messages("pages.bankDetails.sortCode.label"),
+            classes = Some("govuk-input--width-5"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.sortCode.hint"))))
+
+            @inputText(form = bankDetailsForm,
+                id = "rollNumber",
+                name = "rollNumber",
+                label = messages("pages.bankDetails.rollNumber.label"),
+                classes = Some("govuk-input--width-20"),
+                isPageHeading = false,
+                hint = Some(Html(messages("pages.bankDetails.rollNumber.hint"))))
 
         @button("app.common.continue")
     }
