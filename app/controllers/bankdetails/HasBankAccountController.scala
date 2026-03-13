@@ -45,7 +45,7 @@ class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
           Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
         case _ =>
           for {
-            bankDetails <- bankAccountDetailsService.fetchBankAccountDetails
+            bankDetails <- bankAccountDetailsService.getBankAccount
             filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
           } yield Ok(view(filledForm))
       }

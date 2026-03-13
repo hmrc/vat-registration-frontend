@@ -130,7 +130,7 @@ POST        /cannot-provide-bank-account-details                      controller
 GET         /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.show
 POST        /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.submit
 
-## BANK DETAILS (ACCOUNT NAME, NUMBER, SORT CODE)
+## ENTER BANK DETAILS
 GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show
 POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit
 

@@ -989,22 +989,35 @@ pages.chooseAccountType.option.business               = Cyfrif busnes
 pages.chooseAccountType.option.personal               = Cyfrif personol
 
 # Bank Details page
-pages.bankDetails.heading                           = Beth yw manylion cyfrif banc neu gymdeithas adeiladu’r busnes?
-pages.bankDetails.p1                                = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEM yn defnyddio’r cyfrif hwn. Ni fyddwn yn cymryd arian ohono.
+pages.bankDetails.heading.old                       = Beth yw manylion cyfrif banc neu gymdeithas adeiladu’r busnes?
+pages.bankDetails.heading.new                       = Beth yw manylion cyswllt y busnes?
+pages.bankDetails.p1.old                            = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEM yn defnyddio’r cyfrif hwn. Ni fyddwn yn cymryd arian ohono.
+pages.bankDetails.p1.new                            = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEF yn defnyddio’r cyfrif hwn. Ni fydd arian yn cael ei gymryd o’r cyfrif rydych chi’n ei ddarparu.
 pages.bankDetails.info                              = Mae’n rhaid i chi roi gwybod i ni os bydd manylion eich cyfrif yn newid.
-pages.bankDetails.accountName.label                 = Enw’r cyfrif
+pages.bankDetails.accountName.label.old             = Enw’r cyfrif
+pages.bankDetails.accountName.label.new             = Yr enw sydd ar y cyfrif
+pages.bankDetails.accountName.hint                  = Nodwch yr enw fel y mae’n ymddangos ar gyfriflenni banc ac yn eich cyfrif TAW
 pages.bankDetails.accountNumber.label               = Rhif y cyfrif
 pages.bankDetails.accountNumber.hint                = Mae’n rhaid iddo fod rhwng 6 ac 8 digid o hyd
 pages.bankDetails.sortCode.label                    = Cod didoli
 pages.bankDetails.sortCode.hint                     = Mae’n rhaid iddo fod yn 6 digid o hyd
-validation.companyBankAccount.name.missing          = Nodwch enw’r cyfrif
+pages.bankDetails.rollNumber.label                  = Rhif rôl y gymdeithas adeiladu (os oes gennych un)
+pages.bankDetails.rollNumber.hint                   = Bydd hwn i’w weld ar eich cerdyn, cyfriflen neu baslyfr
+validation.companyBankAccount.name.missing.old      = Nodwch enw’r cyfrif
+validation.companyBankAccount.name.missing.new      = Nodwch yr enw sydd ar y cyfrif
 validation.companyBankAccount.name.maxLength        = Mae’n rhaid i enw’r cyfrif fod yn 60 o gymeriadau neu lai
-validation.companyBankAccount.name.invalid          = Mae’n rhaid i enw’r cyfrif gynnwys rhifau, y llythrennau a i z, a chymeriadau arbennig megis cysylltnodau, collnodau a chromfachau yn unig
+validation.companyBankAccount.name.invalid.old      = Mae’n rhaid i enw’r cyfrif gynnwys rhifau, y llythrennau a i z, a chymeriadau arbennig megis cysylltnodau, collnodau a chromfachau yn unig
+validation.companyBankAccount.name.invalid.new      = Enw sydd ar y cyfrif: mae’n rhaid i hyn beidio cynnwys cymeriadau arbennig
 validation.companyBankAccount.number.missing        = Nodwch rif y cyfrif
-validation.companyBankAccount.number.invalid        = Mae’n rhaid i rif y cyfrif fod rhwng 6 ac 8 digid
-validation.companyBankAccount.sortCode.missing      = Nodwch god didoli’r cyfrif
+validation.companyBankAccount.number.invalid        = Rhif y cyfrif: mae’n rhaid i hyn fod rhwng 6 ac 8 digid
+validation.companyBankAccount.number.format         = Rhif y cyfrif: mae’n rhaid i hyn gynnwys rhifau yn unig
+validation.companyBankAccount.sortCode.missing.old  = Nodwch god didoli’r cyfrif
+validation.companyBankAccount.sortCode.missing.new  = Nodwch y cod didoli
 validation.companyBankAccount.sortCode.invalid      = Nodwch god didoli dilys ar gyfer y cyfrif
+validation.companyBankAccount.sortCode.length       = Cod didoli: mae’n rhaid i hyn fod yn 6 digid
+validation.companyBankAccount.sortCode.format       = Cod didoli: mae’n rhaid i hyn gynnwys rhifau yn unig
 validation.companyBankAccount.invalidCombination    = Nodwch rif cyfrif banc a chod didoli dilys
+validation.companyBankAccount.rollNumber.invalid    = Mae’n rhaid i rif rôl y gymdeithas adeiladu fod yn fyrrach
 
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Pa weithgaredd yw prif ffynhonnell incwm y busnes?

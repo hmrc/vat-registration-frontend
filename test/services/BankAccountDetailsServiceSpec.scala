@@ -40,14 +40,14 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
 
   implicit val request: Request[_] = FakeRequest()
 
-  "fetchBankAccountDetails" should {
+  "getBankAccountDetails" should {
 
     val bankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
     "return a BankAccount" in new Setup {
       mockGetSection[BankAccount](testRegId, Some(bankAccount))
 
-      val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
+      val result: Option[BankAccount] = await(service.getBankAccount)
 
       result mustBe Some(bankAccount)
     }
@@ -55,19 +55,19 @@ class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConn
     "return None if a BankAccount isn't found" in new Setup {
       mockGetSection[BankAccount](testRegId, None)
 
-      val result: Option[BankAccount] = await(service.fetchBankAccountDetails)
+      val result: Option[BankAccount] = await(service.getBankAccount)
 
       result mustBe None
     }
   }
 
-  "saveBankAccountDetails" should {
+  "saveBankAccount" should {
     "return a BankAccount and save to the backend" in new Setup {
       val fullBankAccount: BankAccount = BankAccount(isProvided = true, Some(BankAccountDetails("testName", "testCode", "testAccNumber")), None)
 
       mockReplaceSection[BankAccount](testRegId, fullBankAccount)
 
-      val result: BankAccount = await(service.saveBankAccountDetails(fullBankAccount))
+      val result: BankAccount = await(service.saveBankAccount(fullBankAccount))
       result mustBe fullBankAccount
 
       verify(mockRegistrationApiConnector, times(1))

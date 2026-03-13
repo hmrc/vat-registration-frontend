@@ -16,7 +16,7 @@
 
 package config.startup
 
-import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.ApplicationCrypto
 
 import javax.inject.{Inject, Singleton}
 

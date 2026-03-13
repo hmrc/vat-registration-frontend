@@ -397,7 +397,7 @@ trait VatRegistrationFixture extends BaseFixture with FlatRateFixtures with Appl
 
   val testBankName = "testName"
 
-  val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(ValidStatus))
+  val testUkBankDetails: BankAccountDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, None, Some(ValidStatus))
 
   val bankAccount: BankAccount = BankAccount(isProvided = true, Some(testUkBankDetails), None)
 

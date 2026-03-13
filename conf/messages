@@ -973,7 +973,6 @@ pages.hasCompanyBankAccount.bullet3                   = in the UK
 pages.hasCompanyBankAccount.bullet4                   = able to receive BACS payments
 validation.hasCompanyBankAccount.missing              = Select yes if you are able to provide bank or building society details for the business
 
-
 # Bank Account Type Page
 pages.chooseAccountType.heading                       = What kind of bank or building society account will you use for VAT repayments?
 pages.chooseAccountType.option.business               = Business account
@@ -991,22 +990,35 @@ pages.noUKBankAccount.dontWantToProvide              = I do not want to provide 
 pages.noUKBankAccount.error                          = Select why you cannot provide bank account details for the business
 
 # Bank Details page
-pages.bankDetails.heading                           = What are the business’s bank or building society account details?
-pages.bankDetails.p1                                = HMRC VAT will only use this account to send VAT repayments. We will not take money from it.
-pages.bankDetails.info                              = You must tell us if your account details change.
-pages.bankDetails.accountName.label                 = Account name
-pages.bankDetails.accountNumber.label               = Account number
-pages.bankDetails.accountNumber.hint                = Must be between 6 and 8 digits long
-pages.bankDetails.sortCode.label                    = Sort code
-pages.bankDetails.sortCode.hint                     = Must be 6 digits long
-validation.companyBankAccount.name.missing          = Enter the account name
-validation.companyBankAccount.name.maxLength        = The account name must be 60 characters or less
-validation.companyBankAccount.name.invalid          = The account name must only include numbers, letters a to z, and special characters such as hyphens, apostrophes and brackets
-validation.companyBankAccount.number.missing        = Enter the account number
-validation.companyBankAccount.number.invalid        = Account number must be between 6 and 8 digits
-validation.companyBankAccount.sortCode.missing      = Enter the account sort code
-validation.companyBankAccount.sortCode.invalid      = Enter a valid account sort code
-validation.companyBankAccount.invalidCombination    = Enter a valid bank account number and sort code
+pages.bankDetails.heading.old                           = What are the business’s bank or building society account details?
+pages.bankDetails.heading.new                           = What are the business’s account details?
+pages.bankDetails.p1.old                                = HMRC VAT will only use this account to send VAT repayments. We will not take money from it.
+pages.bankDetails.p1.new                                = HMRC VAT will only use this information to send VAT repayments. Money will not be taken from the account you supply.
+pages.bankDetails.info                                  = You must tell us if your account details change.
+pages.bankDetails.accountName.label.old                 = Account name
+pages.bankDetails.accountName.label.new                 = Name on the account
+pages.bankDetails.accountName.hint                      = Enter the name as it appears on bank statements and in your VAT account
+pages.bankDetails.accountNumber.label                   = Account number
+pages.bankDetails.accountNumber.hint                    = Must be between 6 and 8 digits long
+pages.bankDetails.sortCode.label                        = Sort code
+pages.bankDetails.sortCode.hint                         = Must be 6 digits long
+pages.bankDetails.rollNumber.label                      = Building society roll number (if you have one)
+pages.bankDetails.rollNumber.hint                       = You can find it on your card, statement or passbook
+validation.companyBankAccount.name.missing.old          = Enter the account name
+validation.companyBankAccount.name.missing.new          = Enter the name on the account
+validation.companyBankAccount.name.maxLength            = The account name must be 60 characters or less
+validation.companyBankAccount.name.invalid.old          = The account name must only include numbers, letters a to z, and special characters such as hyphens, apostrophes and brackets
+validation.companyBankAccount.name.invalid.new          = Name on the account must not use special characters
+validation.companyBankAccount.number.missing            = Enter the account number
+validation.companyBankAccount.number.invalid            = Account number must be between 6 and 8 digits
+validation.companyBankAccount.number.format             = Account number must only contain numbers
+validation.companyBankAccount.sortCode.missing.old      = Enter the account sort code
+validation.companyBankAccount.sortCode.missing.new      = Enter the sort code
+validation.companyBankAccount.sortCode.invalid          = Enter a valid account sort code
+validation.companyBankAccount.sortCode.format           = Sort code must only contain numbers
+validation.companyBankAccount.sortCode.length           = Sort code must be 6 digits long
+validation.companyBankAccount.invalidCombination        = Enter a valid bank account number and sort code
+validation.companyBankAccount.rollNumber.invalid        = Building society roll number must be shorter
 
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?

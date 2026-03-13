@@ -16,10 +16,11 @@
 
 package controllers.bankdetails
 
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.api.EligibilitySubmissionData
 import models.{BankAccount, TransferOfAGoingConcern}
+import models.api.EligibilitySubmissionData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
@@ -30,109 +31,232 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
   val url = "/account-details"
 
-  "GET /account-details" must {
-    "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](None)
+  "GET /account-details" when {
 
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
+    "UseNewBarsVerify is disabled" must {
 
-      val res: WSResponse = await(buildClient(url).get())
+      "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
+        disable(UseNewBarsVerify)
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
 
-      res.status mustBe OK
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        doc.select("input[id=accountName]").size() mustBe 1
+        doc.select("input[id=accountNumber]").size() mustBe 1
+        doc.select("input[id=sortCode]").size() mustBe 1
+        doc.select("input[id=rollNumber]").size() mustBe 0
+      }
+
+      "return OK with a form pre-populated from the backend when bank details exist" in new Setup {
+        disable(UseNewBarsVerify)
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        doc.select("input[id=accountName]").`val`() mustBe testBankName
+        doc.select("input[id=accountNumber]").`val`() mustBe testAccountNumber
+        doc.select("input[id=sortCode]").`val`() mustBe testSortCode
+        doc.select("input[id=rollNumber]").size() mustBe 0
+      }
     }
-    "return OK with a pre-populated form from backend" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(bankAccount))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
+    "UseNewBarsVerify is enabled" must {
 
-      val res: WSResponse = await(buildClient(url).get())
-      val doc: Document = Jsoup.parse(res.body)
+      "return OK with a blank form when session is empty" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
 
-      res.status mustBe OK
-      doc.select("input[id=accountName]").`val`() mustBe testBankName
-      doc.select("input[id=accountNumber]").`val`() mustBe testAccountNumber
-      doc.select("input[id=sortCode]").`val`() mustBe testSortCode
-    }
-    "return OK with a pre-populated form from the backend" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(bankAccount))
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
+        val res: WSResponse = await(buildClient(url).get())
+        res.status mustBe OK
+        val doc: Document = Jsoup.parse(res.body)
+        doc.select("input[id=accountName]").`val`() mustBe ""
+      }
 
-      val res: WSResponse = await(buildClient(url).get())
-      val doc: Document = Jsoup.parse(res.body)
+      "return OK with a form pre-populated from session when session contains bank details" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
 
-      res.status mustBe OK
-      doc.select("input[id=accountName]").`val`() mustBe testBankName
-      doc.select("input[id=accountNumber]").`val`() mustBe testAccountNumber
-      doc.select("input[id=sortCode]").`val`() mustBe testSortCode
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode,
+              "rollNumber"    -> testRollNumber
+            )))
+
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        doc.select("input[id=accountName]").`val`() mustBe testBankName
+        doc.select("input[id=accountNumber]").`val`() mustBe testAccountNumber
+        doc.select("input[id=sortCode]").`val`() mustBe testSortCode
+        doc.select("input[id=rollNumber]").`val`() mustBe testRollNumber
+      }
     }
   }
 
   "POST /account-details" when {
-    "bank details and Bank Account Reputation states are invalid" must {
-      "return BAD_REQUEST" in new Setup {
-        given()
-          .user.isAuthorised()
-          .bankAccountReputation.fails
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+
+    "UseNewBarsVerify is disabled" must {
+
+      "redirect to the Task List when valid bank details" in new Setup {
+        disable(UseNewBarsVerify)
+        given().user
+          .isAuthorised()
+          .bankAccountReputation
+          .passes
+          .registrationApi
+          .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
+          .registrationApi
+          .replaceSection[BankAccount](bankAccount)
+          .registrationApi
+          .getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(url).post(Map(
-          "accountName" -> testBankName,
-          "accountNumber" -> testAccountNumber,
-          "sortCode" -> testSortCode
-        )))
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
+            )))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+
+      "return BAD_REQUEST when valid bank details fail BARS verification" in new Setup {
+        disable(UseNewBarsVerify)
+        given().user
+          .isAuthorised()
+          .bankAccountReputation
+          .fails
+          .registrationApi
+          .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
+          .registrationApi
+          .getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
+            )))
+
+        res.status mustBe BAD_REQUEST
+      }
+
+      "return BAD_REQUEST when form fields are empty" in new Setup {
+        disable(UseNewBarsVerify)
+        given().user
+          .isAuthorised()
+          .registrationApi
+          .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> "",
+              "accountNumber" -> "",
+              "sortCode"      -> ""
+            )))
 
         res.status mustBe BAD_REQUEST
       }
     }
 
-    "redirect to the Tasklist if the account details are valid" in new Setup {
-      given()
-        .user.isAuthorised()
-        .bankAccountReputation.passes
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
-        .registrationApi.replaceSection[BankAccount](bankAccount)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+    "UseNewBarsVerify is enabled" must {
 
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(url).post(Map(
-        "accountName" -> testBankName,
-        "accountNumber" -> testAccountNumber,
-        "sortCode" -> testSortCode
-      )))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-    }
-
-    "bank details are incorrect" must {
-      "return BAD_REQUEST" in new Setup {
-        given()
-          .user.isAuthorised()
-          .bankAccountReputation.fails
-          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
+      "save bank details to session and redirect to Task List when form is valid" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-        val res: WSResponse = await(buildClient(url).post(Map(
-          "accountName" -> "",
-          "accountNumber" -> "",
-          "sortCode" -> ""
-        )))
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
+            )))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+
+      "save bank details including roll number to session and redirect to Task List" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode,
+              "rollNumber"    -> testRollNumber
+            )))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      }
+
+      "return BAD_REQUEST without calling BARS when form fields are empty" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> "",
+              "accountNumber" -> "",
+              "sortCode"      -> ""
+            )))
+
+        res.status mustBe BAD_REQUEST
+      }
+
+      "return BAD_REQUEST without calling BARS when account number is invalid" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> "invalid",
+              "sortCode"      -> testSortCode
+            )))
 
         res.status mustBe BAD_REQUEST
       }
     }
   }
-
 }
