@@ -1,4 +1,3 @@
-
 package pages.bankdetails
 
 import forms.EnterBankAccountDetailsForm
@@ -7,12 +6,12 @@ import models.BankAccountDetails
 import play.api.data.Form
 import views.html.bankdetails.EnterBankAccountDetails
 
-class BarsBankAccountDetailsA11ySpec extends A11ySpec {
+class EnterBankAccountDetailsA11ySpec extends A11ySpec {
 
-  val view: EnterBankAccountDetails = app.injector.instanceOf[EnterBankAccountDetails]
+  val view: EnterBankAccountDetails  = app.injector.instanceOf[EnterBankAccountDetails]
   val form: Form[BankAccountDetails] = EnterBankAccountDetailsForm.form
 
-  "the Enter Company Bank Account Details page" when {
+  "the Enter Bank Account Details page" when {
     "there are no form errors" must {
       "pass all a11y checks" in {
         view(form).body must passAccessibilityChecks

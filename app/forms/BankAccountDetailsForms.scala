@@ -53,7 +53,7 @@ object ChooseAccountTypeForm {
   )
 }
 
-object EnterBankAccountDetailsForm {
+object EnterCompanyBankAccountDetailsForm {
 
   val ACCOUNT_NAME   = "accountName"
   val ACCOUNT_NUMBER = "accountNumber"
@@ -106,7 +106,7 @@ object EnterBankAccountDetailsForm {
     form.withError(invalidAccountReputationKey, invalidAccountReputationMessage)
 }
 
-object EnterBankAccountDetailsNewBarsForm {
+object EnterBankAccountDetailsForm {
 
   val ACCOUNT_NAME   = "accountName"
   val ACCOUNT_NUMBER = "accountNumber"

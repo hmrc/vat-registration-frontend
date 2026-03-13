@@ -20,9 +20,9 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
+import forms.EnterCompanyBankAccountDetailsForm
+import forms.EnterCompanyBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
 import forms.EnterBankAccountDetailsForm
-import forms.EnterBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
-import forms.EnterBankAccountDetailsNewBarsForm
 import models.BankAccountDetails
 import models.bars.BankAccountDetailsSessionFormat
 import play.api.libs.json.Format
@@ -56,7 +56,7 @@ class UkBankAccountDetailsController @Inject() (
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      val newBarsForm = EnterBankAccountDetailsNewBarsForm.form
+      val newBarsForm = EnterBankAccountDetailsForm.form
       sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
         case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
         case None          => Ok(newBarsView(newBarsForm))
@@ -71,7 +71,7 @@ class UkBankAccountDetailsController @Inject() (
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      val newBarsForm = EnterBankAccountDetailsNewBarsForm.form
+      val newBarsForm = EnterBankAccountDetailsForm.form
       newBarsForm
         .bindFromRequest()
         .fold(
@@ -89,7 +89,7 @@ class UkBankAccountDetailsController @Inject() (
           accountDetails =>
             bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails).map {
               case true  => Redirect(controllers.routes.TaskListController.show.url)
-              case false => BadRequest(oldView(EnterBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)))
+              case false => BadRequest(oldView(EnterCompanyBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)))
             }
         )
     }

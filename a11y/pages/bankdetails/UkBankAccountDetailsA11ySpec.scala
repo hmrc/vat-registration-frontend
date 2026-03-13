@@ -3,12 +3,14 @@ package pages.bankdetails
 
 import helpers.A11ySpec
 import views.html.bankdetails.EnterCompanyBankAccountDetails
-import forms.EnterBankAccountDetailsForm
+import forms.EnterCompanyBankAccountDetailsForm
+import models.BankAccountDetails
+import play.api.data.Form
 
 class UkBankAccountDetailsA11ySpec extends A11ySpec {
 
-  val view = app.injector.instanceOf[EnterCompanyBankAccountDetails]
-  val form = EnterBankAccountDetailsForm.form
+  val view: EnterCompanyBankAccountDetails = app.injector.instanceOf[EnterCompanyBankAccountDetails]
+  val form: Form[BankAccountDetails] = EnterCompanyBankAccountDetailsForm.form
 
   "the Enter Company Bank Account Details page" when {
     "there are no form errors" must {

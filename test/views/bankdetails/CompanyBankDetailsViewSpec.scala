@@ -16,7 +16,7 @@
 
 package views.bankdetails
 
-import forms.EnterBankAccountDetailsForm
+import forms.EnterCompanyBankAccountDetailsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -38,7 +38,7 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
   val buttonText = "Save and continue"
 
   "Company Bank Details Page" should {
-    implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
+    implicit lazy val doc: Document = Jsoup.parse(view(EnterCompanyBankAccountDetailsForm.form).body)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(title)

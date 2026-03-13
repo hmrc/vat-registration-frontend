@@ -18,7 +18,7 @@ package views.bankdetails
 
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport._
-import forms.EnterBankAccountDetailsNewBarsForm
+import forms.EnterBankAccountDetailsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -41,7 +41,7 @@ class EnterBankDetailsViewSpec extends VatRegViewSpec {
   val rollNumberHint = "You can find it on your card, statement or passbook"
   val buttonText = "Save and continue"
 
-  implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsNewBarsForm.form).body)
+  implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
 
   "Company Bank Details Page common elements" should {
     disable(UseNewBarsVerify)
