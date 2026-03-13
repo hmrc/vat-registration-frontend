@@ -989,10 +989,13 @@ pages.chooseAccountType.option.business               = Cyfrif busnes
 pages.chooseAccountType.option.personal               = Cyfrif personol
 
 # Bank Details page
-pages.bankDetails.heading                           = Beth yw manylion cyswllt y busnes?
-pages.bankDetails.p1                                = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEF yn defnyddio’r cyfrif hwn. Ni fydd arian yn cael ei gymryd o’r cyfrif rydych chi’n ei ddarparu.
+pages.bankDetails.heading.old                       = Beth yw manylion cyfrif banc neu gymdeithas adeiladu’r busnes?
+pages.bankDetails.heading.new                       = Beth yw manylion cyswllt y busnes?
+pages.bankDetails.p1.old                            = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEM yn defnyddio’r cyfrif hwn. Ni fyddwn yn cymryd arian ohono.
+pages.bankDetails.p1.new                            = Dim ond i anfon ad-daliadau TAW y bydd tîm TAW CThEF yn defnyddio’r cyfrif hwn. Ni fydd arian yn cael ei gymryd o’r cyfrif rydych chi’n ei ddarparu.
 pages.bankDetails.info                              = Mae’n rhaid i chi roi gwybod i ni os bydd manylion eich cyfrif yn newid.
-pages.bankDetails.accountName.label                 = Yr enw sydd ar y cyfrif
+pages.bankDetails.accountName.label.old             = Enw’r cyfrif
+pages.bankDetails.accountName.label.new             = Yr enw sydd ar y cyfrif
 pages.bankDetails.accountName.hint                  = Nodwch yr enw fel y mae’n ymddangos ar gyfriflenni banc ac yn eich cyfrif TAW
 pages.bankDetails.accountNumber.label               = Rhif y cyfrif
 pages.bankDetails.accountNumber.hint                = Mae’n rhaid iddo fod rhwng 6 ac 8 digid o hyd
