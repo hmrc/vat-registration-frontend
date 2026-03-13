@@ -64,7 +64,7 @@ object EnterCompanyBankAccountDetailsForm {
   val accountNameInvalidKey   = "validation.companyBankAccount.name.invalid.old"
   val accountNumberEmptyKey   = "validation.companyBankAccount.number.missing"
   val accountNumberInvalidKey = "validation.companyBankAccount.number.invalid"
-  val sortCodeEmptyKey        = "validation.companyBankAccount.sortCode.missing"
+  val sortCodeEmptyKey        = "validation.companyBankAccount.sortCode.missing.old"
   val sortCodeInvalidKey      = "validation.companyBankAccount.sortCode.invalid"
 
   val invalidAccountReputationKey     = "sortCodeAndAccountGroup"
@@ -119,7 +119,7 @@ object EnterBankAccountDetailsForm {
   val accountNumberEmptyKey       = "validation.companyBankAccount.number.missing"
   val accountNumberFormatKey      = "validation.companyBankAccount.number.format"
   val accountNumberInvalidKey     = "validation.companyBankAccount.number.invalid"
-  val sortCodeEmptyKey            = "validation.companyBankAccount.sortCode.missing"
+  val sortCodeEmptyKey            = "validation.companyBankAccount.sortCode.missing.new"
   val sortCodeLengthKey           = "validation.companyBankAccount.sortCode.length"
   val sortCodeFormatKey           = "validation.companyBankAccount.sortCode.format"
   val rollNumberInvalidKey        = "validation.companyBankAccount.rollNumber.invalid"
