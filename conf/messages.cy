@@ -1007,10 +1007,11 @@ validation.companyBankAccount.name.invalid.old      = Mae’n rhaid i enw’r cy
 validation.companyBankAccount.name.invalid.new      = Enw sydd ar y cyfrif: mae’n rhaid i hyn beidio cynnwys cymeriadau arbennig
 validation.companyBankAccount.number.missing        = Nodwch rif y cyfrif
 validation.companyBankAccount.number.invalid        = Rhif y cyfrif: mae’n rhaid i hyn fod rhwng 6 ac 8 digid
-validation.companyBankAccount.number.digit.error    = Rhif y cyfrif: mae’n rhaid i hyn gynnwys rhifau yn unig
+validation.companyBankAccount.number.format         = Rhif y cyfrif: mae’n rhaid i hyn gynnwys rhifau yn unig
 validation.companyBankAccount.sortCode.missing      = Nodwch god didoli’r cyfrif
-validation.companyBankAccount.sortCode.invalid      = Cod didoli: mae’n rhaid i hyn fod yn 6 digid
-validation.companyBankAccount.sortCode.digit.error  = Cod didoli: mae’n rhaid i hyn gynnwys rhifau yn unig
+validation.companyBankAccount.sortCode.invalid      = Nodwch god didoli dilys ar gyfer y cyfrif
+validation.companyBankAccount.sortCode.length       = Cod didoli: mae’n rhaid i hyn fod yn 6 digid
+validation.companyBankAccount.sortCode.format       = Cod didoli: mae’n rhaid i hyn gynnwys rhifau yn unig
 validation.companyBankAccount.invalidCombination    = Nodwch rif cyfrif banc a chod didoli dilys
 validation.companyBankAccount.rollNumber.invalid    = Mae’n rhaid i rif rôl y gymdeithas adeiladu fod yn fyrrach
 

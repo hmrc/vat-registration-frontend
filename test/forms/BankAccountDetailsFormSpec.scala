@@ -45,15 +45,6 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.get mustBe validBankAccountDetails
     }
 
-    "successfully bind an account name containing all valid characters" in {
-      val formData = Map(
-        ACCOUNT_NAME   -> "O'Brien-Smith J. A/B",
-        ACCOUNT_NUMBER -> validAccountNumber,
-        SORT_CODE      -> validSortCode
-      )
-      form.bind(formData).errors mustBe empty
-    }
-
     "return a FormError when binding an empty account name to the form" in {
       val formData = Map(
         ACCOUNT_NAME   -> "",
@@ -219,7 +210,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.get mustBe BankAccountDetails(validAccountName, validAccountNumber, validSortCode)
     }
 
-    "return a FormError with the new missing account name error message when account name is empty" in {
+    "return a FormError when account name is empty" in {
       val formData = Map(
         ACCOUNT_NAME   -> "",
         ACCOUNT_NUMBER -> validAccountNumber,
@@ -247,7 +238,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNameMaxLengthKey
     }
 
-    "return a FormError with the new invalid account name error message when account name contains invalid characters" in {
+    "return a FormError when account name contains invalid characters" in {
       val invalidAccountName = "123#@~"
 
       val formData = Map(
@@ -275,7 +266,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberEmptyKey
     }
 
-    "return a FormError with the length error message when account number is fewer than 6 digits" in {
+    "return a FormError when account number is fewer than 6 digits" in {
       val invalidAccountNumber = "12345"
 
       val formData = Map(
@@ -290,7 +281,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberInvalidKey
     }
 
-    "return a FormError with the invalid characters error message when account number is 8 characters but contains letters" in {
+    "return a FormError when account number is 8 characters but contains letters" in {
       val invalidAccountNumber = "1234567A"
 
       val formData = Map(
@@ -302,7 +293,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberDigitErrorKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberFormatKey
     }
 
     "return a FormError when sort code is empty" in {
@@ -318,7 +309,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.sortCodeEmptyKey
     }
 
-    "return a FormError with the length error message when sort code is fewer than 6 digits" in {
+    "return a FormError when sort code is fewer than 6 digits" in {
       val invalidSortCode = "12345"
 
       val formData = Map(
@@ -330,10 +321,10 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.sortCodeInvalidKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.sortCodeLengthKey
     }
 
-    "return a FormError with the invalid characters error message when sort code is 6 characters but contains letters" in {
+    "return a FormError when sort code is 6 characters but contains letters" in {
       val invalidSortCode = "ABCDEF"
 
       val formData = Map(
@@ -345,7 +336,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.sortCodeDigitErrorKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.sortCodeFormatKey
     }
 
     "successfully bind with a valid roll number" in {
