@@ -16,29 +16,33 @@
 
 package services
 
+import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
 import models.bars.BankAccountType
-import models.bars.BankAccountType.Personal
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.Assertion
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import testHelpers.VatSpec
 
-class BankAccountDetailsServiceSpec extends VatSpec with MockRegistrationApiConnector {
+class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite with MockRegistrationApiConnector {
 
   val mockBankAccountRepService: BankAccountReputationService = mock[BankAccountReputationService]
+  val mockBarsService: BarsService                            = mock[BarsService]
 
   trait Setup {
     val service: BankAccountDetailsService = new BankAccountDetailsService(
       mockRegistrationApiConnector,
-      mockBankAccountRepService
+      mockBankAccountRepService,
+      mockBarsService
     )
   }
 
-  implicit val request: Request[_] = FakeRequest()
+  implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  implicit val request: Request[_]          = FakeRequest()
 
   "getBankAccountDetails" should {
 

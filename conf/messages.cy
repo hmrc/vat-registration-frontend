@@ -1019,6 +1019,16 @@ validation.companyBankAccount.sortCode.format       = Cod didoli: mae’n rhaid 
 validation.companyBankAccount.invalidCombination    = Nodwch rif cyfrif banc a chod didoli dilys
 validation.companyBankAccount.rollNumber.invalid    = Mae’n rhaid i rif rôl y gymdeithas adeiladu fod yn fyrrach
 
+# Check Bank Details Page
+pages.checkBankDetails.heading                          = Gwiriwch fanylion eich cyfrif
+pages.checkBankDetails.cardTitle                        = Manylion cyfrif banc
+pages.checkBankDetails.change                           = Newid
+pages.checkBankDetails.accountName                      = Enw’r cyfrif
+pages.checkBankDetails.accountNumber                    = Rhif y cyfrif
+pages.checkBankDetails.sortCode                         = Cod didoli
+pages.checkBankDetails.rollNumber                       = Rhif rôl y gymdeithas adeiladu
+pages.checkBankDetails.p1                               = Drwy gadarnhau manylion y cyfrif hwn, rydych yn cytuno bod yr wybodaeth rydych wedi’u darparu yn gyflawn ac yn gywir.
+
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Pa weithgaredd yw prif ffynhonnell incwm y busnes?
 validation.mainBusinessActivity.missing                   = Dewiswch brif ffynhonnell incwm y busnes

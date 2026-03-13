@@ -16,9 +16,12 @@
 
 package services
 
+import config.FrontendAppConfig
 import connectors.RegistrationApiConnector
+import featuretoggle.FeatureSwitch.UseNewBarsVerify
+import featuretoggle.FeatureToggleSupport.isEnabled
 import models._
-import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars.BankAccountType
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,7 +30,9 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector, val bankAccountRepService: BankAccountReputationService) {
+class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector,
+                                           bankAccountRepService: BankAccountReputationService,
+                                           barsService: BarsService)(implicit appConfig: FrontendAppConfig) {
 
   def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
     regApiConnector.getSection[BankAccount](profile.registrationId)
@@ -52,25 +57,34 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
     bankAccount flatMap saveBankAccount
   }
 
-  def saveEnteredBankAccountDetails(accountDetails: BankAccountDetails)(implicit
+  def saveEnteredBankAccountDetails(bankAccountDetails: BankAccountDetails, bankAccountType: Option[BankAccountType])(implicit
       hc: HeaderCarrier,
       profile: CurrentProfile,
       ex: ExecutionContext,
       request: Request[_]): Future[Boolean] =
     for {
-      existing <- getBankAccount
-      result <- bankAccountRepService.validateBankDetails(accountDetails).flatMap {
+      result <- selectBarsEndpoint(bankAccountDetails, bankAccountType).flatMap {
         case status @ (ValidStatus | IndeterminateStatus) =>
           val bankAccount = BankAccount(
             isProvided = true,
-            details = Some(accountDetails.copy(status = Some(status))),
+            details = Some(bankAccountDetails.copy(status = Some(status))),
             reason = None,
-            bankAccountType = existing.flatMap(_.bankAccountType)
+            bankAccountType = bankAccountType
           )
           saveBankAccount(bankAccount) map (_ => true)
         case InvalidStatus => Future.successful(false)
       }
     } yield result
+
+  def selectBarsEndpoint(bankAccountDetails: BankAccountDetails, bankAccountType: Option[BankAccountType])(implicit
+      hc: HeaderCarrier,
+      request: Request[_]): Future[BankAccountDetailsStatus] =
+    if (isEnabled(UseNewBarsVerify))
+      barsService.verifyBankDetails(
+        bankAccountDetails,
+        bankAccountType.getOrElse(throw new IllegalStateException("bankAccountType is required when UseNewBarsVerify is enabled")))
+    else
+      bankAccountRepService.validateBankDetails(bankAccountDetails)
 
   def saveNoUkBankAccountDetails(
       reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {

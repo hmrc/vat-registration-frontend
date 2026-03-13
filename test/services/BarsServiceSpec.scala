@@ -91,7 +91,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(successResponse))
 
-        service.verifyBankDetails(BankAccountType.Personal, personalDetails).futureValue shouldBe ValidStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe ValidStatus
       }
     }
 
@@ -100,7 +100,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponseWith(accountExists = BarsResponse.Indeterminate)))
 
-        service.verifyBankDetails(BankAccountType.Personal, personalDetails).futureValue shouldBe IndeterminateStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe IndeterminateStatus
       }
     }
 
@@ -109,14 +109,14 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)))
 
-        service.verifyBankDetails(BankAccountType.Personal, personalDetails).futureValue shouldBe InvalidStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe InvalidStatus
       }
 
       "the connector throws an exception" in {
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("failure")))
 
-        service.verifyBankDetails(BankAccountType.Personal, personalDetails).futureValue shouldBe InvalidStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe InvalidStatus
       }
     }
   }
@@ -180,7 +180,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
 
     "return a JSON body with 'account' and 'subject' keys" when {
       "given a Personal account type" in {
-        val result = service.buildJsonRequestBody(BankAccountType.Personal, personalDetails)
+        val result = service.buildJsonRequestBody(personalDetails, BankAccountType.Personal)
 
         result shouldBe Json.toJson(
           BarsPersonalRequest(
@@ -193,14 +193,14 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
 
     "not include a 'business' key" when {
       "given a Personal account type" in {
-        val result = service.buildJsonRequestBody(BankAccountType.Personal, personalDetails)
+        val result = service.buildJsonRequestBody(personalDetails, BankAccountType.Personal)
         (result \ "business").isDefined shouldBe false
       }
     }
 
     "return a JSON body with 'account' and 'business' keys" when {
       "given a Business account type" in {
-        val result = service.buildJsonRequestBody(BankAccountType.Business, businessDetails)
+        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business)
 
         result shouldBe Json.toJson(
           BarsBusinessRequest(
@@ -213,7 +213,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
 
     "not include a 'subject' key" when {
       "given a Business account type" in {
-        val result = service.buildJsonRequestBody(BankAccountType.Business, businessDetails)
+        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business )
         (result \ "subject").isDefined shouldBe false
       }
     }
