@@ -49,11 +49,11 @@ class CheckBankDetailsController @Inject() (
 
   private val sessionKey = "bankAccountDetails"
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def show: Action[AnyContent] = isAuthenticated { implicit request =>
     if (isEnabled(UseNewBarsVerify)) {
       sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
         case Some(details) => Ok(view(details))
-        case None          => Redirect(routes.UkBankAccountDetailsController.show)
+        case None          => Redirect(routes.HasBankAccountController.show)
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
@@ -62,16 +62,18 @@ class CheckBankDetailsController @Inject() (
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      sessionService.fetchAndGet[BankAccountDetails](sessionKey).flatMap {
-        case Some(details) =>
-          bankAccountDetailsService.getBankAccount.flatMap { bankAccount =>
-            bankAccountDetailsService.saveEnteredBankAccountDetails(details, bankAccount.flatMap(_.bankAccountType)).flatMap {
-              case true  => sessionService.remove.map(_ => Redirect(controllers.routes.TaskListController.show.url))
-              case false => Future.successful(Redirect(routes.UkBankAccountDetailsController.show))
+      for {
+        details     <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
+        bankAccount <- bankAccountDetailsService.getBankAccount
+        result <- (details, bankAccount.flatMap(_.bankAccountType)) match {
+          case (Some(accountDetails), Some(accountType)) =>
+            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, Some(accountType)).map {
+              case true  => Redirect(controllers.routes.TaskListController.show.url)
+              case false => Redirect(routes.UkBankAccountDetailsController.show)
             }
-          }
-        case None => Future.successful(Redirect(routes.UkBankAccountDetailsController.show))
-      }
+          case _ => Future.successful(Redirect(routes.HasBankAccountController.show))
+        }
+      } yield result
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
     }

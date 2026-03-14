@@ -20,7 +20,6 @@ import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
 import models.BankAccount
-import models.api.ValidStatus
 import models.bars.BankAccountType
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -51,7 +50,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
 
     "UseNewBarsVerify is enabled" must {
 
-      "redirect to UkBankAccountDetailsController when session is empty" in new Setup {
+      "redirect to HasBankAccountController when session is empty" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -60,7 +59,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.UkBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
       }
 
       "return OK and display bank details when session contains bank details" in new Setup {
@@ -109,19 +108,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
 
     "UseNewBarsVerify is enabled" must {
 
-      "redirect to UkBankAccountDetailsController when session is empty" in new Setup {
-        enable(UseNewBarsVerify)
-        given().user.isAuthorised()
-
-        insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-        val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
-
-        res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.UkBankAccountDetailsController.show.url)
-      }
-
-      "redirect to TaskList and clear session when BARS verification passes" in new Setup {
+      "redirect to TaskList when BARS verification passes" in new Setup {
         enable(UseNewBarsVerify)
         given().user
           .isAuthorised()
@@ -130,12 +117,13 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
           .registrationApi
           .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, Some(BankAccountType.Business))))
           .registrationApi
-          .replaceSection[BankAccount](BankAccount(
-            isProvided = true,
-            details = Some(testUkBankDetails),
-            reason = None,
-            bankAccountType = Some(BankAccountType.Business)
-          ))
+          .replaceSection[BankAccount](
+            BankAccount(
+              isProvided = true,
+              details = Some(testUkBankDetails),
+              reason = None,
+              bankAccountType = Some(BankAccountType.Business)
+            ))
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         await(
@@ -151,6 +139,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
+
       "redirect back to UkBankAccountDetailsController when BARS verification fails" in new Setup {
         enable(UseNewBarsVerify)
         given().user
@@ -174,6 +163,41 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.UkBankAccountDetailsController.show.url)
+      }
+
+      "redirect to HasBankAccountController when session is empty" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+      }
+
+      "redirect to HasBankAccountController if there is no account type saved" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user
+          .isAuthorised()
+          .registrationApi
+          .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, bankAccountType = None)))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        await(
+          buildClient("/account-details").post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
+            )))
+
+        val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
       }
     }
   }
