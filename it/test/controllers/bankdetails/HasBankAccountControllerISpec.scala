@@ -21,6 +21,7 @@ import itutil.ControllerISpec
 import models.BankAccount
 import models.api.{EligibilitySubmissionData, Individual, NETP, NonUkNonEstablished}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
@@ -41,6 +42,22 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe OK
+    }
+    "return OK and render the ProvideBankDetailsView when UseNewBarsVerify is enabled" in new Setup {
+      enable(UseNewBarsVerify)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[BankAccount](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).get())
+      val doc: Document = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      doc.title() mustBe "Can you provide bank or building society details for VAT repayments to the business? - Register for VAT - GOV.UK"
+      disable(UseNewBarsVerify)
     }
     "return SEE_OTHER when the party type is NETP" in new Setup {
       given()
@@ -172,6 +189,18 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe SEE_OTHER
       res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.ChooseAccountTypeController.show.url)
+      disable(UseNewBarsVerify)
+    }
+
+    "return BAD_REQUEST and render the ProvideBankDetailsView when form is empty and UseNewBarsVerify is enabled" in new Setup {
+      enable(UseNewBarsVerify)
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).post(""))
+
+      res.status mustBe BAD_REQUEST
+      Jsoup.parse(res.body).title() must include("Can you provide bank or building society details for VAT repayments to the business? - Register for VAT - GOV.UK")
       disable(UseNewBarsVerify)
     }
 

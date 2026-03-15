@@ -1,0 +1,69 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import play.api.data.Form
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        button: components.button,
+        formWithCSRF: FormWithCSRF,
+        errorSummary: components.errorSummary,
+        panelIndent: components.panelIndent,
+        yesNoRadio: components.yesNoRadio,
+        bullets: components.bullets
+)
+
+@(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(title(hasBankAccountForm, messages("pages.canProvideBankAccount.heading")))) {
+
+    @errorSummary(errors = hasBankAccountForm.errors)
+
+    @h1("pages.canProvideBankAccount.heading")
+    @p {
+        @messages("pages.canProvideBankAccount.para")
+    }
+    @p {
+        @messages("pages.canProvideBankAccount.para2")
+    }
+    @p {
+        @messages("pages.canProvideBankAccount.para3")
+    }
+    @bullets(
+        "pages.canProvideBankAccount.bullet1",
+        "pages.canProvideBankAccount.bullet2",
+        "pages.canProvideBankAccount.bullet3",
+        "pages.canProvideBankAccount.bullet4"
+    )
+
+    @formWithCSRF(action = controllers.bankdetails.routes.HasBankAccountController.submit) {
+
+        @yesNoRadio(
+            form = hasBankAccountForm,
+            headingKey = messages("pages.canProvideBankAccount.heading"),
+            isPageHeading = false,
+            classes = "govuk-visually-hidden",
+        )
+
+        @button(messages("app.common.continue"))
+
+    }
+}
