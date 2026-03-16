@@ -80,11 +80,11 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       hc: HeaderCarrier,
       request: Request[_]): Future[BankAccountDetailsStatus] =
     if (isEnabled(UseNewBarsVerify))
-      barsService.verifyBankDetails(
-        bankAccountDetails,
-        bankAccountType.getOrElse(throw new IllegalStateException("bankAccountType is required when UseNewBarsVerify is enabled")))
-    else
-      bankAccountRepService.validateBankDetails(bankAccountDetails)
+      bankAccountType match {
+        case Some(accountType) => barsService.verifyBankDetails(bankAccountDetails, accountType)
+        case None              => Future.failed(new IllegalStateException("bankAccountType is required when UseNewBarsVerify is enabled"))
+      }
+    else bankAccountRepService.validateBankDetails(bankAccountDetails)
 
   def saveNoUkBankAccountDetails(
       reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
