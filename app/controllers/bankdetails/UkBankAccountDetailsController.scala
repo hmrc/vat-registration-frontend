@@ -61,9 +61,9 @@ class UkBankAccountDetailsController @Inject() (
           val newBarsForm = EnterBankAccountDetailsForm.form
           sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
             case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
-            case None          => Ok(newBarsView(newBarsForm))
+            case None => Ok(newBarsView(newBarsForm))
           }
-        }
+      }
     }
 
 
