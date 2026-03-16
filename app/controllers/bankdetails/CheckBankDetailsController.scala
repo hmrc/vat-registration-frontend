@@ -25,7 +25,7 @@ import models.bars.BankAccountDetailsSessionFormat
 import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionService}
+import services.{BankAccountDetailsService,LockService, SessionService}
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.CheckBankDetailsView
 
@@ -36,6 +36,7 @@ class CheckBankDetailsController @Inject() (
     val authConnector: AuthClientConnector,
     val bankAccountDetailsService: BankAccountDetailsService,
     val sessionService: SessionService,
+    val lockService: LockService,
     configuration: Configuration,
     view: CheckBankDetailsView
 )(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
@@ -69,7 +70,16 @@ class CheckBankDetailsController @Inject() (
           case (Some(accountDetails), Some(accountType)) =>
             bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, Some(accountType)).map {
               case true  => Redirect(controllers.routes.TaskListController.show.url)
-              case false => Redirect(routes.UkBankAccountDetailsController.show)
+              case false =>
+                lockService.incrementBarsAttempts(profile.registrationId).map { attempts =>
+                  if (attempts >= appConfig.knownFactsLockAttemptLimit) {
+                    Redirect(controllers.errors.routes.ThirdAttemptLockoutController.show)
+                  } else {
+                    Redirect(controllers.bankdetails.routes.AccountDetailsNotVerified.show)
+                  }
+                }
+                Redirect(routes.UkBankAccountDetailsController.show)
+
             }
           case _ => Future.successful(Redirect(routes.HasBankAccountController.show))
         }
