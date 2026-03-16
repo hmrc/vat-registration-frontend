@@ -187,7 +187,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
     "UseNewBarsVerify is enabled" must {
 
-      "save bank details to session and redirect to Task List when form is valid" in new Setup {
+      "save bank details to session and redirect to Check Details Controller when form is valid" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -202,10 +202,10 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
             )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
       }
 
-      "save bank details including roll number to session and redirect to Task List" in new Setup {
+      "save bank details including roll number to session and redirect to Check Details Controller" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -221,7 +221,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
             )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
       }
 
       "return BAD_REQUEST without calling BARS when form fields are empty" in new Setup {

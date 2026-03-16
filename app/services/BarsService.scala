@@ -34,9 +34,9 @@ case class BarsService @Inject() (
 )(implicit ec: ExecutionContext)
     extends Logging {
 
-  def verifyBankDetails(bankAccountType: BankAccountType, bankDetails: BankAccountDetails)(implicit
+  def verifyBankDetails(bankDetails: BankAccountDetails, bankAccountType: BankAccountType)(implicit
       hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
-    val requestBody: JsValue = buildJsonRequestBody(bankAccountType, bankDetails)
+    val requestBody: JsValue = buildJsonRequestBody(bankDetails, bankAccountType)
 
     logger.info(s"Verifying bank details for account type: $bankAccountType")
 
@@ -67,7 +67,7 @@ case class BarsService @Inject() (
     case Left(_)                     => InvalidStatus
   }
 
-  def buildJsonRequestBody(bankAccountType: BankAccountType, bankDetails: BankAccountDetails): JsValue =
+  def buildJsonRequestBody(bankDetails: BankAccountDetails, bankAccountType: BankAccountType): JsValue =
     bankAccountType match {
       case BankAccountType.Personal =>
         Json.toJson(

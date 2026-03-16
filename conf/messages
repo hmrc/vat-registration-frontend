@@ -1020,6 +1020,16 @@ validation.companyBankAccount.sortCode.length           = Sort code must be 6 di
 validation.companyBankAccount.invalidCombination        = Enter a valid bank account number and sort code
 validation.companyBankAccount.rollNumber.invalid        = Building society roll number must be shorter
 
+# Check Bank Details Page
+pages.checkBankDetails.heading                          = Check your account details
+pages.checkBankDetails.cardTitle                        = Bank account details
+pages.checkBankDetails.change                           = Change
+pages.checkBankDetails.accountName                      = Account name
+pages.checkBankDetails.accountNumber                    = Account number
+pages.checkBankDetails.sortCode                         = Sort code
+pages.checkBankDetails.rollNumber                       = Building society roll number
+pages.checkBankDetails.p1                               = By confirming these account details, you agree the information you have provided is complete and correct.
+
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?
 validation.mainBusinessActivity.missing                   = Select the business’s main source of income

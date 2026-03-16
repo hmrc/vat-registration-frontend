@@ -104,13 +104,15 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   // Bank Account Reputation Section
   private lazy val bankAccountReputationHost = servicesConfig.baseUrl("bank-account-reputation")
+  private lazy val bankAccountReputationStubHost = servicesConfig.baseUrl("bank-account-reputation-stub")
 
   def validateBankDetailsUrl: String =
     if (isEnabled(StubBars)) s"$host/register-for-vat/test-only/bars/validate-bank-details"
     else s"$bankAccountReputationHost/validate/bank-details"
 
   def verifyBankDetailsUrl(bankAccountType: BankAccountType): String =
-    s"$bankAccountReputationHost/verify/${bankAccountType.asBars}"
+    if (isEnabled(StubBars)) s"$bankAccountReputationStubHost/verify/${bankAccountType.asBars}"
+    else s"$bankAccountReputationHost/verify/${bankAccountType.asBars}"
 
   def fixedEstablishmentUrl: String =
     s"$eligibilityUrl/fixed-establishment"
