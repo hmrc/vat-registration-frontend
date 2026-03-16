@@ -43,7 +43,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
     }
-    "return OK and render the ProvideBankDetailsView when UseNewBarsVerify is enabled" in new Setup {
+    "return OK and render the CanProvideBankDetailsView when UseNewBarsVerify is enabled" in new Setup {
       enable(UseNewBarsVerify)
       given()
         .user.isAuthorised()
@@ -59,6 +59,23 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       doc.title() mustBe "Can you provide bank or building society details for VAT repayments to the business? - Register for VAT - GOV.UK"
       disable(UseNewBarsVerify)
     }
+
+    "return OK and render the HasBankAccountView when UseNewBarsVerify is disabled" in new Setup {
+      disable(UseNewBarsVerify)
+      given()
+        .user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[BankAccount](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).get())
+      val doc: Document = Jsoup.parse(res.body)
+
+      res.status mustBe OK
+      doc.title() mustBe "Are you able to provide bank or building society account details for the business? - Register for VAT - GOV.UK"
+    }
+
     "return SEE_OTHER when the party type is NETP" in new Setup {
       given()
         .user.isAuthorised()
@@ -192,7 +209,7 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       disable(UseNewBarsVerify)
     }
 
-    "return BAD_REQUEST and render the ProvideBankDetailsView when form is empty and UseNewBarsVerify is enabled" in new Setup {
+    "return BAD_REQUEST and render the CanProvideBankDetailsView when form is empty and UseNewBarsVerify is enabled" in new Setup {
       enable(UseNewBarsVerify)
       given().user.isAuthorised()
       insertCurrentProfileIntoDb(currentProfile, sessionString)
@@ -202,6 +219,17 @@ class HasBankAccountControllerISpec extends ControllerISpec {
       res.status mustBe BAD_REQUEST
       Jsoup.parse(res.body).title() must include("Can you provide bank or building society details for VAT repayments to the business? - Register for VAT - GOV.UK")
       disable(UseNewBarsVerify)
+    }
+
+    "return BAD_REQUEST and render the HasBankAccountView when form is empty and UseNewBarsVerify is disabled" in new Setup {
+      disable(UseNewBarsVerify)
+      given().user.isAuthorised()
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      val res: WSResponse = await(buildClient(url).post(""))
+
+      res.status mustBe BAD_REQUEST
+      Jsoup.parse(res.body).title() must include("Are you able to provide bank or building society account details for the business? - Register for VAT - GOV.UK")
     }
 
     "return BAD_REQUEST if has_bank_account option not selected" in new Setup {
