@@ -982,7 +982,7 @@ pages.canProvideBankAccount.bullet1                   = used only for this busin
 pages.canProvideBankAccount.bullet2                   = in the name of the individual or company registering for VAT
 pages.canProvideBankAccount.bullet3                   = based in the UK
 pages.canProvideBankAccount.bullet4                   = able to receive BACS payments
-validation.canProvideBankAccount.missing              = Select yes if you are able to provide bank or building society details for the business
+validation.canProvideBankAccount.missing              = Select ‘Yes’ if you are able to provide bank or building society details for the business
 
 # Bank Account Type Page
 pages.chooseAccountType.heading                       = What kind of bank or building society account will you use for VAT repayments?
