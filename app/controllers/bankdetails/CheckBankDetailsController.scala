@@ -25,7 +25,7 @@ import models.bars.BankAccountDetailsSessionFormat
 import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService,LockService, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionService}
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.CheckBankDetailsView
 
@@ -50,11 +50,16 @@ class CheckBankDetailsController @Inject() (
 
   private val sessionKey = "bankAccountDetails"
 
-  def show: Action[AnyContent] = isAuthenticated { implicit request =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
-        case Some(details) => Ok(view(details))
-        case None          => Redirect(routes.HasBankAccountController.show)
+      lockService.isBarsLocked(profile.registrationId).flatMap {
+        case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
+        case false =>
+          sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
+            case Some(details) => Ok(view(details))
+            case None          => Redirect(routes.HasBankAccountController.show)
+          }
+
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
@@ -68,18 +73,17 @@ class CheckBankDetailsController @Inject() (
         bankAccount <- bankAccountDetailsService.getBankAccount
         result <- (details, bankAccount.flatMap(_.bankAccountType)) match {
           case (Some(accountDetails), Some(accountType)) =>
-            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, Some(accountType)).map {
-              case true  => Redirect(controllers.routes.TaskListController.show.url)
+            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, Some(accountType)).flatMap {
+              case true => Future.successful(Redirect(controllers.routes.TaskListController.show.url))
               case false =>
-                lockService.incrementBarsAttempts(profile.registrationId).map { attempts =>
-                  if (attempts >= appConfig.knownFactsLockAttemptLimit) {
-                    Redirect(controllers.errors.routes.ThirdAttemptLockoutController.show)
-                  } else {
-                    Redirect(controllers.bankdetails.routes.AccountDetailsNotVerified.show)
+                lockService.incrementBarsAttempts(profile.registrationId).flatMap { _ =>
+                  lockService.isBarsLocked(profile.registrationId).map {
+                    case true =>
+                      Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+                    case false =>
+                      Redirect(controllers.bankdetails.routes.AccountDetailsNotVerifiedController.show)
                   }
                 }
-                Redirect(routes.UkBankAccountDetailsController.show)
-
             }
           case _ => Future.successful(Redirect(routes.HasBankAccountController.show))
         }

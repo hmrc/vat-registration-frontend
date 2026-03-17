@@ -22,77 +22,72 @@ import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import repositories.UserLockRepository
+import repositories.BarsLockRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with DefaultAwaitTimeout {
 
-  val mockUserLockRepository: UserLockRepository = mock[UserLockRepository]
+  val mockBarsLockRepository: BarsLockRepository = mock[BarsLockRepository]
   val mockAppConfig: FrontendAppConfig             = mock[FrontendAppConfig]
 
   val registrationId = "reg-123"
 
   trait Setup {
-    val service: LockService = new LockService(mockUserLockRepository, mockAppConfig)
+    val service: LockService = new LockService(mockBarsLockRepository)
   }
-
-  // ---- getBarsAttemptsUsed ----
 
   "getBarsAttemptsUsed" should {
     "return the number of failed attempts from the repository" in new Setup {
-      when(mockUserLockRepository.getFailedAttempts(eqTo(registrationId)))
+      when(mockBarsLockRepository.getAttemptsUsed(eqTo(registrationId)))
         .thenReturn(Future.successful(2))
 
       await(service.getBarsAttemptsUsed(registrationId)) mustBe 2
     }
 
     "return 0 when there are no recorded attempts" in new Setup {
-      when(mockUserLockRepository.getFailedAttempts(eqTo(registrationId)))
+      when(mockBarsLockRepository.getAttemptsUsed(eqTo(registrationId)))
         .thenReturn(Future.successful(0))
 
       await(service.getBarsAttemptsUsed(registrationId)) mustBe 0
     }
   }
 
-  // ---- incrementBarsAttempts ----
 
   "incrementBarsAttempts" should {
     "return the new total number of failed attempts after incrementing" in new Setup {
-      when(mockUserLockRepository.updateAttempts(eqTo(registrationId)))
-        .thenReturn(Future.successful(Map("user" -> 1)))
+      when(mockBarsLockRepository.recordFailedAttempt(eqTo(registrationId)))
+        .thenReturn(Future.successful(1))
 
       await(service.incrementBarsAttempts(registrationId)) mustBe 1
     }
 
-    "return 0 if the repository map does not contain the 'user' key" in new Setup {
-      when(mockUserLockRepository.updateAttempts(eqTo(registrationId)))
-        .thenReturn(Future.successful(Map.empty[String, Int]))
+    "return 1 as default if repository returns nothing" in new Setup {
+      when(mockBarsLockRepository.recordFailedAttempt(eqTo(registrationId)))
+        .thenReturn(Future.successful(1))
 
-      await(service.incrementBarsAttempts(registrationId)) mustBe 0
+      await(service.incrementBarsAttempts(registrationId)) mustBe 1
     }
 
     "return 3 on the third failed attempt" in new Setup {
-      when(mockUserLockRepository.updateAttempts(eqTo(registrationId)))
-        .thenReturn(Future.successful(Map("user" -> 3)))
+      when(mockBarsLockRepository.recordFailedAttempt(eqTo(registrationId)))
+        .thenReturn(Future.successful(3))
 
       await(service.incrementBarsAttempts(registrationId)) mustBe 3
     }
   }
 
-  // ---- isBarsLocked ----
-
   "isBarsLocked" should {
     "return true when the user is locked in the repository" in new Setup {
-      when(mockUserLockRepository.isUserLocked(eqTo(registrationId)))
+      when(mockBarsLockRepository.isLocked(eqTo(registrationId)))
         .thenReturn(Future.successful(true))
 
       await(service.isBarsLocked(registrationId)) mustBe true
     }
 
     "return false when the user is not locked in the repository" in new Setup {
-      when(mockUserLockRepository.isUserLocked(eqTo(registrationId)))
+      when(mockBarsLockRepository.isLocked(eqTo(registrationId)))
         .thenReturn(Future.successful(false))
 
       await(service.isBarsLocked(registrationId)) mustBe false

@@ -19,31 +19,31 @@
 @import play.api.mvc.Request
 @import views.html.components._
 @import views.html.layouts.layout
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 
 @this(layout: layout,
-    h1: h1,
-    p: p,
-    govUkHeader: GovukHeader,
-    govukButton: GovukButton
+        h1: h1,
+        p: p,
+        link: link
+
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(titleNoForm(messages("ThirdAttemptLockoutPage.heading"))), backLink = false) {
+@layout(Some(titleNoForm(messages("pages.bankDetailsLockoutPage.heading"))), backLink = false) {
 
-    @h1(messages("ThirdAttemptLockoutPage.heading"))
+    @h1(messages("pages.bankDetailsLockoutPage.heading"))
 
     @p {
-        @messages("pages.ThirdAttemptLockoutPage.para1")
+        @messages("pages.bankDetailsLockoutPage.para1")
     }
 
     @p {
-        @messages("pages.ThirdAttemptLockoutPage.para2")
+        @messages("pages.bankDetailsLockoutPage.para2")
     }
 
     @p {
-        @Html(messages("pages.ThirdAttemptLockoutPage.para3", appConfig.vatTaskList))
+        @link(controllers.routes.TaskListController.show.url, messages("pages.bankDetailsLockoutPage.para3.link"))@messages("pages.bankDetailsLockoutPage.para3")
     }
+
 }

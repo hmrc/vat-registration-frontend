@@ -27,7 +27,7 @@ import models.bars.BankAccountDetailsSessionFormat
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import play.api.Configuration
-import services.{BankAccountDetailsService,LockService, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionService}
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.{EnterBankAccountDetails, EnterCompanyBankAccountDetails}
 
@@ -55,26 +55,22 @@ class UkBankAccountDetailsController @Inject() (
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      lockService.getBarsAttemptsUsed(profile.registrationId).map(_ >= appConfig.knownFactsLockAttemptLimit).flatMap {
-        case true => Future.successful(Redirect(controllers.errors.routes.ThirdAttemptLockoutController.show))
+      lockService.isBarsLocked(profile.registrationId).flatMap {
+        case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
         case false =>
           val newBarsForm = EnterBankAccountDetailsForm.form
           sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
             case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
-            case None => Ok(newBarsView(newBarsForm))
+            case None          => Ok(newBarsView(newBarsForm))
           }
       }
-    }
-
-
-    else {
+    } else {
       for {
         bankDetails <- bankAccountDetailsService.getBankAccount
         filledForm = bankDetails.flatMap(_.details).fold(enterBankAccountDetailsForm)(enterBankAccountDetailsForm.fill)
       } yield Ok(oldView(filledForm))
     }
   }
-
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       val newBarsForm = EnterBankAccountDetailsForm.form
