@@ -290,8 +290,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val govukHowToRegister: String = "https://www.gov.uk/register-for-vat/how-register-for-vat"
 
-  lazy val vatTaskList: String = s"$host/register-for-vat/application-progress"
-
   lazy val govukTogcVatNotice: String = "https://www.gov.uk/guidance/transfer-a-business-as-a-going-concern-and-vat-notice-7009"
 
   lazy val businessDescriptionMaxLength: Int = servicesConfig.getInt("constants.businessDescriptionMaxLength")

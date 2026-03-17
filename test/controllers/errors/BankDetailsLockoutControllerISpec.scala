@@ -16,39 +16,27 @@
 
 package controllers.errors
 
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import play.api.mvc.Result
-import play.api.test.FakeRequest
+import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.errors.BankDetailsLockoutPage
 
-import scala.concurrent.Future
-
-class BankDetailsLockoutControllerSpec extends ControllerSpec with FutureAssertions {
+class BankDetailsLockoutControllerISpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
   val view: BankDetailsLockoutPage = app.injector.instanceOf[BankDetailsLockoutPage]
 
   trait Setup {
     val testController = new BankDetailsLockoutController(
-      messagesControllerComponents,
       view,
-      mockAuthConnector
+      mockSessionService,
+      mockAuthClientConnector
     )
-
-    // ThirdAttemptLockoutController uses AuthorisedFunctions which calls authConnector.authorise
-    // directly, so we stub mockAuthConnector (uk.gov.hmrc.auth.core.AuthConnector) rather than
-    // mockAuthClientConnector.
-    when(mockAuthConnector.authorise[Unit](any(), any())(any(), any()))
-      .thenReturn(Future.successful(()))
   }
 
   "show" should {
-    "return 200 and render the lockout page" in new Setup {
-      val result: Future[Result] = testController.show()(FakeRequest())
-      status(result)      mustBe OK
-      contentType(result) mustBe Some("text/html")
+    "return 200" in new Setup {
+      callAuthorised(testController.show) { result =>
+        status(result) mustBe OK
+      }
     }
   }
 }
-
