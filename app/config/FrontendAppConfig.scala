@@ -45,13 +45,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
   implicit val appConfig: FrontendAppConfig = this
 
-  lazy val ttlLockSeconds:Int = 86400
-  lazy val knownFactsLockAttemptLimit:Int = 3
-  lazy val isKnownFactsCheckEnabled:Boolean = true
-
-
-
-
   private lazy val thresholdString: String = runModeConfiguration.get[ConfigList]("vat-threshold").render(ConfigRenderOptions.concise())
   lazy val thresholds: Seq[VatThreshold] = Json.parse(thresholdString).as[List[VatThreshold]]
 

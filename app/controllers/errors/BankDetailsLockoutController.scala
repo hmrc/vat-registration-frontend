@@ -16,27 +16,22 @@
 
 package controllers.errors
 
-
+import config.FrontendAppConfig
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import config.FrontendAppConfig
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import services.SessionService
-import views.html.errors.ThirdAttemptLockoutPage
+import views.html.errors.BankDetailsLockoutPage
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class ThirdAttemptLockoutController @Inject()(mcc: MessagesControllerComponents,
-                                              view: ThirdAttemptLockoutPage,
-                                              val authConnector: AuthConnector
-                                             )(implicit appConfig: FrontendAppConfig, ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+class BankDetailsLockoutController @Inject()(mcc: MessagesControllerComponents, view: BankDetailsLockoutPage, val authConnector: AuthConnector)(
+    implicit appConfig: FrontendAppConfig)
+    extends FrontendController(mcc)
+    with AuthorisedFunctions {
 
-  def show(): Action[AnyContent] = Action.async {
-    implicit request =>
-      authorised() {
-        Future.successful(Ok(view()))
-      }
+  def show: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(view()))
   }
 }

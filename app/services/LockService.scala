@@ -16,47 +16,22 @@
 
 package services
 
-
-import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
-import config.FrontendAppConfig
-import controllers.errors
-import repositories.UserLockRepository
+import repositories.BarsLockRepository
 import utils.LoggingUtil
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class LockService @Inject()(userLockRepository: UserLockRepository,
-                            config: FrontendAppConfig)(implicit ec: ExecutionContext) extends LoggingUtil{
-
-
-
-  def updateAttempts(userId: String): Future[Map[String, Int]] = {
-    if (config.isKnownFactsCheckEnabled) {
-      userLockRepository.updateAttempts(userId)
-    } else {
-      Future.successful(Map.empty)
-    }
-  }
-
-  def isJourneyLocked(userId: String): Future[Boolean] = {
-    if (config.isKnownFactsCheckEnabled) {
-      userLockRepository.isUserLocked(userId)
-    } else {
-      Future.successful(false)
-    }
-  }
-
-  // ---- BARs bank account lock methods ----
+class LockService @Inject() (barsLockRepository: BarsLockRepository) extends LoggingUtil {
 
   def getBarsAttemptsUsed(registrationId: String): Future[Int] =
-    userLockRepository.getFailedAttempts(registrationId)
+    barsLockRepository.getAttemptsUsed(registrationId)
 
   def incrementBarsAttempts(registrationId: String): Future[Int] =
-    userLockRepository.updateAttempts(registrationId).map(_.getOrElse("user", 0))
+    barsLockRepository.recordFailedAttempt(registrationId)
 
   def isBarsLocked(registrationId: String): Future[Boolean] =
-    userLockRepository.isUserLocked(registrationId)
+    barsLockRepository.isLocked(registrationId)
+
 }

@@ -18,18 +18,19 @@ package controllers.errors
 
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.errors.ThirdAttemptLockoutPage
+import views.html.errors.BankDetailsLockoutPage
 
 import scala.concurrent.Future
 
-class ThirdAttemptLockoutControllerSpec extends ControllerSpec with FutureAssertions {
+class BankDetailsLockoutControllerSpec extends ControllerSpec with FutureAssertions {
 
-  val view: ThirdAttemptLockoutPage = app.injector.instanceOf[ThirdAttemptLockoutPage]
+  val view: BankDetailsLockoutPage = app.injector.instanceOf[BankDetailsLockoutPage]
 
   trait Setup {
-    val testController = new ThirdAttemptLockoutController(
+    val testController = new BankDetailsLockoutController(
       messagesControllerComponents,
       view,
       mockAuthConnector
@@ -44,7 +45,7 @@ class ThirdAttemptLockoutControllerSpec extends ControllerSpec with FutureAssert
 
   "show" should {
     "return 200 and render the lockout page" in new Setup {
-      val result = testController.show()(FakeRequest())
+      val result: Future[Result] = testController.show()(FakeRequest())
       status(result)      mustBe OK
       contentType(result) mustBe Some("text/html")
     }

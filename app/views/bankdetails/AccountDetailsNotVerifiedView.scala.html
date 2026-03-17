@@ -15,43 +15,42 @@
  *@
 
 @import config.FrontendAppConfig
-@import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.Request
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
-    layout: layouts.layout,
-    h1: components.h1,
-    p: components.p,
-    formWithCSRF: FormWithCSRF,
-    errorSummary: components.errorSummary,
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        govukBackLink: GovukBackLink
 )
 
-@(form: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(attemptsUsed: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 
-@layout(pageTitle = Some(title(form, messages("pages.accountDetailsCouldNotBeVerified.heading")))){
-
-    @errorSummary(errors = form.errors)
-
+@layout(
+    pageTitle = Some(messages("pages.accountDetailsCouldNotBeVerified.heading")),
+    backLink = false
+) {
     @h1("pages.accountDetailsCouldNotBeVerified.heading")
 
     @p {
-        @messages("pages.accountDetailsCouldNotBeVerified.para1", 3 - form.data.get("attempts").map(_.toInt).getOrElse(0))
+        @messages("pages.accountDetailsCouldNotBeVerified.text.pre")
+        @if(attemptsUsed == 2) {
+            <strong>@messages("pages.accountDetailsCouldNotBeVerified.one.remaining")</strong>
+        } else {
+            <strong>@messages("pages.accountDetailsCouldNotBeVerified.two.remaining")</strong>
+        }
+        @messages("pages.accountDetailsCouldNotBeVerified.text.post")
     }
 
     @p {
-        @Html(messages("pages.accountDetailsCouldNotBeVerified.para2", appConfig.vatTaskList))
+        @Html(messages("pages.accountDetailsCouldNotBeVerified.para2", controllers.bankdetails.routes.UkBankAccountDetailsController.show.url))
     }
-@*
-    * @p {
-    *    @messages("pages.accountDetailsCouldNotBeVerified.para2")
-    * }
-*@
 
     @p {
-        <strong>@messages("pages.accountDetailsCouldNotBeVerified.para3.bold")</strong> @messages("pages.accountDetailsCouldNotBeVerified.para3")
+        <strong>@messages("pages.accountDetailsCouldNotBeVerified.para3.bold")</strong>
+        @messages("pages.accountDetailsCouldNotBeVerified.para3")
     }
 
 }

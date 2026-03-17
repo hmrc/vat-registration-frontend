@@ -140,7 +140,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
 
-      "redirect back to UkBankAccountDetailsController when BARS verification fails" in new Setup {
+      "redirect to AccountDetailsNotVerifiedController when BARS verification fails" in new Setup {
         enable(UseNewBarsVerify)
         given().user
           .isAuthorised()
@@ -162,7 +162,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.UkBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.AccountDetailsNotVerifiedController.show.url)
       }
 
       "redirect to HasBankAccountController when session is empty" in new Setup {
