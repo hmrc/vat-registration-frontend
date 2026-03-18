@@ -19,13 +19,15 @@ package controllers.bankdetails
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.BankAccount
+import models.{BankAccount, Lock}
 import models.bars.BankAccountType
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
+
+import java.time.Instant
 
 class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
@@ -34,9 +36,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
   "GET /choose-account-type" must {
     "redirect to HasBankAccountController when feature switch is disabled" in new Setup {
       disable(UseNewBarsVerify)
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](None)
+      given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -48,9 +48,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
     }
 
     "return OK with a blank form if the VAT scheme doesn't contain bank account type" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](None)
+      given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -60,9 +58,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
     }
 
     "return OK with a pre-populated form when bankAccountType is Business" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Business))))
+      given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Business))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -74,9 +70,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
     }
 
     "return OK with a pre-populated form when bankAccountType is Personal" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Personal))))
+      given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Personal))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -86,15 +80,35 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
       res.status mustBe OK
       doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe true
     }
+
+    "redirect to BankDetailsLockoutController when user is locked" in new Setup {
+      given().user.isAuthorised()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      await(
+        barsLockRepository.collection
+          .insertOne(
+            Lock(currentProfile.registrationId, failedAttempts = 3, lastAttemptedAt = Instant.now())
+          )
+          .toFuture())
+
+      val res: WSResponse = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
+    }
   }
 
   "POST /choose-account-type" when {
     "a valid Business account type is submitted" must {
       "redirect to the UK bank account details page" in new Setup {
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection[BankAccount](Some(bankAccount))
-          .registrationApi.replaceSection[BankAccount](bankAccount.copy(bankAccountType = Some(BankAccountType.Business)))
+        given().user
+          .isAuthorised()
+          .registrationApi
+          .getSection[BankAccount](Some(bankAccount))
+          .registrationApi
+          .replaceSection[BankAccount](bankAccount.copy(bankAccountType = Some(BankAccountType.Business)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -107,10 +121,12 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
 
     "a valid Personal account type is submitted" must {
       "redirect to the UK bank account details page" in new Setup {
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection[BankAccount](Some(bankAccount))
-          .registrationApi.replaceSection[BankAccount](bankAccount.copy(bankAccountType = Some(BankAccountType.Personal)))
+        given().user
+          .isAuthorised()
+          .registrationApi
+          .getSection[BankAccount](Some(bankAccount))
+          .registrationApi
+          .replaceSection[BankAccount](bankAccount.copy(bankAccountType = Some(BankAccountType.Personal)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -123,9 +139,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
 
     "no option is selected" must {
       "return BAD_REQUEST" in new Setup {
-        given()
-          .user.isAuthorised()
-          .registrationApi.getSection[BankAccount](Some(bankAccount))
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
