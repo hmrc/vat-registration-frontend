@@ -973,6 +973,17 @@ pages.hasCompanyBankAccount.bullet3                   = in the UK
 pages.hasCompanyBankAccount.bullet4                   = able to receive BACS payments
 validation.hasCompanyBankAccount.missing              = Select yes if you are able to provide bank or building society details for the business
 
+# New Can Provide Bank Account Page
+pages.canProvideBankAccount.heading                   = Can you provide bank or building society details for VAT repayments to the business?
+pages.canProvideBankAccount.para                      = If HMRC owes the business money, it will repay this directly to your business’s account.
+pages.canProvideBankAccount.para2                     = BACS is normally used for VAT repayments because this is a faster and more secure payment method than a cheque.
+pages.canProvideBankAccount.para3                     = The account you select to receive VAT repayments must be:
+pages.canProvideBankAccount.bullet1                   = used only for this business
+pages.canProvideBankAccount.bullet2                   = in the name of the individual or company registering for VAT
+pages.canProvideBankAccount.bullet3                   = based in the UK
+pages.canProvideBankAccount.bullet4                   = able to receive BACS payments
+validation.canProvideBankAccount.missing              = Select ‘Yes’ if you are able to provide bank or building society details for the business
+
 # Bank Account Type Page
 pages.chooseAccountType.heading                       = What kind of bank or building society account will you use for VAT repayments?
 pages.chooseAccountType.option.business               = Business account
