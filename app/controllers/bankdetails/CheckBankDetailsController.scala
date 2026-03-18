@@ -52,20 +52,23 @@ class CheckBankDetailsController @Inject() (
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      lockService.isBarsLocked(profile.registrationId).flatMap {
-        case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
-        case false =>
-          sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
-            case Some(details) => Ok(view(details))
-            case None          => Redirect(routes.HasBankAccountController.show)
-          }
-
+      for {
+        isLocked    <- lockService.isBarsLocked(profile.registrationId)
+        bankDetails <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
+        fromEnter   <- sessionService.fetchAndGet[Boolean]("fromEnterDetails")
+        _ <-
+          if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
+          else Future.successful(())
+      } yield (isLocked, bankDetails, fromEnter) match {
+        case (true, _, _)             => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+        case (_, None, _)             => Redirect(routes.HasBankAccountController.show)
+        case (_, Some(bankDetails), Some(true)) => Ok(view(bankDetails))
+        case _                        => Redirect(routes.UkBankAccountDetailsController.show)
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
     }
   }
-
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       for {
@@ -81,7 +84,7 @@ class CheckBankDetailsController @Inject() (
                     case true =>
                       Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
                     case false =>
-                      Redirect(controllers.bankdetails.routes.AccountDetailsNotVerifiedController.show)
+                      Redirect(routes.AccountDetailsNotVerifiedController.show)
                   }
                 }
             }

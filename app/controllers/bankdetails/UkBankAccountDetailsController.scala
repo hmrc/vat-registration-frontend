@@ -79,8 +79,10 @@ class UkBankAccountDetailsController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(newBarsView(formWithErrors))),
           accountDetails =>
-            sessionService.cache[BankAccountDetails](sessionKey, accountDetails).map { _ =>
-              Redirect(routes.CheckBankDetailsController.show)
+            sessionService.cache[Boolean]("fromEnterDetails", true).flatMap { _ =>
+              sessionService.cache[BankAccountDetails](sessionKey, accountDetails).map { _ =>
+                Redirect(routes.CheckBankDetailsController.show)
+              }
             }
         )
     } else {

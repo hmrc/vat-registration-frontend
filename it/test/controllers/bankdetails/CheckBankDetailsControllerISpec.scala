@@ -19,13 +19,17 @@ package controllers.bankdetails
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.BankAccount
+import models.{BankAccount, Lock}
 import models.bars.BankAccountType
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import java.time.Instant
 
 class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
@@ -62,7 +66,29 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
       }
 
-      "return OK and display bank details when session contains bank details" in new Setup {
+      "redirect to UkBankAccountDetailsController when fromEnterDetails flag is missing" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        await(buildClient("/account-details").post(
+          Map(
+            "accountName"   -> testBankName,
+            "accountNumber" -> testAccountNumber,
+            "sortCode"      -> testSortCode
+          )))
+
+        val session: CacheMap = await(repo.get(sessionString)).getOrElse(CacheMap(sessionString, Map.empty))
+        await(repo.upsert(CacheMap(sessionString, session.data + ("fromEnterDetails" -> Json.toJson(false)))))
+
+        val res: WSResponse = await(buildClient(url).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.UkBankAccountDetailsController.show.url)
+      }
+
+      "return OK and display bank details when session contains bank details and token" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -85,6 +111,22 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         doc.body().text() must include(testAccountNumber)
         doc.body().text() must include(testSortCode)
         doc.body().text() must include(testRollNumber)
+      }
+
+      "redirect to BankDetailsLockoutController when user is locked" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        await(barsLockRepository.collection.insertOne(
+          Lock(currentProfile.registrationId, failedAttempts = 3, lastAttemptedAt = Instant.now())
+        ).toFuture())
+
+        val res: WSResponse = await(buildClient(url).get())
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
       }
     }
   }

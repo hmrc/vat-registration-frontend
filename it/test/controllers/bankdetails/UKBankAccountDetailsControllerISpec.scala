@@ -26,6 +26,7 @@ import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
@@ -187,7 +188,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
     "UseNewBarsVerify is enabled" must {
 
-      "save bank details to session and redirect to Check Details Controller when form is valid" in new Setup {
+      "save bank details and fromEnterDetails flag to session and redirect to CheckDetailsController when form is valid" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -196,16 +197,19 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         val res: WSResponse = await(
           buildClient(url).post(
             Map(
-              "accountName"   -> testBankName,
-              "accountNumber" -> testAccountNumber,
-              "sortCode"      -> testSortCode
+              "accountName"      -> testBankName,
+              "accountNumber"    -> testAccountNumber,
+              "sortCode"         -> testSortCode
             )))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
+
+        val sessionData: Option[CacheMap] = await(repo.get(sessionString))
+        sessionData.flatMap(_.getEntry[Boolean]("fromEnterDetails")) mustBe Some(true)
       }
 
-      "save bank details including roll number to session and redirect to Check Details Controller" in new Setup {
+      "save roll number bank details and fromEnterDetails flag to session and redirect to Check Details Controller" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -222,9 +226,12 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
+
+        val sessionData: Option[CacheMap] = await(repo.get(sessionString))
+        sessionData.flatMap(_.getEntry[Boolean]("fromEnterDetails")) mustBe Some(true)
       }
 
-      "return BAD_REQUEST without calling BARS when form fields are empty" in new Setup {
+      "return BAD_REQUEST without setting fromEnterDetails in session when form fields are empty" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -239,6 +246,8 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
             )))
 
         res.status mustBe BAD_REQUEST
+        val sessionData: Option[CacheMap] = await(repo.get(sessionString))
+        sessionData.flatMap(_.getEntry[Boolean]("fromEnterDetails")) mustBe None
       }
 
       "return BAD_REQUEST without calling BARS when account number is invalid" in new Setup {
