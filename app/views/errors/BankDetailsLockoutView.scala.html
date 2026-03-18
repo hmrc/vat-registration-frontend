@@ -30,20 +30,20 @@
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(Some(titleNoForm(messages("pages.bankDetailsLockoutPage.heading"))), backLink = false) {
+@layout(Some(titleNoForm(messages("pages.bankDetailsLockoutView.heading"))), backLink = false) {
 
-    @h1(messages("pages.bankDetailsLockoutPage.heading"))
+    @h1(messages("pages.bankDetailsLockoutView.heading"))
 
     @p {
-        @messages("pages.bankDetailsLockoutPage.para1")
+        @messages("pages.bankDetailsLockoutView.para1")
     }
 
     @p {
-        @messages("pages.bankDetailsLockoutPage.para2")
+        @messages("pages.bankDetailsLockoutView.para2")
     }
 
     @p {
-        @link(controllers.routes.TaskListController.show.url, messages("pages.bankDetailsLockoutPage.para3.link"))@messages("pages.bankDetailsLockoutPage.para3")
+        @link(controllers.routes.TaskListController.show.url, messages("pages.bankDetailsLockoutView.para3.link"))@messages("pages.bankDetailsLockoutView.para3")
     }
 
 }

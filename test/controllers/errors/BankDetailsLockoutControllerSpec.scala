@@ -18,11 +18,11 @@ package controllers.errors
 
 import fixtures.VatRegistrationFixture
 import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.errors.BankDetailsLockoutPage
+import views.html.errors.BankDetailsLockoutView
 
-class BankDetailsLockoutControllerISpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+class BankDetailsLockoutControllerSpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
-  val view: BankDetailsLockoutPage = app.injector.instanceOf[BankDetailsLockoutPage]
+  val view: BankDetailsLockoutView = app.injector.instanceOf[BankDetailsLockoutView]
 
   trait Setup {
     val testController = new BankDetailsLockoutController(

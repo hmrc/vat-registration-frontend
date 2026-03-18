@@ -1041,11 +1041,11 @@ pages.accountDetailsCouldNotBeVerified.para3.bold       = After 3 consecutive un
 pages.accountDetailsCouldNotBeVerified.para3            = you will need to complete your VAT registration before sending us your details.
 
 # Locked Out Page
-pages.bankDetailsLockoutPage.heading                    = Account details could not be verified
-pages.bankDetailsLockoutPage.para1                      = We have been unable to verify the account details you supplied.
-pages.bankDetailsLockoutPage.para2                      = For your security, we have paused this part of the service.
-pages.bankDetailsLockoutPage.para3.link                 = You can return to the VAT registration task list now
-pages.bankDetailsLockoutPage.para3                      =, and provide your account details later once your registration is confirmed.
+pages.bankDetailsLockoutView.heading                    = Account details could not be verified
+pages.bankDetailsLockoutView.para1                      = We have been unable to verify the account details you supplied.
+pages.bankDetailsLockoutView.para2                      = For your security, we have paused this part of the service.
+pages.bankDetailsLockoutView.para3.link                 = You can return to the VAT registration task list now
+pages.bankDetailsLockoutView.para3                      =, and provide your account details later once your registration is confirmed.
 
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?

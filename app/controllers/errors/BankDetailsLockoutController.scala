@@ -21,13 +21,13 @@ import controllers.BaseController
 import play.api.mvc.{Action, AnyContent}
 import services.{SessionProfile, SessionService}
 import uk.gov.hmrc.auth.core.AuthConnector
-import views.html.errors.BankDetailsLockoutPage
+import views.html.errors.BankDetailsLockoutView
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankDetailsLockoutController @Inject() (view: BankDetailsLockoutPage, val sessionService: SessionService, val authConnector: AuthConnector)(
+class BankDetailsLockoutController @Inject() (view: BankDetailsLockoutView, val sessionService: SessionService, val authConnector: AuthConnector)(
     implicit
     appConfig: FrontendAppConfig,
     val executionContext: ExecutionContext,
