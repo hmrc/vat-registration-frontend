@@ -26,36 +26,32 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
                               checks: VatScheme => Seq[Boolean],
                               prerequisites: VatScheme => Seq[TaskListRowBuilder],
                               error: VatScheme => Boolean = _ => false,
+                              incomplete: VatScheme => Boolean = _ => false,
                               canEdit: TaskListState => Boolean = _ => false) {
 
   def isComplete(vatScheme: VatScheme): Boolean = checks(vatScheme).forall(_ == true)
 
   def prerequisitesMet(vatScheme: VatScheme): Boolean = {
     @tailrec
-    def checkCompleteness(rows: Seq[TaskListRowBuilder], result: Boolean = true): Boolean = {
+    def checkCompleteness(rows: Seq[TaskListRowBuilder], result: Boolean = true): Boolean =
       rows match {
-        case Nil => result
+        case Nil         => result
         case row :: tail => checkCompleteness(tail ++ row.prerequisites(vatScheme), result && row.isComplete(vatScheme))
       }
-    }
 
     checkCompleteness(prerequisites(vatScheme))
   }
 
   def build(vatScheme: VatScheme): TaskListSectionRow = {
-    val status = if (prerequisitesMet(vatScheme)) {
-      if(error(vatScheme)) {
-        TLFailed
-      } else if (isComplete(vatScheme)) {
-        TLCompleted
-      } else  if (checks(vatScheme).contains(true)) {
-          TLInProgress
-        } else {
-          TLNotStarted
-        }
-    } else {
-      TLCannotStart
-    }
+    val status =
+      (prerequisitesMet(vatScheme), error(vatScheme), incomplete(vatScheme), isComplete(vatScheme), checks(vatScheme).contains(true)) match {
+        case (false, _, _, _, _) => TLCannotStart
+        case (_, true, _, _, _)  => TLFailed
+        case (_, _, true, _, _)  => TLInComplete
+        case (_, _, _, true, _)  => TLCompleted
+        case (_, _, _, _, true)  => TLInProgress
+        case _                   => TLNotStarted
+      }
 
     TaskListSectionRow(messageKey(vatScheme), url(vatScheme)(status), tagId, status, canEdit(status))
   }

@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import models.BankAccountDetails
+import models.{BankAccount, BankAccountDetails}
 import models.bars.BankAccountDetailsSessionFormat
 import play.api.Configuration
 import play.api.libs.json.Format
@@ -60,10 +60,10 @@ class CheckBankDetailsController @Inject() (
           if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
           else Future.successful(())
       } yield (isLocked, bankDetails, fromEnter) match {
-        case (true, _, _)             => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
-        case (_, None, _)             => Redirect(routes.HasBankAccountController.show)
+        case (true, _, _)                       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+        case (_, None, _)                       => Redirect(routes.HasBankAccountController.show)
         case (_, Some(bankDetails), Some(true)) => Ok(view(bankDetails))
-        case _                        => Redirect(routes.UkBankAccountDetailsController.show)
+        case _                                  => Redirect(routes.UkBankAccountDetailsController.show)
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
@@ -80,11 +80,21 @@ class CheckBankDetailsController @Inject() (
               case true => Future.successful(Redirect(controllers.routes.TaskListController.show.url))
               case false =>
                 lockService.incrementBarsAttempts(profile.registrationId).flatMap { _ =>
-                  lockService.isBarsLocked(profile.registrationId).map {
+                  lockService.isBarsLocked(profile.registrationId).flatMap {
                     case true =>
-                      Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+                      bankAccountDetailsService
+                        .saveBankAccount(
+                          BankAccount(
+                            isProvided = false,
+                            details = None,
+                            reason = None,
+                            bankAccountType = None
+                          ))
+                        .map { _ =>
+                          Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+                        }
                     case false =>
-                      Redirect(routes.AccountDetailsNotVerifiedController.show)
+                      Future.successful(Redirect(routes.AccountDetailsNotVerifiedController.show))
                   }
                 }
             }

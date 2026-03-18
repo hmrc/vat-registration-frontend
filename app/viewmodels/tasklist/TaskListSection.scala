@@ -28,25 +28,25 @@ import scala.concurrent.ExecutionContext
 
 case class TaskListSection(heading: String, rows: Seq[TaskListSectionRow]) {
 
-  def isComplete: Boolean = rows.forall(_.status == TLCompleted)
+  def isComplete: Boolean = rows.forall(r => r.status == TLCompleted || r.status == TLInComplete)
 
 }
 
 object TaskListSections {
 
 
-  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])(implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]) = List(
+  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder], barsLocked: Boolean = false)(implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Seq[TaskListSection] = List(
     Some(RegistrationReasonTaskList.build(vatScheme)),
     if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(AboutYouTransactorTaskList.build(vatScheme)) else None,
     Some(VerifyBusinessTaskList.build(vatScheme)),
     Some(AboutYouTaskList.build(vatScheme)),
     Some(AboutTheBusinessTaskList.build(vatScheme, businessService)),
-    Some(VatRegistrationTaskList.build(vatScheme, businessService)),
+    Some(VatRegistrationTaskList.build(vatScheme, businessService, barsLocked)),
     attachmentsRequiredRow.map(AttachmentsTaskList.build(vatScheme, _))
   ).flatten
-  def allComplete(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])
+  def allComplete(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder], barsLocked: Boolean = false)
                  (implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Boolean =
-    sections(vatScheme, businessService, attachmentsRequiredRow).forall{x =>x.isComplete}
+    sections(vatScheme, businessService, attachmentsRequiredRow, barsLocked).forall{x =>x.isComplete}
 }
 
 case class TaskListSectionRow(messageKey: String,
@@ -66,3 +66,5 @@ case object TLInProgress extends TaskListState
 case object TLCompleted extends TaskListState
 
 case object TLFailed extends TaskListState
+
+case object TLInComplete extends TaskListState

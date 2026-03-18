@@ -15,7 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import viewmodels.tasklist.{TLCannotStart, TLCompleted, TLInProgress, TLNotStarted, TLFailed, TaskListState}
+@import viewmodels.tasklist.{TLCannotStart, TLCompleted, TLInProgress, TLNotStarted, TLFailed, TLInComplete, TaskListState}
 @import views.html.components.link
 
 @this(
@@ -58,7 +58,10 @@
                             govukTag(Tag(Text(messages("tasklist.complete")), classes = "app-task-list__task-completed no-wrap", attributes = Map("id" -> tagId)))
                         case `TLFailed` =>
                             govukTag(Tag(Text(messages("tasklist.failed")), classes = "app-task-list__task-completed govuk-tag--red no-wrap", attributes = Map("id" -> tagId)))
+                        case TLInComplete =>
+                            govukTag(Tag(Text(messages("tasklist.incomplete")), classes = "app-task-list__task-completed govuk-tag--orange no-wrap", attributes = Map("id" -> tagId)))
                     }
+
                 }
             </td>
         </tr>

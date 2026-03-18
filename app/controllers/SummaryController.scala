@@ -20,13 +20,14 @@ import cats.syntax.ApplicativeSyntax
 import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors._
+import controllers.BaseController
 import models.CurrentProfile
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.tasklist.{AttachmentsTaskList, TaskListSections}
 import views.html.Summary
-import controllers.BaseController
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +39,8 @@ class SummaryController @Inject()(val sessionService: SessionService,
                                   val nonRepudiationService: NonRepudiationService,
                                   val summaryPage: Summary,
                                   businessService: BusinessService,
-                                  attachmentsService: AttachmentsService
+                                  attachmentsService: AttachmentsService,
+                                  lockService: LockService
                                  )
                                  (implicit appConfig: FrontendAppConfig,
                                   val executionContext: ExecutionContext,
@@ -48,19 +50,22 @@ class SummaryController @Inject()(val sessionService: SessionService,
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
       vrs.getVatScheme.flatMap { vatScheme =>
-        AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService).flatMap { attachmentsRequiredRow =>
-        if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow)) {
-          infoLog(s"[SummaryController][show] - The TaskListSections are all complete, loading the summary page")
-          for {
-            accordion <- summaryService.getSummaryData
-            html = summaryPage(accordion)
-            _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
-          } yield Ok(html)
-        } else {
-          infoLog(s"[SummaryController][show] - The TaskListSections are not all complete, redirecting to the application progress page")
-          Future.successful(Redirect(controllers.routes.TaskListController.show))
+        lockService.isBarsLocked(profile.registrationId).flatMap { barsLocked =>
+          AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService, barsLocked).flatMap { attachmentsRequiredRow =>
+            if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow, barsLocked)) {
+              infoLog(s"[SummaryController][show] - The TaskListSections are all complete, loading the summary page")
+              for {
+                accordion <- summaryService.getSummaryData
+                html = summaryPage(accordion)
+                _ <- nonRepudiationService.storeEncodedUserAnswers(profile.registrationId, html)
+              } yield Ok(html)
+            }
+            else {
+              infoLog(s"[SummaryController][show] - The TaskListSections are not all complete, redirecting to the application progress page")
+              Future.successful(Redirect(controllers.routes.TaskListController.show))
+            }
+          }
         }
-      }
       }
   }
 
@@ -69,21 +74,21 @@ class SummaryController @Inject()(val sessionService: SessionService,
     implicit request =>
       implicit profile =>
         vrs.getVatScheme.flatMap { vatScheme =>
-          AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService).flatMap { attachmentsRequiredRow =>
-          if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow)) {
-            infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are all complete")
-            for {
-              _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
-              response <- vrs.submitRegistration()
-              result <- submissionRedirectLocation(response)
-            } yield {
-              result
+          lockService.isBarsLocked(profile.registrationId).flatMap { barsLocked =>
+            AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService, barsLocked).flatMap { attachmentsRequiredRow =>
+              if (TaskListSections.allComplete(vatScheme, businessService, attachmentsRequiredRow, barsLocked)) {
+                infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are all complete")
+                for {
+                  _ <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
+                  response <- vrs.submitRegistration()
+                  result <- submissionRedirectLocation(response)
+                } yield result
+              } else {
+                infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are not all complete, redirecting to the application progress page")
+                Future.successful(Redirect(controllers.routes.TaskListController.show))
+              }
             }
-          } else {
-            infoLog(s"[SummaryController][submitRegistration] - The TaskListSections are not all complete, redirecting to the application progress page")
-            Future.successful(Redirect(controllers.routes.TaskListController.show))
           }
-        }
         }
   }
 

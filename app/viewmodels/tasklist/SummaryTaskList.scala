@@ -24,7 +24,7 @@ import services.BusinessService
 
 object SummaryTaskList {
 
-  def summaryRow(attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService)
+  def summaryRow(attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService, barsLocked: Boolean = false)
                 (implicit profile: CurrentProfile,
                  appConfig: FrontendAppConfig): TaskListRowBuilder = {
 
@@ -35,18 +35,18 @@ object SummaryTaskList {
       checks = _ => Seq(false),
       prerequisites = vatScheme => Seq(
         attachmentsTaskListRowBuilder.getOrElse(
-          VatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme, businessService).getOrElse(
-            VatRegistrationTaskList.vatReturnsRow(businessService)
+          VatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme, businessService, barsLocked).getOrElse(
+            VatRegistrationTaskList.vatReturnsRow(businessService, barsLocked)
           )
         )
       )
     )
   }
 
-  def build(vatScheme: VatScheme, attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService)
+  def build(vatScheme: VatScheme, attachmentsTaskListRowBuilder: Option[TaskListRowBuilder], businessService: BusinessService, barsLocked: Boolean = false)
            (implicit profile: CurrentProfile, messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
       heading = messages("tasklist.cya.heading"),
-      rows = Seq(summaryRow(attachmentsTaskListRowBuilder, businessService).build(vatScheme))
+      rows = Seq(summaryRow(attachmentsTaskListRowBuilder, businessService, barsLocked).build(vatScheme))
     )
 }
