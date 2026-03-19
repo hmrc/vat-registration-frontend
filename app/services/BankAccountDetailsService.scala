@@ -22,7 +22,7 @@ import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
 import models._
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
-import models.bars.BankAccountType
+import models.bars._
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -32,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector,
                                            bankAccountRepService: BankAccountReputationService,
-                                           barsService: BarsService)(implicit appConfig: FrontendAppConfig) {
+                                           barsService: BarsService,
+                                           lockService: LockService)(implicit appConfig: FrontendAppConfig) {
 
   def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
     regApiConnector.getSection[BankAccount](profile.registrationId)
@@ -86,6 +87,22 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       }
     else bankAccountRepService.validateBankDetails(bankAccountDetails)
 
+  def verifyAndSaveBankAccountDetails(
+                                       bankAccountDetails: BankAccountDetails,
+                                       bankAccountType: BankAccountType,
+                                       registrationId: String
+                                     )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
+    saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap {
+      case true => Future.successful(BarsSuccess)
+      case false =>
+        lockService.incrementBarsAttempts(registrationId).flatMap { _ =>
+          lockService.isBarsLocked(registrationId).map {
+            case true  => BarsLockedOut
+            case false => BarsFailedNotLocked
+          }
+        }
+    }
+
   def saveNoUkBankAccountDetails(
       reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
     val bankAccount = BankAccount(
@@ -108,4 +125,13 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
         case None           => BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(bankAccountType))
       }
       .flatMap(saveBankAccount)
+
+  def clearBankAccountOnLockout()(implicit hc: HeaderCarrier, ex: ExecutionContext, profile: CurrentProfile, request: Request[_]): Future[Unit] =
+    saveBankAccount(
+      BankAccount(
+        isProvided = false,
+        details = None,
+        reason = None,
+        bankAccountType = None
+      )).map(_ => ())
 }

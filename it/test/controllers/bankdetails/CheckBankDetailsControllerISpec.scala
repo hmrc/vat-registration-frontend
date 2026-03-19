@@ -182,7 +182,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
 
-      "redirect to AccountDetailsNotVerifiedController when BARS verification fails" in new Setup {
+      "redirect to AccountDetailsNotVerifiedController when BARS verification fails once" in new Setup {
         enable(UseNewBarsVerify)
         given().user
           .isAuthorised()
@@ -205,6 +205,41 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.AccountDetailsNotVerifiedController.show.url)
+      }
+
+      "redirect to BankDetailsLockoutController when BARS verification fails and user is locked out" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user
+          .isAuthorised()
+          .bars
+          .verifyFails(BankAccountType.Business, BAD_REQUEST)
+          .registrationApi
+          .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, Some(BankAccountType.Business))))
+          .registrationApi
+          .replaceSection[BankAccount](BankAccount(
+            isProvided      = false,
+            details         = None,
+            reason          = None,
+            bankAccountType = None
+          ))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        await(barsLockRepository.collection.insertOne(
+          Lock(currentProfile.registrationId, failedAttempts = 2, lastAttemptedAt = Instant.now())
+        ).toFuture())
+
+        await(buildClient("/account-details").post(
+          Map(
+            "accountName"   -> testBankName,
+            "accountNumber" -> testAccountNumber,
+            "sortCode"      -> testSortCode
+          )))
+
+        val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
       }
 
       "redirect to HasBankAccountController when session is empty" in new Setup {

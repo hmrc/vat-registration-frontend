@@ -21,7 +21,7 @@ import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
 import models.{BankAccount, BankAccountDetails}
-import models.bars.BankAccountDetailsSessionFormat
+import models.bars.{BankAccountDetailsSessionFormat, BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
 import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
@@ -59,6 +59,7 @@ class CheckBankDetailsController @Inject() (
         _ <-
           if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
           else Future.successful(())
+
       } yield (isLocked, bankDetails, fromEnter) match {
         case (true, _, _)                       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
         case (_, None, _)                       => Redirect(routes.HasBankAccountController.show)
@@ -76,27 +77,15 @@ class CheckBankDetailsController @Inject() (
         bankAccount <- bankAccountDetailsService.getBankAccount
         result <- (details, bankAccount.flatMap(_.bankAccountType)) match {
           case (Some(accountDetails), Some(accountType)) =>
-            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, Some(accountType)).flatMap {
-              case true => Future.successful(Redirect(controllers.routes.TaskListController.show.url))
-              case false =>
-                lockService.incrementBarsAttempts(profile.registrationId).flatMap { _ =>
-                  lockService.isBarsLocked(profile.registrationId).flatMap {
-                    case true =>
-                      bankAccountDetailsService
-                        .saveBankAccount(
-                          BankAccount(
-                            isProvided = false,
-                            details = None,
-                            reason = None,
-                            bankAccountType = None
-                          ))
-                        .map { _ =>
-                          Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
-                        }
-                    case false =>
-                      Future.successful(Redirect(routes.AccountDetailsNotVerifiedController.show))
-                  }
+            bankAccountDetailsService.verifyAndSaveBankAccountDetails(accountDetails, accountType, profile.registrationId).flatMap {
+              case BarsSuccess =>
+                Future.successful(Redirect(controllers.routes.TaskListController.show.url))
+              case BarsLockedOut =>
+                bankAccountDetailsService.clearBankAccountOnLockout().map { _ =>
+                  Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
                 }
+              case BarsFailedNotLocked =>
+                Future.successful(Redirect(routes.AccountDetailsNotVerifiedController.show))
             }
           case _ => Future.successful(Redirect(routes.HasBankAccountController.show))
         }

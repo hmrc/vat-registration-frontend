@@ -1029,6 +1029,23 @@ pages.checkBankDetails.sortCode                         = Cod didoli
 pages.checkBankDetails.rollNumber                       = Rhif rôl y gymdeithas adeiladu
 pages.checkBankDetails.p1                               = Drwy gadarnhau manylion y cyfrif hwn, rydych yn cytuno bod yr wybodaeth rydych wedi’u darparu yn gyflawn ac yn gywir.
 
+# Account Details could not be verified
+pages.accountDetailsCouldNotBeVerified.heading          = Doedd dim modd dilysu manylion y cyfrif
+pages.accountDetailsCouldNotBeVerified.text.pre         = Mae gennych
+pages.accountDetailsCouldNotBeVerified.one.remaining    = un ymgais arall
+pages.accountDetailsCouldNotBeVerified.two.remaining    = ddau ymgais arall
+pages.accountDetailsCouldNotBeVerified.text.post        = i ddarparu manylion eich cyfrif.
+pages.accountDetailsCouldNotBeVerified.para2            = <a href="{0}">Nodwch eich manylion banc neu gymdeithas adeiladu eto,</a> gan wneud yn siŵr bod yr enw yn cyfateb yn union fel y mae’n ymddangos ar eich cyfrif.
+pages.accountDetailsCouldNotBeVerified.para3.bold       = Ar ôl 3 ymgais aflwyddiannus,
+pages.accountDetailsCouldNotBeVerified.para3            = bydd angen i chi gwblhau eich cofrestriad TAW cyn anfon eich manylion atom.
+
+# Locked Out Page
+pages.bankDetailsLockoutView.heading                    = Doedd dim modd dilysu manylion y cyfrif
+pages.bankDetailsLockoutView.para1                      = Nid ydym wedi gallu dilysu manylion y cyfrif yr ydych wedi eu darparu.
+pages.bankDetailsLockoutView.para2                      = Er eich diogelwch, rydym wedi oedi’r rhan hon o’r gwasanaeth.
+pages.bankDetailsLockoutView.para3.link                 = Gallwch nawr ddychwelyd i’r rhestr tasgau ar gyfer cofrestru TAW
+pages.bankDetailsLockoutView.para3                      =, a darparu manylion eich cyfrif yn nes ymlaen unwaith y bydd eich cofrestriad wedi’i gadarnhau.
+
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Pa weithgaredd yw prif ffynhonnell incwm y busnes?
 validation.mainBusinessActivity.missing                   = Dewiswch brif ffynhonnell incwm y busnes

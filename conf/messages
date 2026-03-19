@@ -1032,7 +1032,7 @@ pages.checkBankDetails.rollNumber                       = Building society roll 
 pages.checkBankDetails.p1                               = By confirming these account details, you agree the information you have provided is complete and correct.
 
 # Account Details could not be verified
-pages.accountDetailsCouldNotBeVerified.heading          = We could not verify the bank details you provided
+pages.accountDetailsCouldNotBeVerified.heading          = Account details could not be verified
 pages.accountDetailsCouldNotBeVerified.text.pre         = You have
 pages.accountDetailsCouldNotBeVerified.one.remaining    = one more attempt
 pages.accountDetailsCouldNotBeVerified.two.remaining    = two more attempts

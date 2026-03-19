@@ -25,7 +25,7 @@ class AccountDetailsNotVerifiedViewSpec extends VatRegViewSpec {
 
   val view: AccountDetailsNotVerifiedView = app.injector.instanceOf[AccountDetailsNotVerifiedView]
 
-  val heading      = "We could not verify the bank details you provided"
+  val heading      = "Account details could not be verified"
   val textPre      = "You have"
   val textPost     = "to provide your account details."
   val oneRemaining = "one more attempt"
