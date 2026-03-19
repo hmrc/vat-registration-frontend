@@ -217,7 +217,7 @@ class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends Vat
       row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
-    "be completed when attachment method is post" in new Setup {
+    "be completed when attachment method is post and bars lock for bank details" in new Setup {
       val scheme: VatScheme = validVatScheme.copy(
         business = Some(validBusiness.copy(
           hasLandAndProperty = Some(false),
@@ -233,7 +233,7 @@ class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends Vat
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder: Option[TaskListRowBuilder] = await(section.attachmentsRequiredRow(attatchmentService,businessService))
+      val rowBuilder: Option[TaskListRowBuilder] = await(section.attachmentsRequiredRow(attatchmentService,businessService, barsLocked = true))
       val row: TaskListSectionRow = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted

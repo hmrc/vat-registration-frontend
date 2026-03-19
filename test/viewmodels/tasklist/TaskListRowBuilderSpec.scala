@@ -63,13 +63,34 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
           res mustBe TaskListSectionRow(rowMessageKey, testUrl, rowAriaLabel, TLCompleted)
         }
       }
-      "some required rows are incomplete" must {
+      "some required rows are not finished" must {
         "return IN PROGRESS" in {
           val testVatScheme = emptyVatScheme.copy(business = Some(validBusiness), applicantDetails = None)
 
           val res = testRow(prerequisitesMet = true).build(testVatScheme)
 
           res mustBe TaskListSectionRow(rowMessageKey, testUrl, rowAriaLabel, TLInProgress)
+        }
+      }
+      "all required rows are marked as incomplete" must {
+        "return INCOMPLETE" in {
+          val testVatScheme = emptyVatScheme.copy(business = Some(validBusiness), applicantDetails = Some(completeApplicantDetails))
+
+          val incompleteRow = TaskListRowBuilder(
+            messageKey = _ => rowMessageKey,
+            url = _ => _ => testUrl,
+            tagId = rowAriaLabel,
+            checks = scheme => Seq(
+              scheme.business.isDefined,
+              scheme.applicantDetails.map(_.personalDetails).isDefined
+            ),
+            prerequisites = _ => Seq(testPrerequisite(true)),
+            incomplete = _ => true
+          )
+
+          val res = incompleteRow.build(testVatScheme)
+
+          res mustBe TaskListSectionRow(rowMessageKey, testUrl, rowAriaLabel, TLInComplete)
         }
       }
       "no required rows are complete" must {
@@ -99,6 +120,61 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
         val result = testPrerequisite(checksPass = true).copy(prerequisites = _ => Seq(chainedPrerequisite)).build(emptyVatScheme)
 
         result.status mustBe TLCannotStart
+      }
+    }
+  }
+
+  "TaskListSection isReadyForSubmission" when {
+    "all rows are Completed" must {
+      "return true" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLCompleted)
+        )).isReadyForSubmission mustBe true
+      }
+    }
+
+    "all rows are Incomplete" must {
+      "return true" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLInComplete)
+        )).isReadyForSubmission mustBe true
+      }
+    }
+
+    "rows are a mix of Completed and Incomplete" must {
+      "return true" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLInComplete)
+        )).isReadyForSubmission mustBe true
+      }
+    }
+
+    "any row is NotStarted" must {
+      "return false" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLNotStarted)
+        )).isReadyForSubmission mustBe false
+      }
+    }
+
+    "any row is CannotStart" must {
+      "return false" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLCannotStart)
+        )).isReadyForSubmission mustBe false
+      }
+    }
+
+    "any row is InProgress" must {
+      "return false" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLInProgress)
+        )).isReadyForSubmission mustBe false
       }
     }
   }

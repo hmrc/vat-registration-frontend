@@ -26,7 +26,7 @@ import org.mockito.Mockito.when
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import services.mocks.MockNonRepudiationService
+import services.mocks.{MockNonRepudiationService, MockLockService}
 import testHelpers.{ControllerSpec, FutureAssertions}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.accordion.Accordion
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -35,7 +35,7 @@ import views.html.Summary
 
 import scala.concurrent.Future
 
-class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with FeatureToggleSupport {
+class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with MockLockService with FeatureToggleSupport {
 
   trait Setup {
     val testSummaryController = new SummaryController(
@@ -46,10 +46,12 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       mockNonRepuidiationService,
       app.injector.instanceOf[Summary],
       mockBusinessService,
-      mockAttachmentsService
+      mockAttachmentsService,
+      mockLockService
     )
 
     mockAuthenticated()
+    mockIsBarsLocked(regId)(Future.successful(false))
     mockWithCurrentProfile(Some(currentProfile))
     val mockAttachmentTaskList: AttachmentsTaskList.type = AttachmentsTaskList
     val mockTaskListSections: TaskListSections.type = TaskListSections
@@ -87,6 +89,22 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
         callAuthorised(testSummaryController.show)(status(_) mustBe SEE_OTHER)
       }
     }
+
+    "return OK with a valid summary view when bars lock for bank details" in new Setup {
+      mockIsBarsLocked(regId)(Future.successful(true))
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockSummaryService.getSummaryData(any(), any(), any(), any(), any())).thenReturn(Future.successful(Accordion()))
+
+      mockStoreEncodedUserAnswers(regId)(Future.successful(""))
+
+      callAuthorised(testSummaryController.show)(status(_) mustBe OK)
+    }
   }
 
   "Calling submitRegistration" should {
@@ -111,7 +129,8 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       }
     }
 
-    "redirect to the confirmation page if the status of the document is in draft" in new Setup {
+    "redirect to the confirmation page if the status of the document is in draft and bars lock for bank details" in new Setup {
+      mockIsBarsLocked(regId)(Future.successful(true))
 
       when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
 

@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext
 
 case class TaskListSection(heading: String, rows: Seq[TaskListSectionRow]) {
 
-  def isComplete: Boolean = rows.forall(r => r.status == TLCompleted || r.status == TLInComplete)
+  def isReadyForSubmission: Boolean = rows.forall(r => r.status == TLCompleted || r.status == TLInComplete)
 
 }
 
@@ -46,7 +46,7 @@ object TaskListSections {
   ).flatten
   def allComplete(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder], barsLocked: Boolean = false)
                  (implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Boolean =
-    sections(vatScheme, businessService, attachmentsRequiredRow, barsLocked).forall{x =>x.isComplete}
+    sections(vatScheme, businessService, attachmentsRequiredRow, barsLocked).forall{x =>x.isReadyForSubmission}
 }
 
 case class TaskListSectionRow(messageKey: String,
