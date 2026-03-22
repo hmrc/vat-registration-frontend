@@ -85,7 +85,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
               scheme.applicantDetails.map(_.personalDetails).isDefined
             ),
             prerequisites = _ => Seq(testPrerequisite(true)),
-            incomplete = _ => true
+            overrideStatus = _ => Some(TLInComplete)
           )
 
           val res = incompleteRow.build(testVatScheme)

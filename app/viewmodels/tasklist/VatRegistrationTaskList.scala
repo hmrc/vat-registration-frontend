@@ -86,7 +86,7 @@ object VatRegistrationTaskList {
                 Seq(scheme.bankAccount.exists(_.reason.isDefined))
               }
             },
-      incomplete = _ => barsLocked,
+      overrideStatus = _ => if (barsLocked) Some(TLInComplete) else None,
       prerequisites = _ => Seq(goodsAndServicesRow(businessService))
     )
 

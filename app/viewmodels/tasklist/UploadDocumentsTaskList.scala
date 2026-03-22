@@ -38,9 +38,9 @@ class UploadDocumentsTaskList {
           Seq(hasUpscan, hasUpscan && uploadDetails.filter(_.attachmentType.equals(attachmentType)).head.fileStatus.equals(Ready))
         },
         prerequisites = _ => Seq(),
-        error = _ => {
+        overrideStatus = _ => {
           val details = uploadDetails.filter(_.attachmentType.equals(attachmentType))
-          details.nonEmpty && details.head.fileStatus.equals(Failed)
+          if (details.nonEmpty && details.head.fileStatus.equals(Failed)) Some(TLFailed) else None
         },
         canEdit = state => state.equals(TLCompleted) || state.equals(TLFailed)
       )
