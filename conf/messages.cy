@@ -974,6 +974,17 @@ pages.hasCompanyBankAccount.bullet3                   = yn y DU
 pages.hasCompanyBankAccount.bullet4                   = yn gallu derbyn taliadau drwy BACS
 validation.hasCompanyBankAccount.missing              = Dewiswch ‘Iawn’ os ydych yn gallu rhoi manylion banc neu gymdeithas adeiladu ar gyfer y busnes
 
+# New Can Provide Bank Account Page
+pages.canProvideBankAccount.heading                   = A allwch chi ddarparu manylion banc neu gymdeithas adeiladu ar gyfer ad-daliadau TAW i’r busnes?
+pages.canProvideBankAccount.para                      = Os oes arian yn ddyledus i’r busnes gan CThEF, bydd hwn yn cael ei ad-dalu yn uniongyrchol i gyfrif eich busnes.
+pages.canProvideBankAccount.para2                     = Mae BACS fel arfer yn cael ei ddefnyddio ar gyfer ad-daliadau TAW oherwydd ei fod yn ddull cyflymach a mwy diogel na thalu gyda siec.
+pages.canProvideBankAccount.para3                     = Mae’n rhaid i’r cyfrif rydych yn ei ddewis i gael ad-daliadau TAW gael ei:
+pages.canProvideBankAccount.bullet1                   = a ddefnyddir ar gyfer y busnes hwn yn unig
+pages.canProvideBankAccount.bullet2                   = yn enw’r unigolyn neu’r cwmni sy’n cofrestru ar gyfer TAW
+pages.canProvideBankAccount.bullet3                   = wedi’i leoli yn y DU
+pages.canProvideBankAccount.bullet4                   = gallu derbyn taliadau BACS
+validation.canProvideBankAccount.missing              = Dewiswch ‘Iawn’ os ydych yn gallu rhoi manylion banc neu gymdeithas adeiladu ar gyfer y busnes
+
 # No UK Bank Account Page
 pages.noUKBankAccount.heading                        = Pam na allwch roi manylion cyfrif banc ar gyfer y busnes?
 pages.noUKBankAccount.beingSetup                     = Mae wrthi’n cael ei sefydlu, ond mae’n cymryd sbel

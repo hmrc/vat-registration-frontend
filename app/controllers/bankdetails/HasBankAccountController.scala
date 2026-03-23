@@ -18,50 +18,55 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
-import models.api.{Individual, NETP, NonUkNonEstablished}
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
+import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
+import models.api.{Individual, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
-import views.html.bankdetails.HasCompanyBankAccountView
+import views.html.bankdetails.{HasCompanyBankAccountView, CanProvideBankAccountView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class HasBankAccountController @Inject()(val authConnector: AuthClientConnector,
-                                         val bankAccountDetailsService: BankAccountDetailsService,
-                                         val sessionService: SessionService,
-                                         val vatRegistrationService: VatRegistrationService,
-                                         view: HasCompanyBankAccountView)
-                                        (implicit appConfig: FrontendAppConfig,
-                                         val executionContext: ExecutionContext,
-                                         baseControllerComponents: BaseControllerComponents) extends BaseController {
+class HasBankAccountController @Inject() (val authConnector: AuthClientConnector,
+                                          val bankAccountDetailsService: BankAccountDetailsService,
+                                          val sessionService: SessionService,
+                                          val vatRegistrationService: VatRegistrationService,
+                                          oldView: HasCompanyBankAccountView,
+                                          newView: CanProvideBankAccountView)(implicit
+    appConfig: FrontendAppConfig,
+    val executionContext: ExecutionContext,
+    baseControllerComponents: BaseControllerComponents)
+    extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).flatMap {
-        case (Individual | NonUkNonEstablished, false) =>
-          Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
-        case _ =>
-          for {
-            bankDetails <- bankAccountDetailsService.getBankAccount
-            filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
-          } yield Ok(view(filledForm))
-      }
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).flatMap {
+      case (Individual | NonUkNonEstablished, false) =>
+        Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+      case _ =>
+        for {
+          bankDetails <- bankAccountDetailsService.getBankAccount
+          filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
+        } yield
+          if (isEnabled(UseNewBarsVerify)) Ok(newView(filledForm))
+          else Ok(oldView(filledForm))
+    }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      hasBankAccountForm.bindFromRequest().fold(
+  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    hasBankAccountForm
+      .bindFromRequest()
+      .fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors))),
+          if (isEnabled(UseNewBarsVerify)) Future.successful(BadRequest(newView(formWithErrors)))
+          else Future.successful(BadRequest(oldView(formWithErrors))),
         hasBankAccount =>
           bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).map { _ =>
-             (hasBankAccount, isEnabled(UseNewBarsVerify)) match {
-               case (true, false) => Redirect(routes.UkBankAccountDetailsController.show)
-               case (true, true) => Redirect(routes.ChooseAccountTypeController.show)
-               case (false, _) => Redirect(routes.NoUKBankAccountController.show)
+            (hasBankAccount, isEnabled(UseNewBarsVerify)) match {
+              case (true, false) => Redirect(routes.UkBankAccountDetailsController.show)
+              case (true, true)  => Redirect(routes.ChooseAccountTypeController.show)
+              case (false, _)    => Redirect(routes.NoUKBankAccountController.show)
             }
           }
       )
