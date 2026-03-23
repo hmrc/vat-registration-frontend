@@ -75,8 +75,10 @@ object VatRegistrationTaskList {
       messageKey = _ => "tasklist.vatRegistration.bankAccountDetails",
       url = _ => _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
       tagId = "bankAccountDetailsRow",
-      checks = scheme =>
-        if (barsLocked) Seq(true, true)
+      checks = scheme => {
+        val resolvedLockout = barsLocked && scheme.bankAccount.exists(ba => !ba.isProvided && ba.reason.isDefined)
+        if (barsLocked && !resolvedLockout)
+          Seq(true, true)
         else
           Seq(scheme.bankAccount.isDefined)
             .++ {
@@ -85,12 +87,18 @@ object VatRegistrationTaskList {
               } else {
                 Seq(scheme.bankAccount.exists(_.reason.isDefined))
               }
-            },
-      overrideStatus = _ => if (barsLocked) Some(TLInComplete) else None,
+            }
+      },
+      overrideStatus = scheme => {
+        val resolvedLockout = barsLocked && scheme.bankAccount.exists(ba => !ba.isProvided && ba.reason.isDefined)
+        if (barsLocked && !resolvedLockout) Some(TLInComplete) else None
+      },
       prerequisites = _ => Seq(goodsAndServicesRow(businessService))
     )
 
-  def registrationDateRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder =
+  def registrationDateRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit
+      profile: CurrentProfile,
+      appConfig: FrontendAppConfig): TaskListRowBuilder =
     TaskListRowBuilder(
       messageKey = _ => "tasklist.vatRegistration.registrationDate",
       url = _ => _ => controllers.vatapplication.routes.VatRegStartDateResolverController.resolve.url,
@@ -125,7 +133,9 @@ object VatRegistrationTaskList {
       )
   )
 
-  def flatRateSchemeRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit profile: CurrentProfile, appConfig: FrontendAppConfig): TaskListRowBuilder =
+  def flatRateSchemeRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit
+      profile: CurrentProfile,
+      appConfig: FrontendAppConfig): TaskListRowBuilder =
     TaskListRowBuilder(
       messageKey = _ => "tasklist.vatRegistration.flatRateScheme",
       url = _ => _ => controllers.flatratescheme.routes.JoinFlatRateSchemeController.show.url,

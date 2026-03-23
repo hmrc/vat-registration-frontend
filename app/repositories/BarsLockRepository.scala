@@ -16,6 +16,7 @@
 
 package repositories
 
+import config.FrontendAppConfig
 import models.Lock
 import models.Lock._
 import org.mongodb.scala.model._
@@ -31,7 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BarsLockRepository @Inject() (
-    mongoComponent: MongoComponent
+    mongoComponent: MongoComponent,
+    config: FrontendAppConfig
 )(implicit ec: ExecutionContext)
     extends PlayMongoRepository[Lock](
       collectionName = "bars-lock",
@@ -42,7 +44,7 @@ class BarsLockRepository @Inject() (
           keys = ascending("lastAttemptedAt"),
           indexOptions = IndexOptions()
             .name("BarsLockExpires")
-            .expireAfter(24, TimeUnit.HOURS)
+            .expireAfter(config.ttlLockSeconds, TimeUnit.SECONDS)
         ),
         IndexModel(
           keys = ascending("identifier"),

@@ -16,24 +16,29 @@
 
 package repositories
 
+import config.FrontendAppConfig
 import models.Lock
+import org.mockito.Mockito.when
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.Helpers._
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BarsLockRepositoryISpec
-  extends AnyWordSpec
-    with Matchers
-    with DefaultPlayMongoRepositorySupport[Lock] {
+class BarsLockRepositoryISpec extends AnyWordSpec with Matchers with DefaultPlayMongoRepositorySupport[Lock] {
+
+  private val testRegistrationId    = "test-registration-id"
+  private val anotherRegistrationId = "another-registration-id"
+
+  private val mockAppConfig: FrontendAppConfig   = mock[FrontendAppConfig]
+  private val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
+  when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
 
   override protected val repository: BarsLockRepository =
-    new BarsLockRepository(mongoComponent)
-
-  private val testRegistrationId      = "test-registration-id"
-  private val anotherRegistrationId   = "another-registration-id"
+    new BarsLockRepository(mongoComponent, mockAppConfig)
 
   "getAttemptsUsed" should {
 
@@ -53,7 +58,7 @@ class BarsLockRepositoryISpec
       await(repository.recordFailedAttempt(anotherRegistrationId))
       await(repository.recordFailedAttempt(anotherRegistrationId))
 
-      await(repository.getAttemptsUsed(testRegistrationId))    mustBe 1
+      await(repository.getAttemptsUsed(testRegistrationId)) mustBe 1
       await(repository.getAttemptsUsed(anotherRegistrationId)) mustBe 2
     }
   }
@@ -125,7 +130,7 @@ class BarsLockRepositoryISpec
 
       await(repository.recordFailedAttempt(anotherRegistrationId)) mustBe 1
 
-      await(repository.getAttemptsUsed(testRegistrationId))    mustBe 2
+      await(repository.getAttemptsUsed(testRegistrationId)) mustBe 2
       await(repository.getAttemptsUsed(anotherRegistrationId)) mustBe 1
     }
   }
