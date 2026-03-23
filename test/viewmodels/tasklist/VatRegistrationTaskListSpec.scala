@@ -153,7 +153,9 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
         verifyInProgressSectionRow(scheme)
       }
     }
+  }
 
+  "checks for vat registration date tasklist row" when {
     "rendering registration date row" must {
 
       "resolve to None if registration reason available but not eligible for registration date flow" in {
