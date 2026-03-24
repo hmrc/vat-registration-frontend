@@ -58,9 +58,7 @@
                             govukTag(Tag(Text(messages("tasklist.complete")), classes = "app-task-list__task-completed no-wrap", attributes = Map("id" -> tagId)))
                         case `TLFailed` =>
                             govukTag(Tag(Text(messages("tasklist.failed")), classes = "app-task-list__task-completed govuk-tag--red no-wrap", attributes = Map("id" -> tagId)))
-
                     }
-
                 }
             </td>
         </tr>
