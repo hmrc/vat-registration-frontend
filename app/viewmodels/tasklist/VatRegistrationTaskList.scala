@@ -28,7 +28,7 @@ import javax.inject.Singleton
 @Singleton
 object VatRegistrationTaskList {
 
-  def build(vatScheme: VatScheme, businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  def build(vatScheme: VatScheme, businessService: BusinessService)(implicit
       profile: CurrentProfile,
       messages: Messages,
       appConfig: FrontendAppConfig): TaskListSection =
@@ -36,10 +36,10 @@ object VatRegistrationTaskList {
       heading = messages("tasklist.vatRegistration.heading"),
       rows = Seq(
         Some(goodsAndServicesRow(businessService).build(vatScheme)),
-        resolveBankDetailsRow(vatScheme, businessService, barsLocked).map(_.build(vatScheme)),
-        resolveVATRegistrationDateRow(vatScheme, businessService, barsLocked).map(_.build(vatScheme)),
-        Some(vatReturnsRow(businessService, barsLocked).build(vatScheme)),
-        resolveFlatRateSchemeRow(vatScheme, businessService, barsLocked).map(_.build(vatScheme))
+        resolveBankDetailsRow(vatScheme, businessService).map(_.build(vatScheme)),
+        resolveVATRegistrationDateRow(vatScheme, businessService).map(_.build(vatScheme)),
+        Some(vatReturnsRow(businessService).build(vatScheme)),
+        resolveFlatRateSchemeRow(vatScheme, businessService).map(_.build(vatScheme))
       ).flatten
     )
 
@@ -68,7 +68,7 @@ object VatRegistrationTaskList {
       prerequisites = _ => Seq(AboutTheBusinessTaskList.otherBusinessInvolvementsRow(businessService))
     )
 
-  def bankAccountDetailsRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  def bankAccountDetailsRow(businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig): TaskListRowBuilder =
     TaskListRowBuilder(
@@ -76,10 +76,6 @@ object VatRegistrationTaskList {
       url = _ => _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
       tagId = "bankAccountDetailsRow",
       checks = scheme => {
-        val resolvedLockout = barsLocked && scheme.bankAccount.exists(ba => !ba.isProvided && ba.reason.isDefined)
-        if (barsLocked && !resolvedLockout)
-          Seq(true, true)
-        else
           Seq(scheme.bankAccount.isDefined)
             .++ {
               if (scheme.bankAccount.exists(_.isProvided)) {
@@ -89,14 +85,10 @@ object VatRegistrationTaskList {
               }
             }
       },
-      overrideStatus = scheme => {
-        val resolvedLockout = barsLocked && scheme.bankAccount.exists(ba => !ba.isProvided && ba.reason.isDefined)
-        if (barsLocked && !resolvedLockout) Some(TLInComplete) else None
-      },
       prerequisites = _ => Seq(goodsAndServicesRow(businessService))
     )
 
-  def registrationDateRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  def registrationDateRow(businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig): TaskListRowBuilder =
     TaskListRowBuilder(
@@ -112,10 +104,10 @@ object VatRegistrationTaskList {
               Nil
             }
           },
-      prerequisites = _ => Seq(bankAccountDetailsRow(businessService, barsLocked))
+      prerequisites = _ => Seq(bankAccountDetailsRow(businessService))
     )
 
-  def vatReturnsRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  def vatReturnsRow(businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig): TaskListRowBuilder = TaskListRowBuilder(
     messageKey = _ => "tasklist.vatRegistration.vatReturns",
@@ -127,13 +119,13 @@ object VatRegistrationTaskList {
     prerequisites = scheme =>
       Seq(
         List(
-          resolveVATRegistrationDateRow(scheme, businessService, barsLocked),
-          resolveBankDetailsRow(scheme, businessService, barsLocked)
+          resolveVATRegistrationDateRow(scheme, businessService),
+          resolveBankDetailsRow(scheme, businessService)
         ).flatten.headOption.getOrElse(goodsAndServicesRow(businessService))
       )
   )
 
-  def flatRateSchemeRow(businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  def flatRateSchemeRow(businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig): TaskListRowBuilder =
     TaskListRowBuilder(
@@ -150,7 +142,7 @@ object VatRegistrationTaskList {
           case Some(FlatRateScheme(Some(false), _, _, _, _, _, _, _, _)) => List(true)
           case _                                                         => List(false)
         },
-      prerequisites = _ => Seq(vatReturnsRow(businessService, barsLocked))
+      prerequisites = _ => Seq(vatReturnsRow(businessService))
     )
 
   private def checkImportsAndExports(vatScheme: VatScheme) =
@@ -163,32 +155,32 @@ object VatRegistrationTaskList {
         }
       }
 
-  private def resolveBankDetailsRow(vatScheme: VatScheme, businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  private def resolveBankDetailsRow(vatScheme: VatScheme, businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig) =
     if (Seq(Individual, NonUkNonEstablished).exists(vatScheme.partyType.contains) && vatScheme.eligibilitySubmissionData.exists(
         !_.fixedEstablishmentInManOrUk)) {
       None
     } else {
-      Some(bankAccountDetailsRow(businessService, barsLocked))
+      Some(bankAccountDetailsRow(businessService))
     }
 
-  private[tasklist] def resolveFlatRateSchemeRow(vatScheme: VatScheme, businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  private[tasklist] def resolveFlatRateSchemeRow(vatScheme: VatScheme, businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig) =
     if (vatScheme.vatApplication.flatMap(_.turnoverEstimate).exists(_ > 150000L) ||
       vatScheme.eligibilitySubmissionData.map(_.registrationReason).exists(GroupRegistration.equals)) {
       None
     } else {
-      Some(flatRateSchemeRow(businessService, barsLocked))
+      Some(flatRateSchemeRow(businessService))
     }
 
-  private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme, businessService: BusinessService, barsLocked: Boolean = false)(implicit
+  private[tasklist] def resolveVATRegistrationDateRow(vatScheme: VatScheme, businessService: BusinessService)(implicit
       profile: CurrentProfile,
       appConfig: FrontendAppConfig) =
     vatScheme.registrationReason match {
       case Some(ForwardLook) | Some(BackwardLook) | Some(GroupRegistration) | Some(Voluntary) | Some(IntendingTrader) | Some(SuppliesOutsideUk) =>
-        Some(registrationDateRow(businessService, barsLocked))
+        Some(registrationDateRow(businessService))
       case _ =>
         None
     }

@@ -408,7 +408,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
     }
 
     "prerequisite is complete and bars lock for bank details" must {
-      "return TLInComplete when prerequisites are met" in {
+      "return TLCompleted when prerequisites are met" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
           business = Some(validBusiness.copy(
@@ -426,11 +426,11 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
               goodsFromEU = Some(ConditionalValue(answer = false, None))
             ))
           )),
-          bankAccount = Some(BankAccount(isProvided = false, reason = None, details = None, bankAccountType = None))
+          bankAccount = Some(BankAccount(isProvided = false, reason = Some(FailedVerification), details = None, bankAccountType = None))
         )
 
-        val sectionRow = section.bankAccountDetailsRow(businessService, barsLocked = true).build(scheme)
-        sectionRow.status mustBe TLInComplete
+        val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
+        sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
       }
 
@@ -455,13 +455,13 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
           bankAccount = Some(BankAccount(isProvided = false, reason = Some(DontWantToProvide), details = None, bankAccountType = None))
         )
 
-        val sectionRow = section.bankAccountDetailsRow(businessService, barsLocked = true).build(scheme)
+        val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
       }
 
       "return TLCannotStart when prerequisites are not met regardless of lock" in {
-        val sectionRow = section.bankAccountDetailsRow(businessService, barsLocked = true).build(emptyVatScheme)
+        val sectionRow = section.bankAccountDetailsRow(businessService).build(emptyVatScheme)
         sectionRow.status mustBe TLCannotStart
       }
     }

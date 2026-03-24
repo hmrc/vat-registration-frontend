@@ -19,7 +19,6 @@ package controllers
 import config.{BaseControllerComponents, FrontendAppConfig}
 import play.api.mvc.{Action, AnyContent}
 import services._
-import services.LockService
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.tasklist._
 import views.html.TaskList
@@ -32,7 +31,6 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
                                    val sessionService: SessionService,
                                    attachmentsService: AttachmentsService,
                                    businessService: BusinessService,
-                                   lockService: LockService,
                                    view: TaskList)
                                   (implicit val executionContext: ExecutionContext,
                                    bcc: BaseControllerComponents,
@@ -42,8 +40,7 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
   def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     for {
       vatScheme <- vatRegistrationService.getVatScheme
-      barsLocked             <- lockService.isBarsLocked(profile.registrationId)
-      attachmentsTaskListRow <- AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService, barsLocked)
+      attachmentsTaskListRow <- AttachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService)
       redirect = vatScheme match {
         case scheme if scheme.applicationReference.isEmpty =>
           Redirect(routes.ApplicationReferenceController.show)
@@ -56,9 +53,9 @@ class TaskListController @Inject()(vatRegistrationService: VatRegistrationServic
             Some(VerifyBusinessTaskList.build(vatScheme)),
             Some(AboutYouTaskList.build(vatScheme)),
             Some(AboutTheBusinessTaskList.build(vatScheme, businessService)),
-            Some(VatRegistrationTaskList.build(vatScheme, businessService, barsLocked)),
+            Some(VatRegistrationTaskList.build(vatScheme, businessService)),
             attachmentsTaskListRow.map(AttachmentsTaskList.build(vatScheme, _)),
-            Some(SummaryTaskList.build(vatScheme, attachmentsTaskListRow, businessService, barsLocked))
+            Some(SummaryTaskList.build(vatScheme, attachmentsTaskListRow, businessService))
           ).flatten
           Ok(view(sections: _*))
       }

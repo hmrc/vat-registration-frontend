@@ -25,7 +25,7 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
                               tagId: String,
                               checks: VatScheme => Seq[Boolean],
                               prerequisites: VatScheme => Seq[TaskListRowBuilder],
-                              overrideStatus: VatScheme => Option[TaskListState] = _ => None,
+                              error: VatScheme => Boolean = _ => false,
                               canEdit: TaskListState => Boolean = _ => false) {
 
   def isComplete(vatScheme: VatScheme): Boolean = checks(vatScheme).forall(_ == true)
@@ -42,12 +42,18 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
   }
 
   def build(vatScheme: VatScheme): TaskListSectionRow = {
-    val status = (prerequisitesMet(vatScheme), overrideStatus(vatScheme), isComplete(vatScheme), checks(vatScheme).contains(true)) match {
-      case (false, _, _, _)        => TLCannotStart
-      case (_, Some(status), _, _) => status
-      case (_, _, true, _)         => TLCompleted
-      case (_, _, _, true)         => TLInProgress
-      case _                       => TLNotStarted
+    val status = if (prerequisitesMet(vatScheme)) {
+      if (error(vatScheme)) {
+        TLFailed
+      } else if (isComplete(vatScheme)) {
+        TLCompleted
+      } else if (checks(vatScheme).contains(true)) {
+        TLInProgress
+      } else {
+        TLNotStarted
+      }
+    } else {
+      TLCannotStart
     }
     TaskListSectionRow(messageKey(vatScheme), url(vatScheme)(status), tagId, status, canEdit(status))
   }

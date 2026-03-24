@@ -81,7 +81,7 @@ class CheckBankDetailsController @Inject() (
               case BarsSuccess =>
                 Future.successful(Redirect(controllers.routes.TaskListController.show.url))
               case BarsLockedOut =>
-                bankAccountDetailsService.clearBankAccountOnLockout().map { _ =>
+                bankAccountDetailsService.saveFailedVerificationBankAccount().map { _ =>
                   Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
                 }
               case BarsFailedNotLocked =>

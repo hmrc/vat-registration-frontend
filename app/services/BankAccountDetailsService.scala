@@ -126,12 +126,12 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       }
       .flatMap(saveBankAccount)
 
-  def clearBankAccountOnLockout()(implicit hc: HeaderCarrier, ex: ExecutionContext, profile: CurrentProfile, request: Request[_]): Future[Unit] =
+  def saveFailedVerificationBankAccount()(implicit hc: HeaderCarrier, ex: ExecutionContext, profile: CurrentProfile, request: Request[_]): Future[Unit] =
     saveBankAccount(
       BankAccount(
         isProvided = false,
         details = None,
-        reason = None,
+        reason = Some(FailedVerification),
         bankAccountType = None
       )).map(_ => ())
 }

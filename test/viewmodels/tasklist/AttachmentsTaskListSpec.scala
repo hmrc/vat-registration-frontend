@@ -233,7 +233,7 @@ class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends Vat
       when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
       when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-      val rowBuilder: Option[TaskListRowBuilder] = await(section.attachmentsRequiredRow(attatchmentService,businessService, barsLocked = true))
+      val rowBuilder: Option[TaskListRowBuilder] = await(section.attachmentsRequiredRow(attatchmentService,businessService))
       val row: TaskListSectionRow = rowBuilder.get.build(scheme)
 
       row.status mustBe TLCompleted

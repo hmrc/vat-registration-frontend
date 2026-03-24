@@ -34,7 +34,6 @@ tasklist.complete                                   = Wedi cwblhau
 tasklist.notStarted                                 = Heb ddechrau
 tasklist.cannotStartYet                             = Methu dechrau eto
 tasklist.inProgress                                 = Ar waith
-tasklist.incomplete                                 = Anghyflawn
 tasklist.eligibility.heading                        = Gwirio cyn i chi ddechrau
 tasklist.eligibilty.regReason                       = Rheswm dros gofrestru
 tasklist.verifyBusiness.heading                     = Dilysu’r busnes

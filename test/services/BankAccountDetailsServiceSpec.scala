@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.{disable, enable}
-import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
+import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange, FailedVerification}
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -367,17 +367,17 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
     }
   }
 
-  "clearBankAccountOnLockout" should {
-    "save a blank BankAccount with isProvided false and return unit" in new Setup {
+  "saveFailedVerificationBankAccount" should {
+    "save a failed verification reason for BankAccount" in new Setup {
       val expected: BankAccount = BankAccount(
         isProvided = false,
         details = None,
-        reason = None,
+        reason = Some(FailedVerification),
         bankAccountType = None
       )
       mockReplaceSection[BankAccount](testRegId, expected)
 
-      val result: Unit = await(service.clearBankAccountOnLockout())
+      val result: Unit = await(service.saveFailedVerificationBankAccount())
 
       result mustBe ()
       verify(mockRegistrationApiConnector, times(1))

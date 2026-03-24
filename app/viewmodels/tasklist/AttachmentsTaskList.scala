@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 object AttachmentsTaskList {
 
-  def attachmentsRequiredRow(attachmentsService: AttachmentsService, businessService: BusinessService, barsLocked: Boolean = false)(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_], appConfig: FrontendAppConfig): Future[Option[TaskListRowBuilder]] =
+  def attachmentsRequiredRow(attachmentsService: AttachmentsService, businessService: BusinessService)(implicit profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_], appConfig: FrontendAppConfig): Future[Option[TaskListRowBuilder]] =
     for {
       attachments <- attachmentsService.getAttachmentList(profile.registrationId)
       incompleteAttachments <- attachmentsService.getIncompleteAttachments(profile.registrationId)
@@ -41,8 +41,8 @@ object AttachmentsTaskList {
           tagId = "attachmentsRequiredRow",
           checks = scheme => checks(scheme, incompleteAttachments),
           prerequisites = vatScheme => Seq(
-            VatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme, businessService, barsLocked).getOrElse(
-              VatRegistrationTaskList.vatReturnsRow(businessService, barsLocked)
+            VatRegistrationTaskList.resolveFlatRateSchemeRow(vatScheme, businessService).getOrElse(
+              VatRegistrationTaskList.vatReturnsRow(businessService)
             )
           )
         )
