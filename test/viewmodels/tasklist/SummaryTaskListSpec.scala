@@ -121,7 +121,7 @@ class SummaryTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegS
       }
     }
 
-    "digital attachments prerequisites are met when digital attachments tasklist available and bars lock for bank details" must {
+    "digital attachments prerequisites are met when digital attachments tasklist available" must {
       "return TLNotStarted" in {
         val attachmentsTaskList = AttachmentsTaskList
 
@@ -157,7 +157,7 @@ class SummaryTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegS
         when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence, VAT2)))
         when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
 
-        val row = summaryTaskList.summaryRow(await(attachmentsTaskList.attachmentsRequiredRow(attachmentsService, businessService)), businessService).build(scheme)
+        val row = summaryTaskList.summaryRow(await(attachmentsTaskList.attachmentsRequiredRow(attachmentsService,businessService)), businessService).build(scheme)
         row.status mustBe TLNotStarted
       }
     }

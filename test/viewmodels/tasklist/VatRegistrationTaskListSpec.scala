@@ -258,7 +258,6 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       }
     }
   }
-
   "checks for bank account details row" when {
     "prerequisite not complete" must {
       "return TLCannotStart" in {

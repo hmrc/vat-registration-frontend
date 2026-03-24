@@ -63,7 +63,7 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
           res mustBe TaskListSectionRow(rowMessageKey, testUrl, rowAriaLabel, TLCompleted)
         }
       }
-      "some required rows are not finished" must {
+      "some required rows are incomplete" must {
         "return IN PROGRESS" in {
           val testVatScheme = emptyVatScheme.copy(business = Some(validBusiness), applicantDetails = None)
 

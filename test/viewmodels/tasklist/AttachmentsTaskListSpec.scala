@@ -217,7 +217,7 @@ class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends Vat
       row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
     }
 
-    "be completed when attachment method is post and bars lock for bank details" in new Setup {
+    "be completed when attachment method is post" in new Setup {
       val scheme: VatScheme = validVatScheme.copy(
         business = Some(validBusiness.copy(
           hasLandAndProperty = Some(false),

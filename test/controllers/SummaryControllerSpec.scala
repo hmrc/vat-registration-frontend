@@ -111,7 +111,7 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
       }
     }
 
-    "redirect to the confirmation page if the status of the document is in draft and bars lock for bank details" in new Setup {
+    "redirect to the confirmation page if the status of the document is in draft" in new Setup {
 
       when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
 
