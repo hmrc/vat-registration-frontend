@@ -365,7 +365,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
 
     val noUKBankAccount = optSummaryListRowString(
       s"$sectionId.companyBankAccount.reason",
-      bankAccount.flatMap(_.reason).map {
+      bankAccount.flatMap(_.reason).collect {
         case BeingSetupOrNameChange => "pages.noUKBankAccount.beingSetupOrNameChange"
         case OverseasAccount => "pages.noUKBankAccount.overseasAccount"
         case NameChange => "pages.noUKBankAccount.nameChange"
