@@ -131,7 +131,7 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       BankAccount(
         isProvided = false,
         details = None,
-        reason = Some(FailedVerification),
+        reason = None,
         bankAccountType = None
       )).map(_ => ())
 }

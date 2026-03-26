@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.{disable, enable}
-import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange, FailedVerification}
+import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -372,7 +372,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
       val expected: BankAccount = BankAccount(
         isProvided = false,
         details = None,
-        reason = Some(FailedVerification),
+        reason = None,
         bankAccountType = None
       )
       mockReplaceSection[BankAccount](testRegId, expected)

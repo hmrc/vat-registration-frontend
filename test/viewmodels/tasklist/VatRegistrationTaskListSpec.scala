@@ -407,7 +407,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
     }
 
     "prerequisite is complete and bars lock for bank details" must {
-      "return TLCompleted when prerequisites are met" in {
+      "return TLInprogress when prerequisites are met" in {
         val scheme = validVatScheme.copy(
           eligibilitySubmissionData = Some(validEligibilitySubmissionData),
           business = Some(validBusiness.copy(
@@ -425,11 +425,11 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
               goodsFromEU = Some(ConditionalValue(answer = false, None))
             ))
           )),
-          bankAccount = Some(BankAccount(isProvided = false, reason = Some(FailedVerification), details = None, bankAccountType = None))
+          bankAccount = Some(BankAccount(isProvided = false, reason = None, details = None, bankAccountType = None))
         )
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
-        sectionRow.status mustBe TLCompleted
+        sectionRow.status mustBe TLInProgress
         sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
       }
 

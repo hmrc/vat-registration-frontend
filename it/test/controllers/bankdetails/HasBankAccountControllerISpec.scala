@@ -19,7 +19,7 @@ package controllers.bankdetails
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itutil.ControllerISpec
 import models.{BankAccount, Lock}
-import models.api.{EligibilitySubmissionData, Individual, NETP, NonUkNonEstablished}
+import models.api.{EligibilitySubmissionData, Individual, NonUkNonEstablished}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse

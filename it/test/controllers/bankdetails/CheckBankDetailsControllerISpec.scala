@@ -19,7 +19,7 @@ package controllers.bankdetails
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.{BankAccount, FailedVerification, Lock}
+import models.{BankAccount, Lock}
 import models.bars.BankAccountType
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -219,7 +219,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
           .replaceSection[BankAccount](BankAccount(
             isProvided      = false,
             details         = None,
-            reason          = Some(FailedVerification),
+            reason          = None,
             bankAccountType = None
           ))
 
