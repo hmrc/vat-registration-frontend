@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import models.BankAccountDetails
+import models.{BankAccountDetails, DontWantToProvide}
 import models.bars.{BankAccountDetailsSessionFormat, BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
 import play.api.Configuration
 import play.api.libs.json.Format
@@ -81,7 +81,7 @@ class CheckBankDetailsController @Inject() (
               case BarsSuccess =>
                 Future.successful(Redirect(controllers.routes.TaskListController.show.url))
               case BarsLockedOut =>
-                bankAccountDetailsService.saveFailedVerificationBankAccount().map { _ =>
+                bankAccountDetailsService.saveBankAccountNotProvided(DontWantToProvide).map { _ =>
                   Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
                 }
               case BarsFailedNotLocked =>

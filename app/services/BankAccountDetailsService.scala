@@ -104,7 +104,7 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       }
     }
 
-  def saveNoUkBankAccountDetails(
+  def saveBankAccountNotProvided(
       reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
     val bankAccount = BankAccount(
       isProvided = false,
@@ -126,17 +126,4 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
         case None           => BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(bankAccountType))
       }
       .flatMap(saveBankAccount)
-
-  def saveFailedVerificationBankAccount()(implicit
-      hc: HeaderCarrier,
-      ex: ExecutionContext,
-      profile: CurrentProfile,
-      request: Request[_]): Future[Unit] =
-    saveBankAccount(
-      BankAccount(
-        isProvided = false,
-        details = None,
-        reason = Some(DontWantToProvide),
-        bankAccountType = None
-      )).map(_ => ())
 }

@@ -323,7 +323,7 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
       mockGetSection[BankAccount](testRegId, Some(existing))
       mockReplaceSection[BankAccount](testRegId, expected)
 
-      val result: BankAccount = await(service.saveNoUkBankAccountDetails(BeingSetupOrNameChange))
+      val result: BankAccount = await(service.saveBankAccountNotProvided(BeingSetupOrNameChange))
 
       result mustBe expected
     }
@@ -364,24 +364,6 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
       val result: BankAccount = await(service.saveBankAccountType(BankAccountType.Business))
 
       result mustBe expected
-    }
-  }
-
-  "saveFailedVerificationBankAccount" should {
-    "save a failed verification reason for BankAccount" in new Setup {
-      val expected: BankAccount = BankAccount(
-        isProvided = false,
-        details = None,
-        reason = Some(DontWantToProvide),
-        bankAccountType = None
-      )
-      mockReplaceSection[BankAccount](testRegId, expected)
-
-      val result: Unit = await(service.saveFailedVerificationBankAccount())
-
-      result mustBe ()
-      verify(mockRegistrationApiConnector, times(1))
-        .replaceSection[BankAccount](eqTo(testRegId), eqTo(expected), any())(any(), any(), any(), any())
     }
   }
 }

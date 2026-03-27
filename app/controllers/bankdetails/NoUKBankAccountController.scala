@@ -52,7 +52,7 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
           badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
           reason =>
             for {
-              _ <- bankAccountDetailsService.saveNoUkBankAccountDetails(reason)
+              _ <- bankAccountDetailsService.saveBankAccountNotProvided(reason)
             } yield Redirect(controllers.routes.TaskListController.show.url)
         )
       }
