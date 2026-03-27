@@ -55,14 +55,12 @@ class UkBankAccountDetailsController @Inject() (
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      lockService.isBarsLocked(profile.registrationId).flatMap {
-        case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
-        case false =>
-          val newBarsForm = EnterBankAccountDetailsForm.form
-          sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
-            case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
-            case None          => Ok(newBarsView(newBarsForm))
-          }
+      lockService.redirectIfBarsIsLocked {
+        val newBarsForm = EnterBankAccountDetailsForm.form
+        sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
+          case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
+          case None          => Ok(newBarsView(newBarsForm))
+        }
       }
     } else {
       for {

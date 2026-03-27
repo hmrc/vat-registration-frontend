@@ -88,19 +88,20 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
     else bankAccountRepService.validateBankDetails(bankAccountDetails)
 
   def verifyAndSaveBankAccountDetails(
-                                       bankAccountDetails: BankAccountDetails,
-                                       bankAccountType: BankAccountType,
-                                       registrationId: String
-                                     )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
-    saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap {
-      case true => Future.successful(BarsSuccess)
-      case false =>
+      bankAccountDetails: BankAccountDetails,
+      bankAccountType: BankAccountType,
+      registrationId: String
+  )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
+    saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap { saved =>
+      if (saved) {
+        Future.successful(BarsSuccess)
+      } else {
         lockService.incrementBarsAttempts(registrationId).flatMap { _ =>
-          lockService.isBarsLocked(registrationId).map {
-            case true  => BarsLockedOut
-            case false => BarsFailedNotLocked
+          lockService.isBarsLocked(registrationId).map { isLocked =>
+            if (isLocked) BarsLockedOut else BarsFailedNotLocked
           }
         }
+      }
     }
 
   def saveNoUkBankAccountDetails(
@@ -126,12 +127,16 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       }
       .flatMap(saveBankAccount)
 
-  def saveFailedVerificationBankAccount()(implicit hc: HeaderCarrier, ex: ExecutionContext, profile: CurrentProfile, request: Request[_]): Future[Unit] =
+  def saveFailedVerificationBankAccount()(implicit
+      hc: HeaderCarrier,
+      ex: ExecutionContext,
+      profile: CurrentProfile,
+      request: Request[_]): Future[Unit] =
     saveBankAccount(
       BankAccount(
         isProvided = false,
         details = None,
-        reason = None,
+        reason = Some(DontWantToProvide),
         bankAccountType = None
       )).map(_ => ())
 }

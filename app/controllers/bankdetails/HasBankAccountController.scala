@@ -47,9 +47,7 @@ class HasBankAccountController @Inject() (val authConnector: AuthClientConnector
       case (Individual | NonUkNonEstablished, false) =>
         Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
       case _ =>
-        lockService.isBarsLocked(profile.registrationId).flatMap {
-          case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
-          case false =>
+        lockService.redirectIfBarsIsLocked {
             for {
               bankDetails <- bankAccountDetailsService.getBankAccount
               filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)

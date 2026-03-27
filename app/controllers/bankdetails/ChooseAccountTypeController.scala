@@ -40,15 +40,13 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      lockService.isBarsLocked(profile.registrationId).flatMap {
-        case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
-        case false =>
-          bankAccountDetailsService.getBankAccount.map { bankDetails =>
-            val filledForm = bankDetails
-              .flatMap(_.bankAccountType)
-              .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
-            Ok(view(filledForm))
-          }
+      lockService.redirectIfBarsIsLocked {
+        bankAccountDetailsService.getBankAccount.map { bankDetails =>
+          val filledForm = bankDetails
+            .flatMap(_.bankAccountType)
+            .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
+          Ok(view(filledForm))
+        }
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))

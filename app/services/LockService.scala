@@ -16,11 +16,14 @@
 
 package services
 
+import models.CurrentProfile
+import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import repositories.BarsLockRepository
 import utils.LoggingUtil
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class LockService @Inject() (barsLockRepository: BarsLockRepository) extends LoggingUtil {
@@ -33,5 +36,10 @@ class LockService @Inject() (barsLockRepository: BarsLockRepository) extends Log
 
   def isBarsLocked(registrationId: String): Future[Boolean] =
     barsLockRepository.isLocked(registrationId)
+
+  def redirectIfBarsIsLocked(notLockedScenario: => Future[Result])(implicit profile: CurrentProfile, ec: ExecutionContext): Future[Result] =
+    isBarsLocked(profile.registrationId).flatMap { isLocked =>
+      if (isLocked) Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show)) else notLockedScenario
+    }
 
 }

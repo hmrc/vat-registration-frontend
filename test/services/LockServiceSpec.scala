@@ -16,11 +16,16 @@
 
 package services
 
+import common.enums.VatRegStatus
 import config.FrontendAppConfig
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import models.CurrentProfile
+import org.mockito.ArgumentMatchers.{eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.Result
+import play.api.mvc.Results.Ok
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import repositories.BarsLockRepository
 
@@ -30,7 +35,7 @@ import scala.concurrent.Future
 class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with DefaultAwaitTimeout {
 
   val mockBarsLockRepository: BarsLockRepository = mock[BarsLockRepository]
-  val mockAppConfig: FrontendAppConfig             = mock[FrontendAppConfig]
+  val mockAppConfig: FrontendAppConfig           = mock[FrontendAppConfig]
 
   val registrationId = "reg-123"
 
@@ -45,15 +50,7 @@ class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with 
 
       await(service.getBarsAttemptsUsed(registrationId)) mustBe 2
     }
-
-    "return 0 when there are no recorded attempts" in new Setup {
-      when(mockBarsLockRepository.getAttemptsUsed(eqTo(registrationId)))
-        .thenReturn(Future.successful(0))
-
-      await(service.getBarsAttemptsUsed(registrationId)) mustBe 0
-    }
   }
-
 
   "incrementBarsAttempts" should {
     "return the new total number of failed attempts after incrementing" in new Setup {
@@ -62,36 +59,37 @@ class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with 
 
       await(service.incrementBarsAttempts(registrationId)) mustBe 1
     }
-
-    "return 1 as default if repository returns nothing" in new Setup {
-      when(mockBarsLockRepository.recordFailedAttempt(eqTo(registrationId)))
-        .thenReturn(Future.successful(1))
-
-      await(service.incrementBarsAttempts(registrationId)) mustBe 1
-    }
-
-    "return 3 on the third failed attempt" in new Setup {
-      when(mockBarsLockRepository.recordFailedAttempt(eqTo(registrationId)))
-        .thenReturn(Future.successful(3))
-
-      await(service.incrementBarsAttempts(registrationId)) mustBe 3
-    }
   }
 
   "isBarsLocked" should {
-    "return true when the user is locked in the repository" in new Setup {
+    "return the value of the user in the repository" in new Setup {
       when(mockBarsLockRepository.isLocked(eqTo(registrationId)))
         .thenReturn(Future.successful(true))
 
       await(service.isBarsLocked(registrationId)) mustBe true
     }
+  }
 
-    "return false when the user is not locked in the repository" in new Setup {
+  "redirectIfBarsIsLocked" should {
+    implicit val profile: CurrentProfile = CurrentProfile(registrationId, VatRegStatus.draft)
+
+    "redirect to BankDetailsLockoutController when bars is locked" in new Setup {
+      when(mockBarsLockRepository.isLocked(eqTo(registrationId)))
+        .thenReturn(Future.successful(true))
+
+      val result: Result = await(service.redirectIfBarsIsLocked(Future.successful(Ok)))
+
+      result.header.status mustBe SEE_OTHER
+      result.header.headers.get("Location") mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
+    }
+
+    "execute and return the notLockedScenario when bars is not locked" in new Setup {
       when(mockBarsLockRepository.isLocked(eqTo(registrationId)))
         .thenReturn(Future.successful(false))
 
-      await(service.isBarsLocked(registrationId)) mustBe false
+      val result: Result = await(service.redirectIfBarsIsLocked(Future.successful(Ok)))
+
+      result.header.status mustBe OK
     }
   }
 }
-

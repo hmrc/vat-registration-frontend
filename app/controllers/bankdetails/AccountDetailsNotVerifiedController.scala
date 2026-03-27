@@ -23,25 +23,22 @@ import services.{LockService, SessionService}
 import views.html.bankdetails.AccountDetailsNotVerifiedView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class AccountDetailsNotVerifiedController @Inject()(
-                                           val authConnector: AuthClientConnector,
-                                           val sessionService: SessionService,
-                                           lockService: LockService,
-                                           view: AccountDetailsNotVerifiedView
-                                         )(implicit appConfig: FrontendAppConfig,
-                                           val executionContext: ExecutionContext,
-                                           baseControllerComponents: BaseControllerComponents) extends BaseController {
+class AccountDetailsNotVerifiedController @Inject() (
+    val authConnector: AuthClientConnector,
+    val sessionService: SessionService,
+    lockService: LockService,
+    view: AccountDetailsNotVerifiedView
+)(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
+    extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => implicit profile =>
-      lockService.isBarsLocked(profile.registrationId).flatMap {
-        case true => Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show))
-        case false =>
-          lockService.getBarsAttemptsUsed(profile.registrationId).map { attemptsUsed =>
-            Ok(view(attemptsUsed))
-          }
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+    lockService.redirectIfBarsIsLocked {
+      lockService.getBarsAttemptsUsed(profile.registrationId).map { attemptsUsed =>
+        Ok(view(attemptsUsed))
       }
+    }
   }
+
 }

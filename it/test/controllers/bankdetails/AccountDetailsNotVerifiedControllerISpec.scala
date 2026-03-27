@@ -19,6 +19,7 @@ package controllers.bankdetails
 import fixtures.VatRegistrationFixture
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import repositories.BarsLockRepository
 import services.LockService
 import testHelpers.{ControllerSpec, FutureAssertions}
 import views.html.bankdetails.AccountDetailsNotVerifiedView
@@ -27,14 +28,15 @@ import scala.concurrent.Future
 
 class AccountDetailsNotVerifiedControllerISpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
 
-  val mockLockService: LockService = mock[LockService]
-  val view: AccountDetailsNotVerifiedView = app.injector.instanceOf[AccountDetailsNotVerifiedView]
+  val mockBarsLockRepository: BarsLockRepository = mock[BarsLockRepository]
+  val lockService: LockService                   = new LockService(mockBarsLockRepository)
+  val view: AccountDetailsNotVerifiedView        = app.injector.instanceOf[AccountDetailsNotVerifiedView]
 
   trait Setup {
     val testController = new AccountDetailsNotVerifiedController(
       mockAuthClientConnector,
       mockSessionService,
-      mockLockService,
+      lockService,
       view
     )
 
@@ -43,46 +45,25 @@ class AccountDetailsNotVerifiedControllerISpec extends ControllerSpec with VatRe
   }
 
   "show" should {
-    "return 200 when attempts used is below the lockout limit" in new Setup {
-      when(mockLockService.isBarsLocked(any()))
-        .thenReturn(Future.successful(false))
-      when(mockLockService.getBarsAttemptsUsed(any()))
-        .thenReturn(Future.successful(1))
+    "redirect to BankDetailsLockoutController when bars is locked" in new Setup {
+      when(mockBarsLockRepository.isLocked(any()))
+        .thenReturn(Future.successful(true))
 
       callAuthorised(testController.show) { result =>
-        status(result) mustBe OK
+        status(result)           mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
       }
     }
 
-    "return 200 when attempts used is one below the lockout limit" in new Setup {
-      when(mockLockService.isBarsLocked(any()))
+    "return OK when bars is not locked" in new Setup {
+      when(mockBarsLockRepository.isLocked(any()))
         .thenReturn(Future.successful(false))
-      when(mockLockService.getBarsAttemptsUsed(any()))
+      when(mockBarsLockRepository.getAttemptsUsed(any()))
         .thenReturn(Future.successful(2))
 
       callAuthorised(testController.show) { result =>
         status(result) mustBe OK
       }
     }
-
-    "redirect to BankDetailsLockoutController when attempts used is at or above the lockout limit" in new Setup {
-      when(mockLockService.isBarsLocked(any()))
-        .thenReturn(Future.successful(true))
-
-      callAuthorised(testController.show) { result =>
-        status(result)           mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
-      }
-    }
-
-    "redirect to BankDetailsLockoutController when attempts used exceeds the lockout limit" in new Setup {
-      when(mockLockService.isBarsLocked(any()))
-        .thenReturn(Future.successful(true))
-
-      callAuthorised(testController.show) { result =>
-        status(result)           mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
-      }
-    }
-  }}
-
+  }
+}

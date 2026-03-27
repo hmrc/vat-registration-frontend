@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import models.{BankAccount, BankAccountDetails}
+import models.BankAccountDetails
 import models.bars.{BankAccountDetailsSessionFormat, BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
 import play.api.Configuration
 import play.api.libs.json.Format
@@ -52,19 +52,19 @@ class CheckBankDetailsController @Inject() (
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      for {
-        isLocked    <- lockService.isBarsLocked(profile.registrationId)
-        bankDetails <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
-        fromEnter   <- sessionService.fetchAndGet[Boolean]("fromEnterDetails")
-        _ <-
-          if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
-          else Future.successful(())
+      lockService.redirectIfBarsIsLocked {
+        for {
+          bankDetails <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
+          fromEnter <- sessionService.fetchAndGet[Boolean]("fromEnterDetails")
+          _ <-
+            if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
+            else Future.successful(())
 
-      } yield (isLocked, bankDetails, fromEnter) match {
-        case (true, _, _)                       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
-        case (_, None, _)                       => Redirect(routes.HasBankAccountController.show)
-        case (_, Some(bankDetails), Some(true)) => Ok(view(bankDetails))
-        case _                                  => Redirect(routes.UkBankAccountDetailsController.show)
+        } yield (bankDetails, fromEnter) match {
+          case (None, _) => Redirect(routes.HasBankAccountController.show)
+          case (Some(bankDetails), Some(true)) => Ok(view(bankDetails))
+          case _ => Redirect(routes.UkBankAccountDetailsController.show)
+        }
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
