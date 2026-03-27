@@ -16,54 +16,54 @@
 
 package controllers.bankdetails
 
-import fixtures.VatRegistrationFixture
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
-import repositories.BarsLockRepository
-import services.LockService
-import testHelpers.{ControllerSpec, FutureAssertions}
-import views.html.bankdetails.AccountDetailsNotVerifiedView
+import itFixtures.ITRegistrationFixtures
+import itutil.ControllerISpec
+import models.Lock
+import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
+import play.mvc.Http.HeaderNames
 
-import scala.concurrent.Future
+import java.time.Instant
 
-class AccountDetailsNotVerifiedControllerISpec extends ControllerSpec with VatRegistrationFixture with FutureAssertions {
+class AccountDetailsNotVerifiedControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
-  val mockBarsLockRepository: BarsLockRepository = mock[BarsLockRepository]
-  val lockService: LockService                   = new LockService(mockBarsLockRepository)
-  val view: AccountDetailsNotVerifiedView        = app.injector.instanceOf[AccountDetailsNotVerifiedView]
+  val url = "/failed-verification"
 
-  trait Setup {
-    val testController = new AccountDetailsNotVerifiedController(
-      mockAuthClientConnector,
-      mockSessionService,
-      lockService,
-      view
-    )
+  "GET /failed-verification" must {
 
-    mockAuthenticated()
-    mockWithCurrentProfile(Some(currentProfile))
-  }
+    "redirect to BankDetailsLockoutController when user is locked out" in new Setup {
+      given().user.isAuthorised()
 
-  "show" should {
-    "redirect to BankDetailsLockoutController when bars is locked" in new Setup {
-      when(mockBarsLockRepository.isLocked(any()))
-        .thenReturn(Future.successful(true))
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      callAuthorised(testController.show) { result =>
-        status(result)           mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
-      }
+      await(
+        barsLockRepository.collection
+          .insertOne(
+            Lock(currentProfile.registrationId, failedAttempts = 3, lastAttemptedAt = Instant.now())
+          )
+          .toFuture())
+
+      val res: WSResponse = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
     }
 
-    "return OK when bars is not locked" in new Setup {
-      when(mockBarsLockRepository.isLocked(any()))
-        .thenReturn(Future.successful(false))
-      when(mockBarsLockRepository.getAttemptsUsed(any()))
-        .thenReturn(Future.successful(2))
+    "return OK and display the view when user has failed attempts but is not locked" in new Setup {
+      given().user.isAuthorised()
 
-      callAuthorised(testController.show) { result =>
-        status(result) mustBe OK
-      }
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      await(
+        barsLockRepository.collection
+          .insertOne(
+            Lock(currentProfile.registrationId, failedAttempts = 2, lastAttemptedAt = Instant.now())
+          )
+          .toFuture())
+
+      val res: WSResponse = await(buildClient(url).get())
+
+      res.status mustBe OK
     }
   }
 }
