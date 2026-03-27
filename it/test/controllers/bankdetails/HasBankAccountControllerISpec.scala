@@ -18,13 +18,15 @@ package controllers.bankdetails
 
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itutil.ControllerISpec
-import models.BankAccount
-import models.api.{EligibilitySubmissionData, Individual, NETP, NonUkNonEstablished}
+import models.{BankAccount, Lock}
+import models.api.{EligibilitySubmissionData, Individual, NonUkNonEstablished}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
+
+import java.time.Instant
 
 class HasBankAccountControllerISpec extends ControllerISpec {
 
@@ -157,6 +159,25 @@ class HasBankAccountControllerISpec extends ControllerISpec {
 
       res.status mustBe OK
       Jsoup.parse(res.body).select("input[id=value-no]").hasAttr("checked") mustBe true
+    }
+    "redirect to BankDetailsLockoutController when user is locked" in new Setup {
+      given().user.isAuthorised()
+        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+        .registrationApi.getSection[BankAccount](None)
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      await(
+        barsLockRepository.collection
+          .insertOne(
+            Lock(currentProfile.registrationId, failedAttempts = 3, lastAttemptedAt = Instant.now())
+          )
+          .toFuture())
+
+      val res: WSResponse = await(buildClient(url).get())
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
     }
   }
 

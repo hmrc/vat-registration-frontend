@@ -156,7 +156,6 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
   }
 
   "checks for vat registration date tasklist row" when {
-
     "rendering registration date row" must {
 
       "resolve to None if registration reason available but not eligible for registration date flow" in {
@@ -259,7 +258,6 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
       }
     }
   }
-
   "checks for bank account details row" when {
     "prerequisite not complete" must {
       "return TLCannotStart" in {
@@ -405,6 +403,65 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLCompleted
         sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+    }
+
+    "prerequisite is complete and bars lock for bank details" must {
+      "return TLInprogress when prerequisites are met" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            overseasCompliance = Some(OverseasCompliance(
+              goodsToOverseas = Some(false),
+              storingGoodsForDispatch = Some(StoringOverseas)
+            )),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None))
+            ))
+          )),
+          bankAccount = Some(BankAccount(isProvided = false, reason = None, details = None, bankAccountType = None))
+        )
+
+        val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
+        sectionRow.status mustBe TLInProgress
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+
+      "return TLComplete if the user selects no uk bank account and gives a reason" in {
+        val scheme = validVatScheme.copy(
+          eligibilitySubmissionData = Some(validEligibilitySubmissionData),
+          business = Some(validBusiness.copy(
+            hasLandAndProperty = Some(false),
+            otherBusinessInvolvement = Some(false),
+            businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+          )),
+          vatApplication = Some(validVatApplication.copy(
+            overseasCompliance = Some(OverseasCompliance(
+              goodsToOverseas = Some(false),
+              storingGoodsForDispatch = Some(StoringOverseas)
+            )),
+            northernIrelandProtocol = Some(NIPTurnover(
+              goodsToEU = Some(ConditionalValue(answer = false, None)),
+              goodsFromEU = Some(ConditionalValue(answer = false, None))
+            ))
+          )),
+          bankAccount = Some(BankAccount(isProvided = false, reason = Some(DontWantToProvide), details = None, bankAccountType = None))
+        )
+
+        val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
+        sectionRow.status mustBe TLCompleted
+        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+      }
+
+      "return TLCannotStart when prerequisites are not met regardless of lock" in {
+        val sectionRow = section.bankAccountDetailsRow(businessService).build(emptyVatScheme)
+        sectionRow.status mustBe TLCannotStart
       }
     }
   }

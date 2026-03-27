@@ -44,6 +44,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val eligibilityUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.uri")
   lazy val eligibilityQuestionUrl: String = loadConfig("microservice.services.vat-registration-eligibility-frontend.question")
   implicit val appConfig: FrontendAppConfig = this
+  val ttlLockSeconds: Int = servicesConfig.getInt("mongodb.LockTTLSeconds")
 
   private lazy val thresholdString: String = runModeConfiguration.get[ConfigList]("vat-threshold").render(ConfigRenderOptions.concise())
   lazy val thresholds: Seq[VatThreshold] = Json.parse(thresholdString).as[List[VatThreshold]]

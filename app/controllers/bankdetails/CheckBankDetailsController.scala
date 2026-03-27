@@ -20,12 +20,12 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import models.BankAccountDetails
-import models.bars.BankAccountDetailsSessionFormat
+import models.{BankAccountDetails, DontWantToProvide}
+import models.bars.{BankAccountDetailsSessionFormat, BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
 import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionService}
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.CheckBankDetailsView
 
@@ -36,6 +36,7 @@ class CheckBankDetailsController @Inject() (
     val authConnector: AuthClientConnector,
     val bankAccountDetailsService: BankAccountDetailsService,
     val sessionService: SessionService,
+    val lockService: LockService,
     configuration: Configuration,
     view: CheckBankDetailsView
 )(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
@@ -49,17 +50,26 @@ class CheckBankDetailsController @Inject() (
 
   private val sessionKey = "bankAccountDetails"
 
-  def show: Action[AnyContent] = isAuthenticated { implicit request =>
+  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
-        case Some(details) => Ok(view(details))
-        case None          => Redirect(routes.HasBankAccountController.show)
+      lockService.redirectIfBarsIsLocked {
+        for {
+          bankDetails <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
+          fromEnter <- sessionService.fetchAndGet[Boolean]("fromEnterDetails")
+          _ <-
+            if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
+            else Future.successful(())
+
+        } yield (bankDetails, fromEnter) match {
+          case (None, _) => Redirect(routes.HasBankAccountController.show)
+          case (Some(bankDetails), Some(true)) => Ok(view(bankDetails))
+          case _ => Redirect(routes.UkBankAccountDetailsController.show)
+        }
       }
     } else {
       Future.successful(Redirect(routes.HasBankAccountController.show))
     }
   }
-
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       for {
@@ -67,9 +77,15 @@ class CheckBankDetailsController @Inject() (
         bankAccount <- bankAccountDetailsService.getBankAccount
         result <- (details, bankAccount.flatMap(_.bankAccountType)) match {
           case (Some(accountDetails), Some(accountType)) =>
-            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, Some(accountType)).map {
-              case true  => Redirect(controllers.routes.TaskListController.show.url)
-              case false => Redirect(routes.UkBankAccountDetailsController.show)
+            bankAccountDetailsService.verifyAndSaveBankAccountDetails(accountDetails, accountType, profile.registrationId).flatMap {
+              case BarsSuccess =>
+                Future.successful(Redirect(controllers.routes.TaskListController.show.url))
+              case BarsLockedOut =>
+                bankAccountDetailsService.saveBankAccountNotProvided(DontWantToProvide).map { _ =>
+                  Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+                }
+              case BarsFailedNotLocked =>
+                Future.successful(Redirect(routes.AccountDetailsNotVerifiedController.show))
             }
           case _ => Future.successful(Redirect(routes.HasBankAccountController.show))
         }

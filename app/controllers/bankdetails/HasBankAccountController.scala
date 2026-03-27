@@ -23,8 +23,8 @@ import featuretoggle.FeatureToggleSupport.isEnabled
 import forms.HasCompanyBankAccountForm.{form => hasBankAccountForm}
 import models.api.{Individual, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionService, VatRegistrationService}
-import views.html.bankdetails.{HasCompanyBankAccountView, CanProvideBankAccountView}
+import services.{BankAccountDetailsService, LockService, SessionService, VatRegistrationService}
+import views.html.bankdetails.{CanProvideBankAccountView, HasCompanyBankAccountView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,6 +33,8 @@ class HasBankAccountController @Inject() (val authConnector: AuthClientConnector
                                           val bankAccountDetailsService: BankAccountDetailsService,
                                           val sessionService: SessionService,
                                           val vatRegistrationService: VatRegistrationService,
+                                          val lockService: LockService,
+
                                           oldView: HasCompanyBankAccountView,
                                           newView: CanProvideBankAccountView)(implicit
     appConfig: FrontendAppConfig,
@@ -45,12 +47,14 @@ class HasBankAccountController @Inject() (val authConnector: AuthClientConnector
       case (Individual | NonUkNonEstablished, false) =>
         Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
       case _ =>
-        for {
-          bankDetails <- bankAccountDetailsService.getBankAccount
-          filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
-        } yield
-          if (isEnabled(UseNewBarsVerify)) Ok(newView(filledForm))
-          else Ok(oldView(filledForm))
+        lockService.redirectIfBarsIsLocked {
+            for {
+              bankDetails <- bankAccountDetailsService.getBankAccount
+              filledForm = bankDetails.map(_.isProvided).fold(hasBankAccountForm)(hasBankAccountForm.fill)
+            } yield
+              if (isEnabled(UseNewBarsVerify)) Ok(newView(filledForm))
+              else Ok(oldView(filledForm))
+        }
     }
   }
 

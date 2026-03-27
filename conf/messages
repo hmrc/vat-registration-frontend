@@ -1041,6 +1041,23 @@ pages.checkBankDetails.sortCode                         = Sort code
 pages.checkBankDetails.rollNumber                       = Building society roll number
 pages.checkBankDetails.p1                               = By confirming these account details, you agree the information you have provided is complete and correct.
 
+# Account Details could not be verified
+pages.accountDetailsCouldNotBeVerified.heading          = Account details could not be verified
+pages.accountDetailsCouldNotBeVerified.text.pre         = You have
+pages.accountDetailsCouldNotBeVerified.one.remaining    = one more attempt
+pages.accountDetailsCouldNotBeVerified.two.remaining    = two more attempts
+pages.accountDetailsCouldNotBeVerified.text.post        = to provide your account details.
+pages.accountDetailsCouldNotBeVerified.para2            = <a href="{0}">Enter your bank account or building society details again,</a> making sure the name matches exactly as it appears on your account.
+pages.accountDetailsCouldNotBeVerified.para3.bold       = After 3 consecutive unsuccessful attempts,
+pages.accountDetailsCouldNotBeVerified.para3            = you will need to complete your VAT registration before sending us your details.
+
+# Locked Out Page
+pages.bankDetailsLockoutView.heading                    = Account details could not be verified
+pages.bankDetailsLockoutView.para1                      = We have been unable to verify the account details you supplied.
+pages.bankDetailsLockoutView.para2                      = For your security, we have paused this part of the service.
+pages.bankDetailsLockoutView.para3.link                 = You can return to the VAT registration task list now
+pages.bankDetailsLockoutView.para3                      =, and provide your account details later once your registration is confirmed.
+
 # Main Business Activity Page
 pages.mainBusinessActivity.heading                        = Which activity is the business’s main source of income?
 validation.mainBusinessActivity.missing                   = Select the business’s main source of income
@@ -2060,4 +2077,3 @@ partnerEmail.link                              = HMRC Privacy Notice
 partnerEmail.error.incorrect_format            = Enter the email address in the correct format, like name@example.com
 partnerEmail.error.nothing_entered             = Enter the email address
 partnerEmail.error.incorrect_length            = The email address must be 132 characters or fewer
-

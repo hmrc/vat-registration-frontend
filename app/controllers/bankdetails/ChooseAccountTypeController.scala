@@ -22,7 +22,7 @@ import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
 import forms.ChooseAccountTypeForm
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionService}
 import views.html.bankdetails.ChooseAccountTypeView
 
 import javax.inject.Inject
@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnector,
                                              val bankAccountDetailsService: BankAccountDetailsService,
                                              val sessionService: SessionService,
+                                             val lockService: LockService,
                                              view: ChooseAccountTypeView)(implicit
     appConfig: FrontendAppConfig,
     val executionContext: ExecutionContext,
@@ -39,14 +40,16 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      bankAccountDetailsService.getBankAccount.map { bankDetails =>
-        val filledForm = bankDetails
-          .flatMap(_.bankAccountType)
-          .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
-        Ok(view(filledForm))
+      lockService.redirectIfBarsIsLocked {
+        bankAccountDetailsService.getBankAccount.map { bankDetails =>
+          val filledForm = bankDetails
+            .flatMap(_.bankAccountType)
+            .fold(ChooseAccountTypeForm.form)(ChooseAccountTypeForm.form.fill)
+          Ok(view(filledForm))
+        }
       }
     } else {
-        Future.successful(Redirect(routes.HasBankAccountController.show))
+      Future.successful(Redirect(routes.HasBankAccountController.show))
     }
   }
 

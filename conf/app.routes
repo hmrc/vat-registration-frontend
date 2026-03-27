@@ -138,6 +138,10 @@ POST        /account-details                                          controller
 GET         /check-bank-details                                       controllers.bankdetails.CheckBankDetailsController.show
 POST        /check-bank-details                                       controllers.bankdetails.CheckBankDetailsController.submit
 
+# FAILED VERIFICATION SCREENS
+GET        /failed-verification                                       controllers.bankdetails.AccountDetailsNotVerifiedController.show
+GET        /verification-lockout                                      controllers.errors.BankDetailsLockoutController.show
+
 ## VAT CORRESPONDENCE
 GET         /vat-correspondence-language                              controllers.business.VatCorrespondenceController.show
 POST        /vat-correspondence-language                              controllers.business.VatCorrespondenceController.submit

@@ -32,31 +32,29 @@ case class TaskListRowBuilder(messageKey: VatScheme => String,
 
   def prerequisitesMet(vatScheme: VatScheme): Boolean = {
     @tailrec
-    def checkCompleteness(rows: Seq[TaskListRowBuilder], result: Boolean = true): Boolean = {
+    def checkCompleteness(rows: Seq[TaskListRowBuilder], result: Boolean = true): Boolean =
       rows match {
-        case Nil => result
+        case Nil         => result
         case row :: tail => checkCompleteness(tail ++ row.prerequisites(vatScheme), result && row.isComplete(vatScheme))
       }
-    }
 
     checkCompleteness(prerequisites(vatScheme))
   }
 
   def build(vatScheme: VatScheme): TaskListSectionRow = {
     val status = if (prerequisitesMet(vatScheme)) {
-      if(error(vatScheme)) {
+      if (error(vatScheme)) {
         TLFailed
       } else if (isComplete(vatScheme)) {
         TLCompleted
-      } else  if (checks(vatScheme).contains(true)) {
-          TLInProgress
-        } else {
-          TLNotStarted
-        }
+      } else if (checks(vatScheme).contains(true)) {
+        TLInProgress
+      } else {
+        TLNotStarted
+      }
     } else {
       TLCannotStart
     }
-
     TaskListSectionRow(messageKey(vatScheme), url(vatScheme)(status), tagId, status, canEdit(status))
   }
 }

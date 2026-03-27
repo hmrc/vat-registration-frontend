@@ -102,4 +102,43 @@ class TaskListRowBuilderSpec extends VatRegViewSpec with VatRegistrationFixture 
       }
     }
   }
+
+  "TaskListSection isReadyForSubmission" when {
+    "all rows are Completed" must {
+      "return true" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLCompleted)
+        )).isComplete mustBe true
+      }
+    }
+
+
+    "any row is NotStarted" must {
+      "return false" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLNotStarted)
+        )).isComplete mustBe false
+      }
+    }
+
+    "any row is CannotStart" must {
+      "return false" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLCannotStart)
+        )).isComplete mustBe false
+      }
+    }
+
+    "any row is InProgress" must {
+      "return false" in {
+        TaskListSection("heading", List(
+          TaskListSectionRow("row1", testUrl, "tag1", TLCompleted),
+          TaskListSectionRow("row2", testUrl, "tag2", TLInProgress)
+        )).isComplete mustBe false
+      }
+    }
+  }
 }

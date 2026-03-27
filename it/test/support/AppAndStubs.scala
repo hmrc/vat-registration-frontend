@@ -25,11 +25,11 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json.{Json, JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
-import repositories.SessionRepository
+import repositories.{BarsLockRepository, SessionRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.cache.client.CacheMap
 
@@ -45,11 +45,14 @@ trait AppAndStubs extends StubUtils with GuiceOneServerPerSuite with Integration
   trait Setup {
     def customAwait[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
+    val barsLockRepository: BarsLockRepository = app.injector.instanceOf[BarsLockRepository]
     val repo: SessionRepository = app.injector.instanceOf[SessionRepository]
+
     val defaultTimeout: FiniteDuration = 2 seconds
 
     customAwait(repo.ensureIndexes())(defaultTimeout)
     customAwait(repo.collection.countDocuments().head())(defaultTimeout)
+    customAwait(barsLockRepository.collection.drop().head())(defaultTimeout)
 
     def insertCurrentProfileIntoDb(currentProfile: models.CurrentProfile, sessionId: String): Boolean = {
       customAwait(repo.collection.countDocuments().head())(defaultTimeout)

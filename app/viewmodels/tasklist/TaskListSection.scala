@@ -29,13 +29,12 @@ import scala.concurrent.ExecutionContext
 case class TaskListSection(heading: String, rows: Seq[TaskListSectionRow]) {
 
   def isComplete: Boolean = rows.forall(_.status == TLCompleted)
-
 }
 
 object TaskListSections {
 
 
-  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])(implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]) = List(
+  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])(implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Seq[TaskListSection] = List(
     Some(RegistrationReasonTaskList.build(vatScheme)),
     if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(AboutYouTransactorTaskList.build(vatScheme)) else None,
     Some(VerifyBusinessTaskList.build(vatScheme)),

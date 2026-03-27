@@ -27,7 +27,7 @@ import models.bars.BankAccountDetailsSessionFormat
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import play.api.Configuration
-import services.{BankAccountDetailsService, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionService}
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.{EnterBankAccountDetails, EnterCompanyBankAccountDetails}
 
@@ -38,6 +38,7 @@ class UkBankAccountDetailsController @Inject() (
     val authConnector: AuthClientConnector,
     val bankAccountDetailsService: BankAccountDetailsService,
     val sessionService: SessionService,
+    val lockService: LockService,
     configuration: Configuration,
     newBarsView: EnterBankAccountDetails,
     oldView: EnterCompanyBankAccountDetails
@@ -54,10 +55,12 @@ class UkBankAccountDetailsController @Inject() (
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
-      val newBarsForm = EnterBankAccountDetailsForm.form
-      sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
-        case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
-        case None          => Ok(newBarsView(newBarsForm))
+      lockService.redirectIfBarsIsLocked {
+        val newBarsForm = EnterBankAccountDetailsForm.form
+        sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
+          case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
+          case None          => Ok(newBarsView(newBarsForm))
+        }
       }
     } else {
       for {
@@ -66,7 +69,6 @@ class UkBankAccountDetailsController @Inject() (
       } yield Ok(oldView(filledForm))
     }
   }
-
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       val newBarsForm = EnterBankAccountDetailsForm.form
@@ -75,8 +77,10 @@ class UkBankAccountDetailsController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(newBarsView(formWithErrors))),
           accountDetails =>
-            sessionService.cache[BankAccountDetails](sessionKey, accountDetails).map { _ =>
-              Redirect(routes.CheckBankDetailsController.show)
+            sessionService.cache[Boolean]("fromEnterDetails", true).flatMap { _ =>
+              sessionService.cache[BankAccountDetails](sessionKey, accountDetails).map { _ =>
+                Redirect(routes.CheckBankDetailsController.show)
+              }
             }
         )
     } else {
@@ -92,4 +96,5 @@ class UkBankAccountDetailsController @Inject() (
         )
     }
   }
+
 }
