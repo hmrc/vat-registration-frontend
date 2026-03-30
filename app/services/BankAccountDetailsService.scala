@@ -24,12 +24,8 @@ import models._
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
 import play.api.Logging
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,13 +36,9 @@ class BankAccountDetailsService @Inject() (
     bankAccountRepService: BankAccountReputationService,
     barsService: BarsService,
     lockService: LockService,
-    auditConnector: AuditConnector,
-    val authConnector: AuthConnector
+    barsAuditService: BarsAuditService
 )(implicit appConfig: FrontendAppConfig)
-    extends Logging
-    with AuthorisedFunctions {
-
-  private val BarsCheckAttemptAuditType = "BarsCheckAttempt"
+    extends Logging {
 
   def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
     regApiConnector.getSection[BankAccount](profile.registrationId)
@@ -105,79 +97,28 @@ class BankAccountDetailsService @Inject() (
       bankAccountType: BankAccountType
   )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
     saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap { case (saved, rawResponse) =>
-      authorised().retrieve(Retrievals.internalId) {
-        case Some(credId) =>
-          if (saved) {
-            lockService.getBarsAttemptsUsed(profile.registrationId).map { attemptNumber =>
-              sendBarsAuditEvent(
+      if (saved) {
+        lockService.getBarsAttemptsUsed(profile.registrationId).flatMap { attemptNumber =>
+          barsAuditService
+            .sendBarsAuditEvent(bankAccountDetails, bankAccountType, rawResponse, attemptNumber, accountStatus = "unlocked", checkOutcome = "pass")
+            .map(_ => BarsSuccess)
+        }
+      } else {
+        lockService.incrementBarsAttempts(profile.registrationId).flatMap { attemptNumber =>
+          lockService.isBarsLocked(profile.registrationId).flatMap { isLocked =>
+            barsAuditService
+              .sendBarsAuditEvent(
                 bankAccountDetails,
                 bankAccountType,
                 rawResponse,
-                credId,
                 attemptNumber,
-                accountStatus = "unlocked",
-                checkOutcome = "pass")
-              BarsSuccess
-            }
-          } else {
-            lockService.incrementBarsAttempts(profile.registrationId).flatMap { attemptNumber =>
-              lockService.isBarsLocked(profile.registrationId).map { isLocked =>
-                sendBarsAuditEvent(
-                  bankAccountDetails,
-                  bankAccountType,
-                  rawResponse,
-                  credId,
-                  attemptNumber,
-                  accountStatus = if (isLocked) "locked" else "unlocked",
-                  checkOutcome = "fail")
-                if (isLocked) BarsLockedOut else BarsFailedNotLocked
-              }
-            }
+                accountStatus = if (isLocked) "locked" else "unlocked",
+                checkOutcome = "fail")
+              .map(_ => if (isLocked) BarsLockedOut else BarsFailedNotLocked)
           }
-        case None =>
-          throw new InternalServerException("Missing internal ID for BARS check auditing")
+        }
       }
     }
-
-  private def sendBarsAuditEvent(
-      bankAccountDetails: BankAccountDetails,
-      bankAccountType: BankAccountType,
-      rawResponse: Option[BarsVerificationResponse],
-      credId: String,
-      attemptNumber: Int,
-      accountStatus: String,
-      checkOutcome: String
-  )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Unit = {
-
-    logger.info(s"Raising BARS audit event: outcome=$checkOutcome attempt=$attemptNumber accountStatus=$accountStatus")
-
-    val userType = if (profile.agentReferenceNumber.isDefined) "agent" else "organisation"
-
-    val detail: JsObject = Json.obj(
-      "attemptNumber" -> attemptNumber,
-      "accountStatus" -> accountStatus,
-      "checkOutcome"  -> checkOutcome,
-      "credId"        -> credId,
-      "journeyId"     -> profile.registrationId,
-      "userType"      -> userType,
-      "detailsSubmitted" -> Json.obj(
-        "account" -> Json.obj(
-          "sortCode"      -> bankAccountDetails.sortCode,
-          "accountNumber" -> bankAccountDetails.number
-        ),
-        "accountType" -> bankAccountType.toString.toLowerCase,
-        "accountName" -> bankAccountDetails.name
-      ),
-      "validationResponse" -> rawResponse.map { r =>
-        Json.obj(
-          "accountExists" -> r.accountExists.toString.toLowerCase,
-          "nameMatches"   -> r.nameMatches.toString.toLowerCase
-        )
-      }
-    )
-
-    auditConnector.sendExplicitAudit(BarsCheckAttemptAuditType, detail)
-  }
 
   def saveBankAccountNotProvided(
       reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] =

@@ -77,7 +77,8 @@ trait VatMocks
       mockSummaryService,
       mockAuthClientConnector,
       mockTimeService,
-      mockRegistrationApiConnector
+      mockRegistrationApiConnector,
+
     )
   }
 }
