@@ -36,15 +36,13 @@ case class BarsVerificationResponse(
     (accountNumberIsWellFormatted == BarsResponse.Yes || accountNumberIsWellFormatted == BarsResponse.Indeterminate) &&
       sortCodeIsPresentOnEISCD == BarsResponse.Yes &&
       accountExists == BarsResponse.Yes &&
-      (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial) &&
-      sortCodeSupportsDirectDebit == BarsResponse.Yes
+      (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial)
 
   def check: Seq[BarsError] =
     Seq(
       checkAccountAndName(accountExists, nameMatches),
       checkAccountNumberFormat(accountNumberIsWellFormatted),
       checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD),
-      checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit),
       checkAccountExists(accountExists),
       checkNameMatches(nameMatches, accountExists)
     ).flatten
@@ -62,11 +60,6 @@ case class BarsVerificationResponse(
   private def checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD: BarsResponse): Option[BarsError] =
     if (sortCodeIsPresentOnEISCD == BarsResponse.No)
       Some(SortCodeNotFound)
-    else None
-
-  private def checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit: BarsResponse): Option[BarsError] =
-    if (sortCodeSupportsDirectDebit == BarsResponse.No)
-      Some(SortCodeNotSupported)
     else None
 
   private def checkAccountExists(accountExists: BarsResponse): Option[BarsError] =

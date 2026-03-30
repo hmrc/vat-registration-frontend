@@ -77,7 +77,7 @@ class CheckBankDetailsController @Inject() (
         bankAccount <- bankAccountDetailsService.getBankAccount
         result <- (details, bankAccount.flatMap(_.bankAccountType)) match {
           case (Some(accountDetails), Some(accountType)) =>
-            bankAccountDetailsService.verifyAndSaveBankAccountDetails(accountDetails, accountType, profile.registrationId).flatMap {
+            bankAccountDetailsService.verifyAndSaveBankAccountDetails(accountDetails, accountType).flatMap {
               case BarsSuccess =>
                 Future.successful(Redirect(controllers.routes.TaskListController.show.url))
               case BarsLockedOut =>

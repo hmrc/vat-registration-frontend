@@ -23,17 +23,30 @@ import featuretoggle.FeatureToggleSupport.isEnabled
 import models._
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
+import play.api.Logging
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector,
-                                           bankAccountRepService: BankAccountReputationService,
-                                           barsService: BarsService,
-                                           lockService: LockService)(implicit appConfig: FrontendAppConfig) {
+class BankAccountDetailsService @Inject() (
+    val regApiConnector: RegistrationApiConnector,
+    bankAccountRepService: BankAccountReputationService,
+    barsService: BarsService,
+    lockService: LockService,
+    auditConnector: AuditConnector,
+    val authConnector: AuthConnector
+)(implicit appConfig: FrontendAppConfig)
+    extends Logging
+    with AuthorisedFunctions {
+
+  private val BarsCheckAttemptAuditType = "BarsCheckAttempt"
 
   def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
     regApiConnector.getSection[BankAccount](profile.registrationId)
@@ -54,7 +67,6 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       case None =>
         BankAccount(hasBankAccount, None, None, None)
     }
-
     bankAccount flatMap saveBankAccount
   }
 
@@ -62,58 +74,114 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       hc: HeaderCarrier,
       profile: CurrentProfile,
       ex: ExecutionContext,
-      request: Request[_]): Future[Boolean] =
-    for {
-      result <- selectBarsEndpoint(bankAccountDetails, bankAccountType).flatMap {
-        case status @ (ValidStatus | IndeterminateStatus) =>
-          val bankAccount = BankAccount(
-            isProvided = true,
-            details = Some(bankAccountDetails.copy(status = Some(status))),
-            reason = None,
-            bankAccountType = bankAccountType
-          )
-          saveBankAccount(bankAccount) map (_ => true)
-        case InvalidStatus => Future.successful(false)
-      }
-    } yield result
+      request: Request[_]): Future[(Boolean, Option[BarsVerificationResponse])] =
+    selectBarsEndpoint(bankAccountDetails, bankAccountType).flatMap {
+      case (status @ (ValidStatus | IndeterminateStatus), rawResponse) =>
+        val bankAccount = BankAccount(
+          isProvided = true,
+          details = Some(bankAccountDetails.copy(status = Some(status))),
+          reason = None,
+          bankAccountType = bankAccountType
+        )
+        saveBankAccount(bankAccount).map(_ => (true, rawResponse))
+
+      case (InvalidStatus, rawResponse) =>
+        Future.successful((false, rawResponse))
+    }
 
   def selectBarsEndpoint(bankAccountDetails: BankAccountDetails, bankAccountType: Option[BankAccountType])(implicit
       hc: HeaderCarrier,
-      request: Request[_]): Future[BankAccountDetailsStatus] =
+      ex: ExecutionContext,
+      request: Request[_]): Future[(BankAccountDetailsStatus, Option[BarsVerificationResponse])] =
     if (isEnabled(UseNewBarsVerify))
       bankAccountType match {
         case Some(accountType) => barsService.verifyBankDetails(bankAccountDetails, accountType)
         case None              => Future.failed(new IllegalStateException("bankAccountType is required when UseNewBarsVerify is enabled"))
       }
-    else bankAccountRepService.validateBankDetails(bankAccountDetails)
+    else bankAccountRepService.validateBankDetails(bankAccountDetails).map(status => (status, None))
 
   def verifyAndSaveBankAccountDetails(
       bankAccountDetails: BankAccountDetails,
-      bankAccountType: BankAccountType,
-      registrationId: String
+      bankAccountType: BankAccountType
   )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
-    saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap { saved =>
-      if (saved) {
-        Future.successful(BarsSuccess)
-      } else {
-        lockService.incrementBarsAttempts(registrationId).flatMap { _ =>
-          lockService.isBarsLocked(registrationId).map { isLocked =>
-            if (isLocked) BarsLockedOut else BarsFailedNotLocked
+    saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap { case (saved, rawResponse) =>
+      authorised().retrieve(Retrievals.internalId) {
+        case Some(credId) =>
+          if (saved) {
+            lockService.getBarsAttemptsUsed(profile.registrationId).map { attemptNumber =>
+              sendBarsAuditEvent(
+                bankAccountDetails,
+                bankAccountType,
+                rawResponse,
+                credId,
+                attemptNumber,
+                accountStatus = "unlocked",
+                checkOutcome = "pass")
+              BarsSuccess
+            }
+          } else {
+            lockService.incrementBarsAttempts(profile.registrationId).flatMap { attemptNumber =>
+              lockService.isBarsLocked(profile.registrationId).map { isLocked =>
+                sendBarsAuditEvent(
+                  bankAccountDetails,
+                  bankAccountType,
+                  rawResponse,
+                  credId,
+                  attemptNumber,
+                  accountStatus = if (isLocked) "locked" else "unlocked",
+                  checkOutcome = "fail")
+                if (isLocked) BarsLockedOut else BarsFailedNotLocked
+              }
+            }
           }
-        }
+        case None =>
+          throw new InternalServerException("Missing internal ID for BARS check auditing")
       }
     }
 
-  def saveBankAccountNotProvided(
-      reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
-    val bankAccount = BankAccount(
-      isProvided = false,
-      details = None,
-      reason = Some(reason),
-      bankAccountType = None
+  private def sendBarsAuditEvent(
+      bankAccountDetails: BankAccountDetails,
+      bankAccountType: BankAccountType,
+      rawResponse: Option[BarsVerificationResponse],
+      credId: String,
+      attemptNumber: Int,
+      accountStatus: String,
+      checkOutcome: String
+  )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Unit = {
+
+    logger.info(s"Raising BARS audit event: outcome=$checkOutcome attempt=$attemptNumber accountStatus=$accountStatus")
+
+    val userType = if (profile.agentReferenceNumber.isDefined) "agent" else "organisation"
+
+    val detail: JsObject = Json.obj(
+      "attemptNumber" -> attemptNumber,
+      "accountStatus" -> accountStatus,
+      "checkOutcome"  -> checkOutcome,
+      "credId"        -> credId,
+      "journeyId"     -> profile.registrationId,
+      "userType"      -> userType,
+      "detailsSubmitted" -> Json.obj(
+        "account" -> Json.obj(
+          "sortCode"      -> bankAccountDetails.sortCode,
+          "accountNumber" -> bankAccountDetails.number
+        ),
+        "accountType" -> bankAccountType.toString.toLowerCase,
+        "accountName" -> bankAccountDetails.name
+      ),
+      "validationResponse" -> rawResponse.map { r =>
+        Json.obj(
+          "accountExists" -> r.accountExists.toString.toLowerCase,
+          "nameMatches"   -> r.nameMatches.toString.toLowerCase
+        )
+      }
     )
-    saveBankAccount(bankAccount)
+
+    auditConnector.sendExplicitAudit(BarsCheckAttemptAuditType, detail)
   }
+
+  def saveBankAccountNotProvided(
+      reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] =
+    saveBankAccount(BankAccount(isProvided = false, details = None, reason = Some(reason), bankAccountType = None))
 
   def saveBankAccountType(bankAccountType: BankAccountType)(implicit
       hc: HeaderCarrier,

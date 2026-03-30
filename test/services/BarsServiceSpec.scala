@@ -86,41 +86,54 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
 
   "verifyBankDetails" should {
 
-    "return ValidStatus" when {
+    "return ValidStatus and the response" when {
       "the connector returns a successful BARS response" in {
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(successResponse))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe ValidStatus
+        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+
+        status shouldBe ValidStatus
+        response shouldBe Some(successResponse)
       }
     }
 
-    "return IndeterminateStatus" when {
+    "return IndeterminateStatus and the response" when {
       "the connector returns a response where the account cannot be verified" in {
+        val barsResponse = barsResponseWith(accountExists = BarsResponse.Indeterminate)
         when(mockConnector.verify(any(), any())(any()))
-          .thenReturn(Future.successful(barsResponseWith(accountExists = BarsResponse.Indeterminate)))
+          .thenReturn(Future.successful(barsResponse))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe IndeterminateStatus
+        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+
+        status shouldBe IndeterminateStatus
+        response shouldBe Some(barsResponse)
       }
     }
 
     "return InvalidStatus" when {
       "the connector returns a response indicating a bad sort code or account" in {
+        val barsResponse = barsResponseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
         when(mockConnector.verify(any(), any())(any()))
-          .thenReturn(Future.successful(barsResponseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)))
+          .thenReturn(Future.successful(barsResponse))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe InvalidStatus
+        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+
+        status shouldBe InvalidStatus
+        response shouldBe Some(barsResponse)
       }
 
       "the connector throws an exception" in {
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("failure")))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe InvalidStatus
+        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+
+        status shouldBe InvalidStatus
+        response shouldBe None
       }
     }
   }
-
   "checkVerificationResult" should {
 
     "return Right containing the response" when {
@@ -213,7 +226,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
 
     "not include a 'subject' key" when {
       "given a Business account type" in {
-        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business )
+        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business)
         (result \ "subject").isDefined shouldBe false
       }
     }
