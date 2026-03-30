@@ -17,7 +17,7 @@
 package services
 
 import connectors._
-import connectors.mocks.MockRegistrationApiConnector
+import connectors.mocks.{MockAuditConnector, MockRegistrationApiConnector}
 import models.api.EligibilitySubmissionData
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 
-class VatRegistrationServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
+class VatRegistrationServiceSpec extends VatRegSpec with MockAuditConnector with MockRegistrationApiConnector {
 
   val testHeaderKey = "testHeaderKey"
   val testHeaderValue = "testHeaderValue"

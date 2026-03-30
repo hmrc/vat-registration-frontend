@@ -90,8 +90,8 @@ class UkBankAccountDetailsController @Inject() (
           formWithErrors => Future.successful(BadRequest(oldView(formWithErrors))),
           accountDetails =>
             bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, None).map {
-              case true  => Redirect(controllers.routes.TaskListController.show.url)
-              case false => BadRequest(oldView(EnterCompanyBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)))
+              case (true, _)  => Redirect(controllers.routes.TaskListController.show.url)
+              case (false, _) => BadRequest(oldView(EnterCompanyBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)))
             }
         )
     }

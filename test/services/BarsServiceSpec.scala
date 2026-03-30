@@ -18,7 +18,7 @@ package services
 
 import connectors.BarsConnector
 import models.BankAccountDetails
-import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.api.{IndeterminateStatus, InvalidStatus, SimpleIndeterminateStatus, SimpleInvalidStatus, ValidStatus}
 import models.bars._
 import models.bars.BarsError._
 import org.mockito.ArgumentMatchers.any
@@ -100,7 +100,7 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponseWith(accountExists = BarsResponse.Indeterminate)))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe IndeterminateStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe SimpleIndeterminateStatus
       }
     }
 
@@ -109,14 +109,14 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe InvalidStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe SimpleInvalidStatus
       }
 
       "the connector throws an exception" in {
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("failure")))
 
-        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe InvalidStatus
+        service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue shouldBe SimpleInvalidStatus
       }
     }
   }
@@ -150,28 +150,28 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
 
     "return IndeterminateStatus" when {
       "given Left(BankAccountUnverified)" in {
-        service.handleResponse(Left(BankAccountUnverified)) shouldBe IndeterminateStatus
+        service.handleResponse(Left(BankAccountUnverified)) shouldBe SimpleIndeterminateStatus
       }
     }
 
     "return InvalidStatus" when {
       "given Left(AccountDetailInvalidFormat)" in {
-        service.handleResponse(Left(AccountDetailInvalidFormat)) shouldBe InvalidStatus
+        service.handleResponse(Left(AccountDetailInvalidFormat)) shouldBe SimpleInvalidStatus
       }
       "given Left(SortCodeNotFound)" in {
-        service.handleResponse(Left(SortCodeNotFound)) shouldBe InvalidStatus
+        service.handleResponse(Left(SortCodeNotFound)) shouldBe SimpleInvalidStatus
       }
       "given Left(SortCodeNotSupported)" in {
-        service.handleResponse(Left(SortCodeNotSupported)) shouldBe InvalidStatus
+        service.handleResponse(Left(SortCodeNotSupported)) shouldBe SimpleInvalidStatus
       }
       "given Left(AccountNotFound)" in {
-        service.handleResponse(Left(AccountNotFound)) shouldBe InvalidStatus
+        service.handleResponse(Left(AccountNotFound)) shouldBe SimpleInvalidStatus
       }
       "given Left(NameMismatch)" in {
-        service.handleResponse(Left(NameMismatch)) shouldBe InvalidStatus
+        service.handleResponse(Left(NameMismatch)) shouldBe SimpleInvalidStatus
       }
       "given Left(DetailsVerificationFailed)" in {
-        service.handleResponse(Left(DetailsVerificationFailed)) shouldBe InvalidStatus
+        service.handleResponse(Left(DetailsVerificationFailed)) shouldBe SimpleInvalidStatus
       }
     }
   }

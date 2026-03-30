@@ -20,15 +20,23 @@ import play.api.libs.json.{Format, JsString}
 
 sealed trait BankAccountDetailsStatus
 case object ValidStatus extends BankAccountDetailsStatus
-case object InvalidStatus extends BankAccountDetailsStatus
-case object IndeterminateStatus extends BankAccountDetailsStatus
+
+sealed trait InvalidStatus extends BankAccountDetailsStatus
+case object SimpleInvalidStatus extends InvalidStatus
+case class InvalidStatusWithDetails(details: ValidationDetails) extends InvalidStatus
+
+sealed trait IndeterminateStatus extends BankAccountDetailsStatus
+case object SimpleIndeterminateStatus extends IndeterminateStatus
+case class IndeterminateStatusWithDetails(details: ValidationDetails) extends IndeterminateStatus
+
+case class ValidationDetails(accountExists: Boolean, nameMatches: Boolean)
 
 object BankAccountDetailsStatus {
 
   val map: Map[BankAccountDetailsStatus, String] = Map(
     ValidStatus -> "yes",
-    InvalidStatus -> "no",
-    IndeterminateStatus -> "indeterminate"
+    SimpleInvalidStatus -> "no",
+    SimpleIndeterminateStatus -> "indeterminate"
   )
   val inverseMap: Map[String, BankAccountDetailsStatus] = map.map(_.swap)
 

@@ -17,7 +17,7 @@
 package services
 
 import _root_.models._
-import connectors.mocks.MockRegistrationApiConnector
+import connectors.mocks.{MockAuditConnector, MockRegistrationApiConnector}
 import featuretoggle.FeatureToggleSupport
 import models.api.vatapplication._
 import org.mockito.ArgumentMatchers.any
@@ -34,7 +34,8 @@ import uk.gov.hmrc.http.InternalServerException
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport with MockRegistrationApiConnector with MockVatRegistrationService {
+class VatApplicationServiceSpec extends VatRegSpec with MockAuditConnector with
+  FeatureToggleSupport with MockRegistrationApiConnector with MockVatRegistrationService {
 
   class Setup {
     object Service extends VatApplicationService(

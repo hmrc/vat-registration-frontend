@@ -16,10 +16,11 @@
 
 package services
 
+import connectors.mocks.MockAuditConnector
 import featuretoggle.FeatureSwitch.StubBars
 import featuretoggle.FeatureToggleSupport
 import models.BankAccountDetails
-import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.api.{IndeterminateStatus, InvalidStatus, SimpleIndeterminateStatus, SimpleInvalidStatus, ValidStatus}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -31,7 +32,7 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class BankAccountReputationServiceSpec extends VatRegSpec with FeatureToggleSupport {
+class BankAccountReputationServiceSpec extends VatRegSpec with  MockAuditConnector with FeatureToggleSupport {
   implicit val fakeRequest: Request[_] = FakeRequest()
 
   class Setup {
@@ -78,7 +79,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with FeatureToggleSupp
         "response" -> invalidBankCheckJsonResponse
       )
 
-      service.validateBankDetails(bankDetails) returns InvalidStatus
+      service.validateBankDetails(bankDetails) returns SimpleInvalidStatus
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
@@ -97,7 +98,7 @@ class BankAccountReputationServiceSpec extends VatRegSpec with FeatureToggleSupp
         "response" -> indeterminateBankCheckJsonResponse
       )
 
-      service.validateBankDetails(bankDetails) returns IndeterminateStatus
+      service.validateBankDetails(bankDetails) returns SimpleIndeterminateStatus
 
       verify(mockAuditConnector).sendExplicitAudit(ArgumentMatchers.eq("BarsValidateCheck"), ArgumentMatchers.eq(testAuditRequest)
       )(ArgumentMatchers.any[HeaderCarrier], ArgumentMatchers.any[ExecutionContext])
