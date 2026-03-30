@@ -184,6 +184,9 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
         responseWith(nameMatches = BarsResponse.Inapplicable).isSuccessful shouldBe false
       }
     }
+    "sortCodeSupportsDirectDebit is No" in {
+      responseWith(sortCodeSupportsDirectDebit = BarsResponse.No).isSuccessful shouldBe false
+    }
   }
 
   "check" should {
@@ -212,6 +215,13 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       "sortCodeIsPresentOnEISCD is No" in {
         val response = responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
         response.check shouldBe Seq(SortCodeNotFound)
+      }
+    }
+
+    "return Seq(SortCodeNotSupported)" when {
+      "sortCodeSupportsDirectDebit is No" in {
+        val response = responseWith(sortCodeSupportsDirectDebit = BarsResponse.No)
+        response.check shouldBe Seq(SortCodeNotSupported)
       }
     }
 
