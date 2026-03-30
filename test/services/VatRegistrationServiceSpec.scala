@@ -25,13 +25,14 @@ import org.mockito.Mockito._
 import play.api.i18n.MessagesApi
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
+import services.mocks.MockAuditConnector
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.auth.core.retrieve.Credentials
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 
 import scala.concurrent.Future
 
-class VatRegistrationServiceSpec extends VatRegSpec with MockRegistrationApiConnector {
+class VatRegistrationServiceSpec extends VatRegSpec with MockAuditConnector with MockRegistrationApiConnector {
 
   val testHeaderKey = "testHeaderKey"
   val testHeaderValue = "testHeaderValue"

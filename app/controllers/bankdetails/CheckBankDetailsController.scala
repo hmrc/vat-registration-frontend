@@ -26,8 +26,14 @@ import play.api.Configuration
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent}
 import services.{BankAccountDetailsService, LockService, SessionService}
+import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.affinityGroup
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import views.html.bankdetails.CheckBankDetailsView
+import uk.gov.hmrc.play.audit.AuditExtensions
+import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
+import uk.gov.hmrc.play.audit.model.DataEvent
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -26,7 +26,7 @@ import play.api.libs.json.JsString
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import services.VatApplicationService._
-import services.mocks.MockVatRegistrationService
+import services.mocks.{MockAuditConnector, MockVatRegistrationService}
 import testHelpers.VatRegSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.http.InternalServerException
@@ -34,7 +34,7 @@ import uk.gov.hmrc.http.InternalServerException
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class VatApplicationServiceSpec extends VatRegSpec with FeatureToggleSupport with MockRegistrationApiConnector with MockVatRegistrationService {
+class VatApplicationServiceSpec extends VatRegSpec with MockAuditConnector with FeatureToggleSupport with MockRegistrationApiConnector with MockVatRegistrationService {
 
   class Setup {
     object Service extends VatApplicationService(

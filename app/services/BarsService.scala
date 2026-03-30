@@ -19,11 +19,12 @@ package services
 import com.google.inject.{Inject, Singleton}
 import connectors.BarsConnector
 import models.BankAccountDetails
-import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.api.{BankAccountDetailsStatus, Invalid, InvalidStatusWithDetails,
+  SimpleIndeterminateStatus, SimpleInvalidStatus, ValidStatus, ValidationDetails}
 import models.bars._
 import models.bars.BarsError._
 import play.api.Logging
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -62,9 +63,12 @@ case class BarsService @Inject() (
     }
 
   def handleResponse(response: Either[BarsError, BarsVerificationResponse]): BankAccountDetailsStatus = response match {
-    case Right(_)                    => ValidStatus
-    case Left(BankAccountUnverified) => IndeterminateStatus
-    case Left(_)                     => InvalidStatus
+    case Right(_) => ValidStatus
+    case Left(NameMismatch) => InvalidStatusWithDetails(ValidationDetails(accountExists = true, nameMatches = false))
+    case Left(AccountDetailInvalidFormat | SortCodeNotFound | SortCodeNotSupported | AccountNotFound |
+              BankAccountUnverified) => InvalidStatusWithDetails(ValidationDetails(accountExists = false, nameMatches = false))
+    case Left(BankAccountUnverified) => SimpleIndeterminateStatus
+    case Left(_) => SimpleInvalidStatus
   }
 
   def buildJsonRequestBody(bankDetails: BankAccountDetails, bankAccountType: BankAccountType): JsValue =

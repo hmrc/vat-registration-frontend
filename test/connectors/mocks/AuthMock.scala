@@ -30,6 +30,8 @@ import scala.concurrent.Future
 trait AuthMock {
   this: MockitoSugar =>
 
+  val agentAffinity: AffinityGroup = AffinityGroup.Agent
+
   lazy val mockAuthClientConnector: AuthClientConnector = mock[AuthClientConnector]
   def agentEnrolment(arn: String): Enrolment = Enrolment("HMRC-AS-AGENT").withIdentifier("AgentReferenceNumber", arn)
 
@@ -42,6 +44,12 @@ trait AuthMock {
     when(
       mockAuthClientConnector.authorise(ArgumentMatchers.any(), ArgumentMatchers.eq(Retrievals.allEnrolments))(ArgumentMatchers.any(), ArgumentMatchers.any())
     ).thenReturn(Future.successful(Enrolments(enrolments)))
+  }
+
+  def mockAuthorise(): Unit = {
+    when(
+      mockAuthClientConnector.authorise[Option[AffinityGroup]](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any())
+    ).thenReturn(Future.successful(Some(agentAffinity)))
   }
 
   def mockNotAuthenticated(): OngoingStubbing[Future[Unit]] = {

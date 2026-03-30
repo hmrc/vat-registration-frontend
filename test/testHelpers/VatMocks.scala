@@ -59,7 +59,6 @@ trait VatMocks
 
   val mockTimeService: TimeService = mock[TimeService]
   lazy val mockICLService: ICLService = mock[ICLService]
-  val mockAuditConnector: AuditConnector = mock[AuditConnector]
   lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
 
   def resetMocks(): Unit = {

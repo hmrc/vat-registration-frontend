@@ -21,19 +21,27 @@ import connectors.RegistrationApiConnector
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
 import models._
-import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.api.{BankAccountDetailsStatus, IndeterminateStatus, IndeterminateStatusWithDetails, InvalidStatus, InvalidStatusWithDetails, SimpleIndeterminateStatus, SimpleInvalidStatus, ValidStatus, ValidationDetails}
 import models.bars._
+import play.api.libs.json.Json
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.play.audit.AuditExtensions
+import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.affinityGroup
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector,
+class BankAccountDetailsService @Inject() (auditConnector: AuditConnector,
+                                           val regApiConnector: RegistrationApiConnector,
                                            bankAccountRepService: BankAccountReputationService,
                                            barsService: BarsService,
-                                           lockService: LockService)(implicit appConfig: FrontendAppConfig) {
+                                           lockService: LockService,
+                                           val authConnector: AuthConnector)(implicit appConfig: FrontendAppConfig) extends AuthorisedFunctions {
 
   def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
     regApiConnector.getSection[BankAccount](profile.registrationId)
@@ -62,10 +70,11 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       hc: HeaderCarrier,
       profile: CurrentProfile,
       ex: ExecutionContext,
-      request: Request[_]): Future[Boolean] =
+      request: Request[_]): Future[(Boolean, BankAccountDetailsStatus)] =
     for {
-      result <- selectBarsEndpoint(bankAccountDetails, bankAccountType).flatMap {
-        case status @ (ValidStatus | IndeterminateStatus) =>
+      barsResponse <- selectBarsEndpoint(bankAccountDetails, bankAccountType)
+      result <- barsResponse match {
+        case status @ (ValidStatus | SimpleIndeterminateStatus) =>
           val bankAccount = BankAccount(
             isProvided = true,
             details = Some(bankAccountDetails.copy(status = Some(status))),
@@ -73,9 +82,9 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
             bankAccountType = bankAccountType
           )
           saveBankAccount(bankAccount) map (_ => true)
-        case InvalidStatus => Future.successful(false)
+        case SimpleInvalidStatus => Future.successful(false)
       }
-    } yield result
+    } yield (result, barsResponse)
 
   def selectBarsEndpoint(bankAccountDetails: BankAccountDetails, bankAccountType: Option[BankAccountType])(implicit
       hc: HeaderCarrier,
@@ -93,11 +102,15 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       registrationId: String
   )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
     saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap { saved =>
-      if (saved) {
+      if (saved._1) {
+        sendAuditEvent(bankAccountDetails, bankAccountType, attemptNumber = None, Some("unlocked"), buildBarsAuditInfo("pass",saved._2))
         Future.successful(BarsSuccess)
       } else {
-        lockService.incrementBarsAttempts(registrationId).flatMap { _ =>
+        lockService.incrementBarsAttempts(registrationId).flatMap { attemptNumber =>
           lockService.isBarsLocked(registrationId).map { isLocked =>
+            val accountStatus = if (isLocked) "locked" else "unlocked"
+            sendAuditEvent(bankAccountDetails, bankAccountType, Some(attemptNumber),
+              Some(accountStatus), buildBarsAuditInfo("fail",saved._2))
             if (isLocked) BarsLockedOut else BarsFailedNotLocked
           }
         }
@@ -126,4 +139,107 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
         case None           => BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(bankAccountType))
       }
       .flatMap(saveBankAccount)
+
+
+
+  private def buildBarsAuditInfo(outcome: String, barsResponse: BankAccountDetailsStatus) : BarsAuditInfo = {
+    barsResponse match {
+      case InvalidStatusWithDetails(ValidationDetails(accountExists, nameMatches)) =>
+        BarsAuditInfo(Some(outcome), Some(if (accountExists)  "yes" else "no"), Some(if (nameMatches)  "yes" else "no"))
+      case IndeterminateStatusWithDetails(ValidationDetails(accountExists, nameMatches)) =>
+        BarsAuditInfo(Some(outcome), Some(if (accountExists)  "yes" else "no"), Some(if (nameMatches)  "yes" else "no"))
+      case SimpleInvalidStatus =>
+        BarsAuditInfo(Some(outcome), Some("no"), Some("no"))
+      case ValidStatus =>
+        BarsAuditInfo(Some(outcome), Some("yes"), Some("yes"))
+      case SimpleIndeterminateStatus =>
+        BarsAuditInfo(Some(outcome), Some("yes"), Some("no"))
+    }
+  }
+
+  def sendAuditEvent(
+                      bankAccountDetails: BankAccountDetails,
+                      bankAccountType: BankAccountType,
+                      attemptNumber: Option[Int] = None,
+                      accountStatus: Option[String] = Some(""),
+                      barsAuditInfo: BarsAuditInfo
+                      )(
+                              implicit hc: HeaderCarrier,
+                              request: Request[_],
+                              ec: ExecutionContext
+                            ): Future[Unit] =
+    for {
+      affinityGroup <- retrieveIdentityDetails()
+      _ <- auditConnector.sendEvent(
+        buildBarsCheckAttemptAuditEvent(
+          bankAccountDetails,
+          bankAccountType,
+          attemptNumber,
+          accountStatus,
+          barsAuditInfo,
+          affinityGroup
+        )
+      )
+    } yield ()
+
+
+  case class BarsAuditInfo(checkOutcome: Option[String] = None, accountExists: Option[String] = None,
+                           nameMatches: Option[String] = None)
+
+  private def buildBarsCheckAttemptAuditEvent(
+                                                bankAccountDetails: BankAccountDetails,
+                                                bankAccountType: BankAccountType,
+                                                attemptNumber: Option[Int] = None,
+                                                accountStatus: Option[String] = Some(""),
+                                                barsAuditInfo: BarsAuditInfo,
+                                                affinityGroup: AffinityGroup
+                                              )(
+                                                implicit hc: HeaderCarrier,
+                                                request: Request[_]
+                                              ): DataEvent = {
+
+    val AuditSource: String  = "vat-registration-frontend"
+    val AuditType: String  = "BarsCheckAttempt"
+    val TransactionName: String = "MTDVATPostCodeFail"
+
+    val baseDetail = attemptNumber.map("attemptNumber" -> _.toString).toMap ++
+      accountStatus.map("accountStatus" -> _).toMap ++
+      barsAuditInfo.checkOutcome.map("checkOutcome" -> _).toMap
+
+    val detailsJson = Json.obj(
+      "detailsSubmitted" -> Json.obj(
+        "account" -> Json.obj(
+          "sortCode" -> bankAccountDetails.sortCode,
+          "accountNumber" -> bankAccountDetails.number
+        ),
+        "accountType" -> bankAccountType.asBars,
+        "accountName" -> bankAccountDetails.name
+      ),
+      "validationResponse" -> Json.obj(
+        "accountExists" -> barsAuditInfo.accountExists,
+        "nameMatches" -> barsAuditInfo.nameMatches
+      )
+    )
+    val detailsString: String = Json.stringify(detailsJson)
+
+    val detail = (baseDetail ++
+        Map("detail" -> detailsString) + ("userType" -> affinityGroup.toString))
+        .filter { case (_, value) => value.nonEmpty }
+
+    DataEvent(
+      auditSource = AuditSource,
+      auditType = AuditType,
+      tags = AuditExtensions.auditHeaderCarrier(hc)
+        .toAuditTags(TransactionName, request.path),
+      detail = AuditExtensions.auditHeaderCarrier(hc)
+        .toAuditDetails(detail.toSeq: _*)
+    )
+  }
+
+  private def retrieveIdentityDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AffinityGroup] = {
+    authorised().retrieve(affinityGroup) {
+      case Some(affinity) => Future.successful(affinity)
+      case _ => Future.failed(throw new InternalServerException("[BankAccountDetailsService] Couldn't retrieve auth details for user"))
+    }
+  }
 }
