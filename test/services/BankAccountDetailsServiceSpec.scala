@@ -20,32 +20,39 @@ import config.FrontendAppConfig
 import connectors.mocks.MockRegistrationApiConnector
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.{disable, enable}
-import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange, DontWantToProvide}
-import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.{BankAccount, BankAccountDetails, BeingSetupOrNameChange}
+import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
-import org.scalatest.Assertion
+import org.scalatest.{Assertion, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.libs.json.JsObject
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import testHelpers.VatSpec
 
 import scala.concurrent.Future
 
-class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite with MockRegistrationApiConnector {
+class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite with BeforeAndAfterEach with MockRegistrationApiConnector {
 
   val mockBankAccountRepService: BankAccountReputationService = mock[BankAccountReputationService]
   val mockBarsService: BarsService                            = mock[BarsService]
   val mockLockService: LockService                            = mock[LockService]
+  val mockBarsAuditService: BarsAuditService                  = mock[BarsAuditService]
 
   trait Setup {
     val service: BankAccountDetailsService = new BankAccountDetailsService(
       mockRegistrationApiConnector,
       mockBankAccountRepService,
       mockBarsService,
-      mockLockService
+      mockLockService,
+      mockBarsAuditService
     )
+
+    def stubAudit(): Unit =
+      when(mockBarsAuditService.sendBarsAuditEvent(any(), any(), any(), any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(()))
   }
 
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
@@ -144,79 +151,108 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
     val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
     val bankAccountType    = BankAccountType.Business
+    val barsResponseMock   = mock[BarsVerificationResponse]
+    when(barsResponseMock.accountExists).thenReturn(BarsResponse.Yes)
+    when(barsResponseMock.nameMatches).thenReturn(BarsResponse.Yes)
+    val mockBarsResponse = Some(barsResponseMock)
+
+    def verifyAuditSent(): Unit =
+      verify(mockBarsAuditService, times(1)).sendBarsAuditEvent(any(), any(), any(), any(), any(), any())(any(), any(), any())
 
     "return BarsSuccess when verification passes with ValidStatus" in new Setup {
       enable(UseNewBarsVerify)
+      stubAudit()
+
       when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(ValidStatus))
+        .thenReturn(Future.successful((ValidStatus, mockBarsResponse)))
+      when(mockLockService.getBarsAttemptsUsed(any()))
+        .thenReturn(Future.successful(1))
       mockReplaceSection[BankAccount](
         testRegId,
         BankAccount(isProvided = true, Some(bankAccountDetails.copy(status = Some(ValidStatus))), None, Some(bankAccountType)))
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, testRegId))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsSuccess
-      reset(mockBarsService)
+      verify(mockLockService, times(1)).getBarsAttemptsUsed(eqTo(testRegId))
+      verifyAuditSent()
+      reset(mockBarsService, mockLockService, mockBarsAuditService)
     }
 
     "return BarsSuccess when verification passes with IndeterminateStatus" in new Setup {
       enable(UseNewBarsVerify)
-      when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(IndeterminateStatus))
-      mockReplaceSection[BankAccount](testRegId, BankAccount(isProvided = true, Some(bankAccountDetails.copy(status = Some(IndeterminateStatus))), None, Some(bankAccountType)))
+      stubAudit()
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, testRegId))
+      when(mockBarsService.verifyBankDetails(any(), any())(any()))
+        .thenReturn(Future.successful((IndeterminateStatus, mockBarsResponse)))
+      when(mockLockService.getBarsAttemptsUsed(any()))
+        .thenReturn(Future.successful(1))
+      mockReplaceSection[BankAccount](
+        testRegId,
+        BankAccount(isProvided = true, Some(bankAccountDetails.copy(status = Some(IndeterminateStatus))), None, Some(bankAccountType)))
+
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsSuccess
-      reset(mockBarsService)
+      verify(mockLockService, times(1)).getBarsAttemptsUsed(eqTo(testRegId))
+      verifyAuditSent()
+      reset(mockBarsService, mockLockService, mockBarsAuditService)
     }
 
     "return BarsFailedNotLocked when verification fails and user is not locked" in new Setup {
       enable(UseNewBarsVerify)
+      stubAudit()
+
       when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(InvalidStatus))
+        .thenReturn(Future.successful((InvalidStatus, mockBarsResponse)))
       when(mockLockService.incrementBarsAttempts(any()))
         .thenReturn(Future.successful(1))
       when(mockLockService.isBarsLocked(any()))
         .thenReturn(Future.successful(false))
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, testRegId))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsFailedNotLocked
       verify(mockLockService, times(1)).incrementBarsAttempts(eqTo(testRegId))
       verify(mockLockService, times(1)).isBarsLocked(eqTo(testRegId))
-      reset(mockBarsService, mockLockService)
+      verifyAuditSent()
+      reset(mockBarsService, mockLockService, mockBarsAuditService)
     }
 
     "return BarsLockedOut when verification fails and user is locked" in new Setup {
       enable(UseNewBarsVerify)
+      stubAudit()
+
       when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(InvalidStatus))
+        .thenReturn(Future.successful((InvalidStatus, mockBarsResponse)))
       when(mockLockService.incrementBarsAttempts(any()))
         .thenReturn(Future.successful(3))
       when(mockLockService.isBarsLocked(any()))
         .thenReturn(Future.successful(true))
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, testRegId))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsLockedOut
       verify(mockLockService, times(1)).incrementBarsAttempts(eqTo(testRegId))
       verify(mockLockService, times(1)).isBarsLocked(eqTo(testRegId))
-      reset(mockBarsService, mockLockService)
+      verifyAuditSent()
+      reset(mockBarsService, mockLockService, mockBarsAuditService)
     }
   }
 
   "selectBarsEndpoint" should {
 
+    val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
+    val mockBarsResponse   = mock[BarsVerificationResponse]
+
     "call barsService and return ValidStatus when UseNewBarsVerify is enabled" in new Setup {
       enable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
-      val bankAccountType    = Some(BankAccountType.Business)
+      val bankAccountType = Some(BankAccountType.Business)
 
       when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(ValidStatus))
+        .thenReturn(Future.successful((ValidStatus, Some(mockBarsResponse))))
 
-      val result: BankAccountDetailsStatus = await(service.selectBarsEndpoint(bankAccountDetails, bankAccountType))
+      val (result, _) = await(service.selectBarsEndpoint(bankAccountDetails, bankAccountType))
 
       result mustBe ValidStatus
       verify(mockBarsService, times(1)).verifyBankDetails(eqTo(bankAccountDetails), eqTo(BankAccountType.Business))(any())
@@ -226,13 +262,12 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
     "call barsService and return IndeterminateStatus when UseNewBarsVerify is enabled" in new Setup {
       enable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
-      val bankAccountType    = Some(BankAccountType.Personal)
+      val bankAccountType = Some(BankAccountType.Personal)
 
       when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(IndeterminateStatus))
+        .thenReturn(Future.successful((IndeterminateStatus, Some(mockBarsResponse))))
 
-      val result: BankAccountDetailsStatus = await(service.selectBarsEndpoint(bankAccountDetails, bankAccountType))
+      val (result, _) = await(service.selectBarsEndpoint(bankAccountDetails, bankAccountType))
 
       result mustBe IndeterminateStatus
       verify(mockBarsService, times(1)).verifyBankDetails(eqTo(bankAccountDetails), eqTo(BankAccountType.Personal))(any())
@@ -242,13 +277,12 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
     "call barsService and return InvalidStatus when UseNewBarsVerify is enabled" in new Setup {
       enable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
-      val bankAccountType    = Some(BankAccountType.Business)
+      val bankAccountType = Some(BankAccountType.Business)
 
       when(mockBarsService.verifyBankDetails(any(), any())(any()))
-        .thenReturn(Future.successful(InvalidStatus))
+        .thenReturn(Future.successful((InvalidStatus, None)))
 
-      val result: BankAccountDetailsStatus = await(service.selectBarsEndpoint(bankAccountDetails, bankAccountType))
+      val (result, _) = await(service.selectBarsEndpoint(bankAccountDetails, bankAccountType))
 
       result mustBe InvalidStatus
       verify(mockBarsService, times(1)).verifyBankDetails(eqTo(bankAccountDetails), eqTo(BankAccountType.Business))(any())
@@ -258,7 +292,6 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
     "throw IllegalStateException when UseNewBarsVerify is enabled and bankAccountType is None" in new Setup {
       enable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
 
       intercept[IllegalStateException] {
         await(service.selectBarsEndpoint(bankAccountDetails, None))
@@ -266,19 +299,18 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
       verifyNoInteractions(mockBarsService)
       verifyNoInteractions(mockBankAccountRepService)
-      reset(mockBarsService)
     }
 
     "call bankAccountRepService and return ValidStatus when UseNewBarsVerify is disabled" in new Setup {
       disable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
 
       when(mockBankAccountRepService.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(ValidStatus))
 
-      val result: BankAccountDetailsStatus = await(service.selectBarsEndpoint(bankAccountDetails, None))
+      val (result, rawResponse) = await(service.selectBarsEndpoint(bankAccountDetails, None))
 
       result mustBe ValidStatus
+      rawResponse mustBe None
       verify(mockBankAccountRepService, times(1)).validateBankDetails(eqTo(bankAccountDetails))(any(), any())
       verifyNoInteractions(mockBarsService)
       reset(mockBankAccountRepService)
@@ -286,14 +318,14 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
     "call bankAccountRepService and return IndeterminateStatus when UseNewBarsVerify is disabled" in new Setup {
       disable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
 
       when(mockBankAccountRepService.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(IndeterminateStatus))
 
-      val result: BankAccountDetailsStatus = await(service.selectBarsEndpoint(bankAccountDetails, None))
+      val (result, rawResponse) = await(service.selectBarsEndpoint(bankAccountDetails, None))
 
       result mustBe IndeterminateStatus
+      rawResponse mustBe None
       verify(mockBankAccountRepService, times(1)).validateBankDetails(eqTo(bankAccountDetails))(any(), any())
       verifyNoInteractions(mockBarsService)
       reset(mockBankAccountRepService)
@@ -301,14 +333,14 @@ class BankAccountDetailsServiceSpec extends VatSpec with GuiceOneAppPerSuite wit
 
     "call bankAccountRepService and return InvalidStatus when UseNewBarsVerify is disabled" in new Setup {
       disable(UseNewBarsVerify)
-      val bankAccountDetails = BankAccountDetails("testName", "12345678", "123456", None)
 
       when(mockBankAccountRepService.validateBankDetails(any())(any(), any()))
         .thenReturn(Future.successful(InvalidStatus))
 
-      val result: BankAccountDetailsStatus = await(service.selectBarsEndpoint(bankAccountDetails, None))
+      val (result, rawResponse) = await(service.selectBarsEndpoint(bankAccountDetails, None))
 
       result mustBe InvalidStatus
+      rawResponse mustBe None
       verify(mockBankAccountRepService, times(1)).validateBankDetails(eqTo(bankAccountDetails))(any(), any())
       verifyNoInteractions(mockBarsService)
       reset(mockBankAccountRepService)

@@ -19,7 +19,7 @@ package services
 import com.google.inject.{Inject, Singleton}
 import connectors.BarsConnector
 import models.BankAccountDetails
-import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.api._
 import models.bars._
 import models.bars.BarsError._
 import play.api.Logging
@@ -35,20 +35,24 @@ case class BarsService @Inject() (
     extends Logging {
 
   def verifyBankDetails(bankDetails: BankAccountDetails, bankAccountType: BankAccountType)(implicit
-      hc: HeaderCarrier): Future[BankAccountDetailsStatus] = {
-    val requestBody: JsValue = buildJsonRequestBody(bankDetails, bankAccountType)
+      hc: HeaderCarrier): Future[(BankAccountDetailsStatus, Option[BarsVerificationResponse])] = {
 
+    val requestBody: JsValue = buildJsonRequestBody(bankDetails, bankAccountType)
     logger.info(s"Verifying bank details for account type: $bankAccountType")
 
-    val callBars: Future[Either[BarsError, BarsVerificationResponse]] = barsConnector
+    barsConnector
       .verify(bankAccountType, requestBody)
-      .map(checkVerificationResult)
-      .recover { case e =>
-        logger.error(s"Unexpected error when verifying bank details for '$bankAccountType' account type: ${e.getMessage}")
-        Left(DetailsVerificationFailed)
+      .map { response =>
+        checkVerificationResult(response) match {
+          case Right(verified)             => (ValidStatus, Some(verified))
+          case Left(BankAccountUnverified) => (IndeterminateStatus, Some(response))
+          case Left(_)                     => (InvalidStatus, Some(response))
+        }
       }
-
-    callBars.map(handleResponse)
+      .recover { case e =>
+        logger.error(s"Unexpected error verifying bank details for '$bankAccountType': ${e.getMessage}")
+        (InvalidStatus, None)
+      }
   }
 
   def checkVerificationResult(successResponse: BarsVerificationResponse): Either[BarsError, BarsVerificationResponse] =

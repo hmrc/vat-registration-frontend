@@ -183,9 +183,9 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       "nameMatches is Inapplicable" in {
         responseWith(nameMatches = BarsResponse.Inapplicable).isSuccessful shouldBe false
       }
-      "sortCodeSupportsDirectDebit is No" in {
-        responseWith(sortCodeSupportsDirectDebit = BarsResponse.No).isSuccessful shouldBe false
-      }
+    }
+    "sortCodeSupportsDirectDebit is No" in {
+      responseWith(sortCodeSupportsDirectDebit = BarsResponse.No).isSuccessful shouldBe false
     }
   }
 
