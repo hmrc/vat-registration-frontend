@@ -17,7 +17,7 @@
 package models.bars
 
 import models.bars.BarsError._
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Reads}
 
 case class BarsVerificationResponse(
     accountNumberIsWellFormatted: BarsResponse,
@@ -33,46 +33,29 @@ case class BarsVerificationResponse(
 ) {
 
   val isSuccessful: Boolean =
-    (accountNumberIsWellFormatted == BarsResponse.Yes || accountNumberIsWellFormatted == BarsResponse.Indeterminate) &&
-      sortCodeIsPresentOnEISCD == BarsResponse.Yes &&
+    sortCodeIsPresentOnEISCD == BarsResponse.Yes &&
       accountExists == BarsResponse.Yes &&
-      (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial) &&
-      sortCodeSupportsDirectDebit == BarsResponse.Yes
+      (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial)
 
   def check: Seq[BarsError] =
     Seq(
-      checkAccountAndName(accountExists, nameMatches),
-      checkAccountNumberFormat(accountNumberIsWellFormatted),
       checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD),
-      checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit),
       checkAccountExists(accountExists),
       checkNameMatches(nameMatches, accountExists)
     ).flatten
 
-  private def checkAccountAndName(accountExists: BarsResponse, nameMatches: BarsResponse): Option[BarsError] =
-    if (accountExists == BarsResponse.No && nameMatches == BarsResponse.No)
-      Some(DetailsVerificationFailed)
-    else None
-
-  private def checkAccountNumberFormat(accountNumberIsWellFormatted: BarsResponse): Option[BarsError] =
-    if (accountNumberIsWellFormatted == BarsResponse.No)
-      Some(AccountDetailInvalidFormat)
-    else None
-
   private def checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD: BarsResponse): Option[BarsError] =
-    if (sortCodeIsPresentOnEISCD == BarsResponse.No)
-      Some(SortCodeNotFound)
-    else None
-
-  private def checkSortCodeDirectDebitSupport(sortCodeSupportsDirectDebit: BarsResponse): Option[BarsError] =
-    if (sortCodeSupportsDirectDebit == BarsResponse.No)
-      Some(SortCodeNotSupported)
-    else None
+    sortCodeIsPresentOnEISCD match {
+      case BarsResponse.No    => Some(SortCodeNotFound)
+      case BarsResponse.Error => Some(ThirdPartyError)
+      case _                  => None
+    }
 
   private def checkAccountExists(accountExists: BarsResponse): Option[BarsError] =
     accountExists match {
       case BarsResponse.No | BarsResponse.Inapplicable => Some(AccountNotFound)
       case BarsResponse.Indeterminate                  => Some(BankAccountUnverified)
+      case BarsResponse.Error                          => Some(ThirdPartyError)
       case _                                           => None
     }
 
@@ -80,10 +63,11 @@ case class BarsVerificationResponse(
     nameMatches match {
       case BarsResponse.No | BarsResponse.Inapplicable                     => Some(NameMismatch)
       case BarsResponse.Indeterminate if accountExists == BarsResponse.Yes => Some(BankAccountUnverified)
+      case BarsResponse.Error                                              => Some(ThirdPartyError)
       case _                                                               => None
     }
 }
 
 object BarsVerificationResponse {
-  implicit val format: OFormat[BarsVerificationResponse] = Json.format[BarsVerificationResponse]
+  implicit val reads: Reads[BarsVerificationResponse] = Json.reads[BarsVerificationResponse]
 }

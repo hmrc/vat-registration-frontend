@@ -23,9 +23,9 @@ import featuretoggle.FeatureToggleSupport.isEnabled
 import models._
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars._
-import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.LoggingUtil
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,13 +38,17 @@ class BankAccountDetailsService @Inject() (
     lockService: LockService,
     barsAuditService: BarsAuditService
 )(implicit appConfig: FrontendAppConfig)
-    extends Logging {
+    extends LoggingUtil {
 
-  def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] =
+  def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] = {
+    infoLog(s"[BankAccountDetailsService][getBankAccount] Fetching bank account for registration: ${profile.registrationId}")
     regApiConnector.getSection[BankAccount](profile.registrationId)
+  }
 
-  def saveBankAccount(bankAccount: BankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] =
+  def saveBankAccount(bankAccount: BankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
+    infoLog(s"[BankAccountDetailsService][saveBankAccount] Saving bank account for registration")
     regApiConnector.replaceSection[BankAccount](profile.registrationId, bankAccount)
+  }
 
   def saveHasCompanyBankAccount(hasBankAccount: Boolean)(implicit
       hc: HeaderCarrier,
@@ -53,10 +57,13 @@ class BankAccountDetailsService @Inject() (
       request: Request[_]): Future[BankAccount] = {
     val bankAccount = getBankAccount map {
       case Some(BankAccount(oldHasBankAccount, _, _, _)) if oldHasBankAccount != hasBankAccount =>
+        infoLog(
+          s"[BankAccountDetailsService][saveHasCompanyBankAccount] hasBankAccount changed, clearing existing bank account details for registration")
         BankAccount(hasBankAccount, None, None, None)
       case Some(bankAccountDetails) =>
         bankAccountDetails.copy(isProvided = hasBankAccount)
       case None =>
+        infoLog(s"[BankAccountDetailsService][saveHasCompanyBankAccount] No existing bank account found, creating new for registration")
         BankAccount(hasBankAccount, None, None, None)
     }
     bankAccount flatMap saveBankAccount
@@ -69,6 +76,7 @@ class BankAccountDetailsService @Inject() (
       request: Request[_]): Future[(Boolean, Option[BarsVerificationResponse])] =
     selectBarsEndpoint(bankAccountDetails, bankAccountType).flatMap {
       case (status @ (ValidStatus | IndeterminateStatus), rawResponse) =>
+        infoLog(s"[BankAccountDetailsService][saveEnteredBankAccountDetails] Verification passed with status: $status")
         val bankAccount = BankAccount(
           isProvided = true,
           details = Some(bankAccountDetails.copy(status = Some(status))),
@@ -78,6 +86,7 @@ class BankAccountDetailsService @Inject() (
         saveBankAccount(bankAccount).map(_ => (true, rawResponse))
 
       case (InvalidStatus, rawResponse) =>
+        warnLog(s"[BankAccountDetailsService][saveEnteredBankAccountDetails] Verification failed with InvalidStatus")
         Future.successful((false, rawResponse))
     }
 
@@ -98,12 +107,14 @@ class BankAccountDetailsService @Inject() (
   )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext, request: Request[_]): Future[BarsVerificationOutcome] =
     saveEnteredBankAccountDetails(bankAccountDetails, Some(bankAccountType)).flatMap { case (saved, rawResponse) =>
       if (saved) {
+        infoLog(s"[BankAccountDetailsService][verifyAndSaveBankAccountDetails] Bank details saved successfully")
         lockService.getBarsAttemptsUsed(profile.registrationId).flatMap { attemptNumber =>
           barsAuditService
             .sendBarsAuditEvent(bankAccountDetails, bankAccountType, rawResponse, attemptNumber, accountStatus = "unlocked", checkOutcome = "pass")
             .map(_ => BarsSuccess)
         }
       } else {
+        warnLog(s"[BankAccountDetailsService][verifyAndSaveBankAccountDetails] Bank details failed verification for registration")
         lockService.incrementBarsAttempts(profile.registrationId).flatMap { attemptNumber =>
           lockService.isBarsLocked(profile.registrationId).flatMap { isLocked =>
             barsAuditService
@@ -121,8 +132,10 @@ class BankAccountDetailsService @Inject() (
     }
 
   def saveBankAccountNotProvided(
-      reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] =
+      reason: NoUKBankAccount)(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[BankAccount] = {
+    infoLog(s"[BankAccountDetailsService][saveBankAccountNotProvided] Saving no bank account with reason: $reason")
     saveBankAccount(BankAccount(isProvided = false, details = None, reason = Some(reason), bankAccountType = None))
+  }
 
   def saveBankAccountType(bankAccountType: BankAccountType)(implicit
       hc: HeaderCarrier,
