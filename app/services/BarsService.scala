@@ -62,24 +62,24 @@ case class BarsService @Inject() (
     } else {
       val errors = successResponse.check
       logger.warn(s"BARS verification returned an unsuccessful response with failures: ${errors.mkString(", \n")}")
-      Left(errors.headOption.getOrElse(DetailsVerificationFailed))
+      Left(errors.headOption.getOrElse(AccountNotFound))
     }
-
-  def handleResponse(response: Either[BarsError, BarsVerificationResponse]): BankAccountDetailsStatus = response match {
-    case Right(_)                    => ValidStatus
-    case Left(BankAccountUnverified) => IndeterminateStatus
-    case Left(_)                     => InvalidStatus
-  }
 
   def buildJsonRequestBody(bankDetails: BankAccountDetails, bankAccountType: BankAccountType): JsValue =
     bankAccountType match {
       case BankAccountType.Personal =>
         Json.toJson(
-          BarsPersonalRequest(BarsAccount(bankDetails.sortCode, bankDetails.number), BarsSubject(bankDetails.name))
+          BarsPersonalRequest(
+            BarsAccount(bankDetails.sortCode, bankDetails.number, bankDetails.rollNumber),
+            BarsSubject(bankDetails.name)
+          )
         )
       case BankAccountType.Business =>
         Json.toJson(
-          BarsBusinessRequest(BarsAccount(bankDetails.sortCode, bankDetails.number), BarsBusiness(bankDetails.name))
+          BarsBusinessRequest(
+            BarsAccount(bankDetails.sortCode, bankDetails.number, bankDetails.rollNumber),
+            BarsBusiness(bankDetails.name)
+          )
         )
     }
 }

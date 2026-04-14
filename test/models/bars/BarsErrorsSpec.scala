@@ -26,13 +26,10 @@ class BarsErrorsSpec extends AnyWordSpec with Matchers {
     "contain all error variants exactly once" in {
       BarsError.values shouldBe Set(
         BarsError.BankAccountUnverified,
-        BarsError.AccountDetailInvalidFormat,
         BarsError.SortCodeNotFound,
-        BarsError.SortCodeNotSupported,
         BarsError.AccountNotFound,
         BarsError.NameMismatch,
-        BarsError.SortCodeOnDenyList,
-        BarsError.DetailsVerificationFailed
+        BarsError.ThirdPartyError
       )
 
       BarsError.values.size shouldBe BarsError.values.size

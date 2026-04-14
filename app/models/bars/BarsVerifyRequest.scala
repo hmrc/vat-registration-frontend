@@ -36,7 +36,7 @@ object BarsBusiness {
   implicit val format: OFormat[BarsBusiness] = Json.format[BarsBusiness]
 }
 
-case class BarsAccount(sortCode: String, accountNumber: String)
+case class BarsAccount(sortCode: String, accountNumber: String, rollNumber: Option[String] = None)
 
 object BarsAccount {
   implicit val format: OFormat[BarsAccount] = Json.format[BarsAccount]

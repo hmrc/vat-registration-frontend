@@ -19,23 +19,17 @@ package models.bars
 sealed trait BarsError
 
 object BarsError {
-  case object BankAccountUnverified      extends BarsError
-  case object AccountDetailInvalidFormat extends BarsError
-  case object SortCodeNotFound           extends BarsError
-  case object SortCodeNotSupported       extends BarsError
-  case object AccountNotFound            extends BarsError
-  case object NameMismatch               extends BarsError
-  case object SortCodeOnDenyList         extends BarsError
-  case object DetailsVerificationFailed  extends BarsError
+  case object BankAccountUnverified extends BarsError
+  case object SortCodeNotFound      extends BarsError
+  case object AccountNotFound       extends BarsError
+  case object NameMismatch          extends BarsError
+  case object ThirdPartyError       extends BarsError
 
   val values: Set[BarsError] = Set(
     BankAccountUnverified,
-    AccountDetailInvalidFormat,
     SortCodeNotFound,
-    SortCodeNotSupported,
     AccountNotFound,
     NameMismatch,
-    SortCodeOnDenyList,
-    DetailsVerificationFailed
+    ThirdPartyError
   )
 }

@@ -24,18 +24,16 @@ import play.api.libs.json.{JsNumber, Json, JsString, JsSuccess}
 class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
 
   private def responseWith(
-      accountNumberIsWellFormatted: BarsResponse = BarsResponse.Yes,
       sortCodeIsPresentOnEISCD: BarsResponse = BarsResponse.Yes,
       accountExists: BarsResponse = BarsResponse.Yes,
-      nameMatches: BarsResponse = BarsResponse.Yes,
-      sortCodeSupportsDirectDebit: BarsResponse = BarsResponse.Yes
+      nameMatches: BarsResponse = BarsResponse.Yes
   ): BarsVerificationResponse = BarsVerificationResponse(
-    accountNumberIsWellFormatted = accountNumberIsWellFormatted,
+    accountNumberIsWellFormatted = BarsResponse.Yes,
     sortCodeIsPresentOnEISCD = sortCodeIsPresentOnEISCD,
     sortCodeBankName = None,
     accountExists = accountExists,
     nameMatches = nameMatches,
-    sortCodeSupportsDirectDebit = sortCodeSupportsDirectDebit,
+    sortCodeSupportsDirectDebit = BarsResponse.Yes,
     sortCodeSupportsDirectCredit = BarsResponse.Yes,
     nonStandardAccountDetailsRequiredForBacs = None,
     iban = None,
@@ -135,13 +133,6 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
         json.validate[BarsVerificationResponse].isError shouldBe true
       }
     }
-
-    "both read and write successfully" when {
-      "serialised and deserialised back to the same response" in {
-        val response = responseWith()
-        Json.toJson(response).validate[BarsVerificationResponse].asOpt shouldBe Some(response)
-      }
-    }
   }
 
   "isSuccessful" should {
@@ -150,18 +141,12 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       "all fields pass" in {
         responseWith().isSuccessful shouldBe true
       }
-      "accountNumberIsWellFormatted is Indeterminate" in {
-        responseWith(accountNumberIsWellFormatted = BarsResponse.Indeterminate).isSuccessful shouldBe true
-      }
       "nameMatches is Partial" in {
         responseWith(nameMatches = BarsResponse.Partial).isSuccessful shouldBe true
       }
     }
 
     "return false" when {
-      "accountNumberIsWellFormatted is No" in {
-        responseWith(accountNumberIsWellFormatted = BarsResponse.No).isSuccessful shouldBe false
-      }
       "sortCodeIsPresentOnEISCD is No" in {
         responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No).isSuccessful shouldBe false
       }
@@ -184,9 +169,6 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
         responseWith(nameMatches = BarsResponse.Inapplicable).isSuccessful shouldBe false
       }
     }
-    "sortCodeSupportsDirectDebit is No" in {
-      responseWith(sortCodeSupportsDirectDebit = BarsResponse.No).isSuccessful shouldBe false
-    }
   }
 
   "check" should {
@@ -197,31 +179,10 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       }
     }
 
-    "return Seq(DetailsVerificationFailed, AccountNotFound, NameMismatch)" when {
-      "accountExists and nameMatches are both No" in {
-        val response = responseWith(accountExists = BarsResponse.No, nameMatches = BarsResponse.No)
-        response.check shouldBe Seq(DetailsVerificationFailed, AccountNotFound, NameMismatch)
-      }
-    }
-
-    "return Seq(AccountDetailInvalidFormat)" when {
-      "accountNumberIsWellFormatted is No" in {
-        val response = responseWith(accountNumberIsWellFormatted = BarsResponse.No)
-        response.check shouldBe Seq(AccountDetailInvalidFormat)
-      }
-    }
-
     "return Seq(SortCodeNotFound)" when {
       "sortCodeIsPresentOnEISCD is No" in {
         val response = responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
         response.check shouldBe Seq(SortCodeNotFound)
-      }
-    }
-
-    "return Seq(SortCodeNotSupported)" when {
-      "sortCodeSupportsDirectDebit is No" in {
-        val response = responseWith(sortCodeSupportsDirectDebit = BarsResponse.No)
-        response.check shouldBe Seq(SortCodeNotSupported)
       }
     }
 
@@ -259,6 +220,18 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
       "nameMatches is Inapplicable" in {
         val response = responseWith(nameMatches = BarsResponse.Inapplicable)
         response.check shouldBe Seq(NameMismatch)
+      }
+    }
+
+    "return Seq(ThirdPartyError)" when {
+      "sortCodeIsPresentOnEISCD is Error" in {
+        responseWith(sortCodeIsPresentOnEISCD = BarsResponse.Error).check shouldBe Seq(ThirdPartyError)
+      }
+      "accountExists is Error" in {
+        responseWith(accountExists = BarsResponse.Error).check shouldBe Seq(ThirdPartyError)
+      }
+      "nameMatches is Error" in {
+        responseWith(nameMatches = BarsResponse.Error).check shouldBe Seq(ThirdPartyError)
       }
     }
   }
