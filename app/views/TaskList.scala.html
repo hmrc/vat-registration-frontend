@@ -32,7 +32,7 @@
     <p class="govuk-body" id="announcement-information">@messages("ttBanner.message.1")</p>
 }
 
-@layout(pageTitle = Some(titleNoForm(messages("tasklist.heading"))), backLink = false) {
+@layout(pageTitle = Some(titleNoForm(messages("tasklist.heading"))), backLink = false, showHmrcBanner = false) {
 
     @if(appConfig.isTTMayJunJourneyEnabled){
         @govukNotificationBanner(NotificationBanner(
