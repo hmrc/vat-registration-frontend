@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import views.html.helper.CSPNonce
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{Banners, _}
 
 @this(
     appConfig: FrontendAppConfig,
@@ -35,7 +35,8 @@
         beforeContentBlock: Option[Html] = None,
         backLink: Boolean = true,
         signOutLink: Boolean = true,
-        timeout: Boolean = true
+        timeout: Boolean = true,
+        showHmrcBanner: Boolean = true
 )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @head = {
@@ -71,7 +72,7 @@
         signOutUrl = Some(controllers.callbacks.routes.SignInOutController.signOut.url)
     ),
     banners = Banners(
-        displayHmrcBanner = true,
+        displayHmrcBanner = showHmrcBanner,
     ),
     templateOverrides = TemplateOverrides(
         additionalHeadBlock = Some(head),

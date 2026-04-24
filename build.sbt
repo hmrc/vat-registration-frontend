@@ -26,7 +26,7 @@ val appName = "vat-registration-frontend"
 
 val silencerVersion = "1.7.19"
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "2.13.18"
 
 lazy val scoverageSettings = Seq(
   ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;connectors.test.*;controllers.test.*;featureswitch.*;models.test.*;utils.*;models.api.*;views.test.*;forms.test.*;config.*;poc.view.*;poc.config.*;.*(AuthService|BuildInfo|Routes).*",

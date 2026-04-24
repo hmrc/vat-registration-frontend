@@ -34,7 +34,7 @@
     <p class="govuk-body" id="announcement-information">@messages("ttBanner.message.1")</p>
 }
 
-@layout(pageTitle = Some(title(applicationReferenceForm, messages("applicationReference.heading")))) {
+@layout(pageTitle = Some(title(applicationReferenceForm, messages("applicationReference.heading"))), showHmrcBanner = false) {
 
     @if(appConfig.isTTMayJunJourneyEnabled){
         @govukNotificationBanner(NotificationBanner(
