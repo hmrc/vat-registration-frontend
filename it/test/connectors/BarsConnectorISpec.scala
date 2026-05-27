@@ -72,7 +72,7 @@ class BarsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITReg
           "throw an UpstreamBarsException with status 400" in new Setup {
             given()
               .user.isAuthorised()
-              .bars.verifyFails(bankAccountType, 400)
+              .bars.verifyFails(bankAccountType)
 
             insertCurrentProfileIntoDb(currentProfile, sessionString)
 

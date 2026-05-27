@@ -5,11 +5,11 @@
 The purpose of this microservice is to allow users to register their business for VAT online.
 
 ## How to start the service locally
-To start all the dependent services required by VAT Registration Frontend in service manager, you can either use `sm --start VAT_REG_ALL -r` or `sm2 --start VAT_REG_ALL -r` if you are using sm2.
+To start all the dependent services required by VAT Registration Frontend in service manager, use `sm2 --start VAT_REG_ALL -r`.
 
-Alternatively, if you want to start the service individually, you can either use `sm --start VAT_REG_FE -r` or  `sm2 --start VAT_REG_FE -r` if you are using sm2.
+Alternatively, if you want to start the service individually, you can use `sm2 --start VAT_REG_FE -r`.
 
-Prior to starting the service locally, make sure the instance running in service manager is stopped. This can be done by running either `sm --stop VAT_REG_FE`, or `sm2 --stop VAT_REG_FE` if you are using sm2.
+Prior to starting the service locally, make sure the instance running in service manager is stopped. This can be done by running `sm2 --stop VAT_REG_FE`.
 
 ### From source code on your local machine
 > The below instructions are for Mac/Linux only. Windows users will have to use SBT to run the service on port `9895`.

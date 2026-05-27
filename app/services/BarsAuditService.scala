@@ -16,11 +16,13 @@
 
 package services
 
-import models.BankAccountDetails
+import models.api.{BankAccountDetailsStatus, InvalidStatus}
 import models.bars.{BankAccountType, BarsVerificationResponse}
-import models.CurrentProfile
+import models.{BankAccountDetails, CurrentProfile}
 import play.api.Logging
 import play.api.libs.json.{JsObject, Json}
+import services.BarsAuditService.{BarsCheckAttemptAuditType, Failed, Passed}
+import services.LockService.{accountIsLocked, accountIsUnlocked}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -30,22 +32,18 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BarsAuditService @Inject() (
-                                   auditConnector:    AuditConnector,
-                                   val authConnector: AuthConnector
-                                 ) extends Logging
-  with AuthorisedFunctions {
-
-  private val BarsCheckAttemptAuditType = "BarsCheckAttempt"
+class BarsAuditService @Inject() (auditConnector: AuditConnector, val authConnector: AuthConnector) extends Logging with AuthorisedFunctions {
 
   def sendBarsAuditEvent(
-                          bankAccountDetails: BankAccountDetails,
-                          bankAccountType:    BankAccountType,
-                          rawResponse:        Option[BarsVerificationResponse],
-                          attemptNumber:      Int,
-                          accountStatus:      String,
-                          checkOutcome:       String
-                        )(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Unit] =
+      bankAccountDetails: BankAccountDetails,
+      bankAccountType: BankAccountType,
+      rawResponse: Option[BarsVerificationResponse],
+      attemptNumber: Int,
+      accountIsNowLockedOut: Boolean,
+      barsStatus: BankAccountDetailsStatus)(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Unit] = {
+    val accountStatus = if (accountIsNowLockedOut) accountIsLocked else accountIsUnlocked
+    val checkOutcome  = if (barsStatus == InvalidStatus) Failed else Passed
+
     retrieveIdentityDetails().map { case (credId, userType) =>
       logger.info(s"Raising BARS audit event: outcome=$checkOutcome attempt=$attemptNumber accountStatus=$accountStatus")
 
@@ -74,6 +72,7 @@ class BarsAuditService @Inject() (
 
       auditConnector.sendExplicitAudit(BarsCheckAttemptAuditType, detail)
     }
+  }
 
   private def retrieveIdentityDetails()(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[(String, String)] =
     for {
@@ -86,4 +85,11 @@ class BarsAuditService @Inject() (
         case None        => Future.failed(new InternalServerException("Missing affinity group for BARS check auditing"))
       }
     } yield (credId, affinity)
+
+}
+
+object BarsAuditService {
+  val BarsCheckAttemptAuditType = "BarsCheckAttempt"
+  val Failed                    = "fail"
+  val Passed                    = "pass"
 }

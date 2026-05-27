@@ -17,6 +17,7 @@
 package services
 
 import models.BankAccountDetails
+import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars.{BankAccountType, BarsResponse, BarsVerificationResponse}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -65,30 +66,56 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
   }
 
   "sendBarsAuditEvent" should {
+    "send an audit event with correct fields for a passing check" when {
+      "BankAccountDetailsStatus is Valid" in new Setup {
+        stubAuth()
 
-    "send an audit event with correct fields for a passing check" in new Setup {
-      stubAuth()
+        await(
+          service.sendBarsAuditEvent(
+            bankAccountDetails = bankAccountDetails,
+            bankAccountType = bankAccountType,
+            rawResponse = Some(barsVerificationResponse),
+            attemptNumber = 1,
+            accountIsNowLockedOut = false,
+            barsStatus = ValidStatus
+          ))
 
-      await(
-        service.sendBarsAuditEvent(
-          bankAccountDetails = bankAccountDetails,
-          bankAccountType = bankAccountType,
-          rawResponse = Some(barsVerificationResponse),
-          attemptNumber = 1,
-          accountStatus = "unlocked",
-          checkOutcome = "pass"
-        ))
+        verifyAuditSent()
+        val detail: JsObject = auditCaptor.getValue
+        (detail \ "checkOutcome").as[String] mustBe "pass"
+        (detail \ "accountStatus").as[String] mustBe "unlocked"
+        (detail \ "attemptNumber").as[Int] mustBe 1
+        (detail \ "credId").as[String] mustBe "testCredId"
+        (detail \ "userType").as[String] mustBe "organisation"
+        (detail \ "detailsSubmitted" \ "accountType").as[String] mustBe "business"
+        (detail \ "validationResponse" \ "accountExists").as[String] mustBe "yes"
+        (detail \ "validationResponse" \ "nameMatches").as[String] mustBe "yes"
+      }
 
-      verifyAuditSent()
-      val detail: JsObject = auditCaptor.getValue
-      (detail \ "checkOutcome").as[String] mustBe "pass"
-      (detail \ "accountStatus").as[String] mustBe "unlocked"
-      (detail \ "attemptNumber").as[Int] mustBe 1
-      (detail \ "credId").as[String] mustBe "testCredId"
-      (detail \ "userType").as[String] mustBe "organisation"
-      (detail \ "detailsSubmitted" \ "accountType").as[String] mustBe "business"
-      (detail \ "validationResponse" \ "accountExists").as[String] mustBe "yes"
-      (detail \ "validationResponse" \ "nameMatches").as[String] mustBe "yes"
+      "BankAccountDetailsStatus is Indeterminate" in new Setup {
+        stubAuth()
+
+        await(
+          service.sendBarsAuditEvent(
+            bankAccountDetails = bankAccountDetails,
+            bankAccountType = bankAccountType,
+            rawResponse = Some(barsVerificationResponse),
+            attemptNumber = 1,
+            accountIsNowLockedOut = false,
+            barsStatus = IndeterminateStatus
+          ))
+
+        verifyAuditSent()
+        val detail: JsObject = auditCaptor.getValue
+        (detail \ "checkOutcome").as[String] mustBe "pass"
+        (detail \ "accountStatus").as[String] mustBe "unlocked"
+        (detail \ "attemptNumber").as[Int] mustBe 1
+        (detail \ "credId").as[String] mustBe "testCredId"
+        (detail \ "userType").as[String] mustBe "organisation"
+        (detail \ "detailsSubmitted" \ "accountType").as[String] mustBe "business"
+        (detail \ "validationResponse" \ "accountExists").as[String] mustBe "yes"
+        (detail \ "validationResponse" \ "nameMatches").as[String] mustBe "yes"
+      }
     }
 
     "send an audit event without validationResponse when rawResponse is None" in new Setup {
@@ -100,8 +127,8 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           bankAccountType = bankAccountType,
           rawResponse = None,
           attemptNumber = 1,
-          accountStatus = "unlocked",
-          checkOutcome = "pass"
+          accountIsNowLockedOut = false,
+          barsStatus = ValidStatus
         ))
 
       verifyAuditSent()
@@ -118,8 +145,8 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           bankAccountType = bankAccountType,
           rawResponse = Some(barsVerificationResponse),
           attemptNumber = 3,
-          accountStatus = "locked",
-          checkOutcome = "fail"
+          accountIsNowLockedOut = true,
+          barsStatus = InvalidStatus
         ))
 
       verifyAuditSent()
@@ -138,8 +165,8 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           bankAccountType = bankAccountType,
           rawResponse = Some(barsVerificationResponse),
           attemptNumber = 1,
-          accountStatus = "unlocked",
-          checkOutcome = "pass"
+          accountIsNowLockedOut = false,
+          barsStatus = ValidStatus
         ))
 
       verifyAuditSent()
@@ -156,8 +183,8 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           bankAccountType = bankAccountType,
           rawResponse = Some(barsVerificationResponse),
           attemptNumber = 1,
-          accountStatus = "unlocked",
-          checkOutcome = "pass"
+          accountIsNowLockedOut = false,
+          barsStatus = ValidStatus
         ))
 
       verifyAuditSent()
@@ -176,8 +203,8 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
             bankAccountType = bankAccountType,
             rawResponse = Some(barsVerificationResponse),
             attemptNumber = 1,
-            accountStatus = "unlocked",
-            checkOutcome = "pass"
+            accountIsNowLockedOut = false,
+            barsStatus = ValidStatus
           ))
       }
     }
@@ -194,10 +221,11 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
             bankAccountType = bankAccountType,
             rawResponse = Some(barsVerificationResponse),
             attemptNumber = 1,
-            accountStatus = "unlocked",
-            checkOutcome = "pass"
+            accountIsNowLockedOut = false,
+            barsStatus = ValidStatus
           ))
       }
     }
   }
+
 }

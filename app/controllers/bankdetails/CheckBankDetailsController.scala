@@ -20,11 +20,12 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import models.{BankAccountDetails, DontWantToProvide}
+import models.BankAccountDetails
 import models.bars.{BankAccountDetailsSessionFormat, BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
 import play.api.Configuration
 import play.api.libs.json.Format
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
+import services.BankAccountDetailsService.redirectBackToFirstPageInJourney
 import services.{BankAccountDetailsService, LockService, SessionService}
 import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.CheckBankDetailsView
@@ -37,61 +38,38 @@ class CheckBankDetailsController @Inject() (
     val bankAccountDetailsService: BankAccountDetailsService,
     val sessionService: SessionService,
     val lockService: LockService,
-    configuration: Configuration,
     view: CheckBankDetailsView
 )(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
-  private val encrypter =
-    SymmetricCryptoFactory.aesCryptoFromConfig("json.encryption", configuration.underlying)
-
-  private implicit val encryptedFormat: Format[BankAccountDetails] =
-    BankAccountDetailsSessionFormat.format(encrypter)
-
-  private val sessionKey = "bankAccountDetails"
+  private def redirectToFirstPageIfSwitchIsOff(block: => Future[Result]): Future[Result] =
+    if (isEnabled(UseNewBarsVerify)) block else Future.successful(redirectBackToFirstPageInJourney)
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    if (isEnabled(UseNewBarsVerify)) {
+    redirectToFirstPageIfSwitchIsOff {
       lockService.redirectIfBarsIsLocked {
-        for {
-          bankDetails <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
-          fromEnter <- sessionService.fetchAndGet[Boolean]("fromEnterDetails")
-          _ <-
-            if (fromEnter.contains(true)) sessionService.cache[Boolean]("fromEnterDetails", false)
-            else Future.successful(())
-
-        } yield (bankDetails, fromEnter) match {
-          case (None, _) => Redirect(routes.HasBankAccountController.show)
-          case (Some(bankDetails), Some(true)) => Ok(view(bankDetails))
-          case _ => Redirect(routes.UkBankAccountDetailsController.show)
+        bankAccountDetailsService.getBankAccount.map(_.flatMap(_.details)).map {
+          case Some(bankDetails) => Ok(view(bankDetails))
+          case None                              => Redirect(routes.HasBankAccountController.show)
         }
       }
-    } else {
-      Future.successful(Redirect(routes.HasBankAccountController.show))
     }
   }
+
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    if (isEnabled(UseNewBarsVerify)) {
-      for {
-        details     <- sessionService.fetchAndGet[BankAccountDetails](sessionKey)
-        bankAccount <- bankAccountDetailsService.getBankAccount
-        result <- (details, bankAccount.flatMap(_.bankAccountType)) match {
-          case (Some(accountDetails), Some(accountType)) =>
-            bankAccountDetailsService.verifyAndSaveBankAccountDetails(accountDetails, accountType).flatMap {
-              case BarsSuccess =>
-                Future.successful(Redirect(controllers.routes.TaskListController.show.url))
-              case BarsLockedOut =>
-                bankAccountDetailsService.saveBankAccountNotProvided(DontWantToProvide).map { _ =>
-                  Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
-                }
-              case BarsFailedNotLocked =>
-                Future.successful(Redirect(routes.AccountDetailsNotVerifiedController.show))
+    redirectToFirstPageIfSwitchIsOff {
+      bankAccountDetailsService.getBankAccount.flatMap { bankAccount =>
+        (bankAccount.flatMap(_.details), bankAccount.flatMap(_.bankAccountType)) match {
+          case (Some(bankAccountDetails), Some(accountType)) =>
+            bankAccountDetailsService.verifyAndSaveBankAccountDetails(bankAccountDetails, accountType).map {
+              case BarsSuccess         => Redirect(controllers.routes.TaskListController.show.url)
+              case BarsFailedNotLocked => Redirect(routes.AccountDetailsNotVerifiedController.show)
+              case BarsLockedOut       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
             }
-          case _ => Future.successful(Redirect(routes.HasBankAccountController.show))
+          case _ => Future.successful(redirectBackToFirstPageInJourney)
         }
-      } yield result
-    } else {
-      Future.successful(Redirect(routes.HasBankAccountController.show))
     }
+      }
   }
+
 }

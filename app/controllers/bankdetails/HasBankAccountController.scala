@@ -66,7 +66,7 @@ class HasBankAccountController @Inject() (val authConnector: AuthClientConnector
           if (isEnabled(UseNewBarsVerify)) Future.successful(BadRequest(newView(formWithErrors)))
           else Future.successful(BadRequest(oldView(formWithErrors))),
         hasBankAccount =>
-          bankAccountDetailsService.saveHasCompanyBankAccount(hasBankAccount).map { _ =>
+          bankAccountDetailsService.saveAnswerForHasCompanyBankAccountPage(hasBankAccount).map { _ =>
             (hasBankAccount, isEnabled(UseNewBarsVerify)) match {
               case (true, false) => Redirect(routes.UkBankAccountDetailsController.show)
               case (true, true)  => Redirect(routes.ChooseAccountTypeController.show)

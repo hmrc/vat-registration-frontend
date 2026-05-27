@@ -20,15 +20,11 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import forms.{EnterBankAccountDetailsForm, EnterCompanyBankAccountDetailsForm}
 import forms.EnterCompanyBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
-import models.BankAccountDetails
-import models.bars.BankAccountDetailsSessionFormat
-import play.api.libs.json.Format
+import forms.{EnterBankAccountDetailsForm, EnterCompanyBankAccountDetailsForm}
 import play.api.mvc.{Action, AnyContent}
-import play.api.Configuration
+import services.BankAccountDetailsService.redirectBackToFirstPageInJourney
 import services.{BankAccountDetailsService, LockService, SessionService}
-import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.{EnterBankAccountDetails, EnterCompanyBankAccountDetails}
 
 import javax.inject.Inject
@@ -39,27 +35,20 @@ class UkBankAccountDetailsController @Inject() (
     val bankAccountDetailsService: BankAccountDetailsService,
     val sessionService: SessionService,
     val lockService: LockService,
-    configuration: Configuration,
     newBarsView: EnterBankAccountDetails,
     oldView: EnterCompanyBankAccountDetails
 )(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
-  private val encrypter =
-    SymmetricCryptoFactory.aesCryptoFromConfig("json.encryption", configuration.underlying)
-
-  private implicit val encryptedFormat: Format[BankAccountDetails] =
-    BankAccountDetailsSessionFormat.format(encrypter)
-
-  private val sessionKey = "bankAccountDetails"
-
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       lockService.redirectIfBarsIsLocked {
         val newBarsForm = EnterBankAccountDetailsForm.form
-        sessionService.fetchAndGet[BankAccountDetails](sessionKey).map {
-          case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
-          case None          => Ok(newBarsView(newBarsForm))
+        bankAccountDetailsService.getBankAccount.map { bankAccount =>
+          bankAccount.flatMap(_.details) match {
+            case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
+            case None          => Ok(newBarsView(newBarsForm))
+          }
         }
       }
     } else {
@@ -69,6 +58,7 @@ class UkBankAccountDetailsController @Inject() (
       } yield Ok(oldView(filledForm))
     }
   }
+
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       val newBarsForm = EnterBankAccountDetailsForm.form
@@ -77,10 +67,11 @@ class UkBankAccountDetailsController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(newBarsView(formWithErrors))),
           accountDetails =>
-            sessionService.cache[Boolean]("fromEnterDetails", true).flatMap { _ =>
-              sessionService.cache[BankAccountDetails](sessionKey, accountDetails).map { _ =>
+            bankAccountDetailsService.saveAnswersForBankAccountDetailsPage(accountDetails).map {
+              case Right(_) =>
                 Redirect(routes.CheckBankDetailsController.show)
-              }
+              case Left(_) =>
+                redirectBackToFirstPageInJourney
             }
         )
     } else {
@@ -89,9 +80,12 @@ class UkBankAccountDetailsController @Inject() (
         .fold(
           formWithErrors => Future.successful(BadRequest(oldView(formWithErrors))),
           accountDetails =>
-            bankAccountDetailsService.saveEnteredBankAccountDetails(accountDetails, None).map {
-              case (true, _)  => Redirect(controllers.routes.TaskListController.show.url)
-              case (false, _) => BadRequest(oldView(EnterCompanyBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)))
+            bankAccountDetailsService.makeBarsValidationCheckAndSaveValidAnswers(accountDetails).map { barsWasSuccessful =>
+              if (barsWasSuccessful) {
+                Redirect(controllers.routes.TaskListController.show.url)
+              } else {
+                BadRequest(oldView(EnterCompanyBankAccountDetailsForm.formWithInvalidAccountReputation.fill(accountDetails)))
+              }
             }
         )
     }

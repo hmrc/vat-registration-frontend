@@ -34,8 +34,8 @@ import scala.concurrent.Future
 
 class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with DefaultAwaitTimeout {
 
-  val mockBarsLockRepository: BarsLockRepository = mock[BarsLockRepository]
-  val mockAppConfig: FrontendAppConfig           = mock[FrontendAppConfig]
+  private val mockBarsLockRepository: BarsLockRepository = mock[BarsLockRepository]
+  val mockAppConfig: FrontendAppConfig                   = mock[FrontendAppConfig]
 
   val registrationId = "reg-123"
 
@@ -52,12 +52,12 @@ class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with 
     }
   }
 
-  "incrementBarsAttempts" should {
+  "incrementBarsAttemptsAndReturnNewFailedCount" should {
     "return the new total number of failed attempts after incrementing" in new Setup {
-      when(mockBarsLockRepository.recordFailedAttempt(eqTo(registrationId)))
+      when(mockBarsLockRepository.recordFailedAttemptAndReturnNewFailedCount(eqTo(registrationId)))
         .thenReturn(Future.successful(1))
 
-      await(service.incrementBarsAttempts(registrationId)) mustBe 1
+      await(service.incrementBarsAttemptsAndReturnNewFailedCount(registrationId)) mustBe 1
     }
   }
 
@@ -92,4 +92,5 @@ class LockServiceSpec extends PlaySpec with MockitoSugar with FutureAwaits with 
       result.header.status mustBe OK
     }
   }
+
 }

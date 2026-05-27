@@ -16,56 +16,67 @@
 
 package models.bars
 
+import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars.BarsError._
+import models.bars.BarsResponse._
 import play.api.libs.json.{Json, Reads}
 
-case class BarsVerificationResponse(
-    accountNumberIsWellFormatted: BarsResponse,
-    sortCodeIsPresentOnEISCD: BarsResponse,
-    sortCodeBankName: Option[String],
-    accountExists: BarsResponse,
-    nameMatches: BarsResponse,
-    sortCodeSupportsDirectDebit: BarsResponse,
-    sortCodeSupportsDirectCredit: BarsResponse,
-    nonStandardAccountDetailsRequiredForBacs: Option[BarsResponse],
-    iban: Option[String],
-    accountName: Option[String]
-) {
+case class BarsVerificationResponse(accountNumberIsWellFormatted: BarsResponse,
+                                    sortCodeIsPresentOnEISCD: BarsResponse,
+                                    sortCodeBankName: Option[String],
+                                    accountExists: BarsResponse,
+                                    nameMatches: BarsResponse,
+                                    sortCodeSupportsDirectDebit: BarsResponse,
+                                    sortCodeSupportsDirectCredit: BarsResponse,
+                                    nonStandardAccountDetailsRequiredForBacs: Option[BarsResponse],
+                                    iban: Option[String],
+                                    accountName: Option[String]) {
 
-  val isSuccessful: Boolean =
-    sortCodeIsPresentOnEISCD == BarsResponse.Yes &&
-      accountExists == BarsResponse.Yes &&
-      (nameMatches == BarsResponse.Yes || nameMatches == BarsResponse.Partial)
-
-  def check: Seq[BarsError] =
-    Seq(
-      checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD),
-      checkAccountExists(accountExists),
-      checkNameMatches(nameMatches, accountExists)
+  def handleVerificationResponse: (BankAccountDetailsStatus, Seq[BarsErrorAndReason]) = {
+    val barsErrors: Seq[BarsErrorAndReason] = Seq(
+      checkSortCodeExistsOnEiscd,
+      checkAccountExists,
+      checkNameMatches
     ).flatten
+    val errorsAreIndeterminateOnly: Boolean = barsErrors.forall(_.barsError == BankAccountUnverified)
 
-  private def checkSortCodeExistsOnEiscd(sortCodeIsPresentOnEISCD: BarsResponse): Option[BarsError] =
-    sortCodeIsPresentOnEISCD match {
-      case BarsResponse.No    => Some(SortCodeNotFound)
-      case BarsResponse.Error => Some(ThirdPartyError)
-      case _                  => None
+    if (barsErrors.isEmpty) {
+      (ValidStatus, Seq.empty[BarsErrorAndReason])
+    } else if (errorsAreIndeterminateOnly) {
+      (IndeterminateStatus, barsErrors)
+    } else {
+      (InvalidStatus, barsErrors)
     }
+  }
 
-  private def checkAccountExists(accountExists: BarsResponse): Option[BarsError] =
-    accountExists match {
-      case BarsResponse.No | BarsResponse.Inapplicable => Some(AccountNotFound)
-      case BarsResponse.Indeterminate                  => Some(BankAccountUnverified)
-      case BarsResponse.Error                          => Some(ThirdPartyError)
-      case _                                           => None
+  private def checkSortCodeExistsOnEiscd: Option[BarsErrorAndReason] = {
+    val result = sortCodeIsPresentOnEISCD match {
+      case Yes   => None
+      case No    => Some(SortCodeNotFound)
+      case Error => Some(ThirdPartyError)
     }
+    result.map(barsError => BarsErrorAndReason(barsError, s"${barsError.toString} failure: sortCodeIsPresentOnEISCD = $sortCodeIsPresentOnEISCD"))
+  }
 
-  private def checkNameMatches(nameMatches: BarsResponse, accountExists: BarsResponse): Option[BarsError] =
-    nameMatches match {
-      case BarsResponse.No | BarsResponse.Inapplicable                     => Some(NameMismatch)
-      case BarsResponse.Indeterminate if accountExists == BarsResponse.Yes => Some(BankAccountUnverified)
-      case BarsResponse.Error                                              => Some(ThirdPartyError)
-      case _                                                               => None
+  private def checkAccountExists: Option[BarsErrorAndReason] = {
+    val result = accountExists match {
+      case Yes               => None
+      case No | Inapplicable => Some(AccountNotFound)
+      case Indeterminate     => Some(BankAccountUnverified)
+      case Error             => Some(ThirdPartyError)
     }
+    result.map(barsError => BarsErrorAndReason(barsError, s"${barsError.toString} failure: accountExists = $accountExists"))
+  }
+
+  private def checkNameMatches: Option[BarsErrorAndReason] = {
+    val result = nameMatches match {
+      case Yes | Partial                         => None
+      case Indeterminate if accountExists == Yes => Some(BankAccountUnverified)
+      case No | Inapplicable | Indeterminate     => Some(NameMismatch)
+      case Error                                 => Some(ThirdPartyError)
+    }
+    result.map(barsError => BarsErrorAndReason(barsError, s"${barsError.toString} failure: nameMatches = $nameMatches"))
+  }
 }
 
 object BarsVerificationResponse {

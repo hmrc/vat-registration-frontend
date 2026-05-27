@@ -19,8 +19,9 @@ package controllers.bankdetails
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.{BankAccount, TransferOfAGoingConcern}
 import models.api.EligibilitySubmissionData
+import models.bars.BankAccountType.Personal
+import models.{BankAccount, BankAccountDetails, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
@@ -33,9 +34,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
   val url = "/account-details"
 
   "GET /account-details" when {
-
     "UseNewBarsVerify is disabled" must {
-
       "return OK with a blank form if the VAT scheme doesn't contain bank details" in new Setup {
         disable(UseNewBarsVerify)
         given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
@@ -70,7 +69,6 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
     }
 
     "UseNewBarsVerify is enabled" must {
-
       "return OK with a blank form when session is empty" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
@@ -85,7 +83,8 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
       "return OK with a form pre-populated from session when session contains bank details" in new Setup {
         enable(UseNewBarsVerify)
-        given().user.isAuthorised()
+        private val existingDetails = BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber))
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(details = Some(existingDetails))))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -111,9 +110,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
   }
 
   "POST /account-details" when {
-
     "UseNewBarsVerify is disabled" must {
-
       "redirect to the Task List when valid bank details" in new Setup {
         disable(UseNewBarsVerify)
         given().user
@@ -191,27 +188,29 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       "save bank details and fromEnterDetails flag to session and redirect to CheckDetailsController when form is valid" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
+          .user.isAuthorised()
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, Some(Personal))))
+          .registrationApi.replaceSection[BankAccount](BankAccount(isProvided = true, Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, None)), None, Some(Personal)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
         val res: WSResponse = await(
           buildClient(url).post(
             Map(
-              "accountName"      -> testBankName,
-              "accountNumber"    -> testAccountNumber,
-              "sortCode"         -> testSortCode
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
             )))
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
-
-        val sessionData: Option[CacheMap] = await(repo.get(sessionString))
-        sessionData.flatMap(_.getEntry[Boolean]("fromEnterDetails")) mustBe Some(true)
       }
 
       "save roll number bank details and fromEnterDetails flag to session and redirect to Check Details Controller" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
+          .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, None, None, Some(Personal))))
+          .registrationApi.replaceSection[BankAccount](BankAccount(isProvided = true, Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber))), None, Some(Personal)))
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -226,9 +225,26 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
 
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
+      }
 
-        val sessionData: Option[CacheMap] = await(repo.get(sessionString))
-        sessionData.flatMap(_.getEntry[Boolean]("fromEnterDetails")) mustBe Some(true)
+      "redirect to the first page in journey (HasBankAccount page) when no BankAccount data exists" in new Setup {
+        enable(UseNewBarsVerify)
+        given().user.isAuthorised()
+          .user.isAuthorised()
+          .registrationApi.getSection[BankAccount](None)
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(
+          buildClient(url).post(
+            Map(
+              "accountName"   -> testBankName,
+              "accountNumber" -> testAccountNumber,
+              "sortCode"      -> testSortCode
+            )))
+
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
       }
 
       "return BAD_REQUEST without setting fromEnterDetails in session when form fields are empty" in new Setup {
@@ -268,4 +284,5 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
       }
     }
   }
+
 }

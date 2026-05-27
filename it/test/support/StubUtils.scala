@@ -311,30 +311,51 @@ trait StubUtils {
   }
   case class BarsStub()(implicit builder: PreconditionBuilder) {
 
+    private val successChecksBody = s"""
+                                       |{
+                                       |  "accountNumberIsWellFormatted": "yes",
+                                       |  "sortCodeIsPresentOnEISCD": "yes",
+                                       |  "sortCodeBankName": "Test Bank",
+                                       |  "accountExists": "yes",
+                                       |  "nameMatches": "yes",
+                                       |  "sortCodeSupportsDirectDebit": "yes",
+                                       |  "sortCodeSupportsDirectCredit": "yes"
+                                       |}
+                                       |""".stripMargin
+
+    private val invalidChecksBody = s"""
+                                       |{
+                                       |  "accountNumberIsWellFormatted": "yes",
+                                       |  "sortCodeIsPresentOnEISCD": "yes",
+                                       |  "sortCodeBankName": "Test Bank",
+                                       |  "accountExists": "no",
+                                       |  "nameMatches": "yes",
+                                       |  "sortCodeSupportsDirectDebit": "yes",
+                                       |  "sortCodeSupportsDirectCredit": "yes"
+                                       |}
+                                       |""".stripMargin
+
+    private val indeterminateChecksBody = s"""
+                                       |{
+                                       |  "accountNumberIsWellFormatted": "yes",
+                                       |  "sortCodeIsPresentOnEISCD": "yes",
+                                       |  "sortCodeBankName": "Test Bank",
+                                       |  "accountExists": "indeterminate",
+                                       |  "nameMatches": "yes",
+                                       |  "sortCodeSupportsDirectDebit": "yes",
+                                       |  "sortCodeSupportsDirectCredit": "yes"
+                                       |}
+                                       |""".stripMargin
+
     def verifySucceeds(bankAccountType: BankAccountType): PreconditionBuilder = {
       stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
-        .willReturn(
-          aResponse().withStatus(200).withBody(
-            s"""
-               |{
-               |  "accountNumberIsWellFormatted": "yes",
-               |  "sortCodeIsPresentOnEISCD": "yes",
-               |  "sortCodeBankName": "Test Bank",
-               |  "accountExists": "yes",
-               |  "nameMatches": "yes",
-               |  "sortCodeSupportsDirectDebit": "yes",
-               |  "sortCodeSupportsDirectCredit": "yes"
-               |}
-            """.stripMargin)
-        ))
+        .willReturn(aResponse().withStatus(200).withBody(successChecksBody)))
       builder
     }
 
-    def verifyFails(bankAccountType: BankAccountType, status: Int): PreconditionBuilder = {
+    def verifyFails(bankAccountType: BankAccountType, isIndeterminate: Boolean = false): PreconditionBuilder = {
       stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
-        .willReturn(
-          aResponse().withStatus(status).withBody("Bad request")
-        ))
+        .willReturn(aResponse().withStatus(400).withBody(if (isIndeterminate) indeterminateChecksBody else invalidChecksBody)))
       builder
     }
 

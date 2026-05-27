@@ -19,8 +19,8 @@ package services
 import connectors.BarsConnector
 import models.BankAccountDetails
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
+import models.bars.BankAccountType.{Business, Personal}
 import models.bars._
-import models.bars.BarsError._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
@@ -47,13 +47,6 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
     rollNumber = None
   )
 
-  private val businessDetails = BankAccountDetails(
-    sortCode = "654321",
-    number = "87654321",
-    name = "Aspect Ratio",
-    rollNumber = None
-  )
-
   private def barsResponseWith(
       sortCodeIsPresentOnEISCD: BarsResponse = BarsResponse.Yes,
       accountExists: BarsResponse = BarsResponse.Yes,
@@ -74,40 +67,36 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
   private val successResponse: BarsVerificationResponse = barsResponseWith()
 
   "verifyBankDetails" should {
-
     "return ValidStatus and the response" when {
       "the connector returns a successful BARS response" in {
-        when(mockConnector.verify(any(), any())(any()))
-          .thenReturn(Future.successful(successResponse))
+        when(mockConnector.verify(any(), any())(any())).thenReturn(Future.successful(successResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe ValidStatus
-        response shouldBe Some(successResponse)
+        result.bankDetailsVerificationStatus shouldBe ValidStatus
+        result.barsVerificationResponse shouldBe Some(successResponse)
       }
     }
 
     "return IndeterminateStatus and the response" when {
       "accountExists is Indeterminate" in {
         val barsResponse = barsResponseWith(accountExists = BarsResponse.Indeterminate)
-        when(mockConnector.verify(any(), any())(any()))
-          .thenReturn(Future.successful(barsResponse))
+        when(mockConnector.verify(any(), any())(any())).thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe IndeterminateStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe IndeterminateStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "nameMatches is Indeterminate" in {
         val barsResponse = barsResponseWith(nameMatches = BarsResponse.Indeterminate)
-        when(mockConnector.verify(any(), any())(any()))
-          .thenReturn(Future.successful(barsResponse))
+        when(mockConnector.verify(any(), any())(any())).thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe IndeterminateStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe IndeterminateStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
     }
 
@@ -117,10 +106,10 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "accountExists is No" in {
@@ -128,10 +117,10 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "nameMatches is No" in {
@@ -139,10 +128,10 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "BARS returns an error on the sort code check" in {
@@ -150,10 +139,10 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "BARS returns an error on the account exists check" in {
@@ -161,10 +150,10 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "BARS returns an error on the name match check" in {
@@ -172,187 +161,112 @@ class BarsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar with S
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.successful(barsResponse))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe Some(barsResponse)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe Some(barsResponse)
       }
 
       "the connector throws an exception" in {
         when(mockConnector.verify(any(), any())(any()))
           .thenReturn(Future.failed(new RuntimeException("failure")))
 
-        val (status, response) = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
+        val result = service.verifyBankDetails(personalDetails, BankAccountType.Personal).futureValue
 
-        status shouldBe InvalidStatus
-        response shouldBe None
-      }
-    }
-  }
-
-  "checkVerificationResult" should {
-
-    "return Right containing the response" when {
-      "the response is successful" in {
-        service.checkVerificationResult(successResponse) shouldBe Right(successResponse)
-      }
-
-      "the name is a partial match" in {
-        val response = barsResponseWith(nameMatches = BarsResponse.Partial)
-        service.checkVerificationResult(response) shouldBe Right(response)
-      }
-    }
-
-    "return Left(BankAccountUnverified)" when {
-      "accountExists is Indeterminate" in {
-        val response = barsResponseWith(accountExists = BarsResponse.Indeterminate)
-        service.checkVerificationResult(response) shouldBe Left(BankAccountUnverified)
-      }
-
-      "nameMatches is Indeterminate and accountExists is Yes" in {
-        val response = barsResponseWith(nameMatches = BarsResponse.Indeterminate)
-        service.checkVerificationResult(response) shouldBe Left(BankAccountUnverified)
-      }
-    }
-
-    "return Left(ThirdPartyError)" when {
-      "sortCodeIsPresentOnEISCD is Error" in {
-        val response = barsResponseWith(sortCodeIsPresentOnEISCD = BarsResponse.Error)
-        service.checkVerificationResult(response) shouldBe Left(ThirdPartyError)
-      }
-
-      "accountExists is Error" in {
-        val response = barsResponseWith(accountExists = BarsResponse.Error)
-        service.checkVerificationResult(response) shouldBe Left(ThirdPartyError)
-      }
-
-      "nameMatches is Error" in {
-        val response = barsResponseWith(nameMatches = BarsResponse.Error)
-        service.checkVerificationResult(response) shouldBe Left(ThirdPartyError)
-      }
-    }
-
-    "return Left(SortCodeNotFound)" when {
-      "sortCodeIsPresentOnEISCD is No" in {
-        val response = barsResponseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
-        service.checkVerificationResult(response) shouldBe Left(SortCodeNotFound)
-      }
-    }
-
-    "return Left(AccountNotFound)" when {
-      "accountExists is No" in {
-        val response = barsResponseWith(accountExists = BarsResponse.No)
-        service.checkVerificationResult(response) shouldBe Left(AccountNotFound)
-      }
-    }
-
-    "return Left(NameMismatch)" when {
-      "nameMatches is No" in {
-        val response = barsResponseWith(nameMatches = BarsResponse.No)
-        service.checkVerificationResult(response) shouldBe Left(NameMismatch)
+        result.bankDetailsVerificationStatus shouldBe InvalidStatus
+        result.barsVerificationResponse shouldBe None
       }
     }
   }
 
   "buildJsonRequestBody" should {
-    val personalDetailsWithRollNumber = BankAccountDetails(
+    val personalDetails = BankAccountDetails(
       sortCode = "786786",
       number = "12345678",
       name = "Jane Doe",
       rollNumber = Some("AB/463")
     )
 
-    val businessDetailsWithRollNumber = BankAccountDetails(
+    val businessDetails = BankAccountDetails(
       sortCode = "786786",
       number = "87654321",
       name = "Aspect Ratio Software Ltd",
       rollNumber = Some("AB/463")
     )
 
-    "return a JSON body with 'account' and 'subject' keys" when {
-      "given a Personal account type without a roll number" in {
-        val result = service.buildJsonRequestBody(personalDetails, BankAccountType.Personal)
+    "return a Json body for a Personal account" when {
+      "no rollNumber is provided" in {
+        val result = service.buildJsonRequestBody(personalDetails.copy(rollNumber = None), Personal)
+        val expectedResult = Json.parse("""
+            |{
+            |  "account": {
+            |    "sortCode": "786786",
+            |    "accountNumber": "12345678"
+            |  },
+            |  "subject": {
+            |    "name": "Jane Doe"
+            |  }
+            |}
+            |""".stripMargin)
 
-        result shouldBe Json.toJson(
-          BarsPersonalRequest(
-            BarsAccount(personalDetails.sortCode, personalDetails.number, None),
-            BarsSubject(personalDetails.name)
-          )
-        )
+        result shouldBe expectedResult
       }
 
-      "given a Personal account type with a roll number" in {
-        val result = service.buildJsonRequestBody(personalDetailsWithRollNumber, BankAccountType.Personal)
+      "a rollNumber is provided" in {
+        val result = service.buildJsonRequestBody(personalDetails.copy(rollNumber = Some("AB/463")), Personal)
+        val expectedResult = Json.parse("""
+            |{
+            |  "account": {
+            |    "sortCode": "786786",
+            |    "accountNumber": "12345678",
+            |    "rollNumber": "AB/463"
+            |  },
+            |  "subject": {
+            |    "name": "Jane Doe"
+            |  }
+            |}
+            |""".stripMargin)
 
-        result shouldBe Json.toJson(
-          BarsPersonalRequest(
-            BarsAccount(personalDetailsWithRollNumber.sortCode, personalDetailsWithRollNumber.number, Some("AB/463")),
-            BarsSubject(personalDetailsWithRollNumber.name)
-          )
-        )
-      }
-    }
-
-    "include the roll number in the account object" when {
-      "given a Personal account type with a roll number" in {
-        val result = service.buildJsonRequestBody(personalDetailsWithRollNumber, BankAccountType.Personal)
-        (result \ "account" \ "rollNumber").asOpt[String] shouldBe Some("AB/463")
-      }
-
-      "given a Business account type with a roll number" in {
-        val result = service.buildJsonRequestBody(businessDetailsWithRollNumber, BankAccountType.Business)
-        (result \ "account" \ "rollNumber").asOpt[String] shouldBe Some("AB/463")
-      }
-    }
-
-    "not include the roll number in the account object" when {
-      "given a Personal account type without a roll number" in {
-        val result = service.buildJsonRequestBody(personalDetails, BankAccountType.Personal)
-        (result \ "account" \ "rollNumber").isDefined shouldBe false
-      }
-
-      "given a Business account type without a roll number" in {
-        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business)
-        (result \ "account" \ "rollNumber").isDefined shouldBe false
+        result shouldBe expectedResult
       }
     }
 
-    "not include a 'business' key" when {
-      "given a Personal account type" in {
-        val result = service.buildJsonRequestBody(personalDetails, BankAccountType.Personal)
-        (result \ "business").isDefined shouldBe false
+    "return a Json body for a Business account" when {
+      "no rollNumber is provided" in {
+        val result = service.buildJsonRequestBody(businessDetails.copy(rollNumber = None), Business)
+        val expectedResult = Json.parse("""
+            |{
+            |  "account": {
+            |    "sortCode": "786786",
+            |    "accountNumber": "87654321"
+            |  },
+            |  "business": {
+            |    "companyName": "Aspect Ratio Software Ltd"
+            |  }
+            |}
+            |""".stripMargin)
+
+        result shouldBe expectedResult
       }
-    }
 
-    "return a JSON body with 'account' and 'business' keys" when {
-      "given a Business account type without a roll number" in {
-        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business)
+      "a rollNumber is provided" in {
+        val result = service.buildJsonRequestBody(businessDetails.copy(rollNumber = Some("AB/463")), Business)
+        val expectedResult = Json.parse("""
+            |{
+            |  "account": {
+            |    "sortCode": "786786",
+            |    "accountNumber": "87654321",
+            |    "rollNumber": "AB/463"
+            |  },
+            |  "business": {
+            |    "companyName": "Aspect Ratio Software Ltd"
+            |  }
+            |}
+            |""".stripMargin)
 
-        result shouldBe Json.toJson(
-          BarsBusinessRequest(
-            BarsAccount(businessDetails.sortCode, businessDetails.number, None),
-            BarsBusiness(businessDetails.name)
-          )
-        )
-      }
-
-      "given a Business account type with a roll number" in {
-        val result = service.buildJsonRequestBody(businessDetailsWithRollNumber, BankAccountType.Business)
-
-        result shouldBe Json.toJson(
-          BarsBusinessRequest(
-            BarsAccount(businessDetailsWithRollNumber.sortCode, businessDetailsWithRollNumber.number, Some("AB/463")),
-            BarsBusiness(businessDetailsWithRollNumber.name)
-          )
-        )
-      }
-    }
-
-    "not include a 'subject' key" when {
-      "given a Business account type" in {
-        val result = service.buildJsonRequestBody(businessDetails, BankAccountType.Business)
-        (result \ "subject").isDefined shouldBe false
+        result shouldBe expectedResult
       }
     }
   }
+
 }
