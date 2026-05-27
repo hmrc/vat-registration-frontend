@@ -392,16 +392,14 @@ class BankAccountDetailsServiceSpec
     "unable to fetch any existing details from the backend" should {
       "return a Left" in new Setup {
         val bankAccountDetails: BankAccountDetails = BankAccountDetails("name", "number", "sortCode")
-        val existing: BankAccount                  = BankAccount(isProvided = true, None, None, Some(BankAccountType.Business))
-        val expected: BankAccount                  = existing.copy(details = Some(bankAccountDetails))
+        val expected: BankAccount                  = BankAccount(isProvided = true, Some(bankAccountDetails), None, Some(BankAccountType.Business))
 
-        mockGetSection[BankAccount](testRegId, Some(existing))
-        mockReplaceSection[BankAccount](testRegId, expected)
+        mockGetSection[BankAccount](testRegId, None)
 
         val result: Either[Unit, BankAccount] = await(service.saveAnswersForBankAccountDetailsPage(bankAccountDetails))
 
-        result mustBe Right(expected)
-        verifyReplaceSectionIsCalled(testRegId, expected)
+        result mustBe Left(())
+        verifyReplaceSectionIsNotCalled(testRegId, expected)
       }
     }
   }

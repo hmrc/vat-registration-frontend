@@ -73,7 +73,7 @@ class BankAccountDetailsService @Inject() (
     def hasExistingBankDetailsAnd(invalid: Boolean, existingDetails: BankAccount): Boolean =
       existingDetails.isProvided && {
         val status = existingDetails.details.flatMap(_.status)
-        // Valid and Indeterminate statuses are both considered successful
+        // Valid and Indeterminate statuses are both considered successful in frontend user journey
         if (invalid) status.contains(InvalidStatus) else status.exists(_ != InvalidStatus)
       }
 

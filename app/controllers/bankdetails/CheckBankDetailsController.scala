@@ -20,14 +20,10 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
-import models.BankAccountDetails
-import models.bars.{BankAccountDetailsSessionFormat, BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
-import play.api.Configuration
-import play.api.libs.json.Format
+import models.bars.{BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
 import play.api.mvc.{Action, AnyContent, Result}
 import services.BankAccountDetailsService.redirectBackToFirstPageInJourney
 import services.{BankAccountDetailsService, LockService, SessionService}
-import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 import views.html.bankdetails.CheckBankDetailsView
 
 import javax.inject.Inject
@@ -50,7 +46,7 @@ class CheckBankDetailsController @Inject() (
       lockService.redirectIfBarsIsLocked {
         bankAccountDetailsService.getBankAccount.map(_.flatMap(_.details)).map {
           case Some(bankDetails) => Ok(view(bankDetails))
-          case None                              => Redirect(routes.HasBankAccountController.show)
+          case None              => Redirect(routes.HasBankAccountController.show)
         }
       }
     }
@@ -68,8 +64,8 @@ class CheckBankDetailsController @Inject() (
             }
           case _ => Future.successful(redirectBackToFirstPageInJourney)
         }
-    }
       }
+    }
   }
 
 }

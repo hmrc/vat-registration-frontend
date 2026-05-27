@@ -1,57 +1,59 @@
 
-GET         /delete-registrations                             controllers.test.DeleteAllRegistrationsController.deleteAllRegistrations
+GET         /delete-registrations                                    controllers.test.DeleteAllRegistrationsController.deleteAllRegistrations
 
-GET         /sic-stub                                         controllers.test.SicStubController.show
-POST        /sic-stub                                         controllers.test.SicStubController.submit
+GET         /sic-stub                                                controllers.test.SicStubController.show
+POST        /sic-stub                                                controllers.test.SicStubController.submit
 
-GET         /feature-switches                                 featuretoggle.frontend.controllers.FeatureSwitchFrontendController.show
-POST        /feature-switches                                 featuretoggle.frontend.controllers.FeatureSwitchFrontendController.submit
+GET         /feature-switches                                        featuretoggle.frontend.controllers.FeatureSwitchFrontendController.show
+POST        /feature-switches                                        featuretoggle.frontend.controllers.FeatureSwitchFrontendController.submit
 
-GET         /api/feature-switches                             featuretoggle.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
-POST        /api/feature-switches                             featuretoggle.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
-
-+ nocsrf
-POST        /api/incorp-id-journey                            controllers.test.IncorpIdApiStubController.createJourney(partyType: String)
-GET         /api/incorp-id-journey/response-values/:journeyId controllers.test.IncorpIdApiStubController.showStubPage(journeyId: String)
-POST        /api/incorp-id-journey/response-values/:journeyId controllers.test.IncorpIdApiStubController.submitStubPage(journeyId: String)
-GET         /api/incorp-id-journey/:journeyId                 controllers.test.IncorpIdApiStubController.getDetails(journeyId)
+GET         /api/feature-switches                                    featuretoggle.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+POST        /api/feature-switches                                    featuretoggle.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
 + nocsrf
-POST        /sole-trader-identification                       controllers.test.SoleTraderIdentificationStubController.createJourney(partyType: Option[String])
-+ nocsrf
-POST        /sole-trader-identification-individual            controllers.test.SoleTraderIdentificationStubController.createIndividualJourney(partyType: Option[String])
-GET         /sole-trader-identification/:journeyId            controllers.test.SoleTraderIdentificationStubController.retrieveValidationResult(journeyId)
+POST        /api/incorp-id-journey                                   controllers.test.IncorpIdApiStubController.createJourney(partyType: String)
+GET         /api/incorp-id-journey/response-values/:journeyId        controllers.test.IncorpIdApiStubController.showStubPage(journeyId: String)
+POST        /api/incorp-id-journey/response-values/:journeyId        controllers.test.IncorpIdApiStubController.submitStubPage(journeyId: String)
+GET         /api/incorp-id-journey/:journeyId                        controllers.test.IncorpIdApiStubController.getDetails(journeyId)
 
 + nocsrf
-POST        /partnership-identification                       controllers.test.PartnershipIdentificationStubController.createJourney(partyType: String)
-GET         /partnership-identification/:journeyId            controllers.test.PartnershipIdentificationStubController.retrieveValidationResult(journeyId)
+POST        /sole-trader-identification                              controllers.test.SoleTraderIdentificationStubController.createJourney(partyType: Option[String])
++ nocsrf
+POST        /sole-trader-identification-individual                   controllers.test.SoleTraderIdentificationStubController.createIndividualJourney(partyType: Option[String])
+GET         /sole-trader-identification/:journeyId                   controllers.test.SoleTraderIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
-POST        /minor-entity-identification                      controllers.test.MinorEntityIdentificationStubController.createJourney(partyType: String)
-GET         /minor-entity-identification/:journeyId           controllers.test.MinorEntityIdentificationStubController.retrieveValidationResult(journeyId)
+POST        /partnership-identification                              controllers.test.PartnershipIdentificationStubController.createJourney(partyType: String)
+GET         /partnership-identification/:journeyId                   controllers.test.PartnershipIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
-POST        /address-lookup/init                              controllers.test.AddressLookupStubController.createJourney
-GET         /address-lookup/confirmed                         controllers.test.AddressLookupStubController.retrieve(id: String)
+POST        /minor-entity-identification                             controllers.test.MinorEntityIdentificationStubController.createJourney(partyType: String)
+GET         /minor-entity-identification/:journeyId                  controllers.test.MinorEntityIdentificationStubController.retrieveValidationResult(journeyId)
 
 + nocsrf
-POST        /api/request-passcode                             controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
+POST        /address-lookup/init                                     controllers.test.AddressLookupStubController.createJourney
+GET         /address-lookup/confirmed                                controllers.test.AddressLookupStubController.retrieve(id: String)
 
 + nocsrf
-POST        /api/verify-passcode                              controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode
-
-
-GET         /submission-payload                               controllers.test.RetrieveVatSubmissionController.retrieveSubmissionJson
-
-
-GET         /vat-stub                                         controllers.test.RetrieveVatSubmissionController.showVatStubPage
-POST        /vat-stub                                         controllers.test.RetrieveVatSubmissionController.submitVatStubPage
+POST        /api/request-passcode                                    controllers.test.EmailVerificationStubController.requestEmailVerificationPasscode
 
 + nocsrf
-POST         /upscan/initiate                                 controllers.test.UpscanStubController.upscanInitiate
+POST        /api/verify-passcode                                     controllers.test.EmailVerificationStubController.verifyEmailVerificationPasscode
+
+
+GET         /submission-payload                                      controllers.test.RetrieveVatSubmissionController.retrieveSubmissionJson
+
+
+GET         /vat-stub                                                controllers.test.RetrieveVatSubmissionController.showVatStubPage
+POST        /vat-stub                                                controllers.test.RetrieveVatSubmissionController.submitVatStubPage
 
 + nocsrf
-POST         /upscan/upload-response                          controllers.test.UpscanStubController.uploadResponse(reference: String)
+POST        /upscan/initiate                                         controllers.test.UpscanStubController.upscanInitiate
 
 + nocsrf
-POST         /bars/validate-bank-details                      controllers.test.BankAccountReputationStubController.validateBankDetails
+POST        /upscan/upload-response                                  controllers.test.UpscanStubController.uploadResponse(reference: String)
+
++ nocsrf
+POST        /bars/validate-bank-details                              controllers.test.BankAccountReputationStubController.validateBankDetails
++ nocsrf
+POST        /bars/verify-bank-details                                controllers.test.BankAccountReputationStubController.verifyBankDetails
