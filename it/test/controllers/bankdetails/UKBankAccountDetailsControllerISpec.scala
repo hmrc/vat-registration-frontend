@@ -116,7 +116,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given().user
           .isAuthorised()
           .bankAccountReputation
-          .passes
+          .validateSucceeds
           .registrationApi
           .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
           .registrationApi
@@ -143,7 +143,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
         given().user
           .isAuthorised()
           .bankAccountReputation
-          .fails
+          .validateFails
           .registrationApi
           .getSection[BankAccount](Some(BankAccount(isProvided = true, None, None)))
           .registrationApi

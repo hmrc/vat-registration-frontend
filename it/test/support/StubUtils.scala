@@ -19,10 +19,9 @@ package support
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.matching.UrlPathPattern
 import common.enums.VatRegStatus
+import models.ApiKey
 import models.api._
 import models.external.upscan.UpscanDetails
-import models.ApiKey
-import models.bars.BankAccountType
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -48,9 +47,7 @@ trait StubUtils {
 
     def icl: ICL = ICL()
 
-    def bankAccountReputation: BankAccountReputationServiceStub = BankAccountReputationServiceStub()
-
-    def bars: BarsStub = BarsStub()
+    def bankAccountReputation: BarsVerifyStub = BarsVerifyStub()
 
     def audit: AuditStub = AuditStub()
 
@@ -271,46 +268,9 @@ trait StubUtils {
     }
   }
 
-  case class BankAccountReputationServiceStub()(implicit builder: PreconditionBuilder) {
-    def passes: PreconditionBuilder = {
-      stubFor(post(urlMatching("/validate/bank-details"))
-        .willReturn(
-          aResponse().withStatus(200).withBody(
-            s"""
-               |{
-               |  "accountNumberIsWellFormatted": "yes",
-               |  "nonStandardAccountDetailsRequiredForBacs": "no"
-               |}
-              """.stripMargin)
-        ))
-
-      builder
-    }
-
-    def fails: PreconditionBuilder = {
-      stubFor(post(urlMatching("/validate/bank-details"))
-        .willReturn(
-          aResponse().withStatus(200).withBody(
-            s"""
-               |{
-               |  "accountNumberIsWellFormatted": "no",
-               |  "nonStandardAccountDetailsRequiredForBacs": "no"
-               |}
-              """.stripMargin)
-        ))
-      builder
-    }
-
-    def isDown: PreconditionBuilder = {
-      stubFor(post(urlMatching("/validate/bank-details"))
-        .willReturn(
-          serverError()
-        ))
-      builder
-    }
-  }
-  case class BarsStub()(implicit builder: PreconditionBuilder) {
-
+  case class BarsVerifyStub()(implicit builder: PreconditionBuilder) {
+    private val url = "/register-for-vat/test-only/bars/verify-bank-details"
+    private val validateUrl = "/register-for-vat/test-only/bars/validate-bank-details"
     private val successChecksBody = s"""
                                        |{
                                        |  "accountNumberIsWellFormatted": "yes",
@@ -322,7 +282,6 @@ trait StubUtils {
                                        |  "sortCodeSupportsDirectCredit": "yes"
                                        |}
                                        |""".stripMargin
-
     private val invalidChecksBody = s"""
                                        |{
                                        |  "accountNumberIsWellFormatted": "yes",
@@ -334,7 +293,6 @@ trait StubUtils {
                                        |  "sortCodeSupportsDirectCredit": "yes"
                                        |}
                                        |""".stripMargin
-
     private val indeterminateChecksBody = s"""
                                        |{
                                        |  "accountNumberIsWellFormatted": "yes",
@@ -347,20 +305,30 @@ trait StubUtils {
                                        |}
                                        |""".stripMargin
 
-    def verifySucceeds(bankAccountType: BankAccountType): PreconditionBuilder = {
-      stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
+    def verifySucceeds: PreconditionBuilder = {
+      stubFor(post(urlMatching(url))
+        .willReturn(aResponse().withStatus(200).withBody(successChecksBody)))
+      builder
+    }
+    def validateSucceeds: PreconditionBuilder = {
+      stubFor(post(urlMatching(validateUrl))
         .willReturn(aResponse().withStatus(200).withBody(successChecksBody)))
       builder
     }
 
-    def verifyFails(bankAccountType: BankAccountType, isIndeterminate: Boolean = false): PreconditionBuilder = {
-      stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
+    def verifyFails(isIndeterminate: Boolean = false): PreconditionBuilder = {
+      stubFor(post(urlMatching(url))
         .willReturn(aResponse().withStatus(400).withBody(if (isIndeterminate) indeterminateChecksBody else invalidChecksBody)))
       builder
     }
+    def validateFails: PreconditionBuilder = {
+      stubFor(post(urlMatching(validateUrl))
+        .willReturn(aResponse().withStatus(OK).withBody("""{"accountNumberIsWellFormatted": "no"}""")))
+      builder
+    }
 
-    def isDown(bankAccountType: BankAccountType): PreconditionBuilder = {
-      stubFor(post(urlMatching(s"/verify/${bankAccountType.asBars}"))
+    def isDown: PreconditionBuilder = {
+      stubFor(post(urlMatching(url))
         .willReturn(
           serverError()
         ))

@@ -27,17 +27,26 @@ class BankAccountReputationConnectorISpec extends IntegrationSpecBase with AppAn
 
   val connector: BankAccountReputationConnector = app.injector.instanceOf[BankAccountReputationConnector]
 
-  val stubbedBarsSuccessResponse: JsObject = Json.obj(
-   "accountNumberIsWellFormatted" -> "yes",
-   "nonStandardAccountDetailsRequiredForBacs" -> "no"
-  )
+  val stubbedBarsSuccessResponse: JsValue = Json.parse(
+    s"""
+       |{
+       |  "accountNumberIsWellFormatted": "yes",
+       |  "sortCodeIsPresentOnEISCD": "yes",
+       |  "sortCodeBankName": "Test Bank",
+       |  "accountExists": "yes",
+       |  "nameMatches": "yes",
+       |  "sortCodeSupportsDirectDebit": "yes",
+       |  "sortCodeSupportsDirectCredit": "yes"
+       |}
+       |""".stripMargin)
+
 
   "validateBankDetails" when {
     "BARS returns OK" must {
       "return the JSON response" in new Setup {
         given()
           .user.isAuthorised()
-          .bankAccountReputation.passes
+          .bankAccountReputation.validateSucceeds
 
         insertCurrentProfileIntoDb(currentProfile, sessionString)
 

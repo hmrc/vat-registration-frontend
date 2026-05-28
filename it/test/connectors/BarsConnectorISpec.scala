@@ -58,7 +58,7 @@ class BarsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITReg
           "return the deserialised BarsVerificationResponse" in new Setup {
             given()
               .user.isAuthorised()
-              .bars.verifySucceeds(bankAccountType)
+              .bankAccountReputation.verifySucceeds
 
             insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -72,7 +72,7 @@ class BarsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITReg
           "throw an UpstreamBarsException with status 400" in new Setup {
             given()
               .user.isAuthorised()
-              .bars.verifyFails(bankAccountType)
+              .bankAccountReputation.verifyFails()
 
             insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -88,7 +88,7 @@ class BarsConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITReg
           "throw an UpstreamBarsException with status 500" in new Setup {
             given()
               .user.isAuthorised()
-              .bars.isDown(bankAccountType)
+              .bankAccountReputation.isDown
 
             insertCurrentProfileIntoDb(currentProfile, sessionString)
 

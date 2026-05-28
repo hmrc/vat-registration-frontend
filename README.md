@@ -69,6 +69,8 @@ To run the accessibility tests, use ```sbt A11y/test```.
 You will need to have `Node.js` and `npm` installed to run the accessibility tests. 
 
 # Further Documentation
+[Bank Details Journey, BARS Checks and Stubbing](BARS_AND_STUBBING.md)
+
 [Documentation of TEST endpoints](test-endpoints.md)
 
 ### License

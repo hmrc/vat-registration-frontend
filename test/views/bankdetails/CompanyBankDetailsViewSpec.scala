@@ -32,7 +32,7 @@ class CompanyBankDetailsViewSpec extends VatRegViewSpec {
   val panelText = "You must tell us if your account details change."
   val accountName = "Account name"
   val accountNumber = "Account number"
-  val accountNumberHint = "Must be between 6 and 8 digits long"
+  val accountNumberHint = "Must be 8 digits long"
   val sortCode = "Sort code"
   val sortCodeHint = "Must be 6 digits long"
   val buttonText = "Save and continue"

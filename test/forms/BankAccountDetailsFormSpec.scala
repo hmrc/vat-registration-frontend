@@ -153,7 +153,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
     }
 
     "return No FormError when binding a valid account number with spaces to the form" in {
-      val validAccountNumber = "123   456"
+      val validAccountNumber = "123   456 78"
 
       val formData = Map(
         ACCOUNT_NAME   -> validAccountName,

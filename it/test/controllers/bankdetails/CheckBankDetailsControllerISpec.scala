@@ -122,7 +122,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         given().user
           .isAuthorised()
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber))), None, Some(Business))))
-          .bars.verifySucceeds(Business)
+          .bankAccountReputation.verifySucceeds
           .registrationApi.replaceSection[BankAccount](BankAccount(
               isProvided = true,
               details = Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber), status = Some(ValidStatus))),
@@ -142,7 +142,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         given().user
           .isAuthorised()
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber))), None, Some(Personal))))
-          .bars.verifyFails(Personal)
+          .bankAccountReputation.verifyFails()
           .registrationApi.replaceSection[BankAccount](BankAccount(
             isProvided      = true,
             details         = Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber), status = Some(InvalidStatus))),
@@ -163,7 +163,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         given().user
           .isAuthorised()
           .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = true, Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber))), None, Some(Personal))))
-          .bars.verifyFails(Personal)
+          .bankAccountReputation.verifyFails()
           .registrationApi.replaceSection[BankAccount](BankAccount(
             isProvided      = true,
             details         = Some(BankAccountDetails(testBankName, testAccountNumber, testSortCode, Some(testRollNumber), status = Some(InvalidStatus))),
