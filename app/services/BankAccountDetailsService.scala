@@ -90,21 +90,21 @@ class BankAccountDetailsService @Inject() (
           existingAccount.copy(isProvided = canProvideBankAccountDetails, reason = None)
         saveBankAccount(changingFromOldReasonToNewBankDetailsJourney)
 
-      case Some(existingAccount) if !canProvideBankAccountDetails && existingAccount.details.exists(_.status.isEmpty) =>
-        val changingFromOldUnBarsCheckedBankDetailsToNewReasonJourney =
-          existingAccount.copy(isProvided = canProvideBankAccountDetails, details = None, bankAccountType = None)
-        saveBankAccount(changingFromOldUnBarsCheckedBankDetailsToNewReasonJourney)
+      case Some(existingAccount) if !canProvideBankAccountDetails && hasExistingBankDetailsAnd(invalid = true, existingAccount) =>
+        // Do not delete invalid bank details, they must be sent to the API at submission
+        val changingFromOldInvalidBankDetailsToNewReasonJourney =
+          existingAccount.copy(isProvided = canProvideBankAccountDetails)
+        saveBankAccount(changingFromOldInvalidBankDetailsToNewReasonJourney)
 
       case Some(existingAccount) if !canProvideBankAccountDetails && hasExistingBankDetailsAnd(invalid = false, existingAccount) =>
         val changingFromOldValidBankDetailsToNewReasonJourney =
           existingAccount.copy(isProvided = canProvideBankAccountDetails, details = None, bankAccountType = None)
         saveBankAccount(changingFromOldValidBankDetailsToNewReasonJourney)
 
-      case Some(existingAccount) if !canProvideBankAccountDetails && hasExistingBankDetailsAnd(invalid = true, existingAccount) =>
-        // Do not delete invalid bank details, they must be sent to the API at submission
-        val changingFromOldInvalidBankDetailsToNewReasonJourney =
-          existingAccount.copy(isProvided = canProvideBankAccountDetails)
-        saveBankAccount(changingFromOldInvalidBankDetailsToNewReasonJourney)
+      case Some(existingAccount) if !canProvideBankAccountDetails =>
+        val changingFromOldUnBarsCheckedBankDetailsToNewReasonJourney =
+          existingAccount.copy(isProvided = canProvideBankAccountDetails, details = None, bankAccountType = None)
+        saveBankAccount(changingFromOldUnBarsCheckedBankDetailsToNewReasonJourney)
     }
   }
 

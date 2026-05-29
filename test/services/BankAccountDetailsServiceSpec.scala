@@ -22,7 +22,7 @@ import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport
 import models._
 import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
-import models.bars.BankAccountType.Business
+import models.bars.BankAccountType.{Business, Personal}
 import models.bars._
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -148,64 +148,102 @@ class BankAccountDetailsServiceSpec
       }
 
       "submitted answer is 'false' and existing data was 'true'" should {
-        "save new data and delete old bank details when details had not been BARS checked so have no status" in new Setup(switchIsOn = true) {
-          private val existingData = BankAccount(
-            isProvided = true,
-            details = Some(BankAccountDetails("n", "n", "s", None, None)),
-            reason = None,
-            bankAccountType = Some(Business))
-          private val modelToSave = BankAccount(isProvided = false, details = None, reason = None, bankAccountType = None)
+        "save new data and delete old bank details" when {
+          "details were valid" in new Setup(switchIsOn = true) {
+            private val existingData = BankAccount(
+              isProvided = true,
+              details = Some(BankAccountDetails("n", "n", "s", None, Some(ValidStatus))),
+              reason = None,
+              bankAccountType = Some(Business))
+            private val modelToSave = existingData.copy(isProvided = false, details = None, bankAccountType = None)
 
-          mockGetSection[BankAccount](testRegId, Some(existingData))
-          mockReplaceSection[BankAccount](testRegId, modelToSave)
+            mockGetSection[BankAccount](testRegId, Some(existingData))
+            mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
 
-          result mustBe modelToSave
-          verifyReplaceSectionIsCalled(testRegId, modelToSave)
+            result mustBe modelToSave
+            verifyReplaceSectionIsCalled(testRegId, modelToSave)
+          }
+
+          "details were indeterminate" in new Setup(switchIsOn = true) {
+            private val existingData = BankAccount(
+              isProvided = true,
+              details = Some(BankAccountDetails("n", "n", "s", None, Some(IndeterminateStatus))),
+              reason = None,
+              bankAccountType = Some(Business))
+            private val modelToSave = existingData.copy(isProvided = false, details = None, bankAccountType = None)
+
+            mockGetSection[BankAccount](testRegId, Some(existingData))
+            mockReplaceSection[BankAccount](testRegId, modelToSave)
+
+            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+
+            result mustBe modelToSave
+            verifyReplaceSectionIsCalled(testRegId, modelToSave)
+          }
+
+          "save new data details had not been BARS checked so have no status" in new Setup(switchIsOn = true) {
+            private val existingData = BankAccount(
+              isProvided = true,
+              details = Some(BankAccountDetails("n", "n", "s", None, status = None)),
+              reason = None,
+              bankAccountType = Some(Business))
+            private val modelToSave = existingData.copy(isProvided = false, details = None, bankAccountType = None)
+
+            mockGetSection[BankAccount](testRegId, Some(existingData))
+            mockReplaceSection[BankAccount](testRegId, modelToSave)
+
+            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+
+            result mustBe modelToSave
+            verifyReplaceSectionIsCalled(testRegId, modelToSave)
+          }
         }
 
-        "save new data and delete old bank details when details were valid" in new Setup(switchIsOn = true) {
-          private val existingData = BankAccount(
-            isProvided = true,
-            details = Some(BankAccountDetails("n", "n", "s", None, Some(ValidStatus))),
-            reason = None,
-            bankAccountType = Some(Business))
-          private val modelToSave = BankAccount(isProvided = false, details = None, reason = None, bankAccountType = None)
+        "save new data and do NOT delete old bank details" when {
+          "details were invalid" in new Setup(switchIsOn = true) {
+            private val existingData = BankAccount(
+              isProvided = true,
+              details = Some(BankAccountDetails("n", "n", "s", None, Some(InvalidStatus))),
+              reason = Some(NameChange),
+              bankAccountType = Some(Business))
+            private val modelToSave = existingData.copy(isProvided = false)
 
-          mockGetSection[BankAccount](testRegId, Some(existingData))
-          mockReplaceSection[BankAccount](testRegId, modelToSave)
+            mockGetSection[BankAccount](testRegId, Some(existingData))
+            mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
 
-          result mustBe modelToSave
-          verifyReplaceSectionIsCalled(testRegId, modelToSave)
+            result mustBe modelToSave
+            verifyReplaceSectionIsCalled(testRegId, modelToSave)
+          }
         }
 
-        "save new data and delete old bank details when details were indeterminate" in new Setup(switchIsOn = true) {
+        "save new data and delete old 'isProvided' value when that is all that has been entered" in new Setup(switchIsOn = true) {
           private val existingData = BankAccount(
             isProvided = true,
-            details = Some(BankAccountDetails("n", "n", "s", None, Some(IndeterminateStatus))),
+            details = None,
             reason = None,
-            bankAccountType = Some(Business))
-          private val modelToSave = BankAccount(isProvided = false, details = None, reason = None, bankAccountType = None)
-
-          mockGetSection[BankAccount](testRegId, Some(existingData))
-          mockReplaceSection[BankAccount](testRegId, modelToSave)
-
-          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
-
-          result mustBe modelToSave
-          verifyReplaceSectionIsCalled(testRegId, modelToSave)
-        }
-
-        "save new data and delete old bank details when details were invalid" in new Setup(switchIsOn = true) {
-          private val existingData = BankAccount(
-            isProvided = true,
-            details = Some(BankAccountDetails("n", "n", "s", None, Some(InvalidStatus))),
-            reason = Some(NameChange),
-            bankAccountType = Some(Business))
+            bankAccountType = None)
           private val modelToSave = existingData.copy(isProvided = false)
+
+          mockGetSection[BankAccount](testRegId, Some(existingData))
+          mockReplaceSection[BankAccount](testRegId, modelToSave)
+
+          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+
+          result mustBe modelToSave
+          verifyReplaceSectionIsCalled(testRegId, modelToSave)
+        }
+
+        "save new data and delete old 'isProvided' and 'bankAccountType' values when bank account details have not been entered" in new Setup(switchIsOn = true) {
+          private val existingData = BankAccount(
+            isProvided = true,
+            details = None,
+            reason = None,
+            bankAccountType = Some(Personal))
+          private val modelToSave = existingData.copy(isProvided = false, bankAccountType = None)
 
           mockGetSection[BankAccount](testRegId, Some(existingData))
           mockReplaceSection[BankAccount](testRegId, modelToSave)
