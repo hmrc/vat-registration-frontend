@@ -116,7 +116,7 @@ class BankAccountDetailsServiceSpec
             verifyReplaceSectionIsCalled(testRegId, modelToSave)
           }
 
-          "return the existing data without saving when submitted answer eqTo existing data" in new Setup(switchIsOn = true) {
+          "return the existing data without saving when submitted answer matches existing data" in new Setup(switchIsOn = true) {
             private val existingData =
               BankAccount(isProvided = submittedAnswer, details = None, reason = Some(DontWantToProvide), bankAccountType = None)
             private val modelToSave = BankAccount(isProvided = submittedAnswer, details = None, reason = None, bankAccountType = None)
@@ -148,6 +148,23 @@ class BankAccountDetailsServiceSpec
       }
 
       "submitted answer is 'false' and existing data was 'true'" should {
+        "save new data and delete old bank details when details had not been BARS checked so have no status" in new Setup(switchIsOn = true) {
+          private val existingData = BankAccount(
+            isProvided = true,
+            details = Some(BankAccountDetails("n", "n", "s", None, None)),
+            reason = None,
+            bankAccountType = Some(Business))
+          private val modelToSave = BankAccount(isProvided = false, details = None, reason = None, bankAccountType = None)
+
+          mockGetSection[BankAccount](testRegId, Some(existingData))
+          mockReplaceSection[BankAccount](testRegId, modelToSave)
+
+          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+
+          result mustBe modelToSave
+          verifyReplaceSectionIsCalled(testRegId, modelToSave)
+        }
+
         "save new data and delete old bank details when details were valid" in new Setup(switchIsOn = true) {
           private val existingData = BankAccount(
             isProvided = true,

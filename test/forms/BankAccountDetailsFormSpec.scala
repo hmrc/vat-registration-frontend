@@ -266,8 +266,8 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberEmptyKey
     }
 
-    "return a FormError when account number is fewer than 6 digits" in {
-      val invalidAccountNumber = "12345"
+    "return a FormError when account number is fewer than 8 digits" in {
+      val invalidAccountNumber = "1234567"
 
       val formData = Map(
         ACCOUNT_NAME   -> validAccountName,

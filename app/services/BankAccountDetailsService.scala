@@ -90,6 +90,11 @@ class BankAccountDetailsService @Inject() (
           existingAccount.copy(isProvided = canProvideBankAccountDetails, reason = None)
         saveBankAccount(changingFromOldReasonToNewBankDetailsJourney)
 
+      case Some(existingAccount) if !canProvideBankAccountDetails && existingAccount.details.exists(_.status.isEmpty) =>
+        val changingFromOldUnBarsCheckedBankDetailsToNewReasonJourney =
+          existingAccount.copy(isProvided = canProvideBankAccountDetails, details = None, bankAccountType = None)
+        saveBankAccount(changingFromOldUnBarsCheckedBankDetailsToNewReasonJourney)
+
       case Some(existingAccount) if !canProvideBankAccountDetails && hasExistingBankDetailsAnd(invalid = false, existingAccount) =>
         val changingFromOldValidBankDetailsToNewReasonJourney =
           existingAccount.copy(isProvided = canProvideBankAccountDetails, details = None, bankAccountType = None)
