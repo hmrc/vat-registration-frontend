@@ -20,7 +20,7 @@ import connectors.RegistrationApiConnector
 import models.ApiKey
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.{any, eq => matches}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{never, verify, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json._
@@ -44,6 +44,30 @@ trait MockRegistrationApiConnector {
       any[HeaderCarrier],
       any[Format[T]], ArgumentMatchers.any[Request[_]]
     )).thenReturn(Future.successful(section))
+
+  def verifyReplaceSectionIsCalled[T](regId: String, section: T): Future[T] =
+    verify(mockRegistrationApiConnector).replaceSection[T](
+      regId = matches(regId),
+      section = matches(section),
+      idx = any[Option[Int]]()
+    )(
+      any[ApiKey[T]](),
+      any[HeaderCarrier](),
+      any[Format[T]](),
+      any[Request[_]]()
+    )
+
+  def verifyReplaceSectionIsNotCalled[T](regId: String, section: T): Future[T] =
+    verify(mockRegistrationApiConnector, never()).replaceSection[T](
+      regId = matches(regId),
+      section = matches(section),
+      idx = any[Option[Int]]()
+    )(
+      any[ApiKey[T]](),
+      any[HeaderCarrier](),
+      any[Format[T]](),
+      any[Request[_]]()
+    )
 
   def mockGetSection[T](regId: String, section: Option[T]): OngoingStubbing[Future[Option[T]]] =
     when(mockRegistrationApiConnector.getSection[T](

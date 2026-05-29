@@ -72,7 +72,7 @@ object EnterCompanyBankAccountDetailsForm {
 
   private val accountNameRegex     = """^[A-Za-z0-9 '’‘()\[\]{}<>!«»"ʺ˝ˮ?/\\+=%#*&$€£_\-@¥.,:;]{1,60}$""".r
   private val accountNameMaxLength = 60
-  private val accountNumberRegex   = """[0-9]{6,8}""".r
+  private val accountNumberRegex   = """[0-9]{8}""".r
   private val sortCodeRegex        = """[0-9]{6}""".r
 
   val form = Form[BankAccountDetails](
@@ -128,7 +128,7 @@ object EnterBankAccountDetailsForm {
   private val accountNameMaxLength     = 60
   private val rollNumberMaxLength      = 25
   private val accountNumberDigitRegex  = """^[0-9]+$""".r
-  private val accountNumberLengthRegex = """^.{6,8}$""".r
+  private val accountNumberLengthRegex = """^.{8}$""".r
   private val sortCodeDigitRegex       = """^[0-9]+$""".r
   private val sortCodeLengthRegex      = """^.{6}$""".r
 

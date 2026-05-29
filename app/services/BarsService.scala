@@ -21,65 +21,43 @@ import connectors.BarsConnector
 import models.BankAccountDetails
 import models.api._
 import models.bars._
-import models.bars.BarsError._
 import play.api.Logging
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-case class BarsService @Inject() (
-    barsConnector: BarsConnector
-)(implicit ec: ExecutionContext)
-    extends Logging {
+case class BarsService @Inject() (barsConnector: BarsConnector)(implicit ec: ExecutionContext) extends Logging {
 
   def verifyBankDetails(bankDetails: BankAccountDetails, bankAccountType: BankAccountType)(implicit
-      hc: HeaderCarrier): Future[(BankAccountDetailsStatus, Option[BarsVerificationResponse])] = {
+      hc: HeaderCarrier): Future[BarsResponseAndVerificationStatus] = {
 
     val requestBody: JsValue = buildJsonRequestBody(bankDetails, bankAccountType)
-    logger.info(s"Verifying bank details for account type: $bankAccountType")
 
     barsConnector
       .verify(bankAccountType, requestBody)
       .map { response =>
-        checkVerificationResult(response) match {
-          case Right(verified)             => (ValidStatus, Some(verified))
-          case Left(BankAccountUnverified) => (IndeterminateStatus, Some(response))
-          case Left(_)                     => (InvalidStatus, Some(response))
-        }
+        val (bankAccountDetailsStatus, listOfBarsErrorsAndReasons) = response.handleVerificationResponse
+        val optErrorReasons =
+          if (listOfBarsErrorsAndReasons.isEmpty) "" else listOfBarsErrorsAndReasons.map(_.barsError).mkString(" - Failure reasons: ", ", ", ".")
+        logger.info(s"Verification result for ${bankAccountType.asBars} bank details: $bankAccountDetailsStatus$optErrorReasons")
+        BarsResponseAndVerificationStatus(bankAccountDetailsStatus, barsVerificationResponse = Some(response))
       }
       .recover { case e =>
-        logger.error(s"Unexpected error verifying bank details for '$bankAccountType': ${e.getMessage}")
-        (InvalidStatus, None)
+        logger.error(s"Unexpected error when verifying ${bankAccountType.asBars} bank details: ${e.getMessage}")
+        BarsResponseAndVerificationStatus(InvalidStatus, barsVerificationResponse = None)
       }
   }
 
-  def checkVerificationResult(successResponse: BarsVerificationResponse): Either[BarsError, BarsVerificationResponse] =
-    if (successResponse.isSuccessful) {
-      logger.info("BARS verification returned a successful response")
-      Right(successResponse)
-    } else {
-      val errors = successResponse.check
-      logger.warn(s"BARS verification returned an unsuccessful response with failures: ${errors.mkString(", \n")}")
-      Left(errors.headOption.getOrElse(AccountNotFound))
-    }
-
-  def buildJsonRequestBody(bankDetails: BankAccountDetails, bankAccountType: BankAccountType): JsValue =
+  def buildJsonRequestBody(bankDetails: BankAccountDetails, bankAccountType: BankAccountType): JsValue = {
+    val barsAccount = BarsAccount(bankDetails.sortCode, bankDetails.number, bankDetails.rollNumber)
     bankAccountType match {
       case BankAccountType.Personal =>
-        Json.toJson(
-          BarsPersonalRequest(
-            BarsAccount(bankDetails.sortCode, bankDetails.number, bankDetails.rollNumber),
-            BarsSubject(bankDetails.name)
-          )
-        )
+        Json.toJson(BarsPersonalRequest(barsAccount, BarsSubject(bankDetails.name)))
       case BankAccountType.Business =>
-        Json.toJson(
-          BarsBusinessRequest(
-            BarsAccount(bankDetails.sortCode, bankDetails.number, bankDetails.rollNumber),
-            BarsBusiness(bankDetails.name)
-          )
-        )
+        Json.toJson(BarsBusinessRequest(barsAccount, BarsBusiness(bankDetails.name)))
     }
+  }
+
 }

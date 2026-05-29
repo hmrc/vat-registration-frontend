@@ -16,12 +16,14 @@
 
 package repositories
 
+import com.mongodb.client.model.Updates
 import config.FrontendAppConfig
 import models.Lock
 import models.Lock._
-import org.mongodb.scala.model._
 import org.mongodb.scala.model.Indexes.ascending
+import org.mongodb.scala.model._
 import play.api.libs.json._
+import services.LockService.attemptLimit
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
@@ -31,10 +33,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BarsLockRepository @Inject() (
-    mongoComponent: MongoComponent,
-    config: FrontendAppConfig
-)(implicit ec: ExecutionContext)
+class BarsLockRepository @Inject() (mongoComponent: MongoComponent, config: FrontendAppConfig)(implicit ec: ExecutionContext)
     extends PlayMongoRepository[Lock](
       collectionName = "bars-lock",
       mongoComponent = mongoComponent,
@@ -57,8 +56,6 @@ class BarsLockRepository @Inject() (
       replaceIndexes = true
     ) {
 
-  private val attemptLimit = 3
-
   def getAttemptsUsed(registrationId: String): Future[Int] =
     collection
       .find(Filters.eq("identifier", registrationId))
@@ -68,7 +65,7 @@ class BarsLockRepository @Inject() (
   def isLocked(registrationId: String): Future[Boolean] =
     getAttemptsUsed(registrationId).map(_ >= attemptLimit)
 
-  def recordFailedAttempt(registrationId: String): Future[Int] = {
+  def recordFailedAttemptAndReturnNewFailedCount(registrationId: String): Future[Int] = {
     val update = Updates.combine(
       Updates.inc("failedAttempts", 1),
       Updates.set("lastAttemptedAt", Instant.now()),
@@ -87,4 +84,5 @@ class BarsLockRepository @Inject() (
       .toFutureOption()
       .map(_.map(_.failedAttempts).getOrElse(1))
   }
+
 }

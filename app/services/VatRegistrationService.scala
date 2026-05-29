@@ -48,9 +48,6 @@ class VatRegistrationService @Inject()(vatRegConnector: VatRegistrationConnector
   def getVatScheme(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[VatScheme] =
     vatRegConnector.getRegistration[VatScheme](profile.registrationId)
 
-  def upsertVatScheme(vatScheme: VatScheme)(implicit profile: CurrentProfile, hc: HeaderCarrier, request: Request[_]): Future[VatScheme] =
-    vatRegConnector.upsertRegistration(profile.registrationId, vatScheme)
-
   def getAllRegistrations(implicit hc: HeaderCarrier, request: Request[_]): Future[List[VatSchemeHeader]] =
     vatRegConnector.getAllRegistrations.map(_.filter(_.createdDate.isAfter(LocalDate.MIN.plusDays(1)))) //Sanity check to guard against broken schemes
 

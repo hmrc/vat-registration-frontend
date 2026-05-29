@@ -16,29 +16,14 @@
 
 package models.bars
 
+import models.api.{IndeterminateStatus, InvalidStatus, ValidStatus}
 import models.bars.BarsError._
+import models.bars.BarsResponse._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.libs.json.{JsNumber, Json, JsString, JsSuccess}
+import play.api.libs.json.{JsNumber, JsString, JsSuccess, Json}
 
 class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
-
-  private def responseWith(
-      sortCodeIsPresentOnEISCD: BarsResponse = BarsResponse.Yes,
-      accountExists: BarsResponse = BarsResponse.Yes,
-      nameMatches: BarsResponse = BarsResponse.Yes
-  ): BarsVerificationResponse = BarsVerificationResponse(
-    accountNumberIsWellFormatted = BarsResponse.Yes,
-    sortCodeIsPresentOnEISCD = sortCodeIsPresentOnEISCD,
-    sortCodeBankName = None,
-    accountExists = accountExists,
-    nameMatches = nameMatches,
-    sortCodeSupportsDirectDebit = BarsResponse.Yes,
-    sortCodeSupportsDirectCredit = BarsResponse.Yes,
-    nonStandardAccountDetailsRequiredForBacs = None,
-    iban = None,
-    accountName = None
-  )
 
   "BarsResponse reads" should {
 
@@ -135,104 +120,124 @@ class BarsVerificationResponseSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "isSuccessful" should {
+  private val successfulResponse = BarsVerificationResponse(
+    accountNumberIsWellFormatted = BarsResponse.Yes,
+    sortCodeIsPresentOnEISCD = BarsResponse.Yes,
+    sortCodeBankName = None,
+    accountExists = BarsResponse.Yes,
+    nameMatches = BarsResponse.Yes,
+    sortCodeSupportsDirectDebit = BarsResponse.Yes,
+    sortCodeSupportsDirectCredit = BarsResponse.Yes,
+    nonStandardAccountDetailsRequiredForBacs = None,
+    iban = None,
+    accountName = None
+  )
 
-    "return true" when {
-      "all fields pass" in {
-        responseWith().isSuccessful shouldBe true
+  def barsErrorAndReason(error: BarsError, reasonSnippet: String): BarsErrorAndReason =
+    BarsErrorAndReason(error, s"${error.toString} failure: $reasonSnippet")
+
+  "handleVerificationResponse" should {
+    "return a ValidStatus and an empty BarsErrorAndReason list" when {
+      "the response is successful" in {
+        successfulResponse.handleVerificationResponse shouldBe (ValidStatus, Seq.empty[BarsErrorAndReason])
       }
-      "nameMatches is Partial" in {
-        responseWith(nameMatches = BarsResponse.Partial).isSuccessful shouldBe true
+
+      "nameMatches is Partial but the response is otherwise successful" in {
+        val successfulResponseWithPartialNameMatch = successfulResponse.copy(nameMatches = Partial)
+
+        successfulResponseWithPartialNameMatch.handleVerificationResponse shouldBe (ValidStatus, Seq.empty[BarsErrorAndReason])
       }
     }
 
-    "return false" when {
-      "sortCodeIsPresentOnEISCD is No" in {
-        responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No).isSuccessful shouldBe false
+    "return an IndeterminateStatus and a list of the relevant BarsErrorAndReasons" when {
+      "the result is BankAccountUnverified with reason 'accountExists = Indeterminate'" in {
+        val bankAccountVerificationFailedResponse = successfulResponse.copy(accountExists = Indeterminate)
+        val errorAndReason                        = barsErrorAndReason(BankAccountUnverified, "accountExists = Indeterminate")
+
+        bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (IndeterminateStatus, Seq(errorAndReason))
       }
-      "accountExists is No" in {
-        responseWith(accountExists = BarsResponse.No).isSuccessful shouldBe false
+
+      "the result is BankAccountUnverified with reason 'nameMatches = Indeterminate' IF 'accountExists == yes'" in {
+        val bankAccountVerificationFailedResponse = successfulResponse.copy(nameMatches = Indeterminate, accountExists = Yes)
+        val errorAndReason                        = barsErrorAndReason(BankAccountUnverified, "nameMatches = Indeterminate")
+
+        bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (IndeterminateStatus, Seq(errorAndReason))
       }
-      "accountExists is Indeterminate" in {
-        responseWith(accountExists = BarsResponse.Indeterminate).isSuccessful shouldBe false
+    }
+
+    "return an InvalidStatus and a list of the relevant BarsErrorAndReasons" when {
+      "the result is NameMismatch" when {
+        "'nameMatches = Indeterminate' AND accountExists is not 'yes'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(nameMatches = Indeterminate, accountExists = Indeterminate)
+          val errorAndReason1                       = barsErrorAndReason(BankAccountUnverified, "accountExists = Indeterminate")
+          val errorAndReason2                       = barsErrorAndReason(NameMismatch, "nameMatches = Indeterminate")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason1, errorAndReason2))
+        }
+
+        "'nameMatches = Inapplicable'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(nameMatches = Inapplicable)
+          val errorAndReason                        = barsErrorAndReason(NameMismatch, "nameMatches = Inapplicable")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
+
+        "'nameMatches = No'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(nameMatches = No)
+          val errorAndReason                        = barsErrorAndReason(NameMismatch, "nameMatches = No")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
       }
-      "accountExists is Inapplicable" in {
-        responseWith(accountExists = BarsResponse.Inapplicable).isSuccessful shouldBe false
+
+      "the result is ThirdPartyError" when {
+        "'nameMatches = error'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(nameMatches = Error)
+          val errorAndReason                        = barsErrorAndReason(ThirdPartyError, "nameMatches = Error")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
+
+        "'accountExists = error'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(accountExists = Error)
+          val errorAndReason                        = barsErrorAndReason(ThirdPartyError, "accountExists = Error")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
+
+        "'sortCodeIsPresentOnEISCD = error'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(sortCodeIsPresentOnEISCD = Error)
+          val errorAndReason                        = barsErrorAndReason(ThirdPartyError, "sortCodeIsPresentOnEISCD = Error")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
       }
-      "nameMatches is No" in {
-        responseWith(nameMatches = BarsResponse.No).isSuccessful shouldBe false
+
+      "the result is AccountNotFound" when {
+        "'accountExists = No'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(accountExists = No)
+          val errorAndReason                        = barsErrorAndReason(AccountNotFound, "accountExists = No")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
+
+        "'accountExists = Inapplicable'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(accountExists = Inapplicable)
+          val errorAndReason                        = barsErrorAndReason(AccountNotFound, "accountExists = Inapplicable")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
       }
-      "nameMatches is Indeterminate" in {
-        responseWith(nameMatches = BarsResponse.Indeterminate).isSuccessful shouldBe false
-      }
-      "nameMatches is Inapplicable" in {
-        responseWith(nameMatches = BarsResponse.Inapplicable).isSuccessful shouldBe false
+
+      "the result is SortCodeNotFound" when {
+        "'sortCodeIsPresentOnEISCD = No'" in {
+          val bankAccountVerificationFailedResponse = successfulResponse.copy(sortCodeIsPresentOnEISCD = No)
+          val errorAndReason                        = barsErrorAndReason(SortCodeNotFound, "sortCodeIsPresentOnEISCD = No")
+
+          bankAccountVerificationFailedResponse.handleVerificationResponse shouldBe (InvalidStatus, Seq(errorAndReason))
+        }
       }
     }
   }
 
-  "check" should {
-
-    "return an empty Seq" when {
-      "all fields pass" in {
-        responseWith().check shouldBe empty
-      }
-    }
-
-    "return Seq(SortCodeNotFound)" when {
-      "sortCodeIsPresentOnEISCD is No" in {
-        val response = responseWith(sortCodeIsPresentOnEISCD = BarsResponse.No)
-        response.check shouldBe Seq(SortCodeNotFound)
-      }
-    }
-
-    "return Seq(AccountNotFound)" when {
-      "accountExists is No" in {
-        val response = responseWith(accountExists = BarsResponse.No)
-        response.check shouldBe Seq(AccountNotFound)
-      }
-      "accountExists is Inapplicable" in {
-        val response = responseWith(accountExists = BarsResponse.Inapplicable)
-        response.check shouldBe Seq(AccountNotFound)
-      }
-    }
-
-    "return Seq(BankAccountUnverified)" when {
-      "accountExists is Indeterminate" in {
-        val response = responseWith(accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Seq(BankAccountUnverified)
-      }
-      "nameMatches is Indeterminate and accountExists is Yes" in {
-        val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Yes)
-        response.check shouldBe Seq(BankAccountUnverified)
-      }
-      "nameMatches is Indeterminate and accountExists is Indeterminate" in {
-        val response = responseWith(nameMatches = BarsResponse.Indeterminate, accountExists = BarsResponse.Indeterminate)
-        response.check shouldBe Seq(BankAccountUnverified)
-      }
-    }
-
-    "return Seq(NameMismatch)" when {
-      "nameMatches is No" in {
-        val response = responseWith(nameMatches = BarsResponse.No)
-        response.check shouldBe Seq(NameMismatch)
-      }
-      "nameMatches is Inapplicable" in {
-        val response = responseWith(nameMatches = BarsResponse.Inapplicable)
-        response.check shouldBe Seq(NameMismatch)
-      }
-    }
-
-    "return Seq(ThirdPartyError)" when {
-      "sortCodeIsPresentOnEISCD is Error" in {
-        responseWith(sortCodeIsPresentOnEISCD = BarsResponse.Error).check shouldBe Seq(ThirdPartyError)
-      }
-      "accountExists is Error" in {
-        responseWith(accountExists = BarsResponse.Error).check shouldBe Seq(ThirdPartyError)
-      }
-      "nameMatches is Error" in {
-        responseWith(nameMatches = BarsResponse.Error).check shouldBe Seq(ThirdPartyError)
-      }
-    }
-  }
 }

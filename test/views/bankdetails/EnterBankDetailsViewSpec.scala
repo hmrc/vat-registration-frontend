@@ -34,7 +34,7 @@ class EnterBankDetailsViewSpec extends VatRegViewSpec {
   val panelText = "You must tell us if your account details change."
   val accountName = "Name on the account"
   val accountNumber = "Account number"
-  val accountNumberHint = "Must be between 6 and 8 digits long"
+  val accountNumberHint = "Must be 8 digits long"
   val sortCode = "Sort code"
   val sortCodeHint = "Must be 6 digits long"
   val rollNumber = "Building society roll number (if you have one)"

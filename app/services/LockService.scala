@@ -16,7 +16,7 @@
 
 package services
 
-import models.CurrentProfile
+import models.{CurrentProfile, DontWantToProvide, NoUKBankAccount}
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import repositories.BarsLockRepository
@@ -31,8 +31,8 @@ class LockService @Inject() (barsLockRepository: BarsLockRepository) extends Log
   def getBarsAttemptsUsed(registrationId: String): Future[Int] =
     barsLockRepository.getAttemptsUsed(registrationId)
 
-  def incrementBarsAttempts(registrationId: String): Future[Int] =
-    barsLockRepository.recordFailedAttempt(registrationId)
+  def incrementBarsAttemptsAndReturnNewFailedCount(registrationId: String): Future[Int] =
+    barsLockRepository.recordFailedAttemptAndReturnNewFailedCount(registrationId)
 
   def isBarsLocked(registrationId: String): Future[Boolean] =
     barsLockRepository.isLocked(registrationId)
@@ -42,4 +42,11 @@ class LockService @Inject() (barsLockRepository: BarsLockRepository) extends Log
       if (isLocked) Future.successful(Redirect(controllers.errors.routes.BankDetailsLockoutController.show)) else notLockedScenario
     }
 
+}
+
+object LockService {
+  val attemptLimit: Int              = 3
+  val lockoutReason: NoUKBankAccount = DontWantToProvide
+  val accountIsUnlocked: String = "unlocked"
+  val accountIsLocked: String = "locked"
 }
