@@ -18,10 +18,8 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
-import featuretoggle.FeatureToggleSupport.isEnabled
 import models.bars.{BarsFailedNotLocked, BarsLockedOut, BarsSuccess}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent}
 import services.BankAccountDetailsService.redirectBackToFirstPageInJourney
 import services.{BankAccountDetailsService, LockService, SessionService}
 import views.html.bankdetails.CheckBankDetailsView
@@ -38,32 +36,25 @@ class CheckBankDetailsController @Inject() (
 )(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
-  private def redirectToFirstPageIfSwitchIsOff(block: => Future[Result]): Future[Result] =
-    if (isEnabled(UseNewBarsVerify)) block else Future.successful(redirectBackToFirstPageInJourney)
-
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    redirectToFirstPageIfSwitchIsOff {
-      lockService.redirectIfBarsIsLocked {
-        bankAccountDetailsService.getBankAccount.map(_.flatMap(_.details)).map {
-          case Some(bankDetails) => Ok(view(bankDetails))
-          case None              => Redirect(routes.CanYouProvideBankAccountDetailsController.show)
-        }
+    lockService.redirectIfBarsIsLocked {
+      bankAccountDetailsService.getBankAccount.map(_.flatMap(_.details)).map {
+        case Some(bankDetails) => Ok(view(bankDetails))
+        case None              => Redirect(routes.CanYouProvideBankAccountDetailsController.show)
       }
     }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    redirectToFirstPageIfSwitchIsOff {
-      bankAccountDetailsService.getBankAccount.flatMap { bankAccount =>
-        (bankAccount.flatMap(_.details), bankAccount.flatMap(_.bankAccountType)) match {
-          case (Some(bankAccountDetails), Some(accountType)) =>
-            bankAccountDetailsService.verifyAndSaveBankAccountDetails(bankAccountDetails, accountType).map {
-              case BarsSuccess         => Redirect(controllers.routes.TaskListController.show.url)
-              case BarsFailedNotLocked => Redirect(routes.AccountDetailsNotVerifiedController.show)
-              case BarsLockedOut       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
-            }
-          case _ => Future.successful(redirectBackToFirstPageInJourney)
-        }
+    bankAccountDetailsService.getBankAccount.flatMap { bankAccount =>
+      (bankAccount.flatMap(_.details), bankAccount.flatMap(_.bankAccountType)) match {
+        case (Some(bankAccountDetails), Some(accountType)) =>
+          bankAccountDetailsService.verifyAndSaveBankAccountDetails(bankAccountDetails, accountType).map {
+            case BarsSuccess         => Redirect(controllers.routes.TaskListController.show.url)
+            case BarsFailedNotLocked => Redirect(routes.AccountDetailsNotVerifiedController.show)
+            case BarsLockedOut       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)
+          }
+        case _ => Future.successful(redirectBackToFirstPageInJourney)
       }
     }
   }

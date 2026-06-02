@@ -28,9 +28,9 @@ class BankAccountDetailsFormSpec extends PlaySpec {
   val validRollNumber    = "AB/121212"
 
   "EnterBankAccountDetailsForm (useBarsVerify OFF)" should {
-    import forms.EnterCompanyBankAccountDetailsForm._
+    import forms.EnterBankAccountDetailsForm._
 
-    val form = EnterCompanyBankAccountDetailsForm.form
+    val form = EnterBankAccountDetailsForm.form
 
     "successfully bind data to the form with no errors and allow the return of a valid BankAccountDetails case class" in {
       val formData = Map(
@@ -117,7 +117,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe accountNumberInvalidKey
+      boundForm.errors.head.message mustBe accountNumberInvalidFormatKey
     }
 
     "return a FormError when binding an account number that is too short" in {
@@ -133,7 +133,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe accountNumberInvalidKey
+      boundForm.errors.head.message mustBe accountNumberInvalidLengthKey
     }
 
     "return a FormError when binding an account number that is too long" in {
@@ -149,7 +149,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe accountNumberInvalidKey
+      boundForm.errors.head.message mustBe accountNumberInvalidLengthKey
     }
 
     "return No FormError when binding a valid account number with spaces to the form" in {
@@ -191,7 +191,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
 
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe SORT_CODE
-      boundForm.errors.head.message mustBe sortCodeInvalidKey
+      boundForm.errors.head.message mustBe sortCodeFormatKey
     }
   }
 
@@ -278,7 +278,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberInvalidKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberInvalidLengthKey
     }
 
     "return a FormError when account number is 8 characters but contains letters" in {
@@ -293,7 +293,7 @@ class BankAccountDetailsFormSpec extends PlaySpec {
       val boundForm = form.bind(formData)
       boundForm.errors.size mustBe 1
       boundForm.errors.head.key mustBe ACCOUNT_NUMBER
-      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberFormatKey
+      boundForm.errors.head.message mustBe EnterBankAccountDetailsForm.accountNumberInvalidFormatKey
     }
 
     "return a FormError when sort code is empty" in {

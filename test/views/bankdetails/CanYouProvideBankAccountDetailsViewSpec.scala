@@ -88,7 +88,7 @@ class CanYouProvideBankAccountDetailsViewSpec extends VatRegViewSpec {
         view(CanYouProvideBankAccountDetailsForm.form.withError("value", "validation.canYouProvideBankAccountDetails.missing")).body
       )
       errorDoc.hasErrorSummary mustBe true
-      errorDoc.errorSummaryLinks.head.text mustBe "Select ‘Yes’ if you are able to provide bank for the business"
+      errorDoc.errorSummaryLinks.head.text mustBe "Select ‘Yes’ if you are able to provide bank details for the business"
     }
   }
 

@@ -18,8 +18,6 @@ package controllers.bankdetails
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
-import featuretoggle.FeatureToggleSupport.isEnabled
 import forms.CanYouProvideBankAccountDetailsForm.form
 import models.api.{Individual, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
@@ -34,23 +32,23 @@ class CanYouProvideBankAccountDetailsController @Inject() (val authConnector: Au
                                                            val sessionService: SessionService,
                                                            val vatRegistrationService: VatRegistrationService,
                                                            val lockService: LockService,
-                                                           newView: CanYouProvideBankAccountDetailsView)(implicit
+                                                           view: CanYouProvideBankAccountDetailsView)(implicit
     appConfig: FrontendAppConfig,
     val executionContext: ExecutionContext,
     baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).flatMap {
-      case (Individual | NonUkNonEstablished, false) =>
-        Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
-      case _ =>
-        lockService.redirectIfBarsIsLocked {
-          for {
-            bankDetails <- bankAccountDetailsService.getBankAccount
-            filledForm = bankDetails.map(_.isProvided).fold(form)(form.fill)
-          } yield Ok(newView(filledForm))
-        }
+    lockService.redirectIfBarsIsLocked {
+      vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).flatMap {
+        case (Individual | NonUkNonEstablished, false) =>
+          Future.successful(Redirect(controllers.flatratescheme.routes.JoinFlatRateSchemeController.show))
+        case _ =>
+          bankAccountDetailsService.getBankAccount.map { bankDetails =>
+            val filledForm = bankDetails.map(_.isProvided).fold(form)(form.fill)
+            Ok(view(filledForm))
+          }
+      }
     }
   }
 
@@ -58,14 +56,10 @@ class CanYouProvideBankAccountDetailsController @Inject() (val authConnector: Au
     form
       .bindFromRequest()
       .fold(
-        formWithErrors => Future.successful(BadRequest(newView(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         hasBankAccount =>
           bankAccountDetailsService.saveAnswerCanProvideBankAccountDetailsPage(hasBankAccount).map { _ =>
-            (hasBankAccount, isEnabled(UseNewBarsVerify)) match {
-              case (true, false) => Redirect(routes.UkBankAccountDetailsController.show)
-              case (true, true)  => Redirect(routes.ChooseAccountTypeController.show)
-              case (false, _)    => Redirect(routes.NoUKBankAccountController.show)
-            }
+            if (hasBankAccount) Redirect(routes.ChooseAccountTypeController.show) else Redirect(routes.NoUKBankAccountController.show)
           }
       )
   }
