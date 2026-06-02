@@ -49,7 +49,7 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
         }
       }
     } else {
-      Future.successful(Redirect(routes.HasBankAccountController.show))
+      Future.successful(Redirect(routes.CanYouProvideBankAccountDetailsController.show))
     }
   }
 

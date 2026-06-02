@@ -38,7 +38,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
   "GET /check-bank-details" when {
     "UseNewBarsVerify is disabled" must {
 
-      "redirect to HasBankAccountController" in new Setup {
+      "redirect to the first page in the journey (CanYouProvideBankAccountDetails page)" in new Setup {
         disable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -47,12 +47,12 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
       }
     }
 
     "UseNewBarsVerify is enabled" must {
-      "redirect to HasBankAccountController when there are no BankAccountDetails saved in backend database" in new Setup {
+      "redirect to the first page in the journey (CanYouProvideBankAccountDetails page) when there are no BankAccountDetails saved in backend database" in new Setup {
         enable(UseNewBarsVerify)
         given().user.isAuthorised()
           .registrationApi.getSection[BankAccount](None)
@@ -62,7 +62,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).get())
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
       }
 
       "return OK and display bank details when session contains bank details and token" in new Setup {
@@ -103,7 +103,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
   "POST /check-bank-details" when {
     "UseNewBarsVerify is disabled" must {
 
-      "redirect to HasBankAccountController" in new Setup {
+      "redirect to the first page in the journey (CanYouProvideBankAccountDetails page)" in new Setup {
         disable(UseNewBarsVerify)
         given().user.isAuthorised()
 
@@ -112,7 +112,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
       }
     }
 
@@ -194,7 +194,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
           val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
         }
 
         "BankAccount details have no BankAccountDetails data" in new Setup {
@@ -207,7 +207,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
           val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
         }
 
         "BankAccount details have no BankAccountType data" in new Setup {
@@ -220,7 +220,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
           val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
           res.status mustBe SEE_OTHER
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
         }
       }
     }

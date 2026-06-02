@@ -41,16 +41,13 @@
         @messages("pages.bankDetails.p1.new")
     }
 
-    @panelIndent {
-        @messages("pages.bankDetails.info")
-    }
-
     @formWithCSRF(action = controllers.bankdetails.routes.UkBankAccountDetailsController.submit) {
         @inputText(form = bankDetailsForm,
             id = "accountName",
             name = "accountName",
             label = messages("pages.bankDetails.accountName.label.new"),
-            classes = Some("govuk-input--width-20"),
+            labelOnlyClasses = Some("govuk-!-font-weight-bold"),
+            inputOnlyClasses = Some("govuk-input--width-20"),
             isPageHeading = false,
             hint = Some(Html(messages("pages.bankDetails.accountName.hint"))))
 
@@ -58,7 +55,8 @@
             id = "accountNumber",
             name = "accountNumber",
             label = messages("pages.bankDetails.accountNumber.label"),
-            classes = Some("govuk-input--width-10"),
+            labelOnlyClasses = Some("govuk-!-font-weight-bold"),
+            inputOnlyClasses = Some("govuk-input--width-10"),
             isPageHeading = false,
             hint = Some(Html(messages("pages.bankDetails.accountNumber.hint"))))
 
@@ -66,17 +64,23 @@
             id = "sortCode",
             name = "sortCode",
             label = messages("pages.bankDetails.sortCode.label"),
-            classes = Some("govuk-input--width-5"),
+            labelOnlyClasses = Some("govuk-!-font-weight-bold"),
+            inputOnlyClasses = Some("govuk-input--width-5"),
             isPageHeading = false,
             hint = Some(Html(messages("pages.bankDetails.sortCode.hint"))))
 
-            @inputText(form = bankDetailsForm,
-                id = "rollNumber",
-                name = "rollNumber",
-                label = messages("pages.bankDetails.rollNumber.label"),
-                classes = Some("govuk-input--width-20"),
-                isPageHeading = false,
-                hint = Some(Html(messages("pages.bankDetails.rollNumber.hint"))))
+        @inputText(form = bankDetailsForm,
+            id = "rollNumber",
+            name = "rollNumber",
+            label = messages("pages.bankDetails.rollNumber.label"),
+            labelOnlyClasses = Some("govuk-!-font-weight-bold"),
+            inputOnlyClasses = Some("govuk-input--width-20"),
+            isPageHeading = false,
+            hint = Some(Html(messages("pages.bankDetails.rollNumber.hint"))))
+
+        @panelIndent {
+            @messages("pages.bankDetails.info")
+        }
 
         @button("app.common.continue")
     }

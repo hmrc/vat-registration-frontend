@@ -26,6 +26,8 @@
         headingMessageArgs: Seq[String] = Seq(),
         hint: Option[Html] = None,
         classes: Option[String] = None,
+        labelOnlyClasses: Option[String] = None,
+        inputOnlyClasses: Option[String] = None,
         stripWhitespace: Boolean = false,
         autocomplete: Option[String] = None,
         inputType: String = "text"
@@ -41,11 +43,11 @@
 @govukInput(Input(
   id,
   name,
-  classes = classes.fold("")(x => x),
+  classes = inputOnlyClasses.getOrElse(classes.fold("")(x => x)),
   label = Label(
     content = Text(messages(label, headingMessageArgs:_*)),
     isPageHeading = isPageHeading,
-    classes = labelClasses
+    classes = labelOnlyClasses.getOrElse(labelClasses)
   ),
   hint = hint.map(hintHtml => Hint(
       content = HtmlContent(hintHtml)

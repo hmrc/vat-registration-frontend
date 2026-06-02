@@ -34,7 +34,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
   val url = "/choose-account-type"
 
   "GET /choose-account-type" must {
-    "redirect to HasBankAccountController when feature switch is disabled" in new Setup {
+    "redirect to the first page in the journey (CanYouProvideBankAccountDetails page) when feature switch is disabled" in new Setup {
       disable(UseNewBarsVerify)
       given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
 
@@ -43,7 +43,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
       val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url)
       enable(UseNewBarsVerify)
     }
 

@@ -244,7 +244,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
             )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.HasBankAccountController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
       }
 
       "return BAD_REQUEST without setting fromEnterDetails in session when form fields are empty" in new Setup {

@@ -53,16 +53,16 @@ class BankAccountDetailsService @Inject() (
     regApiConnector.replaceSection[BankAccount](profile.registrationId, bankAccount)
   }
 
-  def saveAnswerForHasCompanyBankAccountPage(hasBankAccount: Boolean)(implicit
+  def saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails: Boolean)(implicit
       hc: HeaderCarrier,
       profile: CurrentProfile,
       appConfig: FrontendAppConfig,
       ex: ExecutionContext,
       request: Request[_]): Future[BankAccount] =
     if (isEnabled(UseNewBarsVerify)) {
-      newSaveAnswerForCanProvideBankAccountDetailsPage(hasBankAccount)
+      newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)
     } else {
-      oldSaveAnswerForCanProvideBankAccountDetailsPage(hasBankAccount)
+      oldSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)
     }
 
   private def newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails: Boolean)(implicit
@@ -262,5 +262,5 @@ class BankAccountDetailsService @Inject() (
 }
 
 object BankAccountDetailsService {
-  val redirectBackToFirstPageInJourney: Result = Redirect(routes.HasBankAccountController.show)
+  val redirectBackToFirstPageInJourney: Result = Redirect(routes.CanYouProvideBankAccountDetailsController.show)
 }

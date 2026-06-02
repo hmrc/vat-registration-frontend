@@ -354,7 +354,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val accountIsProvidedRow = optSummaryListRowBoolean(
       s"$sectionId.companyBankAccount",
       bankAccount.map(_.isProvided),
-      Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
+      Some(controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url)
     )
 
     val companyBankAccountDetails = optSummaryListRowSeq(

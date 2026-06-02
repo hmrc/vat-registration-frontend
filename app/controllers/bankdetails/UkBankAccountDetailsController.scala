@@ -21,6 +21,7 @@ import controllers.BaseController
 import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport.isEnabled
 import forms.EnterCompanyBankAccountDetailsForm.{form => enterBankAccountDetailsForm}
+import forms.EnterBankAccountDetailsForm.form
 import forms.{EnterBankAccountDetailsForm, EnterCompanyBankAccountDetailsForm}
 import play.api.mvc.{Action, AnyContent}
 import services.BankAccountDetailsService.redirectBackToFirstPageInJourney
@@ -30,8 +31,7 @@ import views.html.bankdetails.{EnterBankAccountDetails, EnterCompanyBankAccountD
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UkBankAccountDetailsController @Inject() (
-    val authConnector: AuthClientConnector,
+class UkBankAccountDetailsController @Inject() (val authConnector: AuthClientConnector,
     val bankAccountDetailsService: BankAccountDetailsService,
     val sessionService: SessionService,
     val lockService: LockService,
@@ -43,12 +43,9 @@ class UkBankAccountDetailsController @Inject() (
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     if (isEnabled(UseNewBarsVerify)) {
       lockService.redirectIfBarsIsLocked {
-        val newBarsForm = EnterBankAccountDetailsForm.form
         bankAccountDetailsService.getBankAccount.map { bankAccount =>
-          bankAccount.flatMap(_.details) match {
-            case Some(details) => Ok(newBarsView(newBarsForm.fill(details)))
-            case None          => Ok(newBarsView(newBarsForm))
-          }
+          val filledForm = bankAccount.flatMap(_.details).fold(form)(form.fill)
+          Ok(newBarsView(filledForm))
         }
       }
     } else {

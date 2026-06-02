@@ -291,7 +291,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLNotStarted
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
     }
 
@@ -321,7 +321,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLInProgress
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
 
       "return TLInProgress if user doesn't have bank account and no reason is provided" in {
@@ -350,7 +350,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLInProgress
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
     }
 
@@ -377,7 +377,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLCompleted
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
 
       "return TLCompleted if user doesn't have a bank account and provides reason for no bank account" in {
@@ -402,7 +402,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLCompleted
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
     }
 
@@ -430,7 +430,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLInProgress
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
 
       "return TLComplete if the user selects no uk bank account and gives a reason" in {
@@ -456,7 +456,7 @@ class VatRegistrationTaskListSpec(implicit appConfig: FrontendAppConfig) extends
 
         val sectionRow = section.bankAccountDetailsRow(businessService).build(scheme)
         sectionRow.status mustBe TLCompleted
-        sectionRow.url mustBe controllers.bankdetails.routes.HasBankAccountController.show.url
+        sectionRow.url mustBe controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url
       }
 
       "return TLCannotStart when prerequisites are not met regardless of lock" in {

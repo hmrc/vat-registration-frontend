@@ -46,7 +46,7 @@ class CheckBankDetailsController @Inject() (
       lockService.redirectIfBarsIsLocked {
         bankAccountDetailsService.getBankAccount.map(_.flatMap(_.details)).map {
           case Some(bankDetails) => Ok(view(bankDetails))
-          case None              => Redirect(routes.HasBankAccountController.show)
+          case None              => Redirect(routes.CanYouProvideBankAccountDetailsController.show)
         }
       }
     }
