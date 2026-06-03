@@ -964,16 +964,16 @@ page.IndividualAffinityKickOut.signInLink            = Mewngofnodwch i gyfrif tr
 page.IndividualAffinityKickOut.createLink            = Creu cyfrif treth busnes
 
 # Can You Provide Bank Account Details Page
-pages.canYouProvideBankAccountDetails.heading         = TBC
-pages.canYouProvideBankAccountDetails.subheading      = TBC
-pages.canYouProvideBankAccountDetails.p1              = TBC
-pages.canYouProvideBankAccountDetails.p2              = TBC
-pages.canYouProvideBankAccountDetails.p3              = TBC
+pages.canYouProvideBankAccountDetails.heading         = Manylion bancio ar gyfer ad-daliadau TAW
+pages.canYouProvideBankAccountDetails.subheading      = A allwch chi roi manylion bancio ar gyfer ad-daliadau TAW i’r busnes?
+pages.canYouProvideBankAccountDetails.p1              = Os yw CThEM yn ddyledus arian i’r busnes, bydd yn ad-dalu hwn yn uniongyrchol i’ch cyfrif.
+pages.canYouProvideBankAccountDetails.p2              = Mae BACS fel arfer yn cael ei ddefnyddio ar gyfer ad-daliadau TAW oherwydd ei fod yn ddull cyflymach a mwy diogel na siec.
+pages.canYouProvideBankAccountDetails.p3              = Mae’n rhaid i’r cyfrif rydych yn ei ddewis i gael ad-daliadau TAW gael ei:
 pages.canYouProvideBankAccountDetails.l1              = a ddefnyddir ar gyfer y busnes hwn yn unig
 pages.canYouProvideBankAccountDetails.l2              = yn enw’r unigolyn neu’r cwmni sy’n cofrestru ar gyfer TAW
 pages.canYouProvideBankAccountDetails.l3              = wedi’i leoli yn y DU
 pages.canYouProvideBankAccountDetails.l4              = gallu derbyn taliadau BACS
-validation.canYouProvideBankAccountDetails.missing    = Dewiswch ‘Iawn’ os ydych yn gallu rhoi manylion banc ar gyfer y busnes
+validation.canYouProvideBankAccountDetails.missing    = Dewiswch ‘Iawn’ os gallwch roi manylion bancio ar gyfer ad-daliadau TAW
 
 # No UK Bank Account Page
 pages.noUKBankAccount.heading                        = Pam na allwch roi manylion cyfrif banc ar gyfer y busnes?
