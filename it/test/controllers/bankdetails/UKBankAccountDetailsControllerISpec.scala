@@ -27,6 +27,8 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames
 
+import java.time.Instant
+
 class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistrationFixtures {
 
   val url = "/account-details"
@@ -167,10 +169,14 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
               "accountNumber" -> "",
               "sortCode"      -> ""
             )))
+        val output: Document = Jsoup.parse(res.body)
 
         res.status mustBe BAD_REQUEST
-        Jsoup.parse(res.body).title() must include(
-          "Error: Can you provide banking details for VAT repayments to the business? - Register for VAT - GOV.UK")
+        output.title() must include(
+          "Error: What are the business’s account details? - Register for VAT - GOV.UK")
+        output.body().toString must include("Enter the name on the account")
+        output.body().toString must include("Enter the account number")
+        output.body().toString must include("Enter the sort code")
       }
 
       "the form is submitted with an invalid account number" in new Setup {
@@ -185,10 +191,12 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
               "accountNumber" -> "invalid",
               "sortCode"      -> testSortCode
             )))
+        val output: Document = Jsoup.parse(res.body)
 
         res.status mustBe BAD_REQUEST
-        Jsoup.parse(res.body).title() must include(
-          "Error: Can you provide banking details for VAT repayments to the business? - Register for VAT - GOV.UK")
+        output.title() must include(
+          "Error: What are the business’s account details? - Register for VAT - GOV.UK")
+        output.body().toString must include("Account number must only contain numbers")
       }
     }
   }

@@ -43,7 +43,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
         val doc: Document   = Jsoup.parse(res.body)
 
         res.status mustBe OK
-        doc.title() mustBe "Can you provide banking details for VAT repayments to the business? - Register for VAT - GOV.UK"
+        doc.title() mustBe "What kind of bank or building society account will you use for VAT repayments? - Register for VAT - GOV.UK"
         doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe false
         doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe false
       }
@@ -57,7 +57,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
         val doc: Document   = Jsoup.parse(res.body)
 
         res.status mustBe OK
-        doc.title() mustBe "Can you provide banking details for VAT repayments to the business? - Register for VAT - GOV.UK"
+        doc.title() mustBe "What kind of bank or building society account will you use for VAT repayments? - Register for VAT - GOV.UK"
         doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe false
         doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe true
       }
@@ -71,7 +71,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
         val doc: Document   = Jsoup.parse(res.body)
 
         res.status mustBe OK
-        doc.title() mustBe "Can you provide banking details for VAT repayments to the business? - Register for VAT - GOV.UK"
+        doc.title() mustBe "What kind of bank or building society account will you use for VAT repayments? - Register for VAT - GOV.UK"
         doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe true
         doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe false
       }
