@@ -73,7 +73,7 @@ object VatRegistrationTaskList {
       appConfig: FrontendAppConfig): TaskListRowBuilder =
     TaskListRowBuilder(
       messageKey = _ => "tasklist.vatRegistration.bankAccountDetails",
-      url = _ => _ => controllers.bankdetails.routes.HasBankAccountController.show.url,
+      url = _ => _ => controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url,
       tagId = "bankAccountDetailsRow",
       checks = scheme => {
           Seq(scheme.bankAccount.isDefined)

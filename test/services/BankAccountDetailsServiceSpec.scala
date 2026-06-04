@@ -110,7 +110,7 @@ class BankAccountDetailsServiceSpec
             mockGetSection[BankAccount](testRegId, None)
             mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = submittedAnswer))
+            val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = submittedAnswer))
 
             result mustBe modelToSave
             verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -124,7 +124,7 @@ class BankAccountDetailsServiceSpec
             mockGetSection[BankAccount](testRegId, Some(existingData))
             mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = submittedAnswer))
+            val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = submittedAnswer))
 
             result mustBe existingData
             verifyReplaceSectionIsNotCalled(testRegId, modelToSave)
@@ -140,7 +140,7 @@ class BankAccountDetailsServiceSpec
           mockGetSection[BankAccount](testRegId, Some(existingData))
           mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = true))
+          val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = true))
 
           result mustBe modelToSave
           verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -160,7 +160,7 @@ class BankAccountDetailsServiceSpec
             mockGetSection[BankAccount](testRegId, Some(existingData))
             mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+            val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
             result mustBe modelToSave
             verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -177,7 +177,7 @@ class BankAccountDetailsServiceSpec
             mockGetSection[BankAccount](testRegId, Some(existingData))
             mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+            val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
             result mustBe modelToSave
             verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -194,7 +194,7 @@ class BankAccountDetailsServiceSpec
             mockGetSection[BankAccount](testRegId, Some(existingData))
             mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+            val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
             result mustBe modelToSave
             verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -213,7 +213,7 @@ class BankAccountDetailsServiceSpec
             mockGetSection[BankAccount](testRegId, Some(existingData))
             mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-            val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+            val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
             result mustBe modelToSave
             verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -221,34 +221,27 @@ class BankAccountDetailsServiceSpec
         }
 
         "save new data and delete old 'isProvided' value when that is all that has been entered" in new Setup(switchIsOn = true) {
-          private val existingData = BankAccount(
-            isProvided = true,
-            details = None,
-            reason = None,
-            bankAccountType = None)
-          private val modelToSave = existingData.copy(isProvided = false)
+          private val existingData = BankAccount(isProvided = true, details = None, reason = None, bankAccountType = None)
+          private val modelToSave  = existingData.copy(isProvided = false)
 
           mockGetSection[BankAccount](testRegId, Some(existingData))
           mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+          val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
           result mustBe modelToSave
           verifyReplaceSectionIsCalled(testRegId, modelToSave)
         }
 
-        "save new data and delete old 'isProvided' and 'bankAccountType' values when bank account details have not been entered" in new Setup(switchIsOn = true) {
-          private val existingData = BankAccount(
-            isProvided = true,
-            details = None,
-            reason = None,
-            bankAccountType = Some(Personal))
-          private val modelToSave = existingData.copy(isProvided = false, bankAccountType = None)
+        "save new data and delete old 'isProvided' and 'bankAccountType' values when bank account details have not been entered" in new Setup(
+          switchIsOn = true) {
+          private val existingData = BankAccount(isProvided = true, details = None, reason = None, bankAccountType = Some(Personal))
+          private val modelToSave  = existingData.copy(isProvided = false, bankAccountType = None)
 
           mockGetSection[BankAccount](testRegId, Some(existingData))
           mockReplaceSection[BankAccount](testRegId, modelToSave)
 
-          val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+          val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
           result mustBe modelToSave
           verifyReplaceSectionIsCalled(testRegId, modelToSave)
@@ -264,7 +257,7 @@ class BankAccountDetailsServiceSpec
         mockGetSection[BankAccount](testRegId, Some(existingProvidedBankAccountState))
         mockReplaceSection[BankAccount](testRegId, existingProvidedBankAccountState)
 
-        val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = true))
+        val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = true))
 
         result mustBe existingProvidedBankAccountState
       }
@@ -276,7 +269,7 @@ class BankAccountDetailsServiceSpec
         mockGetSection[BankAccount](testRegId, Some(existingNoBankAccountState))
         mockReplaceSection[BankAccount](testRegId, existingNoBankAccountState)
 
-        val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = false))
+        val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = false))
 
         result mustBe existingNoBankAccountState
       }
@@ -290,23 +283,23 @@ class BankAccountDetailsServiceSpec
         mockGetSection[BankAccount](testRegId, Some(existingNoBankAccountState))
         mockReplaceSection[BankAccount](testRegId, clearedBankAccount)
 
-        val result: BankAccount = await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount = true))
+        val result: BankAccount = await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails = true))
 
         result mustBe clearedBankAccount
       }
 
       "return a new blank BankAccount model if no previous bank account state available" in new Setup(switchIsOn = false) {
-        def verifyIncompleteBankAccount(service: BankAccountDetailsService, hasBankAccount: Boolean): Assertion = {
-          val incompleteBankAccount: BankAccount = BankAccount(hasBankAccount, None, None, None)
+        def verifyIncompleteBankAccount(service: BankAccountDetailsService, canProvideBankAccountDetails: Boolean): Assertion = {
+          val incompleteBankAccount: BankAccount = BankAccount(canProvideBankAccountDetails, None, None, None)
 
           mockGetSection[BankAccount](testRegId, None)
           mockReplaceSection[BankAccount](testRegId, incompleteBankAccount)
 
-          await(service.saveAnswerForHasCompanyBankAccountPage(hasBankAccount)) mustBe incompleteBankAccount
+          await(service.saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)) mustBe incompleteBankAccount
         }
 
-        verifyIncompleteBankAccount(service, hasBankAccount = false)
-        verifyIncompleteBankAccount(service, hasBankAccount = true)
+        verifyIncompleteBankAccount(service, canProvideBankAccountDetails = false)
+        verifyIncompleteBankAccount(service, canProvideBankAccountDetails = true)
       }
     }
   }

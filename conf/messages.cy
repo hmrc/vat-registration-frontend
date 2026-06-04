@@ -963,26 +963,17 @@ page.IndividualAffinityKickOut.p1                    = Er mwyn cofrestru ar gyfe
 page.IndividualAffinityKickOut.signInLink            = Mewngofnodwch i gyfrif treth busnes eich sefydliad
 page.IndividualAffinityKickOut.createLink            = Creu cyfrif treth busnes
 
-# Company Bank Account Page
-pages.hasCompanyBankAccount.heading                   = Ydych chi’n gallu darparu manylion cyfrif banc neu gymdeithas adeiladu ar gyfer y busnes?
-pages.hasCompanyBankAccount.para                      = Os oes arnom arian i’r busnes, gallwn ad-dalu hwn drwy BACS yn uniongyrchol i’ch cyfrif banc. Mae hyn yn gyflymach ac yn fwy diogel na siec CThEF.
-pages.hasCompanyBankAccount.para2                     = Nid oes rhaid i’r cyfrif fod yn gyfrif busnes pwrpasol, ond mae’n rhaid iddo fod:
-pages.hasCompanyBankAccount.bullet1                   = ar wahân i gyfrif personol
-pages.hasCompanyBankAccount.bullet2                   = yn enw’r person neu gwmni cofrestredig
-pages.hasCompanyBankAccount.bullet3                   = yn y DU
-pages.hasCompanyBankAccount.bullet4                   = yn gallu derbyn taliadau drwy BACS
-validation.hasCompanyBankAccount.missing              = Dewiswch ‘Iawn’ os ydych yn gallu rhoi manylion banc neu gymdeithas adeiladu ar gyfer y busnes
-
-# New Can Provide Bank Account Page
-pages.canProvideBankAccount.heading                   = A allwch chi ddarparu manylion banc neu gymdeithas adeiladu ar gyfer ad-daliadau TAW i’r busnes?
-pages.canProvideBankAccount.para                      = Os oes arian yn ddyledus i’r busnes gan CThEF, bydd hwn yn cael ei ad-dalu yn uniongyrchol i gyfrif eich busnes.
-pages.canProvideBankAccount.para2                     = Mae BACS fel arfer yn cael ei ddefnyddio ar gyfer ad-daliadau TAW oherwydd ei fod yn ddull cyflymach a mwy diogel na thalu gyda siec.
-pages.canProvideBankAccount.para3                     = Mae’n rhaid i’r cyfrif rydych yn ei ddewis i gael ad-daliadau TAW gael ei:
-pages.canProvideBankAccount.bullet1                   = a ddefnyddir ar gyfer y busnes hwn yn unig
-pages.canProvideBankAccount.bullet2                   = yn enw’r unigolyn neu’r cwmni sy’n cofrestru ar gyfer TAW
-pages.canProvideBankAccount.bullet3                   = wedi’i leoli yn y DU
-pages.canProvideBankAccount.bullet4                   = gallu derbyn taliadau BACS
-validation.canProvideBankAccount.missing              = Dewiswch ‘Iawn’ os ydych yn gallu rhoi manylion banc neu gymdeithas adeiladu ar gyfer y busnes
+# Can You Provide Bank Account Details Page
+pages.canYouProvideBankAccountDetails.heading         = Manylion bancio ar gyfer ad-daliadau TAW
+pages.canYouProvideBankAccountDetails.subheading      = A allwch chi roi manylion bancio ar gyfer ad-daliadau TAW i’r busnes?
+pages.canYouProvideBankAccountDetails.p1              = Os yw CThEM yn ddyledus arian i’r busnes, bydd yn ad-dalu hwn yn uniongyrchol i’ch cyfrif.
+pages.canYouProvideBankAccountDetails.p2              = Mae BACS fel arfer yn cael ei ddefnyddio ar gyfer ad-daliadau TAW oherwydd ei fod yn ddull cyflymach a mwy diogel na siec.
+pages.canYouProvideBankAccountDetails.p3              = Mae’n rhaid i’r cyfrif rydych yn ei ddewis i gael ad-daliadau TAW gael ei:
+pages.canYouProvideBankAccountDetails.l1              = a ddefnyddir ar gyfer y busnes hwn yn unig
+pages.canYouProvideBankAccountDetails.l2              = yn enw’r unigolyn neu’r cwmni sy’n cofrestru ar gyfer TAW
+pages.canYouProvideBankAccountDetails.l3              = wedi’i leoli yn y DU
+pages.canYouProvideBankAccountDetails.l4              = gallu derbyn taliadau BACS
+validation.canYouProvideBankAccountDetails.missing    = Dewiswch ‘Iawn’ os gallwch roi manylion bancio ar gyfer ad-daliadau TAW
 
 # No UK Bank Account Page
 pages.noUKBankAccount.heading                        = Pam na allwch roi manylion cyfrif banc ar gyfer y busnes?
@@ -1007,7 +998,7 @@ pages.bankDetails.p1.new                            = Dim ond i anfon ad-daliada
 pages.bankDetails.info                              = Mae’n rhaid i chi roi gwybod i ni os bydd manylion eich cyfrif yn newid.
 pages.bankDetails.accountName.label.old             = Enw’r cyfrif
 pages.bankDetails.accountName.label.new             = Yr enw sydd ar y cyfrif
-pages.bankDetails.accountName.hint                  = Nodwch yr enw fel y mae’n ymddangos ar gyfriflenni banc ac yn eich cyfrif TAW
+pages.bankDetails.accountName.hint                  = Nodwch yr enw fel y mae’n ymddangos ar gyfriflenni banc
 pages.bankDetails.accountNumber.label               = Rhif y cyfrif
 pages.bankDetails.accountNumber.hint                = Mae’n rhaid iddo fod yn 8 digid o hyd
 pages.bankDetails.sortCode.label                    = Cod didoli
@@ -1020,8 +1011,8 @@ validation.companyBankAccount.name.maxLength        = Mae’n rhaid i enw’r cy
 validation.companyBankAccount.name.invalid.old      = Mae’n rhaid i enw’r cyfrif gynnwys rhifau, y llythrennau a i z, a chymeriadau arbennig megis cysylltnodau, collnodau a chromfachau yn unig
 validation.companyBankAccount.name.invalid.new      = Enw sydd ar y cyfrif: mae’n rhaid i hyn beidio cynnwys cymeriadau arbennig
 validation.companyBankAccount.number.missing        = Nodwch rif y cyfrif
-validation.companyBankAccount.number.invalid        = Rhif y cyfrif: mae’n rhaid i hyn fod yn 8 digid
-validation.companyBankAccount.number.format         = Rhif y cyfrif: mae’n rhaid i hyn gynnwys rhifau yn unig
+validation.companyBankAccount.number.invalidLength        = Rhif y cyfrif: mae’n rhaid i hyn fod yn 8 digid
+validation.companyBankAccount.number.invalidFormat         = Rhif y cyfrif: mae’n rhaid i hyn gynnwys rhifau yn unig
 validation.companyBankAccount.sortCode.missing.old  = Nodwch god didoli’r cyfrif
 validation.companyBankAccount.sortCode.missing.new  = Nodwch y cod didoli
 validation.companyBankAccount.sortCode.invalid      = Nodwch god didoli dilys ar gyfer y cyfrif

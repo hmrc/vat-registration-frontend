@@ -16,11 +16,10 @@
 
 package controllers.bankdetails
 
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itFixtures.ITRegistrationFixtures
 import itutil.ControllerISpec
-import models.{BankAccount, Lock}
 import models.bars.BankAccountType
+import models.{BankAccount, Lock}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
@@ -34,54 +33,51 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
   val url = "/choose-account-type"
 
   "GET /choose-account-type" must {
-    "redirect to HasBankAccountController when feature switch is disabled" in new Setup {
-      disable(UseNewBarsVerify)
-      given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
+    "return an OK and render the CanYouProvideBankDetailsDetails page" when {
+      "the user has no existing data to pre-populate" in new Setup {
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = None)))
 
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
 
-      val res: WSResponse = await(buildClient(url).get())
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
 
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.HasBankAccountController.show.url)
-      enable(UseNewBarsVerify)
+        res.status mustBe OK
+        doc.title() mustBe "What kind of bank or building society account will you use for VAT repayments? - Register for VAT - GOV.UK"
+        doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe false
+        doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe false
+      }
+
+      "the user has answer 'Personal' pre-populated from the backend" in new Setup {
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Personal))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        doc.title() mustBe "What kind of bank or building society account will you use for VAT repayments? - Register for VAT - GOV.UK"
+        doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe false
+        doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe true
+      }
+
+      "the user has answer 'Business' pre-populated from the backend" in new Setup {
+        given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Business))))
+
+        insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+        val res: WSResponse = await(buildClient(url).get())
+        val doc: Document   = Jsoup.parse(res.body)
+
+        res.status mustBe OK
+        doc.title() mustBe "What kind of bank or building society account will you use for VAT repayments? - Register for VAT - GOV.UK"
+        doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe true
+        doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe false
+      }
     }
 
-    "return OK with a blank form if the VAT scheme doesn't contain bank account type" in new Setup {
-      given().user.isAuthorised().registrationApi.getSection[BankAccount](None)
-
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(url).get())
-
-      res.status mustBe OK
-    }
-
-    "return OK with a pre-populated form when bankAccountType is Business" in new Setup {
-      given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Business))))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(url).get())
-      val doc: Document   = Jsoup.parse(res.body)
-
-      res.status mustBe OK
-      doc.select(s"input[value=${BankAccountType.Business.asBars}]").first().hasAttr("checked") mustBe true
-    }
-
-    "return OK with a pre-populated form when bankAccountType is Personal" in new Setup {
-      given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(bankAccount.copy(bankAccountType = Some(BankAccountType.Personal))))
-
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(url).get())
-      val doc: Document   = Jsoup.parse(res.body)
-
-      res.status mustBe OK
-      doc.select(s"input[value=${BankAccountType.Personal.asBars}]").first().hasAttr("checked") mustBe true
-    }
-
-    "redirect to BankDetailsLockoutController when user is locked" in new Setup {
+    "redirect to the BankDetailsLockout page when user is locked" in new Setup {
       given().user.isAuthorised()
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)

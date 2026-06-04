@@ -27,39 +27,43 @@
         formWithCSRF: FormWithCSRF,
         errorSummary: components.errorSummary,
         panelIndent: components.panelIndent,
+        subheading: components.subheading,
         yesNoRadio: components.yesNoRadio,
         bullets: components.bullets
 )
 
 @(hasBankAccountForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(title(hasBankAccountForm, messages("pages.hasCompanyBankAccount.heading"))), backLink = true) {
+@layout(pageTitle = Some(title(hasBankAccountForm, messages("pages.canYouProvideBankAccountDetails.subheading")))) {
 
     @errorSummary(errors = hasBankAccountForm.errors)
 
-    @h1("pages.hasCompanyBankAccount.heading")
+    @h1("pages.canYouProvideBankAccountDetails.heading")
     @p {
-        @messages("pages.hasCompanyBankAccount.para")
+        @messages("pages.canYouProvideBankAccountDetails.p1")
     }
     @p {
-        @messages("pages.hasCompanyBankAccount.para2")
+        @messages("pages.canYouProvideBankAccountDetails.p2")
+    }
+    @p {
+        @messages("pages.canYouProvideBankAccountDetails.p3")
     }
     @bullets(
-        "pages.hasCompanyBankAccount.bullet1",
-        "pages.hasCompanyBankAccount.bullet2",
-        "pages.hasCompanyBankAccount.bullet3",
-        "pages.hasCompanyBankAccount.bullet4"
+        "pages.canYouProvideBankAccountDetails.l1",
+        "pages.canYouProvideBankAccountDetails.l2",
+        "pages.canYouProvideBankAccountDetails.l3",
+        "pages.canYouProvideBankAccountDetails.l4"
     )
 
-    @formWithCSRF(action = controllers.bankdetails.routes.HasBankAccountController.submit) {
+    @formWithCSRF(action = controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.submit) {
+
+        @subheading("pages.canYouProvideBankAccountDetails.subheading", classes = "govuk-heading-m")
 
         @yesNoRadio(
             form = hasBankAccountForm,
-            headingKey = messages("pages.hasCompanyBankAccount.heading"),
+            headingKey = messages("pages.canYouProvideBankAccountDetails.subheading"),
             isPageHeading = false,
-            inline = true,
-            classes = "govuk-visually-hidden",
-            fieldName = "value"
+            classes = "govuk-visually-hidden"
         )
 
         @button(messages("app.common.continue"))

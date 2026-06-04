@@ -23,13 +23,13 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraints.maxLength
 
-object HasCompanyBankAccountForm extends RequiredBooleanForm {
+object CanYouProvideBankAccountDetailsForm extends RequiredBooleanForm {
 
-  override val errorMsg                      = "validation.hasCompanyBankAccount.missing"
-  val HAS_COMPANY_BANK_ACCOUNT_RADIO: String = "value"
+  override val errorMsg                                          = "validation.canYouProvideBankAccountDetails.missing"
+  private val CAN_YOU_PROVIDE_BANK_ACCOUNT_DETAILS_RADIO: String = "value"
 
-  val form = Form(
-    single(HAS_COMPANY_BANK_ACCOUNT_RADIO -> requiredBoolean)
+  val form: Form[Boolean] = Form(
+    single(CAN_YOU_PROVIDE_BANK_ACCOUNT_DETAILS_RADIO -> requiredBoolean)
   )
 }
 
@@ -53,59 +53,6 @@ object ChooseAccountTypeForm {
   )
 }
 
-object EnterCompanyBankAccountDetailsForm {
-
-  val ACCOUNT_NAME   = "accountName"
-  val ACCOUNT_NUMBER = "accountNumber"
-  val SORT_CODE      = "sortCode"
-
-  val accountNameEmptyKey     = "validation.companyBankAccount.name.missing.old"
-  val accountNameMaxLengthKey = "validation.companyBankAccount.name.maxLength"
-  val accountNameInvalidKey   = "validation.companyBankAccount.name.invalid.old"
-  val accountNumberEmptyKey   = "validation.companyBankAccount.number.missing"
-  val accountNumberInvalidKey = "validation.companyBankAccount.number.invalid"
-  val sortCodeEmptyKey        = "validation.companyBankAccount.sortCode.missing.old"
-  val sortCodeInvalidKey      = "validation.companyBankAccount.sortCode.invalid"
-
-  val invalidAccountReputationKey     = "sortCodeAndAccountGroup"
-  val invalidAccountReputationMessage = "validation.companyBankAccount.invalidCombination"
-
-  private val accountNameRegex     = """^[A-Za-z0-9 '’‘()\[\]{}<>!«»"ʺ˝ˮ?/\\+=%#*&$€£_\-@¥.,:;]{1,60}$""".r
-  private val accountNameMaxLength = 60
-  private val accountNumberRegex   = """[0-9]{8}""".r
-  private val sortCodeRegex        = """[0-9]{6}""".r
-
-  val form = Form[BankAccountDetails](
-    mapping(
-      ACCOUNT_NAME -> text.verifying(
-        stopOnFail(
-          mandatory(accountNameEmptyKey),
-          maxLength(accountNameMaxLength, accountNameMaxLengthKey),
-          matchesRegex(accountNameRegex, accountNameInvalidKey)
-        )),
-      ACCOUNT_NUMBER -> text
-        .transform(removeSpaces, identity[String])
-        .verifying(
-          stopOnFail(
-            mandatory(accountNumberEmptyKey),
-            matchesRegex(accountNumberRegex, accountNumberInvalidKey)
-          )),
-      SORT_CODE -> text
-        .transform(removeSpaces, identity[String])
-        .verifying(
-          stopOnFail(
-            mandatory(sortCodeEmptyKey),
-            matchesRegex(sortCodeRegex, sortCodeInvalidKey)
-          ))
-    )((accountName, accountNumber, sortCode) => BankAccountDetails.apply(accountName, accountNumber, sortCode, None))(bankAccountDetails =>
-      BankAccountDetails.unapply(bankAccountDetails).map { case (accountName, accountNumber, sortCode, _, _) =>
-        (accountName, accountNumber, sortCode)
-      })
-  )
-  val formWithInvalidAccountReputation: Form[BankAccountDetails] =
-    form.withError(invalidAccountReputationKey, invalidAccountReputationMessage)
-}
-
 object EnterBankAccountDetailsForm {
 
   val ACCOUNT_NAME   = "accountName"
@@ -113,16 +60,16 @@ object EnterBankAccountDetailsForm {
   val SORT_CODE      = "sortCode"
   val ROLL_NUMBER    = "rollNumber"
 
-  val accountNameEmptyKey         = "validation.companyBankAccount.name.missing.new"
-  val accountNameMaxLengthKey     = "validation.companyBankAccount.name.maxLength"
-  val accountNameInvalidKey       = "validation.companyBankAccount.name.invalid.new"
-  val accountNumberEmptyKey       = "validation.companyBankAccount.number.missing"
-  val accountNumberFormatKey      = "validation.companyBankAccount.number.format"
-  val accountNumberInvalidKey     = "validation.companyBankAccount.number.invalid"
-  val sortCodeEmptyKey            = "validation.companyBankAccount.sortCode.missing.new"
-  val sortCodeLengthKey           = "validation.companyBankAccount.sortCode.length"
-  val sortCodeFormatKey           = "validation.companyBankAccount.sortCode.format"
-  val rollNumberInvalidKey        = "validation.companyBankAccount.rollNumber.invalid"
+  val accountNameEmptyKey           = "validation.companyBankAccount.name.missing.new"
+  val accountNameMaxLengthKey       = "validation.companyBankAccount.name.maxLength"
+  val accountNameInvalidKey         = "validation.companyBankAccount.name.invalid.new"
+  val accountNumberEmptyKey         = "validation.companyBankAccount.number.missing"
+  val accountNumberInvalidFormatKey = "validation.companyBankAccount.number.invalidFormat"
+  val accountNumberInvalidLengthKey = "validation.companyBankAccount.number.invalidLength"
+  val sortCodeEmptyKey              = "validation.companyBankAccount.sortCode.missing.new"
+  val sortCodeLengthKey             = "validation.companyBankAccount.sortCode.length"
+  val sortCodeFormatKey             = "validation.companyBankAccount.sortCode.format"
+  val rollNumberInvalidKey          = "validation.companyBankAccount.rollNumber.invalid"
 
   private val accountNameRegex         = """^[A-Za-z0-9 '\-./]{1,60}$""".r
   private val accountNameMaxLength     = 60
@@ -144,8 +91,8 @@ object EnterBankAccountDetailsForm {
         .transform(removeSpaces, identity[String])
         .verifying(stopOnFail(
           mandatory(accountNumberEmptyKey),
-          matchesRegex(accountNumberDigitRegex, accountNumberFormatKey),
-          matchesRegex(accountNumberLengthRegex, accountNumberInvalidKey)
+          matchesRegex(accountNumberDigitRegex, accountNumberInvalidFormatKey),
+          matchesRegex(accountNumberLengthRegex, accountNumberInvalidLengthKey)
         )),
       SORT_CODE -> text
         .transform(removeSpaces, identity[String])
