@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.NoUKBankAccountForm
 import play.api.mvc.{Action, AnyContent}
-import services.{BankAccountDetailsService, SessionProfile, SessionService}
+import services.{BankAccountDetailsService, LockService, SessionProfile, SessionService}
 import views.html.bankdetails.NoUkBankAccount
 
 import javax.inject.{Inject, Singleton}
@@ -30,7 +30,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
                                           val authConnector: AuthClientConnector,
                                           val bankAccountDetailsService: BankAccountDetailsService,
-                                          val sessionService: SessionService)
+                                          val sessionService: SessionService,
+                                          val lockService: LockService)
                                          (implicit appConfig: FrontendAppConfig,
                                           val executionContext: ExecutionContext,
                                           baseControllerComponents: BaseControllerComponents)
@@ -39,22 +40,26 @@ class NoUKBankAccountController @Inject()(noUKBankAccountView: NoUkBankAccount,
   def show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
-        for {
-          optBankAccountDetails <- bankAccountDetailsService.getBankAccount
-          form = optBankAccountDetails.flatMap(_.reason).fold(NoUKBankAccountForm.form)(NoUKBankAccountForm.form.fill)
-        } yield Ok(noUKBankAccountView(form))
+        lockService.redirectIfBarsIsLocked {
+          for {
+            optBankAccountDetails <- bankAccountDetailsService.getBankAccount
+            form = optBankAccountDetails.flatMap(_.reason).fold(NoUKBankAccountForm.form)(NoUKBankAccountForm.form.fill)
+          } yield Ok(noUKBankAccountView(form))
+        }
   }
 
   def submit: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile => {
-        NoUKBankAccountForm.form.bindFromRequest().fold(
-          badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
-          reason =>
-            for {
-              _ <- bankAccountDetailsService.saveAnswerForBankAccountNotProvidedPage(reason)
-            } yield Redirect(controllers.routes.TaskListController.show.url)
-        )
+        lockService.redirectIfBarsIsLocked {
+          NoUKBankAccountForm.form.bindFromRequest().fold(
+            badForm => Future.successful(BadRequest(noUKBankAccountView(badForm))),
+            reason =>
+              for {
+                _ <- bankAccountDetailsService.saveAnswerForBankAccountNotProvidedPage(reason)
+              } yield Redirect(controllers.routes.TaskListController.show.url)
+          )
+        }
       }
   }
 
