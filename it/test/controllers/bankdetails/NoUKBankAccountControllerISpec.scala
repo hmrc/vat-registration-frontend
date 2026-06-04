@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package controllers.bankdetails
 
 import itutil.ControllerISpec
 import models.api.EligibilitySubmissionData
-import models.{BankAccount, BeingSetupOrNameChange, TransferOfAGoingConcern}
+import models.{BankAccount, BeingSetupOrNameChange, Lock, TransferOfAGoingConcern}
 import org.jsoup.Jsoup
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import play.mvc.Http.HeaderNames
 
+import java.time.Instant
 import scala.concurrent.Future
 
 class NoUKBankAccountControllerISpec extends ControllerISpec {
@@ -31,9 +33,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return an OK" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
+      given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -45,9 +45,7 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
     }
 
     "return an OK with prepopulated data" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))))
+      given().user.isAuthorised().registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, Some(BeingSetupOrNameChange))))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -59,15 +57,38 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
         Jsoup.parse(res.body).getElementById("value").attr("value") mustBe "beingSetup"
       }
     }
+
+    "redirect to BankDetailsLockoutController when user is locked" in new Setup {
+      given().user.isAuthorised()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      await(
+        barsLockRepository.collection
+          .insertOne(
+            Lock(currentProfile.registrationId, failedAttempts = 3, lastAttemptedAt = Instant.now())
+          )
+          .toFuture())
+
+      val response: Future[WSResponse] = buildClient(url).post("")
+
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
+      }
+    }
   }
 
   s"POST $url" must {
     "redirect to the Tasklist FS" in new Setup {
-      given()
-        .user.isAuthorised()
-        .registrationApi.getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
-        .registrationApi.replaceSection[BankAccount](bankAccountNotProvided)
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
+      given().user
+        .isAuthorised()
+        .registrationApi
+        .getSection[BankAccount](Some(BankAccount(isProvided = false, None, None)))
+        .registrationApi
+        .replaceSection[BankAccount](bankAccountNotProvided)
+        .registrationApi
+        .getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(registrationReason = TransferOfAGoingConcern)))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
@@ -87,6 +108,26 @@ class NoUKBankAccountControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe 400
+      }
+    }
+
+    "redirect to BankDetailsLockoutController when user is locked" in new Setup {
+      given().user.isAuthorised()
+
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+
+      await(
+        barsLockRepository.collection
+          .insertOne(
+            Lock(currentProfile.registrationId, failedAttempts = 3, lastAttemptedAt = Instant.now())
+          )
+          .toFuture())
+
+      val response: Future[WSResponse] = buildClient(url).post("")
+
+      whenReady(response) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.errors.routes.BankDetailsLockoutController.show.url)
       }
     }
   }
