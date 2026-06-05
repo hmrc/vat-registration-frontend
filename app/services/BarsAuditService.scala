@@ -18,7 +18,7 @@ package services
 
 import models.api.{BankAccountDetailsStatus, InvalidStatus}
 import models.bars.{BankAccountType, BarsVerificationResponse}
-import models.{BankAccount, BankAccountDetails, CurrentProfile, NoUKBankAccount}
+import models.{BankAccountDetails, CurrentProfile, NoUKBankAccount}
 import play.api.Logging
 import play.api.libs.json.{JsObject, Json}
 import services.BarsAuditService.{BarsCheckAttemptAuditType, Failed, Passed}
