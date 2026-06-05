@@ -210,7 +210,7 @@ class BankAccountDetailsService @Inject() (
     * Important: IndeterminateStatus is treated similar to ValidStatus - allowing the user to proceed and not incrementing the failure count. However,
     * unlike Valid their details are given the 'bankDetailsNotValid = true' flag in the backend submission to the API.
     */
-  def verifyAndSaveBankAccountDetails(bankAccountDetails: BankAccountDetails, bankAccountType: BankAccountType)(implicit
+  def verifyAndSaveBankAccountDetails(bankAccountDetails: BankAccountDetails, bankAccountType: BankAccountType, optReason: Option[NoUKBankAccount])(implicit
       hc: HeaderCarrier,
       profile: CurrentProfile,
       ex: ExecutionContext,
@@ -225,6 +225,7 @@ class BankAccountDetailsService @Inject() (
       _ <- barsAuditService.sendBarsAuditEvent(
         bankAccountDetails,
         bankAccountType,
+        optReason,
         barsResult.barsVerificationResponse,
         updatedFailureCount,
         isLocked,
