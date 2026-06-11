@@ -24,7 +24,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.matchers.must.Matchers
 import play.api.libs.json.JsObject
-import services.LockService.lockoutReason
 import testHelpers.VatSpec
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthConnector}
 import uk.gov.hmrc.http.InternalServerException
@@ -75,7 +74,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           service.sendBarsAuditEvent(
             bankAccountDetails = bankAccountDetails,
             bankAccountType = bankAccountType,
-            optReason = None,
             rawResponse = Some(barsVerificationResponse),
             attemptNumber = 1,
             accountIsNowLockedOut = false,
@@ -87,7 +85,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
         (detail \ "checkOutcome").as[String] mustBe "pass"
         (detail \ "accountStatus").as[String] mustBe "unlocked"
         (detail \ "attemptNumber").as[Int] mustBe 1
-        (detail \ "reasonBankAccNotProvided").asOpt[String] mustBe None
         (detail \ "credId").as[String] mustBe "testCredId"
         (detail \ "userType").as[String] mustBe "organisation"
         (detail \ "detailsSubmitted" \ "accountType").as[String] mustBe "business"
@@ -102,7 +99,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           service.sendBarsAuditEvent(
             bankAccountDetails = bankAccountDetails,
             bankAccountType = bankAccountType,
-            optReason = None,
             rawResponse = Some(barsVerificationResponse),
             attemptNumber = 1,
             accountIsNowLockedOut = false,
@@ -114,7 +110,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
         (detail \ "checkOutcome").as[String] mustBe "pass"
         (detail \ "accountStatus").as[String] mustBe "unlocked"
         (detail \ "attemptNumber").as[Int] mustBe 1
-        (detail \ "reasonBankAccNotProvided").asOpt[String] mustBe None
         (detail \ "credId").as[String] mustBe "testCredId"
         (detail \ "userType").as[String] mustBe "organisation"
         (detail \ "detailsSubmitted" \ "accountType").as[String] mustBe "business"
@@ -130,7 +125,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
         service.sendBarsAuditEvent(
           bankAccountDetails = bankAccountDetails,
           bankAccountType = bankAccountType,
-          optReason = None,
           rawResponse = None,
           attemptNumber = 1,
           accountIsNowLockedOut = false,
@@ -142,14 +136,13 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
       (detail \ "validationResponse").asOpt[JsObject] mustBe None
     }
 
-    "send an audit event with locked accountStatus and lockout reason on third failed attempt" in new Setup {
+    "send an audit event with locked accountStatus on third failed attempt" in new Setup {
       stubAuth()
 
       await(
         service.sendBarsAuditEvent(
           bankAccountDetails = bankAccountDetails,
           bankAccountType = bankAccountType,
-          optReason = Some(lockoutReason),
           rawResponse = Some(barsVerificationResponse),
           attemptNumber = 3,
           accountIsNowLockedOut = true,
@@ -160,7 +153,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
       val detail: JsObject = auditCaptor.getValue
       (detail \ "checkOutcome").as[String] mustBe "fail"
       (detail \ "accountStatus").as[String] mustBe "locked"
-      (detail \ "detailsSubmitted" \ "reasonBankAccNotProvided").as[String] mustBe "DontWantToProvide"
       (detail \ "attemptNumber").as[Int] mustBe 3
     }
 
@@ -171,7 +163,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
         service.sendBarsAuditEvent(
           bankAccountDetails = bankAccountDetails,
           bankAccountType = bankAccountType,
-          optReason = None,
           rawResponse = Some(barsVerificationResponse),
           attemptNumber = 1,
           accountIsNowLockedOut = false,
@@ -190,7 +181,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
         service.sendBarsAuditEvent(
           bankAccountDetails = bankAccountDetails,
           bankAccountType = bankAccountType,
-          optReason = None,
           rawResponse = Some(barsVerificationResponse),
           attemptNumber = 1,
           accountIsNowLockedOut = false,
@@ -211,7 +201,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           service.sendBarsAuditEvent(
             bankAccountDetails = bankAccountDetails,
             bankAccountType = bankAccountType,
-            optReason = None,
             rawResponse = Some(barsVerificationResponse),
             attemptNumber = 1,
             accountIsNowLockedOut = false,
@@ -230,7 +219,6 @@ class BarsAuditServiceSpec extends VatSpec with Matchers {
           service.sendBarsAuditEvent(
             bankAccountDetails = bankAccountDetails,
             bankAccountType = bankAccountType,
-            optReason = None,
             rawResponse = Some(barsVerificationResponse),
             attemptNumber = 1,
             accountIsNowLockedOut = false,

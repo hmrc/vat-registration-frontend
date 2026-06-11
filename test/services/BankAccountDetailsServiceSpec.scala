@@ -57,7 +57,7 @@ class BankAccountDetailsServiceSpec
     )
 
     def stubAudit(): Unit =
-      when(mockBarsAuditService.sendBarsAuditEvent(any(), any(), any(), any(), any(), any(), any())(any(), any(), any()))
+      when(mockBarsAuditService.sendBarsAuditEvent(any(), any(), any(), any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(()))
 
     if (switchIsOn) enable(UseNewBarsVerify) else disable(UseNewBarsVerify)
@@ -516,7 +516,7 @@ class BankAccountDetailsServiceSpec
     val mockBarsResponse = Some(barsResponseMock)
 
     def verifyAuditSent(): Unit =
-      verify(mockBarsAuditService, times(1)).sendBarsAuditEvent(any(), any(), any(), any(), any(), any(), any())(any(), any(), any())
+      verify(mockBarsAuditService, times(1)).sendBarsAuditEvent(any(), any(), any(), any(), any(), any())(any(), any(), any())
 
     "save details and return BarsSuccess when verification passes with ValidStatus" in new Setup {
       stubAudit()
@@ -529,7 +529,7 @@ class BankAccountDetailsServiceSpec
         .thenReturn(Future.successful(1))
       mockReplaceSection[BankAccount](testRegId, detailsToBeSaved)
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, optReason = None))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsSuccess
       verify(mockLockService, times(1)).getBarsAttemptsUsed(eqTo(testRegId))
@@ -549,7 +549,7 @@ class BankAccountDetailsServiceSpec
         .thenReturn(Future.successful(1))
       mockReplaceSection[BankAccount](testRegId, detailsToBeSaved)
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, optReason = None))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsSuccess
       verify(mockLockService, times(1)).getBarsAttemptsUsed(eqTo(testRegId))
@@ -569,7 +569,7 @@ class BankAccountDetailsServiceSpec
         .thenReturn(Future.successful(1))
       mockReplaceSection[BankAccount](testRegId, detailsToBeSaved)
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, optReason = None))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsFailedNotLocked
       verify(mockLockService, times(1)).incrementBarsAttemptsAndReturnNewFailedCount(eqTo(testRegId))
@@ -589,7 +589,7 @@ class BankAccountDetailsServiceSpec
         .thenReturn(Future.successful(3))
       mockReplaceSection[BankAccount](testRegId, detailsToBeSaved)
 
-      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType, optReason = Some(lockoutReason)))
+      val result: BarsVerificationOutcome = await(service.verifyAndSaveBankAccountDetails(bankAccountDetails, bankAccountType))
 
       result mustBe BarsLockedOut
       verify(mockLockService, times(1)).incrementBarsAttemptsAndReturnNewFailedCount(eqTo(testRegId))

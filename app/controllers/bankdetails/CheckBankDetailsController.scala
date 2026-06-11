@@ -49,7 +49,7 @@ class CheckBankDetailsController @Inject() (
     bankAccountDetailsService.getBankAccount.flatMap { bankAccount =>
       (bankAccount.flatMap(_.details), bankAccount.flatMap(_.bankAccountType)) match {
         case (Some(bankAccountDetails), Some(accountType)) =>
-          bankAccountDetailsService.verifyAndSaveBankAccountDetails(bankAccountDetails, accountType, bankAccount.flatMap(_.reason)).map {
+          bankAccountDetailsService.verifyAndSaveBankAccountDetails(bankAccountDetails, accountType).map {
             case BarsSuccess         => Redirect(controllers.routes.TaskListController.show.url)
             case BarsFailedNotLocked => Redirect(routes.AccountDetailsNotVerifiedController.show)
             case BarsLockedOut       => Redirect(controllers.errors.routes.BankDetailsLockoutController.show)

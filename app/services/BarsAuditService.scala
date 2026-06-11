@@ -18,7 +18,7 @@ package services
 
 import models.api.{BankAccountDetailsStatus, InvalidStatus}
 import models.bars.{BankAccountType, BarsVerificationResponse}
-import models.{BankAccountDetails, CurrentProfile, NoUKBankAccount}
+import models.{BankAccountDetails, CurrentProfile}
 import play.api.Logging
 import play.api.libs.json.{JsObject, Json}
 import services.BarsAuditService.{BarsCheckAttemptAuditType, Failed, Passed}
@@ -34,39 +34,34 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BarsAuditService @Inject() (auditConnector: AuditConnector, val authConnector: AuthConnector) extends Logging with AuthorisedFunctions {
 
-  def sendBarsAuditEvent(bankAccountDetails: BankAccountDetails,
-                          bankAccountType: BankAccountType,
-                          optReason: Option[NoUKBankAccount],
-                          rawResponse: Option[BarsVerificationResponse],
-                          attemptNumber: Int,
-                          accountIsNowLockedOut: Boolean,
-                          barsStatus: BankAccountDetailsStatus)(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Unit] = {
+  def sendBarsAuditEvent(
+      bankAccountDetails: BankAccountDetails,
+      bankAccountType: BankAccountType,
+      rawResponse: Option[BarsVerificationResponse],
+      attemptNumber: Int,
+      accountIsNowLockedOut: Boolean,
+      barsStatus: BankAccountDetailsStatus)(implicit hc: HeaderCarrier, profile: CurrentProfile, ex: ExecutionContext): Future[Unit] = {
     val accountStatus = if (accountIsNowLockedOut) accountIsLocked else accountIsUnlocked
     val checkOutcome  = if (barsStatus == InvalidStatus) Failed else Passed
 
     retrieveIdentityDetails().map { case (credId, userType) =>
       logger.info(s"Raising BARS audit event: outcome=$checkOutcome attempt=$attemptNumber accountStatus=$accountStatus")
 
-      val detailsSubmitted =
-        Json.obj(
-          "account" -> Json.obj(
-            "sortCode"      -> bankAccountDetails.sortCode,
-            "accountNumber" -> bankAccountDetails.number
-          ),
-          "accountType" -> bankAccountType.toString.toLowerCase,
-          "accountName" -> bankAccountDetails.name
-        ) ++ optReason.fold(Json.obj()) { reason =>
-          Json.obj("reasonBankAccNotProvided" -> reason.toString)
-        }
-
-      val fullDetails: JsObject = Json.obj(
+      val detail: JsObject = Json.obj(
         "attemptNumber" -> attemptNumber,
         "accountStatus" -> accountStatus,
         "checkOutcome"  -> checkOutcome,
         "credId"        -> credId,
         "journeyId"     -> profile.registrationId,
         "userType"      -> userType,
-        "detailsSubmitted" -> detailsSubmitted,
+        "detailsSubmitted" -> Json.obj(
+          "account" -> Json.obj(
+            "sortCode"      -> bankAccountDetails.sortCode,
+            "accountNumber" -> bankAccountDetails.number
+          ),
+          "accountType" -> bankAccountType.toString.toLowerCase,
+          "accountName" -> bankAccountDetails.name
+        ),
         "validationResponse" -> rawResponse.map { r =>
           Json.obj(
             "accountExists" -> r.accountExists.toString.toLowerCase,
@@ -75,7 +70,7 @@ class BarsAuditService @Inject() (auditConnector: AuditConnector, val authConnec
         }
       )
 
-      auditConnector.sendExplicitAudit(BarsCheckAttemptAuditType, fullDetails)
+      auditConnector.sendExplicitAudit(BarsCheckAttemptAuditType, detail)
     }
   }
 
