@@ -29,6 +29,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.duration.{Duration, DurationInt}
 
 // scalastyle:off
 @Singleton
@@ -329,4 +330,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   def isTTMayJunJourneyEnabled: Boolean = isEnabled(SubmitDeadline)
   def isNewVRSApplConfirmJourneyEnabled: Boolean = isEnabled(NewVRSApplConfirmJourney)
+
+  lazy val bankHolidaysApiUrl: String = servicesConfig.getString("bank-holiday-api.url")
+  lazy val mongoDbBankHolidayCacheExpireAfterMinutes: Duration = servicesConfig.getInt("mongodb.bankHolidayCache.timeToLiveInMinutes").minutes
+  lazy val appNameAsBankHolidayCacheDbCollection: String = servicesConfig.getString("appName") + "-bankholiday"
 }

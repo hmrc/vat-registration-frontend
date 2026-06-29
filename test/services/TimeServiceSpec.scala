@@ -16,11 +16,13 @@
 
 package services
 
-import connectors.BankHolidaysConnector
+import org.mockito.Mockito.when
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Inspectors
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.cache.SyncCacheApi
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -33,14 +35,13 @@ import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.reflect.ClassTag
 
-class TimeServiceSpec extends AnyWordSpec with MockFactory with Inspectors with Matchers {
+class TimeServiceSpec extends AnyWordSpec with MockitoSugar with Inspectors with Matchers with ScalaFutures {
 
-  val mockBankHolidaysConnector: BankHolidaysConnector = mock[BankHolidaysConnector]
-  val mockCache: SyncCacheApi = mock[SyncCacheApi]
+  val mockBankHolidaysService: BankHolidaysService = mock[BankHolidaysService]
   val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
 
   def timeServiceMock(dateTime: LocalDateTime, dayEnd: Int, bankHolidayDates: List[BankHoliday]): TimeService =
-    new TimeService(mockBankHolidaysConnector, mockCache, mockServicesConfig) {
+    new TimeService(mockBankHolidaysService, mockServicesConfig) {
       override lazy val dayEndHour: Int = dayEnd
 
       override def currentDateTime: LocalDateTime = dateTime
@@ -55,7 +56,7 @@ class TimeServiceSpec extends AnyWordSpec with MockFactory with Inspectors with 
   val bh6th: BankHoliday = BankHoliday(title = "testBH", date = LocalDate.of(2017, 1, 6))
   val bh9th: BankHoliday = BankHoliday(title = "testBH", date = LocalDate.of(2017, 1, 9))
 
-  val service = new TimeService(mockBankHolidaysConnector, mockCache, mockServicesConfig)
+  val service = new TimeService(mockBankHolidaysService, mockServicesConfig)
 
   "isDateSomeWorkingDaysInFuture" should {
     // Before 2pm, no bank holiday
@@ -145,7 +146,7 @@ class TimeServiceSpec extends AnyWordSpec with MockFactory with Inspectors with 
 
 
   "dynamicDateExample" must {
-    val service = new TimeService(mockBankHolidaysConnector, mockCache, mockServicesConfig)
+    val service = new TimeService(mockBankHolidaysService, mockServicesConfig)
 
     "return a date 10 calendar days in the future" in {
       val testCases = Seq(
@@ -173,7 +174,9 @@ class TimeServiceSpec extends AnyWordSpec with MockFactory with Inspectors with 
       List(
         BankHoliday("some holiday", LocalDate.of(2017, 3, 24)),
         //March 25,26 is weekend
-        BankHoliday("some holiday", LocalDate.of(2017, 3, 27))
+        BankHoliday("some holiday", LocalDate.of(2017, 3, 27)),
+        BankHoliday("some holiday", LocalDate.of(2026, 4, 3)),
+        BankHoliday("some holiday", LocalDate.of(2026, 4, 6))
       )
     )
 
@@ -182,54 +185,17 @@ class TimeServiceSpec extends AnyWordSpec with MockFactory with Inspectors with 
         Test(date = LocalDate.of(2017, 3, 22), daysToAdd = 1, expected = LocalDate.of(2017, 3, 23)),
         Test(date = LocalDate.of(2017, 3, 22), daysToAdd = 2, expected = LocalDate.of(2017, 3, 28)),
         Test(date = LocalDate.of(2017, 3, 23), daysToAdd = 1, expected = LocalDate.of(2017, 3, 28)),
-        Test(date = LocalDate.of(2017, 3, 23), daysToAdd = 2, expected = LocalDate.of(2017, 3, 29))
+        Test(date = LocalDate.of(2017, 3, 23), daysToAdd = 2, expected = LocalDate.of(2017, 3, 29)),
+        Test(date = LocalDate.of(2026, 4, 1), daysToAdd = 1, expected = LocalDate.of(2026, 4, 2)),
+        Test(date = LocalDate.of(2026, 4, 2), daysToAdd = 2, expected = LocalDate.of(2026, 4, 8))
       )
 
-      forAll(tests) { test =>
-        (mockCache.getOrElseUpdate[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
-          .expects("bankHolidaySet", 1 day, *, *).returns(fixedHolidaySet)
+      when(mockBankHolidaysService.fetchBankHolidaySet)
+        .thenReturn(Future.successful(fixedHolidaySet))
 
+      forAll(tests) { test =>
         service.addWorkingDays(test.date, test.daysToAdd) mustBe test.expected
       }
-    }
-
-    "should call bank holiday connector when nothing found in cache" in {
-      (mockCache.getOrElseUpdate[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
-        .expects("bankHolidaySet", 1 day, *, *).onCall(product => {
-        // call-by-name parameter of type BankHolidaySet will actually become a
-        // () => BankHolidaySet, i.e. Function0[BankHolidaySet] at runtime
-        // according to http://stackoverflow.com/a/18298495/81520 we need to do this trick:
-        product.productElement(2).asInstanceOf[() => BankHolidaySet]()
-      })
-
-      (mockBankHolidaysConnector.bankHolidays(_: String)(_: HeaderCarrier))
-        .expects("england-and-wales", *)
-        .returns(Future.successful(fixedHolidaySet))
-
-      val date = LocalDate.of(2017, 3, 23)
-
-      service.addWorkingDays(date, 1) mustBe LocalDate.of(2017, 3, 28)
-    }
-
-    "should call bank holiday connector when nothing found in cache and failed to download file from Web" in {
-      inSequence {
-        (mockCache.getOrElseUpdate[BankHolidaySet](_: String, _: Duration)(_: BankHolidaySet)(_: ClassTag[BankHolidaySet]))
-          .expects("bankHolidaySet", 1 day, *, *).onCall(product => {
-          product.productElement(2).asInstanceOf[() => BankHolidaySet]()
-        })
-
-        (mockBankHolidaysConnector.bankHolidays(_: String)(_: HeaderCarrier))
-          .expects("england-and-wales", *)
-          .returns(Future.failed(new TimeoutException("failed to load from URL")))
-
-        (mockBankHolidaysConnector.defaultHolidaySet _: () => BankHolidaySet)
-          .expects()
-          .returns(fixedHolidaySet)
-      }
-
-      val date = LocalDate.of(2017, 3, 23)
-
-      service.addWorkingDays(date, 1) mustBe LocalDate.of(2017, 3, 28)
     }
   }
 }
