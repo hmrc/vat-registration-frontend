@@ -51,14 +51,14 @@ class BankHolidaysService @Inject()(val bankHolidaysConnector: BankHolidaysConne
         getBankHolidaySetFromApi.flatMap {
 
           case Right(bankHolidaySet) =>
-            logger.info("[BankHolidaysService][fetchBankHolidaySet] Successfully retrieved bank holidays from API.")
-
             bankHolidayRepository.saveBankHolidaysDataOnCache(bankHolidaySet)
               .map(_ => bankHolidaySet)
 
-          case Left(error) =>
-            logger.error(s"[BankHolidaysService][fetchBankHolidaySet] - ${error.message}")
-            // pagerduty alert NO_BANK_HOLIDAYS
+          case Left(_) =>
+            // PagerDuty alert: NO_BANK_HOLIDAYS
+            // A failure to retrieve bank holidays must not block the user's journey.
+            // Return an empty BankHolidaySet so processing can continue successfully,
+            // while triggering a PagerDuty alert so the API failure can be investigated.
             logger.error(s"$pagerDutyAlertKeyForNoBankHolidays - Failed to retrieve bank holidays from API and no cached data exists.")
             Future.successful(emptyBankHolidaySet)
         }
@@ -75,7 +75,6 @@ class BankHolidaysService @Inject()(val bankHolidaysConnector: BankHolidaysConne
             response.json.validate[GDSBankHolidays] match {
 
               case JsSuccess(result, _) =>
-                logger.info("[BankHolidaysService][getBankHolidaySetFromApi] Successfully retrieved bank holidays from the API.")
                 Right(toEnglandAndWalesBankHolidays(result))
 
               case e: JsError =>
