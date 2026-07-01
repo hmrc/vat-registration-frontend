@@ -16,102 +16,181 @@
 
 package services
 
-import connectors.BankHolidaysConnectorV2
+import connectors.BankHolidaysConnector
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.scalatest.RecoverMethods.recoverToSucceededIf
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
-import play.api.http.Status.OK
 import play.api.libs.json._
-import services.BankHolidaysService.bankHolidaySetFormat
-import uk.gov.hmrc.http.HttpResponse
+import repositories.BankHolidayRepository
+import services.BankHolidaysService.GDSBankHolidays
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.mongo.cache.CacheItem
-import utils.workingdays.BankHolidaySet
+import utils.workingdays.{BankHoliday, BankHolidaySet}
 
-import java.time.Instant
-import scala.concurrent.Future
+import java.time.{Instant, LocalDate}
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 class BankHolidaysServiceSpec
   extends PlaySpec
     with MockitoSugar
-    with ScalaFutures {
+    with ScalaFutures
+    with Matchers with BeforeAndAfterEach {
 
-  implicit val ec = scala.concurrent.ExecutionContext.global
+  implicit val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val gdsBankHolidaysReads: Reads[GDSBankHolidays] = Json.reads[GDSBankHolidays]
 
-  val connector = mock[BankHolidaysConnectorV2]
-  val service = new BankHolidaysService(connector)
-
-  val sampleSet =
-    BankHolidaySet("england-and-wales", List.empty)
-
-  val cacheItem = CacheItem(
-    id = "all_users",
-    data = JsObject.empty,
-    createdAt = Instant.now(),
-    modifiedAt = Instant.now()
+  val connector: BankHolidaysConnector = mock[BankHolidaysConnector]
+  val repo: BankHolidayRepository = mock[BankHolidayRepository]
+  val service =
+    new BankHolidaysService(connector, repo)
+  val expectedCacheItem: CacheItem =
+    CacheItem(
+      id = "all_users",
+      data = Json.obj(
+        "bank_holidays" -> "Test Day,2026-01-01"
+      ),
+      createdAt = Instant.now(),
+      modifiedAt = Instant.now()
+    )
+  val testDate: LocalDate = LocalDate.of(2026, 1, 1)
+  val apiResult: BankHolidaySet = BankHolidaySet(
+    "england-and-wales",
+    List(BankHoliday("Test Day", testDate))
   )
+  val sampleSet: BankHolidaySet =
+    BankHolidaySet("england-and-wales", Nil)
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(connector, repo)
+  }
 
   "fetchBankHolidaySet" should {
 
     "return cached value when present" in {
 
-      when(connector.getBankHolidaysFromCache[BankHolidaySet]())
+      when(repo.getBankHolidaysFromCache)
         .thenReturn(Future.successful(Some(sampleSet)))
 
-      val result = service.fetchBankHolidaySet
+      val result = service.fetchBankHolidaySet.futureValue
 
-      whenReady(result) { res =>
-        res mustBe sampleSet
-      }
+      result mustBe sampleSet
+
+      verify(repo).getBankHolidaysFromCache
+      verifyNoInteractions(connector)
     }
 
-    "fetch from API when cache is empty and save to cache" in {
+    "fetch from API, cache it, and return value when API succeeds" in {
 
-      val httpResponse = mock[HttpResponse]
-      when(httpResponse.status).thenReturn(OK)
-      when(httpResponse.json).thenReturn(
+      val jsonBankHolidays =
         Json.obj(
           "england-and-wales" -> Json.obj(
+            "events" -> Json.arr(
+              Json.obj(
+                "title" -> "Test Day",
+                "date"  -> "2026-01-01"
+              )
+            )
+          ),
+          "scotland" -> Json.obj(
             "events" -> Json.arr()
           ),
-          "scotland" -> Json.obj("events" -> Json.arr()),
-          "northern-ireland" -> Json.obj("events" -> Json.arr())
+          "northern-ireland" -> Json.obj(
+            "events" -> Json.arr()
+          )
         )
-      )
 
-      when(connector.getBankHolidaysFromCache[BankHolidaySet]())
+      val httpResponse = mock[uk.gov.hmrc.http.HttpResponse]
+
+      when(repo.getBankHolidaysFromCache)
         .thenReturn(Future.successful(None))
 
       when(connector.getBankHolidaysFromApi)
         .thenReturn(Future.successful(httpResponse))
 
-      when(connector.saveBankHolidaysDataOnCache(any[BankHolidaySet])(
-        any()
-      )).thenReturn(Future.successful(cacheItem))
+      when(httpResponse.status)
+        .thenReturn(200)
 
-      val result = service.fetchBankHolidaySet
+      when(httpResponse.json)
+        .thenReturn(jsonBankHolidays)
 
-      whenReady(result) { res =>
-        res.division mustBe "england-and-wales"
-        res.events mustBe Nil
-      }
+      when(repo.saveBankHolidaysDataOnCache(any[BankHolidaySet]))
+        .thenReturn(Future.successful(expectedCacheItem))
+
+      val result = service.fetchBankHolidaySet.futureValue
+
+      result mustBe apiResult
+
+
+      verify(repo).getBankHolidaysFromCache
+      verify(connector).getBankHolidaysFromApi
+      verify(repo).saveBankHolidaysDataOnCache(any())
     }
 
-    "fail when cache empty and API fails" in {
 
-      when(connector.getBankHolidaysFromCache[BankHolidaySet]())
+    "return empty set when API fails" in {
+
+      val apiResponse = mock[HttpResponse]
+
+      when(repo.getBankHolidaysFromCache)
         .thenReturn(Future.successful(None))
 
       when(connector.getBankHolidaysFromApi)
-        .thenReturn(Future.failed(new RuntimeException("API down")))
+        .thenReturn(Future.successful(apiResponse))
 
-      val result = service.fetchBankHolidaySet
+      when(apiResponse.status).thenReturn(500)
 
-      recoverToSucceededIf[Throwable] {
-        result
-      }
+      val result = service.fetchBankHolidaySet.futureValue
+
+      result mustBe BankHolidaySet("england-and-wales", Nil)
+
+      verify(repo).getBankHolidaysFromCache
+      verify(connector).getBankHolidaysFromApi
+      verify(repo, never).saveBankHolidaysDataOnCache(any())
+    }
+
+
+    "return empty set when JSON parsing fails" in {
+
+      val apiResponse = mock[HttpResponse]
+
+      when(repo.getBankHolidaysFromCache)
+        .thenReturn(Future.successful(None))
+
+      when(connector.getBankHolidaysFromApi)
+        .thenReturn(Future.successful(apiResponse))
+
+      when(apiResponse.status).thenReturn(200)
+      when(apiResponse.json).thenReturn(Json.obj()) // invalid structure
+
+      val result = service.fetchBankHolidaySet.futureValue
+
+      result mustBe BankHolidaySet("england-and-wales", Nil)
+
+      verify(repo).getBankHolidaysFromCache
+      verify(connector).getBankHolidaysFromApi
+    }
+
+
+    "return empty set when connector throws exception" in {
+
+      when(repo.getBankHolidaysFromCache)
+        .thenReturn(Future.successful(None))
+
+      when(connector.getBankHolidaysFromApi)
+        .thenReturn(Future.failed(new RuntimeException("boom")))
+
+      val result = service.fetchBankHolidaySet.futureValue
+
+      result mustBe BankHolidaySet("england-and-wales", Nil)
+
+      verify(repo).getBankHolidaysFromCache
+      verify(connector).getBankHolidaysFromApi
     }
   }
 }

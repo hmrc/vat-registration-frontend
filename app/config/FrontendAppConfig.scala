@@ -90,9 +90,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
 
   lazy val scoreKey: String = servicesConfig.getString("constants.score")
 
-  // Bank holidays
-  lazy val bankHolidaysUrl: String = servicesConfig.getString("microservice.services.bank-holidays.url")
-
   // ALF
   private lazy val addressLookupFrontendUrl: String = servicesConfig.baseUrl("address-lookup-frontend")
 

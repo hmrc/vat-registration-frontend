@@ -17,11 +17,10 @@
 package services
 
 import com.google.inject.{Inject, Singleton}
-import connectors.BankHolidaysConnectorV2
-import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK}
+import connectors.BankHolidaysConnector
+import play.api.http.Status.OK
 import play.api.libs.json._
-import uk.gov.hmrc.http.UpstreamErrorResponse
-import uk.gov.hmrc.mongo.cache.CacheItem
+import repositories.BankHolidayRepository
 import utils.LoggingUtil
 import utils.workingdays.{BankHoliday, BankHolidaySet}
 
@@ -31,55 +30,69 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.postfixOps
 
 @Singleton
-class BankHolidaysService @Inject()(val bankHolidaysConnector: BankHolidaysConnectorV2)(implicit val ec: ExecutionContext) extends LoggingUtil {
+class BankHolidaysService @Inject()(val bankHolidaysConnector: BankHolidaysConnector,
+                                    val bankHolidayRepository: BankHolidayRepository)(implicit val ec: ExecutionContext) extends LoggingUtil {
 
   import services.BankHolidaysService._
 
+  private val emptyBankHolidaySet = BankHolidaySet("england-and-wales", Nil)
+  private val pagerDutyAlertKeyForNoBankHolidays = "NO_BANK_HOLIDAYS"
+
   def fetchBankHolidaySet: Future[BankHolidaySet] =
-    getBankHolidaysFromCache.flatMap {
-      case Some(bankHolidaySet) =>
+    bankHolidayRepository.getBankHolidaysFromCache.flatMap {
+
+      case Some(cached) =>
         logger.info("[BankHolidaysService][fetchBankHolidaySet] Retrieved bank holidays from Mongo cache.")
-        Future.successful(bankHolidaySet)
+        Future.successful(cached)
 
       case None =>
         logger.info("[BankHolidaysService][fetchBankHolidaySet] Bank holiday cache empty. Fetching from API.")
 
-        getBankHolidaySetFromApi
-          .flatMap { bankHolidaySet =>
-            saveBankHolidaysDataOnCache(bankHolidaySet)
+        getBankHolidaySetFromApi.flatMap {
+
+          case Right(bankHolidaySet) =>
+            logger.info("[BankHolidaysService][fetchBankHolidaySet] Successfully retrieved bank holidays from API.")
+
+            bankHolidayRepository.saveBankHolidaysDataOnCache(bankHolidaySet)
               .map(_ => bankHolidaySet)
-          }
-          .recoverWith { case ex =>
-            logger.error(
-              "[BankHolidaysService][fetchBankHolidaySet] Failed to retrieve bank holidays from API and no cached data exists.",
-              ex
-            )
-            Future.failed(ex)
-          }
+
+          case Left(error) =>
+            logger.error(s"[BankHolidaysService][fetchBankHolidaySet] - ${error.message}")
+            // pagerduty alert NO_BANK_HOLIDAYS
+            logger.error(s"$pagerDutyAlertKeyForNoBankHolidays - Failed to retrieve bank holidays from API and no cached data exists.")
+            Future.successful(emptyBankHolidaySet)
+        }
     }
 
-  private def getBankHolidaySetFromApi: Future[BankHolidaySet] = {
-    bankHolidaysConnector.getBankHolidaysFromApi.map { httpResponse =>
-      if (httpResponse.status != OK) {
 
-        logger.warn(s"[BankHolidaysService][getBankHolidaySetFromApi] Got http status ${httpResponse.status.toString} when calling the bank holiday API")
-        throw UpstreamErrorResponse(
-          message = "Could not retrieve bank holidays",
-          statusCode = httpResponse.status,
-          reportAs = INTERNAL_SERVER_ERROR
-        )
-      }
-      httpResponse.json.validate[GDSBankHolidays] match {
-        case JsSuccess(result, _) =>
-          logger.info("[BankHolidaysService][getBankHolidaySetFromApi] Successfully retrieved bank holidays from the API.")
-          toEnglandAndWalesBankHolidays(result)
+  private def getBankHolidaySetFromApi: Future[Either[BankHolidayError, BankHolidaySet]] = {
+    bankHolidaysConnector
+      .getBankHolidaysFromApi
+      .map { response =>
+        response.status match {
 
-        case JsError(errors) =>
-          throw new IllegalStateException(
-            s"[BankHolidaysService][getBankHolidaySetFromApi] Could not parse bank holiday response: $errors"
-          )
+          case OK =>
+            response.json.validate[GDSBankHolidays] match {
+
+              case JsSuccess(result, _) =>
+                logger.info("[BankHolidaysService][getBankHolidaySetFromApi] Successfully retrieved bank holidays from the API.")
+                Right(toEnglandAndWalesBankHolidays(result))
+
+              case e: JsError =>
+                logger.error( s"[BankHolidaysService][getBankHolidaySetFromApi] Could not parse bank holiday response: $e")
+                Left(JsonParseError(e))
+            }
+
+          case status =>
+            logger.error(s"[BankHolidaysService][getBankHolidaySetFromApi] Got http status ${status.toString} when calling the bank holiday API")
+            Left(ApiError(status))
+        }
       }
-    }
+      .recover {
+        case ex =>
+          logger.error(s"[BankHolidaysService][getBankHolidaySetFromApi] UnexpectedError when calling the bank holiday API - $ex")
+          Left(UnexpectedError(ex))
+      }
   }
 
 
@@ -88,14 +101,26 @@ class BankHolidaysService @Inject()(val bankHolidaysConnector: BankHolidaysConne
       gdsBankHolidays.`england-and-wales`.events.map(event => BankHoliday(event.title,event.date)).toList)
   }
 
-  private def saveBankHolidaysDataOnCache(data: BankHolidaySet): Future[CacheItem] =
-    bankHolidaysConnector.saveBankHolidaysDataOnCache(data)(bankHolidaySetFormat)
-
-  private def getBankHolidaysFromCache: Future[Option[BankHolidaySet]] =
-    bankHolidaysConnector.getBankHolidaysFromCache()(bankHolidaySetFormat)
-
 }
 
+sealed trait BankHolidayError {
+  def message: String
+}
+
+case class ApiError(status: Int) extends BankHolidayError {
+  override val message =
+    s"Bank holiday API returned HTTP $status"
+}
+
+case class JsonParseError(errors: JsError) extends BankHolidayError {
+  override val message =
+    s"Failed to parse bank holiday response: $errors"
+}
+
+case class UnexpectedError(ex: Throwable) extends BankHolidayError {
+  override val message =
+    s"Unexpected error calling bank holiday API: ${ex.getMessage}"
+}
 
 object BankHolidaysService extends LoggingUtil {
 
@@ -109,8 +134,13 @@ object BankHolidaysService extends LoggingUtil {
                                     `northern-ireland`: RegionalResult
                                   )
 
+  implicit val localDateFormat: Format[LocalDate] =
+    Format(
+      Reads.localDateReads(DateTimeFormatter.ISO_DATE),
+      Writes.temporalWrites[LocalDate, DateTimeFormatter](DateTimeFormatter.ISO_DATE)
+    )
+
   implicit val eventReads: Reads[Event] = {
-    implicit val eventDateReads: Reads[LocalDate] = Reads.localDateReads(DateTimeFormatter.ISO_DATE)
     Json.reads[Event]
   }
 
@@ -120,16 +150,6 @@ object BankHolidaysService extends LoggingUtil {
   implicit val gdsBankHolidaysReads: Reads[GDSBankHolidays] = Json.reads[GDSBankHolidays]
 
   import play.api.libs.json._
-
-  import java.time.LocalDate
-  import java.time.format.DateTimeFormatter
-
-  implicit val localDateFormat: Format[LocalDate] =
-    Format(
-      Reads.localDateReads(DateTimeFormatter.ISO_DATE),
-      Writes.temporalWrites[LocalDate, DateTimeFormatter](DateTimeFormatter.ISO_DATE)
-    )
-
   implicit val bankHolidayFormat: OFormat[BankHoliday] =
     Json.format[BankHoliday]
 

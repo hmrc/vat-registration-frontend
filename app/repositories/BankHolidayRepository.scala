@@ -17,11 +17,13 @@
 package repositories
 
 import config.FrontendAppConfig
-import uk.gov.hmrc.mongo.cache.{CacheIdType, MongoCacheRepository}
+import services.BankHolidaysService.bankHolidaySetFormat
+import uk.gov.hmrc.mongo.cache.{CacheIdType, CacheItem, DataKey, MongoCacheRepository}
 import uk.gov.hmrc.mongo.{MongoComponent, TimestampSupport}
+import utils.workingdays.BankHolidaySet
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BankHolidayRepository @Inject() (
@@ -35,4 +37,13 @@ class BankHolidayRepository @Inject() (
     ttl = configuration.mongoDbBankHolidayCacheExpireAfterMinutes,
     timestampSupport = timestampSupport,
     cacheIdType = CacheIdType.SimpleCacheId
-  )
+  ) {
+
+  private val CacheId = "all_users"
+
+  def saveBankHolidaysDataOnCache(data: BankHolidaySet): Future[CacheItem] =
+    put[BankHolidaySet](CacheId)(DataKey("bank_holidays"), data)(bankHolidaySetFormat)
+
+  def getBankHolidaysFromCache: Future[Option[BankHolidaySet]] =
+    get[BankHolidaySet](CacheId)(DataKey("bank_holidays"))(bankHolidaySetFormat)
+}
