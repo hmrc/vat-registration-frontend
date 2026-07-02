@@ -16,44 +16,27 @@
 
 package connectors
 
+import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
-import org.joda.time.LocalDate
-import play.api.Environment
-import play.api.libs.json.JodaReads.jodaLocalDateReads
-import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.http.HttpReads.Implicits.readFromJson
+import repositories.BankHolidayRepository
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
-import utils.workingdays._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
-import java.io.InputStream
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankHolidaysConnector @Inject()(http: HttpClientV2,
-                                      config: FrontendAppConfig,
-                                      environment: Environment)
-                                     (implicit ec: ExecutionContext) {
+class BankHolidaysConnector @Inject()(val httpClientV2: HttpClientV2,
+                                      val appConfig: FrontendAppConfig,
+                                      val bankHolidayRepository: BankHolidayRepository)(implicit val ec: ExecutionContext) {
 
-  implicit val jodaReads: Reads[LocalDate] = jodaLocalDateReads("yyyy-MM-dd")
-  protected implicit val bankHolidayReads: Reads[BankHoliday] = Json.reads[BankHoliday]
-  protected implicit val bankHolidaySetReads: Reads[BankHolidaySet] = Json.reads[BankHolidaySet]
+  implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders("Accept" -> "application/vnd.hmrc.1.0+json")
 
-  lazy val url: String = config.bankHolidaysUrl
-  private val division = "england-and-wales"
-
-  def defaultHolidaySet: BankHolidaySet = {
-    logger.info("Loading static set of bank holidays from classpath file: bank-holidays.json")
-    val resourceAsStream: InputStream = environment.classLoader.getResourceAsStream("bank-holidays.json")
-    //if below .get fails, app startup fails. This is as expected. bank-holidays.json file must be on classpath
-    val parsed = Json.parse(resourceAsStream).asOpt[Map[String, BankHolidaySet]].get
-    parsed(division)
+  def getBankHolidaysFromApi: Future[HttpResponse] = {
+    httpClientV2
+      .get(url"${appConfig.bankHolidaysApiUrl}")
+      .withProxy
+      .execute
   }
 
-  def bankHolidays(division: String = division)(implicit hc: HeaderCarrier): Future[BankHolidaySet] = {
-    http.get(url"$url")
-      .execute[Map[String, BankHolidaySet]]
-      .map(holidaySets => holidaySets(division))
-  }
 }

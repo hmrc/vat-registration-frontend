@@ -56,6 +56,17 @@ trait WiremockHelper {
       )
     )
 
+  def stubGetWithProxy(url: String, status: Integer, body: String): StubMapping = {
+    val builder = get(urlMatching(url))
+    stubFor(builder
+      .willReturn(
+        aResponse().
+          withStatus(status).
+          withBody(body)
+      )
+    )
+  }
+
   def stubPost(url: String, status: Integer, responseBody: String): StubMapping =
     stubFor(post(urlMatching(url))
       .willReturn(
