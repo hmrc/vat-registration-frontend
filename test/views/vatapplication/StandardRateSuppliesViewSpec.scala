@@ -63,7 +63,7 @@ class StandardRateSuppliesViewSpec extends VatRegViewSpec {
     }
 
     "render the welsh language toggle" in new ViewSetup() {
-      assertContainsLink(doc, "Cymraeg", "/hmrc-frontend/language/cy")
+      assertContainsLink(doc, "Cymraeg", "https://www.gov.uk/cymraeg")
     }
   }
 }
