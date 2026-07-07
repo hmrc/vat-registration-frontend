@@ -16,9 +16,9 @@
 
 @this()
 
-@()(implicit messages: Messages)
+@(saveUrl: String)(implicit messages: Messages)
 
-<a href="@controllers.routes.SaveAndRetrieveController.save.url"
+<a href="@saveUrl"
  class="govuk-button govuk-button--secondary"
  role="button"
  data-module="govuk-button"

@@ -35,7 +35,7 @@ class SaveAndRetrieveControllerISpec extends ControllerISpec {
       val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationProgressSavedController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationProgressSavedController.show().url)
     }
   }
 

@@ -30,16 +30,29 @@ class ApplicationProgressSavedControllerSpec extends ControllerSpec with FutureA
     mockAuthClientConnector,
     mockSessionService,
     applicationProgressSavedView
+
   )
 
-  s"GET ${routes.ApplicationProgressSavedController.show}" should {
+  s"GET ${routes.ApplicationProgressSavedController.show()}" should {
     "display the submission progress saved page to the user" in {
       mockAuthenticated()
       mockWithCurrentProfile(Some(currentProfile))
 
-      callAuthorised(testController.show) { res =>
+      callAuthorised(testController.show(fromCheckAnswers = false)) { res =>
         status(res) mustBe OK
       }
     }
   }
+
+  s"GET ${routes.ApplicationProgressSavedController.show(fromCheckAnswers = true)}" should {
+    "display the progress saved page with upload warning to the user" in {
+      mockAuthenticated()
+      mockWithCurrentProfile(Some(currentProfile))
+
+      callAuthorised(testController.show(fromCheckAnswers = true)) { res =>
+        status(res) mustBe OK
+      }
+    }
+  }
+
 }

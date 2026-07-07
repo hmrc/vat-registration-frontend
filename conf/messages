@@ -788,11 +788,12 @@ pages.application.submission.confirmation.list.software.digital.individual      
 pages.application.submission.confirmation.list.software.digital.individual.vatGroup = A VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
 
 # Progress Saved Page
-pages.application.progress.saved.heading                            = Your application has been saved for 7 days
+pages.application.progress.saved.heading                            = Your application has been saved for 28 days
 pages.application.progress.saved.para1                              = You will not be able to submit the application until you have completed the application.
 pages.application.progress.saved.para2                              = You can leave this page, or
 pages.application.progress.saved.link                               = return to your application
-pages.application.progress.saved.inset                              = Saved applications will only be available for 7 days
+pages.application.progress.saved.inset                              = Saved applications will only be available for 28 days
+pages.application.progress.saved.inset2                             = Uploaded documents will be saved for 6 hours. After this time, the application will remain saved but documents must be uploaded again.
 pages.application.progress.ttDeadline.saved.heading                 = This application will be saved until 19 May 2025
 pages.application.progress.ttDeadline.saved.para1                   = If you do not return to complete and submit this application by this date, you''ll have to start the application again.
 
@@ -1462,9 +1463,10 @@ internationalAddress.error.country                       = Select a country
 internationalAddress.error.country.invalid               = Select a country
 
 # ATTACHMENT METHOD
-attachmentMethod.title                                    = How would you like to send the additional documents?
+attachmentMethod.title                                    = How will you send the additional documents?
 attachmentMethod.text                                     = You can only select one method.
 attachmentMethod.options.upload                           = Upload the documents using this service
+attachmentMethod.options.upload.hint                      = Uploaded documents will be saved for 6 hours. After this time, the application will remain saved but documents must be uploaded again.
 attachmentMethod.options.post                             = Post copies to HMRC
 attachmentMethod.error.missing                            = Select how you want to send copies of the documents to HMRC
 

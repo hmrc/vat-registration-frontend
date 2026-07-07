@@ -31,8 +31,12 @@ class SaveAndRetrieveController @Inject()(val authConnector: AuthConnector,
                                           bcc: BaseControllerComponents,
                                           appConfig: FrontendAppConfig) extends BaseController {
 
+  def saveFromCheckAnswers: Action[AnyContent] = isAuthenticatedWithProfile { _ => _ =>
+    Future.successful(Redirect(controllers.routes.ApplicationProgressSavedController.show(fromCheckAnswers = true)))
+  }
+
   def save: Action[AnyContent] = isAuthenticatedWithProfile { _ => _ =>
-    Future.successful(Redirect(controllers.routes.ApplicationProgressSavedController.show.url))
+    Future.successful(Redirect(controllers.routes.ApplicationProgressSavedController.show().url))
   }
 
 }
