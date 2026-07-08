@@ -35,9 +35,7 @@
 
     @h1("attachmentMethod.title")
 
-    @p{ @messages("attachmentMethod.text") }
-
-    @form(action = controllers.attachments.routes.AttachmentMethodController.submit, 'autoComplete -> "off") {
+    @form(action = controllers.attachments.routes.AttachmentMethodController.submit, Symbol("autoComplete") -> "off") {
         @inputRadio(
             form = attachmentMethodForm,
             legend = messages("attachmentMethod.title"),
@@ -47,7 +45,10 @@
                 RadioItem(
                     content = Text(messages("attachmentMethod.options.upload")),
                     value = Some("2"),
-                    checked = attachmentMethodForm("value").value.contains("2")
+                    checked = attachmentMethodForm("value").value.contains("2"),
+                    conditionalHtml = Some(
+                        Html(s"""<p class="govuk-hint">${messages("attachmentMethod.options.upload.hint")}</p>""")
+                    )
                 ),
                 RadioItem(
                     content = Text(messages("attachmentMethod.options.post")),

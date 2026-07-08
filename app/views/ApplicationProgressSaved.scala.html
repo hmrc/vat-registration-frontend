@@ -30,17 +30,17 @@
         govukInsetText: GovukInsetText
 )
 
-@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(arrivingFromCyaPage: Boolean = false)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @if(!isEnabled(SubmitDeadline)){
 
   @layout(pageTitle = Some(titleNoForm(messages("pages.application.progress.saved.heading")))) {
 
     @govukPanel(Panel(
-        title = Text(messages("pages.application.progress.saved.heading"))
+       title = Text(messages("pages.application.progress.saved.heading"))
     ))
 
-    @p(content = Html(messages("pages.application.progress.saved.para1")))
+     @p(content = Html(messages("pages.application.progress.saved.para1")))
 
     @p{
         @messages("pages.application.progress.saved.para2")
@@ -48,7 +48,14 @@
     }
 
     @govukInsetText(InsetText(
-        content = Text(messages("pages.application.progress.saved.inset"))
+         content = HtmlContent(Html(
+            s"<p>${messages("pages.application.progress.saved.inset")}</p>" +
+            (if (arrivingFromCyaPage)
+              s"<p>${messages("pages.application.progress.saved.inset2")}</p>"
+            else
+              ""
+            )
+         ))
     ))
 
   }
@@ -68,4 +75,3 @@
 
   }
 }
-

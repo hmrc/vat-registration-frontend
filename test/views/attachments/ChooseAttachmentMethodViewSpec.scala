@@ -18,17 +18,18 @@ package views.attachments
 
 import featuretoggle.FeatureToggleSupport
 import forms.AttachmentMethodForm
+import models.api.Upload
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Document, Element}
 import views.VatRegViewSpec
 import views.html.attachments.ChooseAttachmentMethod
 
 class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureToggleSupport {
 
   object ExpectedMessages {
-    val heading = "How would you like to send the additional documents?"
-    val p = "You can only select one method."
+    val heading = "How will you send the additional documents?"
     val upload = "Upload the documents using this service"
+    val uploadHint = "Uploaded documents will be saved for 6 hours. After this time, the application will remain saved but documents must be uploaded again."
     val post = "Post copies to HMRC"
     val button = "Continue"
   }
@@ -46,14 +47,29 @@ class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureToggleSu
       doc.heading mustBe Some(ExpectedMessages.heading)
     }
 
-    "have the correct text" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedMessages.p)
-    }
-
     "have the correct radio options" in new ViewSetup {
       doc.radio("2") mustBe Some(ExpectedMessages.upload)
       doc.radio("3") mustBe Some(ExpectedMessages.post)
       doc.radio("email") mustBe None
+    }
+
+    "have the upload hint" in new ViewSetup {
+      doc.body.text must include(ExpectedMessages.uploadHint)
+    }
+
+    "show the upload hint when Upload is preselected" in new ViewSetup {
+      val uploadDoc: Document = Jsoup.parse(view(form.apply().bind(Map("value" -> "2"))).body)
+      val conditionalBlock: Element = uploadDoc.select("div.govuk-radios__conditional").first()
+
+      conditionalBlock.text() must include(ExpectedMessages.uploadHint)
+      conditionalBlock.hasClass("govuk-radios__conditional--hidden") mustBe false
+    }
+
+    "not show the upload hint when Post is preselected" in new ViewSetup {
+      val postDoc: Document = Jsoup.parse(view(form.apply().bind(Map("value" -> "3"))).body)
+      val conditionalBlock: Element = postDoc.select("div.govuk-radios__conditional").first()
+
+      conditionalBlock.hasClass("govuk-radios__conditional--hidden") mustBe true
     }
 
     "have a save and continue button" in new ViewSetup {

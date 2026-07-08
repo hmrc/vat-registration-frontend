@@ -788,11 +788,12 @@ pages.application.submission.confirmation.list.software.digital.individual      
 pages.application.submission.confirmation.list.software.digital.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 
 # Progress Saved Page
-pages.application.progress.saved.heading                            = Cedwir eich cais am 7 diwrnod
+pages.application.progress.saved.heading                            = Cedwir eich cais am 28 diwrnod
 pages.application.progress.saved.para1                              = Ni fyddwch yn gallu cyflwyno’r cais nes eich bod wedi cwblhau’r cais.
 pages.application.progress.saved.para2                              = Gallwch adael y dudalen hon, neu
 pages.application.progress.saved.link                               = fynd yn ôl i’ch cais
-pages.application.progress.saved.inset                              = Dim ond am 7 diwrnod y bydd ceisiadau wedi’u cadw ar gael
+pages.application.progress.saved.inset                              = Dim ond am 28 diwrnod y bydd ceisiadau wedi’u cadw ar gael
+pages.application.progress.saved.inset2                             = Bydd y dogfennau sydd wedi’u huwchlwytho yn cael eu cadw am 6 awr. Ar ôl yr amser hwn, bydd y cais yn cael ei gadw, ond bydd yn rhaid uwchlwytho’r dogfennau eto.
 pages.application.progress.ttDeadline.saved.heading                 = Bydd y cais hwn yn cael ei arbed hyd at 19 Mai 2025
 pages.application.progress.ttDeadline.saved.para1                   = Os na fyddwch yn cwblhau a chyflwyno’r cais hwn erbyn y dyddiad hwn, bydd yn rhaid i chi ddechrau’r cais eto.
 
@@ -1461,9 +1462,9 @@ internationalAddress.error.country                       = Dewiswch wlad
 internationalAddress.error.country.invalid               = Dewiswch wlad
 
 # ATTACHMENT METHOD
-attachmentMethod.title                                    = Sut yr hoffech anfon y dogfennau ychwanegol?
-attachmentMethod.text                                     = Dim ond un dull y gallwch ei ddewis.
+attachmentMethod.title                                    = Sut y byddwch yn anfon y dogfennau ychwanegol?
 attachmentMethod.options.upload                           = Uwchlwytho’r dogfennau gan ddefnyddio’r gwasanaeth hwn
+attachmentMethod.options.upload.hint                      = Bydd y dogfennau sydd wedi’u huwchlwytho yn cael eu cadw am 6 awr. Ar ôl yr amser hwn, bydd y cais yn cael ei gadw, ond bydd yn rhaid uwchlwytho’r dogfennau eto.
 attachmentMethod.options.post                             = Postio copïau at CThEM
 attachmentMethod.error.missing                            = Dewiswch sut yr hoffech anfon copïau o’r dogfennau at CThEM
 

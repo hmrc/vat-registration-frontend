@@ -10,6 +10,7 @@ GET         /error/destroy-session                                    controller
 GET         /session-timed-out                                        controllers.callbacks.SignInOutController.timeoutShow()
 
 GET         /schemes/save-for-later                                   controllers.SaveAndRetrieveController.save
+GET         /save-from-check-answers                                  controllers.SaveAndRetrieveController.saveFromCheckAnswers
 
 ## FEEDBACK
 GET         /feedback                                                 controllers.feedback.FeedbackController.feedbackShow
@@ -23,7 +24,7 @@ GET         /journey/:regId                                           controller
 GET         /application-progress                                     controllers.TaskListController.show
 
 ## PROGRESS SAVED PAGE
-GET         /progress-saved                                           controllers.ApplicationProgressSavedController.show
+GET         /progress-saved                                           controllers.ApplicationProgressSavedController.show(fromCheckAnswers: Boolean ?= false)
 
 GET         /manage-registrations                                     controllers.ManageRegistrationsController.show
 

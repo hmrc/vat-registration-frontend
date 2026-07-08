@@ -35,6 +35,6 @@
     @govukAccordion(accordion)
 
     @form(action = controllers.routes.SummaryController.submitRegistration) {
-        @button(messages("pages.summary.continue"), showSaveProgressButton = true)
+        @button(messages("pages.summary.continue"), showSaveProgressButton = true, saveProgressUrl = controllers.routes.SaveAndRetrieveController.saveFromCheckAnswers.url)
     }
 }

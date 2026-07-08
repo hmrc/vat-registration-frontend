@@ -22,7 +22,7 @@
         govukButton: GovukButton
 )
 
-@(msg: String, showSaveProgressButton: Boolean = true)(implicit messages: Messages, appConfig: FrontendAppConfig)
+@(msg: String, showSaveProgressButton: Boolean = true, saveProgressUrl: String = controllers.routes.SaveAndRetrieveController.save.url)(implicit messages: Messages, appConfig: FrontendAppConfig)
 
 @button = {
     @govukButton(Button(
@@ -34,7 +34,7 @@
 @if(showSaveProgressButton) {
     <div class="govuk-button-group">
         @button
-        @saveProgressButton()
+        @saveProgressButton(saveProgressUrl)(messages)
     </div>
 } else {
     @button
