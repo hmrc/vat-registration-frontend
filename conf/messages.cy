@@ -1463,7 +1463,6 @@ internationalAddress.error.country.invalid               = Dewiswch wlad
 
 # ATTACHMENT METHOD
 attachmentMethod.title                                    = Sut y byddwch yn anfon y dogfennau ychwanegol?
-attachmentMethod.text                                     = Dim ond un dull y gallwch ei ddewis.
 attachmentMethod.options.upload                           = Uwchlwytho’r dogfennau gan ddefnyddio’r gwasanaeth hwn
 attachmentMethod.options.upload.hint                      = Bydd y dogfennau sydd wedi’u huwchlwytho yn cael eu cadw am 6 awr. Ar ôl yr amser hwn, bydd y cais yn cael ei gadw, ond bydd yn rhaid uwchlwytho’r dogfennau eto.
 attachmentMethod.options.post                             = Postio copïau at CThEM

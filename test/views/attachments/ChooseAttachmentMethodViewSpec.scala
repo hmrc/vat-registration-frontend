@@ -28,7 +28,6 @@ class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureToggleSu
 
   object ExpectedMessages {
     val heading = "How will you send the additional documents?"
-    val p = "You can only select one method."
     val upload = "Upload the documents using this service"
     val uploadHint = "Uploaded documents will be saved for 6 hours. After this time, the application will remain saved but documents must be uploaded again."
     val post = "Post copies to HMRC"
@@ -46,10 +45,6 @@ class ChooseAttachmentMethodViewSpec extends VatRegViewSpec with FeatureToggleSu
     }
     "have the correct page heading" in new ViewSetup {
       doc.heading mustBe Some(ExpectedMessages.heading)
-    }
-
-    "have the correct text" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedMessages.p)
     }
 
     "have the correct radio options" in new ViewSetup {

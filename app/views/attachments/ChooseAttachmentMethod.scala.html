@@ -35,8 +35,6 @@
 
     @h1("attachmentMethod.title")
 
-    @p{ @messages("attachmentMethod.text") }
-
     @form(action = controllers.attachments.routes.AttachmentMethodController.submit, Symbol("autoComplete") -> "off") {
         @inputRadio(
             form = attachmentMethodForm,
