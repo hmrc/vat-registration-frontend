@@ -16,8 +16,6 @@
 
 package views.bankdetails
 
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
-import featuretoggle.FeatureToggleSupport._
 import forms.EnterBankAccountDetailsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,23 +26,22 @@ class EnterBankDetailsViewSpec extends VatRegViewSpec {
 
   val view: EnterBankAccountDetails = app.injector.instanceOf[EnterBankAccountDetails]
 
-  val title = "What are the business’s account details?"
-  val heading = "What are the business’s account details?"
-  val p1 = "HMRC VAT will only use this information to send VAT repayments. Money will not be taken from the account you supply."
-  val panelText = "You must tell us if your account details change."
-  val accountName = "Name on the account"
-  val accountNumber = "Account number"
+  val title             = "What are the business’s account details?"
+  val heading           = "What are the business’s account details?"
+  val p1                = "HMRC VAT will only use this information to send VAT repayments. Money will not be taken from the account you supply."
+  val panelText         = "You must tell us if your account details change."
+  val accountName       = "Name on the account"
+  val accountNumber     = "Account number"
   val accountNumberHint = "Must be 8 digits long"
-  val sortCode = "Sort code"
-  val sortCodeHint = "Must be 6 digits long"
-  val rollNumber = "Building society roll number (if you have one)"
-  val rollNumberHint = "You can find it on your card, statement or passbook"
-  val buttonText = "Save and continue"
+  val sortCode          = "Sort code"
+  val sortCodeHint      = "Must be 6 digits long"
+  val rollNumber        = "Building society roll number (if you have one)"
+  val rollNumberHint    = "You can find it on your card, statement or passbook"
+  val buttonText        = "Save and continue"
 
   implicit lazy val doc: Document = Jsoup.parse(view(EnterBankAccountDetailsForm.form).body)
 
   "Company Bank Details Page common elements" should {
-    disable(UseNewBarsVerify)
 
     "have the correct title" in new ViewSetup {
       doc.title must include(title)

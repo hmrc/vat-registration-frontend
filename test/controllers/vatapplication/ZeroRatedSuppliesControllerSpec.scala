@@ -39,7 +39,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
     val zeroRatedSuppliesView: ZeroRatedSupplies = app.injector.instanceOf[ZeroRatedSupplies]
     val zeroRatedSuppliesNewJourneyView: ZeroRatedSuppliesNewJourney = app.injector.instanceOf[ZeroRatedSuppliesNewJourney]
     val testController = new ZeroRatedSuppliesController(
-      mockSessionService, mockAuthClientConnector, movkVatApplicationService, zeroRatedSuppliesView, zeroRatedSuppliesNewJourneyView
+      mockSessionService, mockAuthClientConnector, mockVatApplicationService, zeroRatedSuppliesView, zeroRatedSuppliesNewJourneyView
     )
     val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
     val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
@@ -56,7 +56,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
   "show with the New Journey feature flag disabled " should {
     "return OK if the user answered ZeroRatedSupply and TurnOverEstimate question" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = Some(zeroRatedSupplies), turnoverEstimate = Some(estimates))))
 
       callAuthorised(testController.show) { result =>
@@ -70,7 +70,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
     "return OK if the has answered TurnOverEstimate question" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = None, turnoverEstimate = Some(estimates))))
 
       callAuthorised(testController.show) { result =>
@@ -84,7 +84,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
     "return Missing Exception if the user has not answered" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = None, turnoverEstimate = None)))
       when(mockSessionService.cache(any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("test", Map())))
@@ -98,7 +98,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
   "show with the New Journey feature flag enabled " should {
     "return OK if the user answered ZeroRatedSupply and TurnOverEstimate question with the new journey view" in new Setup {
       enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = Some(zeroRatedSupplies), turnoverEstimate = Some(estimates))))
 
       callAuthorised(testController.show) { result =>
@@ -112,7 +112,7 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
     "return OK if the user answered TurnOverEstimate question with the new journey view" in new Setup {
       enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(zeroRatedSupplies = None, turnoverEstimate = Some(estimates))))
 
       callAuthorised(testController.show) { result =>
@@ -128,10 +128,10 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
   "submit with the New Journey feature flag disabled" should {
     "redirect to the next page if everything is OK" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getTurnover(any(), any(), any()))
+      when(mockVatApplicationService.getTurnover(any(), any(), any()))
         .thenReturn(Future.successful(Some(BigDecimal(1000))))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -146,10 +146,10 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
 
     "return 400 for an invalid value" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getTurnover(any(), any(), any()))
+      when(mockVatApplicationService.getTurnover(any(), any(), any()))
         .thenReturn(Future.successful(Some(BigDecimal(1000))))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -174,10 +174,10 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
       when(mockSessionService.cache(any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("test", Map())))
 
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -196,10 +196,10 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
       when(mockSessionService.cache(any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("test", Map())))
 
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -222,10 +222,10 @@ class ZeroRatedSuppliesControllerSpec extends ControllerSpec with VatRegistratio
         when(mockSessionService.cache(any(), any())(any(), any()))
           .thenReturn(Future.successful(CacheMap("test", Map())))
 
-        when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+        when(mockVatApplicationService.getVatApplication(any(), any(), any()))
           .thenReturn(Future.successful(savedVatApplication))
 
-        when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+        when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
           .thenReturn(Future.successful(emptyReturns))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

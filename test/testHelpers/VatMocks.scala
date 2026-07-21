@@ -28,41 +28,34 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.Audit
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-trait VatMocks
-    extends AuthMock
-    with SessionServiceMock
-    with BusinessServiceMock
-    with IncorpIdServiceMock
-    with MockRegistrationApiConnector {
+trait VatMocks extends AuthMock with SessionServiceMock with BusinessServiceMock with IncorpIdServiceMock with MockRegistrationApiConnector {
   this: MockitoSugar =>
 
-  implicit lazy val mockAudit: Audit = mock[Audit]
+  implicit lazy val mockAudit: Audit                   = mock[Audit]
   implicit lazy val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
 
-  //Connectors
+  // Connectors
   implicit lazy val mockVatRegistrationConnector: VatRegistrationConnector = mock[VatRegistrationConnector]
-  implicit lazy val mockConfigConnector: ConfigConnector = mock[ConfigConnector]
-  implicit lazy val mockAddressLookupConnector: AddressLookupConnector = mock[AddressLookupConnector]
-  implicit lazy val mockBankAccountReputationConnector: BankAccountReputationConnector = mock[BankAccountReputationConnector]
-  implicit lazy val mockICLConnector: ICLConnector = mock[ICLConnector]
-  implicit lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  implicit lazy val mockConfigConnector: ConfigConnector                   = mock[ConfigConnector]
+  implicit lazy val mockAddressLookupConnector: AddressLookupConnector     = mock[AddressLookupConnector]
+  implicit lazy val mockICLConnector: ICLConnector                         = mock[ICLConnector]
+  implicit lazy val mockAuthConnector: AuthConnector                       = mock[AuthConnector]
 
-  //Services
-  implicit lazy val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
-  implicit lazy val mockVatRegistrationService: VatRegistrationService = mock[VatRegistrationService]
-  implicit lazy val mockBankAccountReputationService: BankAccountReputationService = mock[BankAccountReputationService]
-  implicit lazy val movkVatApplicationService: VatApplicationService = mock[VatApplicationService]
+  // Services
+  implicit lazy val mockAddressLookupService: AddressLookupService          = mock[AddressLookupService]
+  implicit lazy val mockVatRegistrationService: VatRegistrationService      = mock[VatRegistrationService]
+  implicit lazy val mockVatApplicationService: VatApplicationService        = mock[VatApplicationService]
   implicit lazy val mockApplicantDetailsServiceOld: ApplicantDetailsService = mock[ApplicantDetailsService]
-  implicit lazy val mockFlatRateService: FlatRateService = mock[FlatRateService]
-  implicit lazy val mockAttachmentsService: AttachmentsService = mock[AttachmentsService]
-  lazy val mockSummaryService: SummaryService = mock[SummaryService]
+  implicit lazy val mockFlatRateService: FlatRateService                    = mock[FlatRateService]
+  implicit lazy val mockAttachmentsService: AttachmentsService              = mock[AttachmentsService]
+  lazy val mockSummaryService: SummaryService                               = mock[SummaryService]
 
-  val mockTimeService: TimeService = mock[TimeService]
-  lazy val mockICLService: ICLService = mock[ICLService]
+  val mockTimeService: TimeService       = mock[TimeService]
+  lazy val mockICLService: ICLService    = mock[ICLService]
   val mockAuditConnector: AuditConnector = mock[AuditConnector]
-  lazy val mockCache: SyncCacheApi = mock[SyncCacheApi]
+  lazy val mockCache: SyncCacheApi       = mock[SyncCacheApi]
 
-  def resetMocks(): Unit = {
+  def resetMocks(): Unit =
     reset(
       mockSessionService,
       mockAudit,
@@ -70,7 +63,7 @@ trait VatMocks
       mockVatRegistrationConnector,
       mockConfigConnector,
       mockAddressLookupConnector,
-      movkVatApplicationService,
+      mockVatApplicationService,
       mockAttachmentsService,
       mockApplicantDetailsServiceOld,
       mockFlatRateService,
@@ -79,5 +72,4 @@ trait VatMocks
       mockTimeService,
       mockRegistrationApiConnector
     )
-  }
 }

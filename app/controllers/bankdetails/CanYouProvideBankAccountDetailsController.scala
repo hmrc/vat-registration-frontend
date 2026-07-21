@@ -38,7 +38,7 @@ class CanYouProvideBankAccountDetailsController @Inject() (val authConnector: Au
     baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     lockService.redirectIfBarsIsLocked {
       vatRegistrationService.getEligibilitySubmissionData.map(data => (data.partyType, data.fixedEstablishmentInManOrUk)).flatMap {
         case (Individual | NonUkNonEstablished, false) =>
@@ -59,7 +59,7 @@ class CanYouProvideBankAccountDetailsController @Inject() (val authConnector: Au
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         hasBankAccount =>
           bankAccountDetailsService.saveAnswerCanProvideBankAccountDetailsPage(hasBankAccount).map { _ =>
-            if (hasBankAccount) Redirect(routes.ChooseAccountTypeController.show) else Redirect(routes.NoUKBankAccountController.show)
+            if (hasBankAccount) Redirect(routes.ChooseAccountTypeController.show()) else Redirect(routes.NoUKBankAccountController.show())
           }
       )
   }

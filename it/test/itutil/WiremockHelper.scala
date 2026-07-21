@@ -116,17 +116,6 @@ trait WiremockHelper {
     )
   }
 
-  def stubBankReputationCheck(valid: String): StubMapping = {
-    val response = Json.obj("accountNumberIsWellFormatted" -> valid)
-    stubFor(post(urlMatching("/validate/bank-details"))
-      .willReturn(
-        aResponse().
-          withStatus(200)
-          .withBody(response.toString())
-      )
-    )
-  }
-
   def stubVATFetch(regId: String, uri: String, response: Option[JsObject]): StubMapping = {
     val vatRegistrationUrl = s"/vatreg/$regId/$uri"
     val (status, resp) = response.fold((404, Json.obj()))(js => (200, js))

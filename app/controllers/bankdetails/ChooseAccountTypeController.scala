@@ -54,7 +54,7 @@ class ChooseAccountTypeController @Inject() (val authConnector: AuthClientConnec
         formWithErrors => Future.successful(BadRequest(view(formWithErrors))),
         bankAccountType =>
           bankAccountDetailsService.saveAnswerForBankAccountTypePage(bankAccountType).map { _ =>
-            Redirect(routes.UkBankAccountDetailsController.show)
+            Redirect(routes.UkBankAccountDetailsController.show())
           }
       )
   }

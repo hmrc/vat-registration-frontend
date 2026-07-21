@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class NoUKBankAccountControllerISpec extends ControllerISpec {
 
-  val url: String = routes.NoUKBankAccountController.show.url
+  val url: String = routes.NoUKBankAccountController.show().url
 
   s"GET $url" must {
     "return an OK" in new Setup {

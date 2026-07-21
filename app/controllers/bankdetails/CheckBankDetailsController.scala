@@ -36,16 +36,16 @@ class CheckBankDetailsController @Inject() (
 )(implicit appConfig: FrontendAppConfig, val executionContext: ExecutionContext, baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     lockService.redirectIfBarsIsLocked {
       bankAccountDetailsService.getBankAccount.map(_.flatMap(_.details)).map {
         case Some(bankDetails) => Ok(view(bankDetails))
-        case None              => Redirect(routes.CanYouProvideBankAccountDetailsController.show)
+        case None              => Redirect(routes.CanYouProvideBankAccountDetailsController.show())
       }
     }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def submit(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     bankAccountDetailsService.getBankAccount.flatMap { bankAccount =>
       (bankAccount.flatMap(_.details), bankAccount.flatMap(_.bankAccountType)) match {
         case (Some(bankAccountDetails), Some(accountType)) =>
