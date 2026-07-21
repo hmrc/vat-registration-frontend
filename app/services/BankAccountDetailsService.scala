@@ -53,14 +53,8 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
       hc: HeaderCarrier,
       profile: CurrentProfile,
       ex: ExecutionContext,
-      request: Request[_]): Future[BankAccount] =
-    newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)
-
-  private def newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails: Boolean)(implicit
-      hc: HeaderCarrier,
-      profile: CurrentProfile,
-      ex: ExecutionContext,
       request: Request[_]): Future[BankAccount] = {
+
     def hasExistingBankDetailsAnd(invalid: Boolean, existingDetails: BankAccount): Boolean =
       existingDetails.isProvided && {
         val status = existingDetails.details.flatMap(_.status)
@@ -82,7 +76,7 @@ class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiC
         saveBankAccount(changingFromOldReasonToNewBankDetailsJourney)
 
       case Some(existingAccount) if !canProvideBankAccountDetails && hasExistingBankDetailsAnd(invalid = true, existingAccount) =>
-        // Do not delete invalid bank details, they must be sent to the API at submission
+        // Do not delete invalid bank details, they are sent to the API at submission for audit purposes
         val changingFromOldInvalidBankDetailsToNewReasonJourney =
           existingAccount.copy(isProvided = canProvideBankAccountDetails)
         saveBankAccount(changingFromOldInvalidBankDetailsToNewReasonJourney)
