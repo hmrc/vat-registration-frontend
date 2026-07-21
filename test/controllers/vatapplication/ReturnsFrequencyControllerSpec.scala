@@ -37,7 +37,7 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
   class Setup {
     val returnFrequencyView: ReturnFrequency = app.injector.instanceOf[ReturnFrequency]
     val testController = new ReturnsFrequencyController(
-      mockSessionService, mockAuthClientConnector, movkVatApplicationService, mockVatRegistrationService, returnFrequencyView
+      mockSessionService, mockAuthClientConnector, mockVatApplicationService, mockVatRegistrationService, returnFrequencyView
     )
 
     mockAuthenticated()
@@ -49,9 +49,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
 
   "returnsFrequencyPage" should {
     "return OK when returns are present" in new Setup {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       callAuthorised(testController.show) { result =>
@@ -60,9 +60,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return OK when returns are not present" in new Setup {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       callAuthorised(testController.show) { result =>
@@ -71,9 +71,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return OK when returns are present with AAS" in new Setup {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Annual))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       callAuthorised(testController.show) { result =>
@@ -82,9 +82,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return Other when returns are present without AAS" in new Setup {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Quarterly))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(false))
 
       callAuthorised(testController.show) { result =>
@@ -99,9 +99,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the Join Flat Rate page when they select the monthly option" in new Setup {
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -117,9 +117,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the TaxRepController when they select the monthly option and overseas entity does not have a fixed establishment in IsleOfManOrUK" in new Setup {
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = NETP, fixedEstablishmentInManOrUk = false)))
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Monthly))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -135,9 +135,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the account periods page when they select the quarterly option" in new Setup {
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Quarterly))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -153,9 +153,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     "redirect to the last month of accounting year page when they select the annual option" in new Setup {
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(returnsFrequency = Some(Annual))))
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -169,9 +169,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return BAD_REQUEST when no option is selected" in new Setup {
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(true))
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -184,9 +184,9 @@ class ReturnsFrequencyControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return BAD_REQUEST when an invalid option is submitted" in new Setup {
-      when(movkVatApplicationService.isEligibleForAAS(any(), any(), any()))
+      when(mockVatApplicationService.isEligibleForAAS(any(), any(), any()))
         .thenReturn(Future.successful(false))
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

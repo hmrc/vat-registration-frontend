@@ -270,7 +270,6 @@ trait StubUtils {
 
   case class BarsVerifyStub()(implicit builder: PreconditionBuilder) {
     private val url = "/register-for-vat/test-only/bars/verify-bank-details"
-    private val validateUrl = "/register-for-vat/test-only/bars/validate-bank-details"
     private val successChecksBody = s"""
                                        |{
                                        |  "accountNumberIsWellFormatted": "yes",
@@ -310,20 +309,10 @@ trait StubUtils {
         .willReturn(aResponse().withStatus(200).withBody(successChecksBody)))
       builder
     }
-    def validateSucceeds: PreconditionBuilder = {
-      stubFor(post(urlMatching(validateUrl))
-        .willReturn(aResponse().withStatus(200).withBody(successChecksBody)))
-      builder
-    }
 
     def verifyFails(isIndeterminate: Boolean = false): PreconditionBuilder = {
       stubFor(post(urlMatching(url))
         .willReturn(aResponse().withStatus(400).withBody(if (isIndeterminate) indeterminateChecksBody else invalidChecksBody)))
-      builder
-    }
-    def validateFails: PreconditionBuilder = {
-      stubFor(post(urlMatching(validateUrl))
-        .willReturn(aResponse().withStatus(OK).withBody("""{"accountNumberIsWellFormatted": "no"}""")))
       builder
     }
 

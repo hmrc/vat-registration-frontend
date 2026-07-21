@@ -37,7 +37,7 @@ class UkBankAccountDetailsController @Inject() (val authConnector: AuthClientCon
     baseControllerComponents: BaseControllerComponents)
     extends BaseController {
 
-  def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def show(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     lockService.redirectIfBarsIsLocked {
       bankAccountDetailsService.getBankAccount.map { bankAccount =>
         val filledForm = bankAccount.flatMap(_.details).fold(form)(form.fill)
@@ -46,7 +46,7 @@ class UkBankAccountDetailsController @Inject() (val authConnector: AuthClientCon
     }
   }
 
-  def submit: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
+  def submit(): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     form
       .bindFromRequest()
       .fold(
@@ -54,7 +54,7 @@ class UkBankAccountDetailsController @Inject() (val authConnector: AuthClientCon
         accountDetails =>
           bankAccountDetailsService.saveAnswersForBankAccountDetailsPage(accountDetails).map {
             case Right(_) =>
-              Redirect(routes.CheckBankDetailsController.show)
+              Redirect(routes.CheckBankDetailsController.show())
             case Left(_) =>
               redirectBackToFirstPageInJourney
           }

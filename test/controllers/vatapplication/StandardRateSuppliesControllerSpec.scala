@@ -38,7 +38,7 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
   class Setup {
     val standardRateSuppliesView: StandardRateSupplies = app.injector.instanceOf[StandardRateSupplies]
     val testController = new StandardRateSuppliesController(
-      mockSessionService, mockAuthClientConnector, movkVatApplicationService, standardRateSuppliesView
+      mockSessionService, mockAuthClientConnector, mockVatApplicationService, standardRateSuppliesView
     )
     val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
     val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest)
@@ -55,7 +55,7 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
   "show with the Taxable Turnover feature flag disabled " should {
     "return OK if the user answered standardRatedSupplies question" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(standardRateSupplies = Some(standardRatedSupplies))))
 
       callAuthorised(testController.show) { result =>
@@ -72,10 +72,10 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
   "show with the New Journey feature flag enabled " should {
     "return OK if the user answered standardRatedSupplies and TurnOverEstimate question with the new journey view" in new Setup {
       enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(standardRateSupplies = Some(standardRatedSupplies), turnoverEstimate = Some(estimates))))
 
-      when(movkVatApplicationService.getReducedRated(any(), any(), any()))
+      when(mockVatApplicationService.getReducedRated(any(), any(), any()))
         .thenReturn(Future.successful(Some(standardRatedSupplies)))
 
       callAuthorised(testController.show) { result =>
@@ -89,10 +89,10 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
 
     "return OK if the user answered TurnOverEstimate question with the new journey view" in new Setup {
       enable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(standardRateSupplies = None, turnoverEstimate = Some(estimates))))
 
-      when(movkVatApplicationService.getReducedRated(any(), any(), any()))
+      when(mockVatApplicationService.getReducedRated(any(), any(), any()))
         .thenReturn(Future.successful(Some(standardRatedSupplies)))
 
       callAuthorised(testController.show) { result =>
@@ -110,10 +110,10 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
     "redirect to the next page if everything is OK" in new Setup {
       disable(TaxableTurnoverJourney)
 
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(standardRateSupplies = Some(standardRatedSupplies), turnoverEstimate = Some(estimates))))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(standardRateSupplies = Some(standardRatedSupplies), turnoverEstimate = Some(estimates))))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -127,16 +127,16 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
 
     "return 400 for an invalid value" in new Setup {
       disable(TaxableTurnoverJourney)
-      when(movkVatApplicationService.getTurnover(any(), any(), any()))
+      when(mockVatApplicationService.getTurnover(any(), any(), any()))
         .thenReturn(Future.successful(Some(BigDecimal(1000))))
 
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reducedRateSupplies = Some(standardRatedSupplies), turnoverEstimate = Some(estimates))))
 
-      when(movkVatApplicationService.getReducedRated(any(), any(), any()))
+      when(mockVatApplicationService.getReducedRated(any(), any(), any()))
         .thenReturn(Future.successful(Some(standardRatedSupplies)))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(
@@ -161,11 +161,11 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
       when(mockSessionService.cache(any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("test", Map())))
 
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reducedRateSupplies = Some(reducedRatedSupplies),
           turnoverEstimate = Some(estimates), standardRateSupplies = Some(BigDecimal(1000)), zeroRatedSupplies = Some(BigDecimal(700)))))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(reducedRateSupplies = Some(reducedRatedSupplies),
           turnoverEstimate = Some(estimates), standardRateSupplies = Some(BigDecimal(1000)), zeroRatedSupplies = Some(BigDecimal(700)))))
 
@@ -185,10 +185,10 @@ class StandardRateSuppliesControllerSpec extends ControllerSpec with VatRegistra
       when(mockSessionService.cache(any(), any())(any(), any()))
         .thenReturn(Future.successful(CacheMap("test", Map())))
 
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
 
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] = fakeRequest.withMethod("POST").withFormUrlEncodedBody(

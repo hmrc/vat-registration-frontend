@@ -38,7 +38,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
     val testController = new VoluntaryStartDateController(
       mockSessionService,
       mockAuthClientConnector,
-      movkVatApplicationService,
+      mockVatApplicationService,
       mockTimeService,
       app.injector.instanceOf[StartDateIncorp]
     )
@@ -54,13 +54,13 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
   "voluntaryStartPage" should {
     "show the page" when {
       "return an OK when returns are not present" in new Setup {
-        when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+        when(mockVatApplicationService.getVatApplication(any(), any(), any()))
           .thenReturn(Future.successful(validVatApplication))
 
         when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-        when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+        when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
           .thenReturn(Future.successful(testIncorpDate))
 
         callAuthorised(testController.show) { result =>
@@ -69,13 +69,13 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
       }
 
       "return an OK when incorp date same as reg start date" in new Setup {
-        when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+        when(mockVatApplicationService.getVatApplication(any(), any(), any()))
           .thenReturn(Future.successful(validVatApplication.copy(startDate = Some(testIncorpDate))))
 
         when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-        when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+        when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
           .thenReturn(Future.successful(testIncorpDate))
 
         callAuthorised(testController.show) { result =>
@@ -94,13 +94,13 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
         "value" -> DateSelection.company_registration_date
       )
 
-      when(movkVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful(validVatApplication))
 
       when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-      when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+      when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
         .thenReturn(Future.successful(incorpDate))
 
       submitAuthorised(testController.submit, request) { result =>
@@ -121,7 +121,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
           "startDate.day" -> nowPlusFive.getDayOfMonth.toString
         )
 
-        when(movkVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any(), any()))
+        when(mockVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(validVatApplication))
 
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any(), any()))
@@ -130,7 +130,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
         when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-        when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+        when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
           .thenReturn(Future.successful(incorpDate))
 
         submitAuthorised(testController.submit, request) { result =>
@@ -149,7 +149,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
           "startDate.day" -> nowPlusFive.getDayOfMonth.toString
         )
 
-        when(movkVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any(), any()))
+        when(mockVatApplicationService.saveVoluntaryStartDate(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(validVatApplication))
 
         when(mockApplicantDetailsServiceOld.getDateOfIncorporation(any(), any(), any()))
@@ -158,7 +158,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
         when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
           .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-        when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+        when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
           .thenReturn(Future.successful(incorpDate))
 
         submitAuthorised(testController.submit, request) { result =>
@@ -186,7 +186,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
           when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
             .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-          when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+          when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
             .thenReturn(Future.successful(incorpDate))
 
           submitAuthorised(testController.submit, request) { result =>
@@ -210,7 +210,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
           when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
             .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-          when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+          when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
             .thenReturn(Future.successful(incorpDate))
 
           submitAuthorised(testController.submit, request) { result =>
@@ -234,7 +234,7 @@ class VoluntaryStartDateControllerSpec extends ControllerSpec with VatRegistrati
           when(mockVatRegistrationService.getEligibilitySubmissionData(any(), any(), any()))
             .thenReturn(Future.successful(validEligibilitySubmissionData))
 
-          when(movkVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
+          when(mockVatApplicationService.calculateEarliestStartDate()(any(), any(), any()))
             .thenReturn(Future.successful(incorpDate))
 
           submitAuthorised(testController.submit, request) { result =>

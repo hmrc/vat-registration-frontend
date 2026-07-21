@@ -120,24 +120,24 @@ GET         /how-often-submit-returns                                 controller
 POST        /how-often-submit-returns                                 controllers.vatapplication.ReturnsFrequencyController.submit
 
 ## COMPANY BANK ACCOUNT
-GET         /companys-bank-account                                    controllers.bankdetails.CanYouProvideBankAccountDetailsController.show
-POST        /companys-bank-account                                    controllers.bankdetails.CanYouProvideBankAccountDetailsController.submit
+GET         /companys-bank-account                                    controllers.bankdetails.CanYouProvideBankAccountDetailsController.show()
+POST        /companys-bank-account                                    controllers.bankdetails.CanYouProvideBankAccountDetailsController.submit()
 
 ## NO UK BANK ACCOUNT
-GET         /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.show
-POST        /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.submit
+GET         /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.show()
+POST        /cannot-provide-bank-account-details                      controllers.bankdetails.NoUKBankAccountController.submit()
 
 ## CHOOSE BUSINESS OR PERSONAL ACCOUNT TYPE
-GET         /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.show
-POST        /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.submit
+GET         /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.show()
+POST        /choose-account-type                                     controllers.bankdetails.ChooseAccountTypeController.submit()
 
 ## ENTER BANK DETAILS
-GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show
-POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit
+GET         /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.show()
+POST        /account-details                                          controllers.bankdetails.UkBankAccountDetailsController.submit()
 
 # CHECK BANK DETAILS
-GET         /check-bank-details                                       controllers.bankdetails.CheckBankDetailsController.show
-POST        /check-bank-details                                       controllers.bankdetails.CheckBankDetailsController.submit
+GET         /check-bank-details                                       controllers.bankdetails.CheckBankDetailsController.show()
+POST        /check-bank-details                                       controllers.bankdetails.CheckBankDetailsController.submit()
 
 # FAILED VERIFICATION SCREENS
 GET        /failed-verification                                       controllers.bankdetails.AccountDetailsNotVerifiedController.show

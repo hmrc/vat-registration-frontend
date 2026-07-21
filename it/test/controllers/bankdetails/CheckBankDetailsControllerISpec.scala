@@ -43,7 +43,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
       val res: WSResponse = await(buildClient(url).get())
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show().url)
     }
 
     "return OK and display bank details when session contains bank details and token" in new Setup {
@@ -192,7 +192,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show().url)
       }
 
       "BankAccount details have no BankAccountDetails data" in new Setup {
@@ -206,7 +206,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show().url)
       }
 
       "BankAccount details have no BankAccountType data" in new Setup {
@@ -226,7 +226,7 @@ class CheckBankDetailsControllerISpec extends ControllerISpec with ITRegistratio
         val res: WSResponse = await(buildClient(url).post(Map.empty[String, String]))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show().url)
       }
     }
   }

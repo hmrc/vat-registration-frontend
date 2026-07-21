@@ -107,7 +107,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
             )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show().url)
       }
 
       "a valid form is submitted with a roll call number" in new Setup {
@@ -135,7 +135,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
             )))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckBankDetailsController.show().url)
       }
     }
 
@@ -153,7 +153,7 @@ class UKBankAccountDetailsControllerISpec extends ControllerISpec with ITRegistr
           )))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.CanYouProvideBankAccountDetailsController.show().url)
     }
 
     "return a BAD_REQUEST and re-render the page with errors" when {

@@ -37,7 +37,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
   class Setup {
     val accountingPeriodView: AccountingPeriodView = app.injector.instanceOf[AccountingPeriodView]
     val testController = new AccountingPeriodController(
-      mockSessionService, mockAuthClientConnector, movkVatApplicationService, mockVatRegistrationService, accountingPeriodView
+      mockSessionService, mockAuthClientConnector, mockVatApplicationService, mockVatRegistrationService, accountingPeriodView
     )
 
     mockAuthenticated()
@@ -49,7 +49,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
 
   "accountsPeriodPage" should {
     "return OK when returns are present" in new Setup {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
 
       callAuthorised(testController.show) { result =>
@@ -58,7 +58,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "return OK when returns are not present" in new Setup {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns))
 
       callAuthorised(testController.show) { result =>
@@ -71,7 +71,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     val fakeRequest = FakeRequest(controllers.vatapplication.routes.AccountingPeriodController.submit)
 
     "redirect to the TaskListController when they select the jan apr jul oct option" in new Setup {
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(JanuaryStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
@@ -87,7 +87,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "redirect to the TaskListController when they select the feb may aug nov option" in new Setup {
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(FebruaryStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
@@ -103,7 +103,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "redirect to the TaskListController when they select the mar may sep dec option" in new Setup {
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData))
@@ -119,7 +119,7 @@ class AccountingPeriodControllerSpec extends ControllerSpec with VatRegistration
     }
 
     "redirect to the TaxRepController if overseas entity does not have a fixed establishment in IsleOfManOrUK" in new Setup {
-      when(movkVatApplicationService.saveVatApplication(any())(any(), any(), any()))
+      when(mockVatApplicationService.saveVatApplication(any())(any(), any(), any()))
         .thenReturn(Future.successful(emptyReturns.copy(staggerStart = Some(MarchStagger))))
       when(mockVatRegistrationService.getEligibilitySubmissionData(any[CurrentProfile], any[HeaderCarrier], any[Request[_]]))
         .thenReturn(Future.successful(validEligibilitySubmissionData.copy(partyType = Individual, fixedEstablishmentInManOrUk = false)))

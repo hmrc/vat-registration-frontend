@@ -111,7 +111,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
         val res: WSResponse = await(buildClient(url).post(Map("value" -> BankAccountType.Business.asBars)))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show().url)
       }
     }
 
@@ -129,7 +129,7 @@ class ChooseAccountTypeControllerISpec extends ControllerISpec with ITRegistrati
         val res: WSResponse = await(buildClient(url).post(Map("value" -> BankAccountType.Personal.asBars)))
 
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show().url)
       }
     }
 

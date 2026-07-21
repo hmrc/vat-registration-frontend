@@ -16,7 +16,6 @@
 
 package controllers.bankdetails
 
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import itutil.ControllerISpec
 import models.api.{EligibilitySubmissionData, Individual, NonUkNonEstablished}
 import models.{BankAccount, Lock}
@@ -156,7 +155,6 @@ class CanYouProvideBankAccountDetailsControllerISpec extends ControllerISpec {
 
   "POST /companys-bank-account" must {
     "redirect to the ChooseAccountType page if the user answers 'Yes'" in new Setup {
-      enable(UseNewBarsVerify)
       given().user
         .isAuthorised()
         .registrationApi
@@ -171,7 +169,7 @@ class CanYouProvideBankAccountDetailsControllerISpec extends ControllerISpec {
       val res: WSResponse = await(buildClient(url).post(Map("value" -> "true")))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.ChooseAccountTypeController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.ChooseAccountTypeController.show().url)
     }
 
     "redirect to the NoUKBankAccount page if the user answers 'No'" in new Setup {
@@ -189,7 +187,7 @@ class CanYouProvideBankAccountDetailsControllerISpec extends ControllerISpec {
       val res: WSResponse = await(buildClient(url).post(Map("value" -> "false")))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(controllers.bankdetails.routes.NoUKBankAccountController.show().url)
     }
 
     "return a BAD_REQUEST and re-render the page with errors when the form is submitted empty" in new Setup {

@@ -16,10 +16,8 @@
 
 package services
 
-import config.FrontendAppConfig
 import connectors.RegistrationApiConnector
 import controllers.bankdetails.routes
-import featuretoggle.FeatureSwitch.UseNewBarsVerify
 import featuretoggle.FeatureToggleSupport
 import models._
 import models.api.{BankAccountDetailsStatus, IndeterminateStatus, InvalidStatus, ValidStatus}
@@ -34,13 +32,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BankAccountDetailsService @Inject() (
-    val regApiConnector: RegistrationApiConnector,
-    bankAccountRepService: BankAccountReputationService,
-    barsService: BarsService,
-    lockService: LockService,
-    barsAuditService: BarsAuditService
-) extends LoggingUtil
+class BankAccountDetailsService @Inject() (val regApiConnector: RegistrationApiConnector,
+                                           barsService: BarsService,
+                                           lockService: LockService,
+                                           barsAuditService: BarsAuditService)
+    extends LoggingUtil
     with FeatureToggleSupport {
 
   def getBankAccount(implicit hc: HeaderCarrier, profile: CurrentProfile, request: Request[_]): Future[Option[BankAccount]] = {
@@ -56,14 +52,9 @@ class BankAccountDetailsService @Inject() (
   def saveAnswerCanProvideBankAccountDetailsPage(canProvideBankAccountDetails: Boolean)(implicit
       hc: HeaderCarrier,
       profile: CurrentProfile,
-      appConfig: FrontendAppConfig,
       ex: ExecutionContext,
       request: Request[_]): Future[BankAccount] =
-    if (isEnabled(UseNewBarsVerify)) {
-      newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)
-    } else {
-      oldSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)
-    }
+    newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails)
 
   private def newSaveAnswerForCanProvideBankAccountDetailsPage(canProvideBankAccountDetails: Boolean)(implicit
       hc: HeaderCarrier,
@@ -108,45 +99,18 @@ class BankAccountDetailsService @Inject() (
     }
   }
 
-  private def oldSaveAnswerForCanProvideBankAccountDetailsPage(hasBankAccount: Boolean)(implicit
-      hc: HeaderCarrier,
-      profile: CurrentProfile,
-      ex: ExecutionContext,
-      request: Request[_]): Future[BankAccount] = {
-    val bankAccount = getBankAccount map {
-      case Some(BankAccount(oldHasBankAccount, _, _, _)) if oldHasBankAccount != hasBankAccount =>
-        infoLog(
-          s"[BankAccountDetailsService][saveHasCompanyBankAccount] hasBankAccount changed, clearing existing bank account details for registration")
-        BankAccount(hasBankAccount, None, None, None)
-      case Some(bankAccountDetails) =>
-        bankAccountDetails.copy(isProvided = hasBankAccount)
-      case None =>
-        infoLog(s"[BankAccountDetailsService][saveHasCompanyBankAccount] No existing bank account found, creating new for registration")
-        BankAccount(hasBankAccount, None, None, None)
-    }
-    bankAccount flatMap saveBankAccount
-  }
-
-  def saveAnswerForBankAccountNotProvidedPage(reason: NoUKBankAccount)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      profile: CurrentProfile,
-      request: Request[_],
-      appConfig: FrontendAppConfig): Future[BankAccount] =
-    if (isEnabled(UseNewBarsVerify)) {
-      for {
-        maybeExistingBankDetails <- getBankAccount
-        updatedModel = BankAccount(
-          isProvided = false,
-          details = maybeExistingBankDetails.flatMap(_.details),
-          reason = Some(reason),
-          bankAccountType = maybeExistingBankDetails.flatMap(_.bankAccountType)
-        )
-        result <- saveBankAccount(updatedModel)
-      } yield result
-    } else {
-      saveBankAccount(BankAccount(isProvided = false, details = None, reason = Some(reason), bankAccountType = None))
-    }
+  def saveAnswerForBankAccountNotProvidedPage(
+      reason: NoUKBankAccount)(implicit hc: HeaderCarrier, ec: ExecutionContext, profile: CurrentProfile, request: Request[_]): Future[BankAccount] =
+    for {
+      maybeExistingBankDetails <- getBankAccount
+      updatedModel = BankAccount(
+        isProvided = false,
+        details = maybeExistingBankDetails.flatMap(_.details),
+        reason = Some(reason),
+        bankAccountType = maybeExistingBankDetails.flatMap(_.bankAccountType)
+      )
+      result <- saveBankAccount(updatedModel)
+    } yield result
 
   def saveAnswerForBankAccountTypePage(bankAccountType: BankAccountType)(implicit
       hc: HeaderCarrier,
@@ -160,10 +124,6 @@ class BankAccountDetailsService @Inject() (
       }
       .flatMap(saveBankAccount)
 
-  /** This is used only when UseNewBarsVerify switch is ON.
-    *
-    * When switch is off, details are saved to cache by SessionService instead.
-    */
   def saveAnswersForBankAccountDetailsPage(bankAccountDetails: BankAccountDetails)(implicit
       hc: HeaderCarrier,
       profile: CurrentProfile,
@@ -179,38 +139,12 @@ class BankAccountDetailsService @Inject() (
           Future.successful(Left(()))
       }
 
-  /** METHOD TO BE DELETED IN DL-19023 CLEAN UP
-    *
-    * This is used only when UseNewBarsVerify switch is OFF, in which case the user is unable to access the CYA page.
-    *
-    * Important: IndeterminateStatus is treated similar to ValidStatus - allowing the user to proceed and not incrementing the failure count. However,
-    * unlike Valid their details are given the 'bankDetailsNotValid = true' flag in the backend submission to the API.
+  /**
+    * Important: IndeterminateStatus is treated similar to ValidStatus - allowing the user to proceed and not incrementing the failure count.
+    * However, unlike Valid their details are given the 'bankDetailsNotValid = true' flag in the backend submission to the API.
     */
-  def makeBarsValidationCheckAndSaveValidAnswers(bankAccountDetails: BankAccountDetails)(implicit
-      hc: HeaderCarrier,
-      profile: CurrentProfile,
-      ex: ExecutionContext,
-      request: Request[_]): Future[Boolean] =
-    bankAccountRepService.validateBankDetails(bankAccountDetails).flatMap {
-      case barsResponseStatus @ (ValidStatus | IndeterminateStatus) =>
-        val bankAccount = BankAccount(
-          isProvided = true,
-          details = Some(bankAccountDetails.copy(status = Some(barsResponseStatus))),
-          reason = None,
-          bankAccountType = None
-        )
-        saveBankAccount(bankAccount).map(_ => true)
-
-      case InvalidStatus =>
-        Future.successful(false)
-    }
-
-  /** This is used only when UseNewBarsVerify switch is ON.
-    *
-    * Important: IndeterminateStatus is treated similar to ValidStatus - allowing the user to proceed and not incrementing the failure count. However,
-    * unlike Valid their details are given the 'bankDetailsNotValid = true' flag in the backend submission to the API.
-    */
-  def verifyAndSaveBankAccountDetails(bankAccountDetails: BankAccountDetails, bankAccountType: BankAccountType, optReason: Option[NoUKBankAccount])(implicit
+  def verifyAndSaveBankAccountDetails(bankAccountDetails: BankAccountDetails, bankAccountType: BankAccountType, optReason: Option[NoUKBankAccount])(
+      implicit
       hc: HeaderCarrier,
       profile: CurrentProfile,
       ex: ExecutionContext,
@@ -263,5 +197,5 @@ class BankAccountDetailsService @Inject() (
 }
 
 object BankAccountDetailsService {
-  val redirectBackToFirstPageInJourney: Result = Redirect(routes.CanYouProvideBankAccountDetailsController.show)
+  val redirectBackToFirstPageInJourney: Result = Redirect(routes.CanYouProvideBankAccountDetailsController.show())
 }

@@ -38,7 +38,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
   class Setup {
     val service = new FlatRateService(
       mockBusinessService,
-      movkVatApplicationService,
+      mockVatApplicationService,
       mockConfigConnector,
       mockRegistrationApiConnector
     )
@@ -314,7 +314,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
       val vatApplication: VatApplication = validVatApplication.copy(startDate = Some(LocalDate.now()))
 
       mockGetSection[FlatRateScheme](testRegId, Some(validFlatRate))
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
       mockReplaceSection[FlatRateScheme](testRegId, validFlatRate.copy(frsStart = Some(LocalDate.now())))
 
@@ -363,7 +363,7 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
   "fetchVatStartDate" must {
     "return vat start date when it exists" in new Setup() {
       val vatApplication: VatApplication = validVatApplication.copy(startDate = Some(LocalDate.now()))
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
 
       await(service.fetchVatStartDate) mustBe LocalDate.now()
@@ -371,18 +371,18 @@ class FlatRateServiceSpec extends VatSpec with MockRegistrationApiConnector {
 
     "return edr when start date does not exist" in new Setup() {
       val vatApplication: VatApplication = validVatApplication.copy(startDate = None)
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.successful(vatApplication))
-      when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any(), any()))
+      when(mockVatApplicationService.retrieveCalculatedStartDate(any(), any(), any()))
         .thenReturn(Future.successful(LocalDate.now()))
 
       await(service.fetchVatStartDate) mustBe LocalDate.now()
     }
 
     "return an exception when there is no start date or edr" in new Setup() {
-      when(movkVatApplicationService.getVatApplication(any(), any(), any()))
+      when(mockVatApplicationService.getVatApplication(any(), any(), any()))
         .thenReturn(Future.failed(new Exception("")))
-      when(movkVatApplicationService.retrieveCalculatedStartDate(any(), any(), any()))
+      when(mockVatApplicationService.retrieveCalculatedStartDate(any(), any(), any()))
         .thenReturn(Future.failed(new Exception("")))
 
       intercept[Exception](await(service.fetchVatStartDate))
