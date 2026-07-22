@@ -119,4 +119,9 @@ object FeatureSwitch {
     val displayText: String = "New BARS Bank Account Details Verification"
   }
 
+  case object UrBannerEnabled extends FeatureSwitch {
+    val name: String = "feature-switch.urBannerEnabled"
+    val displayText: String = "UR Banner Enabled"
+  }
+
 }
