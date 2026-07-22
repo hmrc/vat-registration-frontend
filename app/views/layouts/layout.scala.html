@@ -18,7 +18,9 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{Banners, _}
+@import featuretoggle.FeatureSwitch.UrBannerEnabled
 
 @this(
     appConfig: FrontendAppConfig,
@@ -27,7 +29,8 @@
     hmrcStandardPage: HmrcStandardPage,
     hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    standardBetaBanner: StandardBetaBanner
+    standardBetaBanner: StandardBetaBanner,
+    hmrcUserResearchBanner: HmrcUserResearchBanner
 )
 
 @(
@@ -36,8 +39,9 @@
         backLink: Boolean = true,
         signOutLink: Boolean = true,
         timeout: Boolean = true,
-        showHmrcBanner: Boolean = false
-)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+        showHmrcBanner: Boolean = false,
+        urBanner: Option[UserResearchBanner] = None
+)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: FrontendAppConfig)
 
 @head = {
     <!--[if lte IE 8]><link href='@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
@@ -73,6 +77,7 @@
     ),
     banners = Banners(
         displayHmrcBanner = showHmrcBanner,
+        additionalBannersBlock = if(appConfig.isEnabled(UrBannerEnabled)) urBanner.map(hmrcUserResearchBanner(_)) else None
     ),
     templateOverrides = TemplateOverrides(
         additionalHeadBlock = Some(head),

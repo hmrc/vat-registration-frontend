@@ -325,6 +325,8 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val maxPartnerCount: Int = servicesConfig.getInt("indexedSection.max.partner")
   lazy val maxObiLimit: Int = servicesConfig.getInt("obiMaxLimit")
 
+  lazy val urBannerBaseUrl: String = servicesConfig.getString("urls.urBannerBase")
+
   def isTTMayJunJourneyEnabled: Boolean = isEnabled(SubmitDeadline)
   def isNewVRSApplConfirmJourneyEnabled: Boolean = isEnabled(NewVRSApplConfirmJourney)
 

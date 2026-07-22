@@ -29,6 +29,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.{HeaderNames, Status}
+import play.api.i18n.MessagesApi
 import play.api.mvc._
 import play.api.test._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -41,6 +42,7 @@ trait ControllerSpec extends PlaySpec with MockitoSugar with GuiceOneAppPerSuite
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val messagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   implicit val baseControllerComponents: BaseControllerComponents = new BaseControllerComponents(messagesControllerComponents)
