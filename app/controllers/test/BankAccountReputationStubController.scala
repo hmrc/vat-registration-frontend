@@ -25,29 +25,6 @@ import scala.concurrent.Future
 
 class BankAccountReputationStubController @Inject() (mcc: MessagesControllerComponents) extends FrontendController(mcc) {
 
-  def validateBankDetails(): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    val sortCode = (request.body \\ "sortCode").head.as[String]
-
-    val status = sortCode.take(2) match {
-      case "11" => "no"
-      case "22" => "indeterminate"
-      case _    => "yes"
-    }
-
-    Future.successful(
-      Ok(Json.obj(
-        "accountNumberIsWellFormatted"             -> status,
-        "nonStandardAccountDetailsRequiredForBacs" -> "no",
-        "sortCodeIsPresentOnEISCD"                 -> "yes",
-        "supportsBACS"                             -> "yes",
-        "ddiVoucherFlag"                           -> "no",
-        "directDebitsDisallowed"                   -> "yes",
-        "directDebitInstructionsDisallowed"        -> "yes",
-        "iban"                                     -> "GB59 HBUK 1234 5678",
-        "sortCodeBankName"                         -> "Lloyds"
-      )))
-  }
-
   def verifyBankDetails(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val sortCode = (request.body \\ "sortCode").head.as[String]
 

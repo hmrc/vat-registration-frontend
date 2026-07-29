@@ -54,6 +54,4 @@ POST        /upscan/initiate                                         controllers
 POST        /upscan/upload-response                                  controllers.test.UpscanStubController.uploadResponse(reference: String)
 
 + nocsrf
-POST        /bars/validate-bank-details                              controllers.test.BankAccountReputationStubController.validateBankDetails
-+ nocsrf
 POST        /bars/verify-bank-details                                controllers.test.BankAccountReputationStubController.verifyBankDetails

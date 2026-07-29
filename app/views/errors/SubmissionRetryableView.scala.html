@@ -15,6 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
+@import viewmodels.UrBannerHelper
 
 @this(
         h1: components.h1,
@@ -26,7 +27,9 @@
 
 @()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@layout(pageTitle = Some(titleNoForm("pages.retrySubmission.heading")), backLink = false) {
+@layout(pageTitle = Some(titleNoForm("pages.retrySubmission.heading")),
+    backLink = false,
+    urBanner = UrBannerHelper.getUrBanner()) {
     @h1("pages.retrySubmission.heading")
 
     @p { @messages("pages.retrySubmission.p1") }

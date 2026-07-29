@@ -15,6 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
+@import viewmodels.UrBannerHelper
 
 @this(
         layout: layouts.layout,
@@ -25,7 +26,10 @@
 
 @()(implicit request: Request[_], appConfig: FrontendAppConfig, messages: Messages)
 
-@layout(pageTitle = Some(titleNoForm(messages("contact.title"))), backLink = false) {
+@layout(pageTitle = Some(titleNoForm(messages("contact.title"))),
+    backLink = false,
+    urBanner = UrBannerHelper.getUrBanner()
+) {
     @h1(messages("contact.heading"))
 
     @p {
