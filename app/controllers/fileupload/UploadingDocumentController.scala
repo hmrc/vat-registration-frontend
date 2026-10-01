@@ -18,6 +18,9 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
+import models.api.{Attachment1614a, Attachment1614h, LandPropertyOtherDocs, VAT5L}
 import models.external.upscan.{Failed, FailureDetails, InProgress, Ready}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
@@ -37,7 +40,7 @@ class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument
                                            )(implicit appConfig: FrontendAppConfig,
                                              val executionContext: ExecutionContext,
                                              baseControllerComponents: BaseControllerComponents)
-  extends BaseController {
+  extends BaseController with FeatureToggleSupport {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
@@ -62,6 +65,14 @@ class UploadingDocumentController @Inject()(uploadingDocument: UploadingDocument
       upscanService.fetchUpscanFileDetails(profile.registrationId, reference).map { details =>
         details.fileStatus match {
           case InProgress => Redirect(routes.UploadingDocumentController.show)
+          case Ready if details.attachmentType.equals(VAT5L) && isEnabled(VrsNewAttachmentJourney) =>
+            Redirect(routes.SupportingDocumentsController.show)
+          case Ready if details.attachmentType.equals(LandPropertyOtherDocs) && isEnabled(VrsNewAttachmentJourney) =>
+            Redirect(routes.UploadSupportingDocumentsController.show)
+          case Ready if details.attachmentType.equals(Attachment1614a) && isEnabled(VrsNewAttachmentJourney) =>
+            Redirect(routes.Vat1614HController.show)
+          case Ready if details.attachmentType.equals(Attachment1614h) && isEnabled(VrsNewAttachmentJourney) =>
+            Redirect(routes.UploadedVat5LDocumentsController.show)
           case Ready => Redirect(routes.DocumentUploadSummaryController.show)
           case Failed =>
             if (details.failureDetails.exists(_.failureReason.equals(FailureDetails.rejectedKey))) {

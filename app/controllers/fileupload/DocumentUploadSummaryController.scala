@@ -19,6 +19,8 @@ package controllers.fileupload
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.fileupload.DocumentUploadSummaryController.maxSupportingLandAndPropertyDocs
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 import forms.DocumentUploadSummaryForm
 import models.api._
 import models.external.upscan.{Ready, UpscanDetails}
@@ -41,7 +43,7 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
                                                )(implicit appConfig: FrontendAppConfig,
                                                  val executionContext: ExecutionContext,
                                                  baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
@@ -80,7 +82,11 @@ class DocumentUploadSummaryController @Inject()(view: DocumentUploadSummary,
         } else if (canSupply1614Form(uploadedAttachments) && !is1614FormComplete(attachmentDetails, uploadedAttachments)) {
           Redirect(routes.Supply1614AController.show)
         } else if (canSupply1614Form(uploadedAttachments) && !areSupportingDocumentsComplete(attachmentDetails, uploadedAttachments)) {
-          Redirect(routes.SupplySupportingDocumentsController.show)
+          if (isEnabled(VrsNewAttachmentJourney)) {
+            Redirect(routes.SupportingDocumentsController.show)
+          } else {
+            Redirect(routes.SupplySupportingDocumentsController.show)
+          }
         } else {
           Redirect(controllers.routes.TaskListController.show.url)
         }

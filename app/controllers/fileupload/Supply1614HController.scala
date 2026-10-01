@@ -18,6 +18,8 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 import forms.Supply1614HForm
 import models.api.{Attachment1614a, Attachment1614h, LandPropertyOtherDocs}
 import models.external.upscan.Ready
@@ -39,7 +41,7 @@ class Supply1614HController @Inject()(val authConnector: AuthConnector,
                                      )(implicit appConfig: FrontendAppConfig,
                                        val executionContext: ExecutionContext,
                                        baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -69,6 +71,8 @@ class Supply1614HController @Inject()(val authConnector: AuthConnector,
                     list.map(file => (file.attachmentType, file.fileStatus)) match {
                       case list if list.contains((LandPropertyOtherDocs, Ready)) =>
                         Redirect(routes.DocumentUploadSummaryController.show)
+                      case _ if isEnabled(VrsNewAttachmentJourney) =>
+                        Redirect(routes.SupportingDocumentsController.show)
                       case _ =>
                         Redirect(routes.SupplySupportingDocumentsController.show)
                     }

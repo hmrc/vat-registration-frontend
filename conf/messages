@@ -2007,15 +2007,45 @@ supply1614A.heading                                     = Do you need to upload 
 supply1614A.hint                                        = This is to tell us about an option to tax land and buildings.
 validation.supply1614A.error                            = Select yes if you need to upload a VAT1614A form
 
+# VAT1614A PAGE (NEW ATTACHMENT JOURNEY)
+vat1614A.heading                                        = Do you need to upload a VAT1614A form?
+vat1614A.hint                                           = This is to tell us about an option to tax land and buildings.
+validation.vat1614A.error                               = Select yes if you need to upload a VAT1614A form
+
+# UPLOAD VAT1614A PAGE (NEW ATTACHMENT JOURNEY)
+uploadVat1614A.heading                                  = Upload your VAT1614A form
+
 # SUPPLY 1614H PAGE
 supply1614H.heading                                     = Do you need to upload a VAT1614H form?
 supply1614H.hint                                        = This is to apply for permission to opt to tax land and buildings.
 validation.supply1614H.error                            = Select yes if you need to upload a VAT1614H form
 
+# VAT1614H PAGE (NEW ATTACHMENT JOURNEY)
+vat1614H.heading                                        = Do you need to upload a VAT1614H form?
+vat1614H.hint                                           = This is to apply for permission to opt to tax land and buildings.
+validation.vat1614H.error                               = Select yes if you need to upload a VAT1614H form
+
+# UPLOAD VAT1614H PAGE (NEW ATTACHMENT JOURNEY)
+uploadVat1614H.heading                                  = Upload your VAT1614H form
+
+# UPLOADED VAT5L DOCUMENTS PAGE (NEW ATTACHMENT JOURNEY)
+uploadedVat5LDocuments.heading                          = Uploaded VAT5L documents
+
 # SUPPLY SUPPORTING DOCUMENTS PAGE
 supplySupportingDocuments.heading                       = Do you have any supporting documents?
 supplySupportingDocuments.hint                          = These are any land or property documents that may support your VAT5L application. For example, planning permission or solicitors correspondence.
 validation.supplySupportingDocuments.error              = Select yes if you have any supporting documents
+
+# SUPPLY SUPPORTING DOCUMENTS NEW JOURNEY
+supportingDocuments.heading                             = Supporting documents for the VAT5L
+supportingDocuments.p1                             = Supporting documents are optional. However, sending them now may save delays to your application if we decide we need to ask for them later.
+supportingDocuments.p2                             = Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence.
+supportingDocuments.link                           = Find out more about supporting documents for VAT5L (opens in new tab)
+supportingDocuments.h1                                  = Do you want to upload any supporting documents for the VAT5L?
+validation.supportingDocuments.error                    = Select yes if you have any supporting documents
+
+# UPLOAD SUPPORTING DOCUMENTS NEW JOURNEY
+uploadSupportingDocuments.addAnother                    = Add another document
 
 # Eligibility data
 eligibility.answer.false                                                = No

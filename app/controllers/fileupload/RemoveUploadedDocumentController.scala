@@ -18,9 +18,12 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 import forms.RemoveUploadedDocumentForm
+import models.api.{Attachment1614a, Attachment1614h, LandPropertyOtherDocs, VAT5L}
 import models.external.upscan.UpscanDetails
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import services.{SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.InternalServerException
@@ -37,7 +40,18 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
                                                 (implicit appConfig: FrontendAppConfig,
                                                  val executionContext: ExecutionContext,
                                                  baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
+
+  private val vat5LReviewDocumentTypes = Set[models.api.AttachmentType](VAT5L, Attachment1614a, Attachment1614h)
+
+  private def redirectToSummary(attachmentType: models.api.AttachmentType): Result =
+    if (attachmentType.equals(LandPropertyOtherDocs) && isEnabled(VrsNewAttachmentJourney)) {
+      Redirect(routes.UploadSupportingDocumentsController.show)
+    } else if (vat5LReviewDocumentTypes.contains(attachmentType) && isEnabled(VrsNewAttachmentJourney)) {
+      Redirect(routes.UploadedVat5LDocumentsController.show)
+    } else {
+      Redirect(routes.DocumentUploadSummaryController.show)
+    }
 
   def show(reference: String): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
@@ -72,9 +86,9 @@ class RemoveUploadedDocumentController @Inject()(val authConnector: AuthConnecto
                     if (success) {
                       for {
                         _ <- upscanService.deleteUpscanDetails(profile.registrationId, reference)
-                      } yield Redirect(routes.DocumentUploadSummaryController.show)
+                      } yield redirectToSummary(upscanDetails.attachmentType)
                     } else {
-                      Future.successful(Redirect(routes.DocumentUploadSummaryController.show))
+                      Future.successful(redirectToSummary(upscanDetails.attachmentType))
                     }
                   }
                 )

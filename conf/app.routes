@@ -591,6 +591,20 @@ GET         /file-upload/upload-supporting-document                   controller
 ## Upload 1614 Document
 GET         /file-upload/upload-1614-document                         controllers.fileupload.UploadOptionToTaxDocumentController.show
 
+## Upload Supporting Document (New Attachment Journey)
+GET         /upload-supporting-document                                controllers.fileupload.UploadSupportingDocumentsController.show
+POST        /upload-supporting-document                                controllers.fileupload.UploadSupportingDocumentsController.continue
+
+## Upload VAT1614A Document (New Attachment Journey)
+GET         /upload-vat1614a                                           controllers.fileupload.UploadVat1614AController.show
+
+## Upload VAT1614H Document (New Attachment Journey)
+GET         /upload-vat1614h                                           controllers.fileupload.UploadVat1614HController.show
+
+## Uploaded VAT5L Documents Page (New Attachment Journey)
+GET         /uploaded-vat5l-documents                                  controllers.fileupload.UploadedVat5LDocumentsController.show
+POST        /uploaded-vat5l-documents                                  controllers.fileupload.UploadedVat5LDocumentsController.continue
+
 ## Async upload document error page
 GET         /file-upload/problem-with-selected-file                   controllers.fileupload.DocumentUploadErrorController.show
 
@@ -617,6 +631,14 @@ POST        /tax-representative                                       controller
 GET         /supply-1614a                                             controllers.fileupload.Supply1614AController.show
 POST        /supply-1614a                                             controllers.fileupload.Supply1614AController.submit
 
+## VAT1614A Page (New Attachment Journey)
+GET         /vat1614a                                                  controllers.fileupload.Vat1614AController.show
+POST        /vat1614a                                                  controllers.fileupload.Vat1614AController.submit
+
+## VAT1614H Page (New Attachment Journey)
+GET         /vat1614h                                                  controllers.fileupload.Vat1614HController.show
+POST        /vat1614h                                                  controllers.fileupload.Vat1614HController.submit
+
 ## Supply 1614H Page
 GET         /supply-1614h                                             controllers.fileupload.Supply1614HController.show
 POST        /supply-1614h                                             controllers.fileupload.Supply1614HController.submit
@@ -624,6 +646,10 @@ POST        /supply-1614h                                             controller
 ## Supply Supporting Documents Page
 GET         /supply-supporting-documents                              controllers.fileupload.SupplySupportingDocumentsController.show
 POST        /supply-supporting-documents                              controllers.fileupload.SupplySupportingDocumentsController.submit
+
+## Supporting Documents Page (New Attachment Journey)
+GET         /supporting-documents                                     controllers.fileupload.SupportingDocumentsController.show
+POST        /supporting-documents                                     controllers.fileupload.SupportingDocumentsController.submit
 
 ## Partner Scottish Partnership Name Page
 GET         /partner/:index/scottish-partnership-name                 controllers.partners.PartnerScottishPartnershipNameController.show(index: Int)
