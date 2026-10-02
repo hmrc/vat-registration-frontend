@@ -18,13 +18,13 @@ package controllers.fileupload
 
 import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.UploadDocumentHintBuilder
-import views.html.attachments.UploadDocumentsNewJourney
-import views.html.fileupload.UploadDocument
+import views.html.fileupload.{UploadDocument, UploadDocumentNewJourney}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadDocumentController @Inject()(view: UploadDocument,
-                                         newView: UploadDocumentsNewJourney,
+                                         viewNewAttachmentJourney: UploadDocumentNewJourney,
                                          upscanService: UpscanService,
                                          attachmentsService: AttachmentsService,
                                          uploadDocumentHint: UploadDocumentHintBuilder,
@@ -53,7 +53,8 @@ class UploadDocumentController @Inject()(view: UploadDocument,
             upscanService.initiateUpscan(profile.registrationId, list.head).flatMap { upscanResponse =>
               uploadDocumentHint.build(list.head).map { hintHtml =>
                 val optErrorCode = request.queryString.get("errorCode").flatMap(_.headOption)
-                  Ok(view(upscanResponse, Some(hintHtml), list.head, optErrorCode)).addingToSession("reference" -> upscanResponse.reference)
+                val uploadView = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else view.apply _
+                Ok(uploadView(upscanResponse, Some(hintHtml), list.head, optErrorCode)).addingToSession("reference" -> upscanResponse.reference)
             }
             }
         }

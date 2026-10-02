@@ -1959,6 +1959,23 @@ fileUpload.error.EntityTooLarge                      = The selected file must be
 fileUpload.error.InvalidArgument                     = Select a file
 fileUpload.error.EntityTooSmall                      = The selected file is empty
 fileUpload.error.InvalidFileType                     = The selected file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT
+fileUpload.error.generic                             = The selected file could not be uploaded
+
+# VRS New Attachment Journey - Upload Document
+vRSNewAttachmentsJourney.uploadDocument.heading.vat5L             = Upload your VAT5L form
+vRSNewAttachmentsJourney.uploadDocument.heading.vat51             = Upload your VAT 50/51 form
+vRSNewAttachmentsJourney.uploadDocument.heading.vat2              = Upload your VAT2 form
+vRSNewAttachmentsJourney.uploadDocument.heading.vat1tr            = Upload your VAT1TR form
+vRSNewAttachmentsJourney.uploadDocument.link.vat5L                = Download and find out more about VAT5L forms (opens in a new tab)
+vRSNewAttachmentsJourney.uploadDocument.link.vat51                = Download and find out more about VAT 50/51 forms (opens in a new tab)
+vRSNewAttachmentsJourney.uploadDocument.link.vat2                 = Download and find out more about VAT2 forms (opens in a new tab)
+vRSNewAttachmentsJourney.uploadDocument.link.vat1tr               = Download and find out more about VAT1TR forms (opens in a new tab)
+vRSNewAttachmentsJourney.uploadDocument.button                    = Upload
+vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile       = Choose file
+vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction  = or drop file
+vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen     = No file chosen
+vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone  = Entered drop zone
+vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone     = Left drop zone
 
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = What is the business email address?

@@ -1913,6 +1913,23 @@ fileUpload.error.EntityTooLarge                      = Mae’n rhaid i’r ffeil
 fileUpload.error.InvalidArgument                     = Dewiswch ffeil
 fileUpload.error.EntityTooSmall                      = Mae’r ffeil dan sylw yn wag
 fileUpload.error.InvalidFileType                     = Mae’n rhaid i’r ffeil dan sylw fod ar ffurf JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF neu TXT.
+fileUpload.error.generic                             = Nid oedd modd uwchlwytho’r ffeil dan sylw
+
+# VRS New Attachment Journey - Upload Document
+vRSNewAttachmentsJourney.uploadDocument.heading.vat5L             = Uwchlwytho’ch ffurflen VAT5L
+vRSNewAttachmentsJourney.uploadDocument.heading.vat51             = Uwchlwytho’ch ffurflen VAT 50/51
+vRSNewAttachmentsJourney.uploadDocument.heading.vat2              = Uwchlwytho’ch ffurflen VAT2
+vRSNewAttachmentsJourney.uploadDocument.heading.vat1tr            = Uwchlwytho’ch ffurflen VAT1TR
+vRSNewAttachmentsJourney.uploadDocument.link.vat5L                = Lawrlwythwch ffurflen VAT5L a dysgu rhagor amdani (yn agor tab newydd)
+vRSNewAttachmentsJourney.uploadDocument.link.vat51                = Lawrlwythwch ffurflen VAT 50/51 a dysgu rhagor amdani (yn agor tab newydd)
+vRSNewAttachmentsJourney.uploadDocument.link.vat2                 = Lawrlwythwch ffurflen VAT2 a dysgu rhagor amdani (yn agor tab newydd)
+vRSNewAttachmentsJourney.uploadDocument.link.vat1tr               = Lawrlwythwch ffurflen VAT1TR a dysgu rhagor amdani (yn agor tab newydd)
+vRSNewAttachmentsJourney.uploadDocument.button                    = Uwchlwytho
+vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile       = Dewis ffeil
+vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction  = neu ollwng ffeil
+vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen     = Dim ffeil wedi’i dewis
+vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone  = Yn y man gollwng
+vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone     = Wedi gadael y man gollwng
 
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = Beth yw cyfeiriad e-bost y busnes?
