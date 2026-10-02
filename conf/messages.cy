@@ -1931,6 +1931,22 @@ vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen     = Dim ffeil we
 vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone  = Yn y man gollwng
 vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone     = Wedi gadael y man gollwng
 
+# VRS New Attachment Journey - Upload Identity Evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.heading        = Uwchlwytho tystiolaeth sy’n profi pwy yw {0}
+vRSNewAttachmentsJourney.uploadIdentityEvidence.para1          = Mae angen i chi <strong>uwchlwytho 2</strong> o’r canlynol:
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet1        = eich tystysgrif geni
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet2        = prydles neu gytundeb rhentu
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet3        = eich trwydded waith neu’ch fisa
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet4        = bil cyfleustodau diweddar
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet5        = datganiad morgais diweddar
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet6        = cyfriflen banc ddiweddar
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet7        = datganiad cerdyn credyd diweddar
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet8        = unrhyw ddogfennau gan yr Adran Gwaith a Phensiynau sy’n cadarnhau’ch hawl i fudd-daliadau
+vRSNewAttachmentsJourney.uploadIdentityEvidence.para2          = Dylai’ch dogfennau fod wedi’u dyddio o fewn y 3 mis diwethaf, lle bo hynny’n bosibl.
+vRSNewAttachmentsJourney.uploadIdentityEvidence.uploadedCount  = {0} o 2 ffeil wedi’u huwchlwytho
+vRSNewAttachmentsJourney.uploadIdentityEvidence.label.first    = Eitem gyntaf o dystiolaeth
+vRSNewAttachmentsJourney.uploadIdentityEvidence.label.second   = Ail eitem o dystiolaeth
+
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = Beth yw cyfeiriad e-bost y busnes?
 businessEmail.hint                                   = Rydym yn defnyddio hyn i anfon gohebiaeth fusnes a diweddariadau ynghylch TAW.
