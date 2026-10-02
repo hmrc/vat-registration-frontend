@@ -90,6 +90,14 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
     }
   }
 
+  def identityEvidenceName(attachmentType: AttachmentType)(
+    implicit hc: HeaderCarrier, cp: CurrentProfile, ec: ExecutionContext, request: Request[_]
+  ): Future[Option[String]] = attachmentType match {
+    case ExtraIdentityEvidence => applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
+    case ExtraTransactorIdentityEvidence => transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
+    case _ => Future.successful(None)
+  }
+
   private def supplementDocumentUploadHint(href: String, msgSuffix: String)(implicit messages: Messages) = {
     HtmlFormat.fill(
       List(

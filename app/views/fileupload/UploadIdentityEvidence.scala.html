@@ -1,0 +1,101 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import helper.form
+@import models.external.upscan.UpscanResponse
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html.components._
+@import views.html.layouts.layout
+
+@this(
+        layout: layout,
+        h1: h1,
+        p: p,
+        bullets: bullets,
+        panelIndent: panelIndent,
+        govukFileUpload: GovukFileUpload,
+        govukButton: GovukButton,
+        errorSummary: errorSummary
+)
+
+@(upscanResponse: UpscanResponse, optName: Option[String], uploadedCount: Int, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(heading))) {
+
+    @errorSummary(optErrorCode.map(errorCode => FormError("file-upload-1", errorKey(errorCode))).toSeq)
+
+    @form(action = Call("POST", upscanResponse.href), 'enctype -> "multipart/form-data") {
+        @for(field <- upscanResponse.fields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
+        }
+
+        @h1(heading)
+
+        @p(Html(messages("vRSNewAttachmentsJourney.uploadIdentityEvidence.para1")))
+
+        @bullets(
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet1",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet2",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet3",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet4",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet5",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet6",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet7",
+            "vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet8"
+        )
+
+        @p(Html(messages("vRSNewAttachmentsJourney.uploadIdentityEvidence.para2")))
+
+        @panelIndent(Html(messages("fileUpload.uploadDocument.hint.fileType")))
+
+        <p class="govuk-body" aria-live="polite"><strong>@messages("vRSNewAttachmentsJourney.uploadIdentityEvidence.uploadedCount", uploadedCount)</strong></p>
+
+        @govukFileUpload(FileUpload(
+            name = "file",
+            id = "file-upload-1",
+            label = Label(
+                content = Text(messages(labelKey))
+            ),
+            errorMessage = optErrorCode.map(errorCode => ErrorMessage(content = Text(messages(errorKey(errorCode))))),
+            attributes = Map("accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.bmp,.gif,.png,.jpeg,.jpg,.txt"),
+            javascript = Some(true),
+            chooseFilesButtonText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile")),
+            dropInstructionText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction")),
+            noFileChosenText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen")),
+            enteredDropZoneText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone")),
+            leftDropZoneText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone"))
+        ))
+
+        @govukButton(Button(
+            attributes = Map("id" -> "file-upload-button"),
+            content = Text(messages("app.common.continueNoSave"))
+        ))
+    }
+}
+
+@heading = @{
+    optName.fold(messages("fileUpload.uploadDocument.heading"))(name => messages("vRSNewAttachmentsJourney.uploadIdentityEvidence.heading", name))
+}
+
+@labelKey = @{
+    if (uploadedCount == 0) "vRSNewAttachmentsJourney.uploadIdentityEvidence.label.first" else "vRSNewAttachmentsJourney.uploadIdentityEvidence.label.second"
+}
+
+@errorKey(code: String) = @{
+    val key = s"fileUpload.error.$code"
+    if (messages.isDefinedAt(key)) key else "fileUpload.error.generic"
+}
