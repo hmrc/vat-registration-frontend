@@ -1947,6 +1947,11 @@ vRSNewAttachmentsJourney.uploadIdentityEvidence.uploadedCount  = {0} o 2 ffeil w
 vRSNewAttachmentsJourney.uploadIdentityEvidence.label.first    = Eitem gyntaf o dystiolaeth
 vRSNewAttachmentsJourney.uploadIdentityEvidence.label.second   = Ail eitem o dystiolaeth
 
+# VRS New Attachment Journey - Upload Proof of Identity
+vRSNewAttachmentsJourney.uploadProofOfIdentity.title           = Uwchlwytho prawf o hunaniaeth
+vRSNewAttachmentsJourney.uploadProofOfIdentity.heading         = Uwchlwytho prawf o bwy yw {0}
+vRSNewAttachmentsJourney.uploadProofOfIdentity.para            = Mae’n rhaid i’r dystiolaeth hon fod yn gopi o naill ai basbort, trwydded yrru cerdyn-llun, neu gerdyn adnabod cenedlaethol {0}.
+
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = Beth yw cyfeiriad e-bost y busnes?
 businessEmail.hint                                   = Rydym yn defnyddio hyn i anfon gohebiaeth fusnes a diweddariadau ynghylch TAW.
