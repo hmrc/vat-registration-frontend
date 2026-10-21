@@ -585,6 +585,9 @@ GET         /file-upload/uploading-document-poll                      controller
 ## Upload Document
 GET         /file-upload/upload-document                              controllers.fileupload.UploadDocumentController.show
 
+## Upload Proof of Identity (New Attachment Journey)
+GET         /file-upload/proof-identity                               controllers.fileupload.UploadDocumentController.showProofOfIdentity
+
 ## Upload Supporting Document
 GET         /file-upload/upload-supporting-document                   controllers.fileupload.UploadSupportingDocumentController.show
 

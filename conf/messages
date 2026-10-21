@@ -1993,6 +1993,11 @@ vRSNewAttachmentsJourney.uploadIdentityEvidence.uploadedCount  = {0} of 2 files 
 vRSNewAttachmentsJourney.uploadIdentityEvidence.label.first    = First item of evidence
 vRSNewAttachmentsJourney.uploadIdentityEvidence.label.second   = Second item of evidence
 
+# VRS New Attachment Journey - Upload Proof of Identity
+vRSNewAttachmentsJourney.uploadProofOfIdentity.title           = Upload proof of identity
+vRSNewAttachmentsJourney.uploadProofOfIdentity.heading         = Upload {0}’s proof of identity
+vRSNewAttachmentsJourney.uploadProofOfIdentity.para            = This must be a copy of either {0}’s passport, driving licence photocard or national identity card.
+
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = What is the business email address?
 businessEmail.hint                                   = We use this to send business communications and VAT updates.
