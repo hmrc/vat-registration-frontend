@@ -46,6 +46,10 @@ class AttachmentsService @Inject()(val attachmentsConnector: AttachmentsConnecto
           }
         case Supply1614HAnswer(answer) =>
           presentAttachmentDetails.copy(supplyVat1614a = Some(false), supplyVat1614h = Some(answer))
+        case VAT1614AAnswer(answer) =>
+          presentAttachmentDetails.copy(supplyVat1614a = Some(answer))
+        case VAT1614HAnswer(answer) =>
+          presentAttachmentDetails.copy(supplyVat1614h = Some(answer))
         case SupplySupportingDocumentsAnswer(answer) =>
           presentAttachmentDetails.copy(supplySupportingDocuments = Some(answer))
         case AdditionalPartnersDocumentsAnswer(answer) =>
@@ -68,6 +72,10 @@ object AttachmentsService {
   case class Supply1614AAnswer(answer: Boolean)
 
   case class Supply1614HAnswer(answer: Boolean)
+
+  case class VAT1614AAnswer(answer: Boolean)
+
+  case class VAT1614HAnswer(answer: Boolean)
 
   case class SupplySupportingDocumentsAnswer(answer: Boolean)
 

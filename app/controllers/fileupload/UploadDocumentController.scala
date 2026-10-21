@@ -20,6 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
+import models.api.VAT5L
 import play.api.mvc.{Action, AnyContent}
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -50,7 +51,10 @@ class UploadDocumentController @Inject()(view: UploadDocument,
           case Nil =>
             Future.successful(Redirect(controllers.routes.TaskListController.show.url))
           case list =>
-            upscanService.initiateUpscan(profile.registrationId, list.head).flatMap { upscanResponse =>
+            val successRedirectUrl =
+              if (isEnabled(VrsNewAttachmentJourney) && list.head == VAT5L) routes.UploadingVat5LDocumentController.show.url
+              else routes.UploadingDocumentController.show.url
+            upscanService.initiateUpscan(profile.registrationId, list.head, successRedirectUrl = successRedirectUrl).flatMap { upscanResponse =>
               uploadDocumentHint.build(list.head).map { hintHtml =>
                 val optErrorCode = request.queryString.get("errorCode").flatMap(_.headOption)
                 val uploadView = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else view.apply _

@@ -308,6 +308,7 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val vat5LGuidanceLink: String = "https://www.gov.uk/guidance/tell-hmrc-about-land-and-property-supplies-youre-making"
   lazy val vat1614ALink: String = "https://www.gov.uk/government/publications/vat-notification-of-an-option-to-tax-land-andor-buildings-vat1614a"
   lazy val vat1614HLink: String = "https://www.gov.uk/government/publications/vat-application-for-permission-to-opt-vat1614h"
+  lazy val supportingDocuments: String = "https://www.gov.uk/guidance/tell-hmrc-about-land-and-property-supplies-youre-making"
   lazy val landAndPropertyGuidance: String = "https://www.gov.uk/guidance/vat-on-land-and-property-notice-742"
   lazy val vat1Link = "https://www.gov.uk/guidance/register-for-vat"
   lazy val utrCopyLink = "https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr"

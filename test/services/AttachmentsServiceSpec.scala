@@ -17,8 +17,8 @@
 package services
 
 import connectors.mocks.{MockAttachmentsConnector, MockRegistrationApiConnector}
-import models.api.{AttachmentType, Attachments, IdentityEvidence, Post}
-import services.AttachmentsService.{Supply1614AAnswer, Supply1614HAnswer, SupplySupportingDocumentsAnswer}
+import models.api.{AttachmentType, Attachments, IdentityEvidence, Post, Upload}
+import services.AttachmentsService.{Supply1614AAnswer, Supply1614HAnswer, SupplySupportingDocumentsAnswer, VAT1614AAnswer, VAT1614HAnswer}
 import testHelpers.VatRegSpec
 
 import scala.concurrent.Future
@@ -101,6 +101,46 @@ implicit val fakeRequest: Request[_] = FakeRequest()
       mockReplaceSection[Attachments](testRegId, updatedAttachments)
 
       val res = await(Service.storeAttachmentDetails(testRegId, Supply1614HAnswer(true)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'true' VAT1614A Answer and keep supplyVat1614h" in {
+      val presentAttachments = Attachments(method = Some(Upload), supplyVat1614h = Some(true))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614a = Some(true))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, VAT1614AAnswer(true)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'false' VAT1614A Answer and keep supplyVat1614h" in {
+      val presentAttachments = Attachments(method = Some(Upload), supplyVat1614a = Some(true), supplyVat1614h = Some(true))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614a = Some(false))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, VAT1614AAnswer(false)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'true' VAT1614H Answer and keep supplyVat1614a" in {
+      val presentAttachments = Attachments(method = Some(Upload), supplyVat1614a = Some(true))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614h = Some(true))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, VAT1614HAnswer(true)))
+      res mustBe updatedAttachments
+    }
+
+    "send the 'false' VAT1614H Answer and keep supplyVat1614a" in {
+      val presentAttachments = Attachments(method = Some(Upload), supplyVat1614a = Some(true), supplyVat1614h = Some(true))
+      val updatedAttachments = presentAttachments.copy(supplyVat1614h = Some(false))
+      mockGetSection[Attachments](testRegId, Some(presentAttachments))
+      mockReplaceSection[Attachments](testRegId, updatedAttachments)
+
+      val res = await(Service.storeAttachmentDetails(testRegId, VAT1614HAnswer(false)))
       res mustBe updatedAttachments
     }
 
