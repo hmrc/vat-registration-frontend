@@ -2056,3 +2056,12 @@ partnerEmail.link                              = Hysbysiad Preifatrwydd CThEM
 partnerEmail.error.incorrect_format            = Nodwch y cyfeiriad e-bost yn y fformat cywir, fel enw@enghraifft.com
 partnerEmail.error.nothing_entered             = Nodwch y cyfeiriad e-bost
 partnerEmail.error.incorrect_length            = Mae’n rhaid i’r cyfeiriad e-bost fod yn 132 o gymeriadau neu lai
+
+# POSTAL CONFIRMATION
+attachments.postalConfirmation.title                              = Anfon eich dogfennau a’ch ffurflenni ychwanegol drwy’r post
+attachments.postalConfirmation.para                               = Fel arfer, bydd uwchlwytho’ch dogfennau a’ch ffurflenni, yn lle eu hanfon drwy’r post, yn golygu ein bod yn gallu prosesu’ch cais yn gyflymach.
+attachments.postalConfirmation.warning                            = Os ydych am eu hanfon drwy’r post o hyd, bydd yn rhaid i chi wneud hyn ar ôl i chi gyflwyno’ch cais i gofrestru ar gyfer TAW. Unwaith i chi wneud hynny byddwn yn gwneud llythyr eglurhaol, a bydd yn rhaid i chi anfon y llythyr hwn gyda’ch dogfennau a’ch ffurflenni.
+attachments.postalConfirmation.para2                              = A ydych am anfon eich dogfennau a’ch ffurflenni ychwanegol drwy’r post o hyd?
+attachments.postalConfirmation.bullet1                            = Iawn
+attachments.postalConfirmation.bullet2                            = Na, hoffwn eu huwchlwytho
+attachments.postalConfirmation.noText                             = Na, hoffwn eu huwchlwytho
