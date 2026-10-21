@@ -1927,6 +1927,22 @@ pending.documents.messagePlural             = Mae angen i chi ychwanegu {0} o dd
 document.upload.remove.heading                  = A ydych yn siŵr eich bod am dynnu {0}?
 validation.document.upload.remove.missing       = Dewiswch ‘Iawn’ os ydych am dynnu {0}
 
+# VRS New Attachment Journey - Remove Document
+vRSNewAttachmentsJourney.removeDocument.heading                              = Tynnu’r ddogfen {0}
+vRSNewAttachmentsJourney.removeDocument.documentType.VAT2                    = VAT2
+vRSNewAttachmentsJourney.removeDocument.documentType.VAT51                   = VAT50/51
+vRSNewAttachmentsJourney.removeDocument.documentType.TaxRepresentativeAuthorisation = VAT1TR
+vRSNewAttachmentsJourney.removeDocument.documentType.VAT5L                   = VAT5L
+vRSNewAttachmentsJourney.removeDocument.table.documentType                   = Math o ddogfen
+vRSNewAttachmentsJourney.removeDocument.table.fileName                       = Enw’r ffeil
+vRSNewAttachmentsJourney.removeDocument.table.status                         = Statws
+vRSNewAttachmentsJourney.removeDocument.status.uploading                     = Yn uwchlwytho
+vRSNewAttachmentsJourney.removeDocument.status.uploaded                      = Wedi’i uwchlwytho
+vRSNewAttachmentsJourney.removeDocument.status.notUploaded                   = Heb ei uwchlwytho
+vRSNewAttachmentsJourney.removeDocument.question                             = A ydych am dynnu’r ddogfen hon?
+vRSNewAttachmentsJourney.removeDocument.button.remove                        = Tynnu’r ddogfen hon
+vRSNewAttachmentsJourney.removeDocument.button.goBack                        = Ewch yn ôl
+
 # UPLOAD DOCUMENT PAGE
 fileUpload.uploadDocument.heading                    = Uwchlwytho dogfen
 fileUpload.uploadDocument.hint.primary               = Mae’n rhaid i hyn fod yn basbort, yn drwydded yrru cerdyn-llun neu’n gerdyn adnabod cenedlaethol. Mae’n rhaid i’r ffeil fod ar ffurf JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF neu TXT.

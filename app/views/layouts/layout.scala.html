@@ -40,7 +40,8 @@
         signOutLink: Boolean = true,
         timeout: Boolean = true,
         showHmrcBanner: Boolean = false,
-        urBanner: Option[UserResearchBanner] = None
+        urBanner: Option[UserResearchBanner] = None,
+        fullWidth: Boolean = false
 )(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: FrontendAppConfig)
 
 @head = {
@@ -83,6 +84,7 @@
         additionalHeadBlock = Some(head),
         additionalScriptsBlock = Some(scripts),
         beforeContentBlock = beforeContentBlock,
+        mainContentLayout = if (fullWidth) Some(identity) else None
     ),
     backLink = if (backLink) Some(BackLink.mimicsBrowserBackButtonViaJavaScript) else None
    )

@@ -30,6 +30,11 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
   val url = "/attachment-method"
   val fullAttachmentList: Attachments = Attachments(Some(Post))
 
+  override def afterEach(): Unit = {
+    super.afterEach()
+    disable(VrsNewAttachmentJourney)
+  }
+
   "GET /register-for-vat/attachment-method" when {
     "the backend contains no attachment information" must {
       "return OK and render the page with a blank form" in new Setup {
@@ -119,6 +124,7 @@ class AttachmentMethodControllerISpec extends ControllerISpec {
     }
       "upscan is in progress" must {
         "Redirect to the error page" in new Setup {
+          enable(VrsNewAttachmentJourney)
           given()
             .user.isAuthorised()
             .registrationApi.replaceSection[Attachments](Attachments(Some(Post)))

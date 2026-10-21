@@ -1971,6 +1971,22 @@ validation.supplySupportingDocuments.error  = Select yes if you need to add anot
 document.upload.remove.heading                  = Are you sure you want to remove {0}?
 validation.document.upload.remove.missing       = Select yes if you want to remove {0}
 
+# VRS New Attachment Journey - Remove Document
+vRSNewAttachmentsJourney.removeDocument.heading                              = Remove {0} document
+vRSNewAttachmentsJourney.removeDocument.documentType.VAT2                    = VAT2
+vRSNewAttachmentsJourney.removeDocument.documentType.VAT51                   = VAT50/51
+vRSNewAttachmentsJourney.removeDocument.documentType.TaxRepresentativeAuthorisation = VAT1TR
+vRSNewAttachmentsJourney.removeDocument.documentType.VAT5L                   = VAT5L
+vRSNewAttachmentsJourney.removeDocument.table.documentType                   = Document type
+vRSNewAttachmentsJourney.removeDocument.table.fileName                       = File name
+vRSNewAttachmentsJourney.removeDocument.table.status                         = Status
+vRSNewAttachmentsJourney.removeDocument.status.uploading                     = Uploading
+vRSNewAttachmentsJourney.removeDocument.status.uploaded                      = Uploaded
+vRSNewAttachmentsJourney.removeDocument.status.notUploaded                   = Not uploaded
+vRSNewAttachmentsJourney.removeDocument.question                             = Do you want to remove this document?
+vRSNewAttachmentsJourney.removeDocument.button.remove                        = Remove this document
+vRSNewAttachmentsJourney.removeDocument.button.goBack                        = Go back
+
 # UPLOAD DOCUMENT PAGE
 fileUpload.uploadDocument.heading                    = Upload a document
 fileUpload.uploadDocument.hint.primary               = This must be a passport, photocard drivers licence or a national identity card. The file must be a JPG, BMP, PNG, PDF, DOC, DOCX, XLS, XLSX, GIF or TXT.

@@ -579,6 +579,9 @@ POST        /file-upload/summary-continue                             controller
 POST        /file-upload/summary                                      controllers.fileupload.DocumentUploadSummaryController.submit
 
 ## Uploaded Document Remove
+# The new attachment journey's controller is listed first so it receives these requests; it hands the old journey's cases to RemoveUploadedDocumentController
+GET         /file-upload/:reference/remove                            controllers.fileupload.RemoveDocumentController.show(reference: String)
+POST        /file-upload/:reference/remove                            controllers.fileupload.RemoveDocumentController.submit(reference: String)
 GET         /file-upload/:reference/remove                            controllers.fileupload.RemoveUploadedDocumentController.show(reference: String)
 POST        /file-upload/:reference/remove                            controllers.fileupload.RemoveUploadedDocumentController.submit(reference: String)
 
