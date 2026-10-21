@@ -1977,6 +1977,22 @@ vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen     = No file chos
 vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone  = Entered drop zone
 vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone     = Left drop zone
 
+# VRS New Attachment Journey - Upload Identity Evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.heading        = Upload {0}’s identity evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.para1          = You need to <strong>upload 2</strong> of the following:
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet1        = your birth certificate
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet2        = a lease or rental agreement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet3        = your work permit or visa
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet4        = a recent utility bill
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet5        = a recent mortgage statement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet6        = a recent bank statement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet7        = a recent credit card statement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet8        = any documents from the Department for Work and Pensions that confirms your entitlement to benefits
+vRSNewAttachmentsJourney.uploadIdentityEvidence.para2          = Your documents should be dated within the last 3 months, where possible.
+vRSNewAttachmentsJourney.uploadIdentityEvidence.uploadedCount  = {0} of 2 files uploaded
+vRSNewAttachmentsJourney.uploadIdentityEvidence.label.first    = First item of evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.label.second   = Second item of evidence
+
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = What is the business email address?
 businessEmail.hint                                   = We use this to send business communications and VAT updates.
