@@ -22,6 +22,7 @@
 
 @this(
         layout: layouts.layout,
+        errorSummary: components.errorSummary,
         h1: components.h1,
         form: FormWithCSRF,
         button: components.button,
@@ -63,6 +64,8 @@
 }
 
 @layout(pageTitle = Some(title(sicStubForm, "SIC codes"))) {
+
+    @errorSummary(sicStubForm.errors)
 
     @form(action = controllers.test.routes.SicStubController.submit) {
 
