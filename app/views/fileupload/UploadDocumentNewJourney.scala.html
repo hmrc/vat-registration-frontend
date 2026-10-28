@@ -65,7 +65,7 @@
             label = Label(
                 content = Text(messages("fileUpload.uploadDocument.label"))
             ),
-            errorMessage = optErrorCode.map(errorCode => ErrorMessage(content = Text(messages(errorKey(errorCode))))),
+            errorMessage = optErrorCode.map(errorCode => ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(errorKey(errorCode))))),
             attributes = Map("accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.bmp,.gif,.png,.jpeg,.jpg,.txt"),
             javascript = formLink.map(_ => true),
             chooseFilesButtonText = dropZoneText("chooseFile"),
