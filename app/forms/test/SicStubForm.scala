@@ -31,7 +31,7 @@ object SicStubForm {
         case Some("MultipleSicCodeNoCompliance") => Right(MultipleSicCodeNoCompliance)
         case Some("MultipleSicCodeCompliance") => Right(MultipleSicCodeCompliance)
         case Some("CustomSicCodes") => Right(CustomSicCodes)
-        case _ => Left(Seq(FormError(key, "Select ")))
+        case _ => Left(Seq(FormError(key, "error.required")))
       }
 
     override def unbind(key: String, value: SicStubSelection): Map[String, String] = {
