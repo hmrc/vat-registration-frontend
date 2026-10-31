@@ -1515,13 +1515,11 @@ vRSNewAttachmentsJourney.multipleDocumentsRequired.identityEvidence.name       =
 
 # POSTAL CONFIRMATION
 attachments.postalConfirmation.title                              = Posting your additional forms and documents
-attachments.postalConfirmation.para                               = Uploading your forms and documents will usually mean we can process your application more quickly
-attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
-attachments.postalConfirmation.para1                              = If we do not receive your forms and documents within a reasonable period of time your application may become void and you will need to start your application again.
+attachments.postalConfirmation.para                               = Uploading, instead of posting, your forms and documents will usually mean we can process your application quicker.
+attachments.postalConfirmation.warning                            = If you still want to post them, you must do this after you have submitted your VAT registration application. Once you have, we will generate the cover letter that must be sent with your forms and documents.
 attachments.postalConfirmation.para2                              = Do you still want to post your additional forms and documents?
-attachments.postalConfirmation.bullet1                            = Yes, I want to post them
+attachments.postalConfirmation.bullet1                            = Yes
 attachments.postalConfirmation.bullet2                            = No, I want to upload them
-attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
 attachments.postalConfirmation.noText                             = No, I want to upload them
 
 # POSTAL ERROR
