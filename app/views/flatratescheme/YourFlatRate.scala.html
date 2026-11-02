@@ -35,6 +35,10 @@
 
 @(sector: String, percentFormat: String, registerForFrsForm: Form[YesOrNoAnswer])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
+@questionLegend = {
+    @h2("pages.frs.registerForWithSector.subheading1", classes = "govuk-fieldset__heading")
+}
+
 @layout(pageTitle = Some(title(registerForFrsForm, messages("pages.frs.registerForWithSector.heading", percentFormat))), backLink = true) {
 
     @errorSummary(registerForFrsForm.errors)
@@ -45,14 +49,13 @@
         @messages("pages.frs.registerForWithSector.info")
     }
 
-    @h2(messages("pages.frs.registerForWithSector.subheading1"))
-
     @formWithCSRF(action = controllers.flatratescheme.routes.YourFlatRateController.submit) {
         @yesNoRadio(
             form = registerForFrsForm,
-            headingKey = messages("pages.frs.registerForWithSector.heading", percentFormat),
+            headingKey = "pages.frs.registerForWithSector.subheading1",
             isPageHeading = false,
-            classes = "govuk-visually-hidden"
+            classes = "govuk-fieldset__legend--m",
+            legendContent = Some(questionLegend)
         )
         @button(messages("app.common.continue"))
     }
