@@ -18,31 +18,30 @@
 
 @this(
         layout: layouts.layout,
-        h1: components.h1,
         errorSummary: components.errorSummary,
         yesNoRadio: components.yesNoRadio,
-        p: components.p,
         form: FormWithCSRF,
         button: components.button
 )
 
 @(confirmTradingNameForm: Form[Boolean], companyName: String)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
+@companyNameHint = {
+    @companyName
+}
+
 @layout(pageTitle = Some(title(confirmTradingNameForm, messages("confirmTradingName.heading", companyName))), backLink = true) {
 
     @errorSummary(confirmTradingNameForm.errors)
 
-    @h1(messages("confirmTradingName.heading", companyName))
-
-    @p {@companyName}
-
     @form(action = controllers.business.routes.ConfirmTradingNameController.submit) {
         @yesNoRadio(
             form = confirmTradingNameForm,
-            headingKey = messages("confirmTradingName.heading", companyName),
-            isPageHeading = false,
+            headingKey = "confirmTradingName.heading",
+            hint = Some(companyNameHint),
+            isPageHeading = true,
             inline = true,
-            classes = "govuk-visually-hidden"
+            classes = "govuk-fieldset__legend--xl govuk-!-margin-bottom-8"
         )
 
         @button(messages("app.common.continue"))

@@ -47,7 +47,7 @@ class ConfirmTradingNameViewSpec extends VatRegViewSpec {
     }
 
     "play back the companyName" in new ViewSetup {
-      doc.para(1) mustBe Some(testCompanyName)
+      doc.hintText mustBe Some(testCompanyName)
     }
 
     "have correct descriptive label" in new ViewSetup {
