@@ -30,7 +30,8 @@
         hiddenNoContent: Option[Html] = None,
         fieldName: String = "value",
         yesText: Option[String] = None,
-        noText: Option[String] = None
+        noText: Option[String] = None,
+        legendContent: Option[Html] = None
 )(implicit messages: Messages)
 
 @govukRadios(Radios(
@@ -39,7 +40,7 @@
     name = fieldName,
     fieldset = Some(Fieldset(
         legend = Some(Legend(
-            content = Text(messages(headingKey, headingMessageArgs:_*)),
+            content = legendContent.map(content => HtmlContent(content)).getOrElse(Text(messages(headingKey, headingMessageArgs:_*))),
             isPageHeading = isPageHeading,
             classes = classes
         ))

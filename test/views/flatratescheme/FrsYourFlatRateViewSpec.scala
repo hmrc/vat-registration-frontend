@@ -45,7 +45,7 @@ class FrsYourFlatRateViewSpec extends VatRegViewSpec {
     }
 
     "have correct descriptive label" in new ViewSetup {
-      doc.select("legend").text() mustBe heading
+      doc.select("legend h2").text() mustBe h2
     }
 
     "have a back link in new Setup" in new ViewSetup {
