@@ -24,6 +24,7 @@ date.day                                = Day
 date.month                              = Month
 date.year                               = Year
 radio.item.divider.or                   = or
+site.warning                            = Warning
 
 # Tasklist
 tasklist.heading                                    = Register for VAT
