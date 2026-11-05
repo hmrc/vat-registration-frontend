@@ -1,0 +1,77 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import play.api.i18n.Messages
+@import play.api.mvc.Request
+@import viewmodels.UploadedVat5LDocumentRow
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        h2: components.h2,
+        p: components.p,
+        details: components.details,
+        govukDetails : GovukDetails,
+        formWithCSRF: FormWithCSRF,
+        uploadedVat5LDocumentsTable: components.UploadedVat5LDocumentsTable,
+        button: components.button,
+        govukButton: GovukButton,
+        panelIndent: components.panelIndent
+)
+
+@(uploadedDocuments: Seq[UploadedVat5LDocumentRow], pendingDocumentsCount: Int)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@detailsBlock = {
+    @p(Html(messages("uploaded.vat5l.documents.details.p1")))
+    @p(Html(messages("uploaded.vat5l.documents.details.p2")))
+}
+
+@defining(uploadedDocuments.size) { noOfUploadedDocuments =>
+    @layout(pageTitle = Some(titleNoForm(messages("uploaded.vat5l.documents.heading"))), backLink = false) {
+
+        @h1(messages("uploaded.vat5l.documents.heading"))
+
+        @h2(messages("uploaded.vat5l.documents.h2"))
+
+        @details(
+            summary = messages("uploaded.vat5l.documents.details.summary"),
+            content = detailsBlock
+        )
+
+        @govukButton(Button(
+            href = Some(controllers.fileupload.routes.SupportingDocumentUploadController.show.url),
+            classes = "govuk-button--secondary",
+            content = Text(messages("uploaded.vat5l.documents.button"))
+        ))
+
+        @uploadedVat5LDocumentsTable(uploadedDocuments)
+
+        @if(pendingDocumentsCount > 0) {
+            @defining(
+                if(pendingDocumentsCount > 1) messages("pending.documents.messagePlural", pendingDocumentsCount)
+                else messages("pending.documents.message")
+            ) { pendingDocumentsMessage =>
+                @panelIndent(Html(pendingDocumentsMessage))
+            }
+        }
+
+        @formWithCSRF(action = controllers.fileupload.routes.UploadedVat5LDocumentsController.continue) {
+            @button("app.common.continueNoSave", showSaveProgressButton = false)
+        }
+    }
+}

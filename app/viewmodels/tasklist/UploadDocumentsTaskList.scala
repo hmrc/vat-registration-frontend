@@ -16,7 +16,7 @@
 
 package viewmodels.tasklist
 
-import models.api.AttachmentType
+import models.api.{AttachmentType, VAT5L}
 import models.external.upscan._
 
 import javax.inject.Singleton
@@ -28,6 +28,7 @@ class UploadDocumentsTaskList {
       TaskListRowBuilder(
         messageKey = _ => "fileUpload.summary." + attachmentType.typeName,
         url = _ => {
+          case TLCompleted if attachmentType == VAT5L => controllers.fileupload.routes.UploadedVat5LDocumentsController.show.url
           case TLCompleted => controllers.fileupload.routes.ViewAttachmentController.show.url
           case TLFailed => controllers.fileupload.routes.UploadErrorController.show(attachmentType.toString).url
           case _ => controllers.fileupload.routes.UploadDocumentController.show.url

@@ -1,0 +1,63 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import models.api._
+@import models.external.upscan.{Failed, FileStatus, InProgress, Ready}
+@import viewmodels.UploadedVat5LDocumentRow
+
+@this(
+        govukTable: GovukTable,
+        govukTag: GovukTag,
+        link: components.link
+)
+
+@(documents: Seq[UploadedVat5LDocumentRow])(implicit request: Request[_], messages: Messages)
+
+@govukTable(Table(
+    head = Some(Seq(
+        HeadCell(content = Text(messages("uploaded.vat5l.documents.table.documentType"))),
+        HeadCell(content = Text(messages("uploaded.vat5l.documents.table.fileName"))),
+        HeadCell(content = Text(messages("uploaded.vat5l.documents.table.status"))),
+        HeadCell(content = HtmlContent(Html(s"""<span class="govuk-visually-hidden">${HtmlFormat.escape(messages("uploaded.vat5l.documents.table.actions"))}</span>""")))
+    )),
+    rows = documents.map { document =>
+        Seq(
+            TableRow(content = Text(documentType(document.documentType))),
+            TableRow(content = Text(document.fileName.getOrElse(""))),
+            TableRow(content = HtmlContent(status(document.status))),
+            document.removeAction.fold(TableRow())(call => TableRow(content = HtmlContent(link(call.url, messages("app.common.remove")))))
+        )
+    },
+    firstCellIsHeader = true
+))
+
+@documentType(attachmentType: AttachmentType) = @{
+    attachmentType match {
+        case VAT5L => messages("uploaded.vat5l.documents.type.vat5L")
+        case LandPropertyOtherDocs => messages("uploaded.vat5l.documents.type.supportingDocument")
+        case Attachment1614a => messages("uploaded.vat5l.documents.type.vat1614a")
+        case Attachment1614h => messages("uploaded.vat5l.documents.type.vat1614h")
+        case other => other.typeName
+    }
+}
+
+@status(fileStatus: FileStatus) = @{
+    fileStatus match {
+        case Ready => govukTag(Tag(content = Text(messages("uploaded.vat5l.documents.status.uploaded")), classes = "govuk-tag--green"))
+        case InProgress => govukTag(Tag(content = Text(messages("uploaded.vat5l.documents.status.uploading")), classes = "govuk-tag--blue"))
+        case Failed => govukTag(Tag(content = Text(messages("uploaded.vat5l.documents.status.failed")), classes = "govuk-tag--red"))
+    }
+}

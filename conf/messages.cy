@@ -1467,6 +1467,7 @@ attachmentMethod.options.upload                           = Uwchlwytho’r dogfe
 attachmentMethod.options.upload.hint                      = Bydd y dogfennau sydd wedi’u huwchlwytho yn cael eu cadw am 6 awr. Ar ôl yr amser hwn, bydd y cais yn cael ei gadw, ond bydd yn rhaid uwchlwytho’r dogfennau eto.
 attachmentMethod.options.post                             = Postio copïau at CThEM
 attachmentMethod.error.missing                            = Dewiswch sut yr hoffech anfon copïau o’r dogfennau at CThEM
+attachmentMethodNewJourney.error.missing                  = Dewiswch sut yr hoffech anfon copïau o’r dogfennau at CThEM
 
 # MULTIPLE DOCUMENTS REQUIRED
 attachments.multipleDocumentsRequired.title                         = Mae’n rhaid i chi anfon dogfennau ychwanegol atom er mwyn i ni brosesu’r cais TAW hwn
@@ -1920,10 +1921,15 @@ vRSNewAttachmentsJourney.uploadDocument.heading.vat5L             = Uwchlwytho�
 vRSNewAttachmentsJourney.uploadDocument.heading.vat51             = Uwchlwytho’ch ffurflen VAT 50/51
 vRSNewAttachmentsJourney.uploadDocument.heading.vat2              = Uwchlwytho’ch ffurflen VAT2
 vRSNewAttachmentsJourney.uploadDocument.heading.vat1tr            = Uwchlwytho’ch ffurflen VAT1TR
+vRSNewAttachmentsJourney.uploadDocument.heading.vat1614a          = Uwchlwytho’ch ffurflen VAT1614A
+vRSNewAttachmentsJourney.uploadDocument.heading.vat1614h          = Uwchlwytho’ch ffurflen VAT1614H
+vRSNewAttachmentsJourney.uploadDocument.heading.supportingDocuments = Uwchlwytho dogfen ategol
 vRSNewAttachmentsJourney.uploadDocument.link.vat5L                = Lawrlwythwch ffurflen VAT5L a dysgu rhagor amdani (yn agor tab newydd)
 vRSNewAttachmentsJourney.uploadDocument.link.vat51                = Lawrlwythwch ffurflen VAT 50/51 a dysgu rhagor amdani (yn agor tab newydd)
 vRSNewAttachmentsJourney.uploadDocument.link.vat2                 = Lawrlwythwch ffurflen VAT2 a dysgu rhagor amdani (yn agor tab newydd)
 vRSNewAttachmentsJourney.uploadDocument.link.vat1tr               = Lawrlwythwch ffurflen VAT1TR a dysgu rhagor amdani (yn agor tab newydd)
+vRSNewAttachmentsJourney.uploadDocument.link.vat1614a             = Lawrlwythwch ffurflen VAT1614A a dysgu rhagor amdani (yn agor tab newydd)
+vRSNewAttachmentsJourney.uploadDocument.link.vat1614h             = Lawrlwythwch ffurflen VAT1614H a dysgu rhagor amdani (yn agor tab newydd)
 vRSNewAttachmentsJourney.uploadDocument.button                    = Uwchlwytho
 vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile       = Dewis ffeil
 vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction  = neu ollwng ffeil
@@ -1986,6 +1992,56 @@ validation.supply1614H.error                            = Dewiswch ‘Iawn’ os
 supplySupportingDocuments.heading                       = A oes gennych unrhyw ddogfennau ategol?
 supplySupportingDocuments.hint                          = Dyma unrhyw ddogfennau sy’n ymwneud â thir neu eiddo a allai gefnogi’ch cais VAT5L. Er enghraifft, caniatâd cynllunio neu ohebiaeth cyfreithwyr.
 validation.supplySupportingDocuments.error              = Dewiswch ‘Iawn’ os ydych am ychwanegu dogfen ategol arall
+
+
+## New Journey
+# SUPPLY SUPPORTING DOCUMENTS
+supportingDocuments.heading                             = Dogfennau ategol ar gyfer VAT5L
+supportingDocuments.p1                                  = Mae dogfennau ategol yn ddewisol. Fodd bynnag, gall eu hanfon nawr osgoi oedi os gofynnwn amdanynt yn nes ymlaen wrth brosesu’ch cais.
+supportingDocuments.p2                                  = Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence.
+supportingDocuments.link                                = Dysgwch ragor am ddogfennau ategol ar gyfer VAT5L (yn agor tab newydd)
+supportingDocuments.h1                                  = A ydych am uwchlwytho unrhyw ddogfennau ategol ar gyfer VAT5L?
+
+# UPLOADED SUPPORTING DOCUMENTS
+uploadedSupportingDocuments.heading                     = You have added {0} file
+uploadedSupportingDocuments.headingPlural               = You have added {0} files
+uploadedSupportingDocuments.addAnother                  = Do you need to upload another file?
+uploadedSupportingDocuments.limitReached                = You have uploaded the maximum of {0} supporting documents.
+validation.uploadedSupportingDocuments.error            = Select yes if you need to upload another file
+validation.supportingDocuments.error                    = Select yes if you have any supporting documents
+
+# VAT1615A
+vat1614A.heading                                        = Ffurflen VAT1614A
+vat1614A.p                                              = Llenwch ac uwchlwythwch y ffurflen hon i roi gwybod i CThEF am eich penderfyniad i optio i drethu tir ac/neu adeiladau.
+vat1614A.link                                           = Lawrlwythwch ffurflen VAT1614A a dysgu rhagor amdani (yn agor tab newydd)
+vat1614A.h1                                             = A oes angen i chi uwchlwytho VAT1614A?
+validation.vat1614A.error                               = Dewiswch ‘Iawn’ os oes angen i chi uwchlwytho ffurflen VAT1614A
+
+# VAT1615H
+vat1614H.heading                                        = Ffurflen VAT1614H
+vat1614H.p                                              = Llenwch ac uwchlwythwch y ffurflen hon os ydych am optio i drethu tir ac/neu adeiladau a bod angen caniatâd CThEF arnoch.
+vat1614H.link                                           = Lawrlwythwch ffurflen VAT1614H a dysgu rhagor amdani (yn agor tab newydd)
+vat1614H.h1                                             = A oes angen i chi uwchlwytho VAT1614H?
+validation.vat1614H.error                               = Dewiswch ‘Iawn’ os oes angen i chi uwchlwytho ffurflen VAT1614H
+
+uploaded.vat5l.documents.heading                        = Uploaded VAT5L documents
+uploaded.vat5l.documents.h2                             = Upload more supporting documents
+uploaded.vat5l.documents.details.summary                = Help with supporting documents
+uploaded.vat5l.documents.details.p1                     = Mae dogfennau ategol yn ddewisol. Fodd bynnag, gall eu hanfon nawr osgoi oedi os gofynnwn amdanynt yn nes ymlaen wrth brosesu’ch cais.
+uploaded.vat5l.documents.details.p2                     = Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence.
+uploaded.vat5l.documents.button                         = Upload supporting document
+uploaded.vat5l.documents.table.documentType             = Document type
+uploaded.vat5l.documents.table.fileName                 = File name
+uploaded.vat5l.documents.table.status                   = Statws
+uploaded.vat5l.documents.table.actions                  = Actions
+uploaded.vat5l.documents.type.vat5L                     = VAT5L
+uploaded.vat5l.documents.type.supportingDocument        = Supporting document
+uploaded.vat5l.documents.type.vat1614a                  = VAT1614A
+uploaded.vat5l.documents.type.vat1614h                  = VAT1614H
+uploaded.vat5l.documents.status.uploaded                = Uploaded
+uploaded.vat5l.documents.status.uploading               = Uploading
+uploaded.vat5l.documents.status.failed                  = Failed
+
 
 # Eligibility data
 eligibility.answer.false                                                = Na
