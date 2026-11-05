@@ -66,7 +66,7 @@ class UploadingVat5LDocumentController @Inject()(uploadingDocument: UploadingVat
           case Ready =>
             details.attachmentType match {
               case VAT5L => Future.successful(Redirect(routes.SupportingDocumentsController.show))
-              case LandPropertyOtherDocs => Future.successful(Redirect(routes.SupportingDocumentUploadController.show))
+              case LandPropertyOtherDocs => Future.successful(Redirect(routes.UploadedSupportingDocumentsController.show))
               case Attachment1614a => Future.successful(Redirect(routes.VAT1614HController.show))
               case Attachment1614h => Future.successful(Redirect(routes.UploadedVat5LDocumentsController.show))
               case _ => Future.successful(Redirect(routes.UploadedVat5LDocumentsController.show))

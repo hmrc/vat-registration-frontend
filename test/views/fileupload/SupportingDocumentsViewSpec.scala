@@ -31,9 +31,12 @@ class SupportingDocumentsViewSpec extends VatRegViewSpec {
   implicit val doc: Document = Jsoup.parse(view.body)
 
   object ExpectedContent {
-    val heading = "Do you have any supporting documents?"
+    val heading = "Supporting documents for the VAT5L"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "These are any land or property documents that may support your VAT5L application. For example, planning permission or solicitors correspondence."
+    val para1 = "Supporting documents are optional. However, sending them now may save delays to your application if we decide we need to ask for them later."
+    val para2 = "Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence."
+    val legend = "Do you want to upload any supporting documents for the VAT5L?"
+    val linkText = "Find out more about supporting documents for VAT5L (opens in new tab)"
     val yes = "Yes"
     val no = "No"
     val continue = "Continue"
@@ -52,8 +55,17 @@ class SupportingDocumentsViewSpec extends VatRegViewSpec {
       doc.title mustBe ExpectedContent.title
     }
 
-    "have the correct hint text" in new ViewSetup {
-      doc.hintText mustBe Some(ExpectedContent.para1)
+    "have the correct paragraphs" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.para1)
+      doc.para(2) mustBe Some(ExpectedContent.para2)
+    }
+
+    "link to the correct guidance" in new ViewSetup {
+      doc.select(s"""main a[href="${appConfig.supportingDocuments}"]""").text mustBe ExpectedContent.linkText
+    }
+
+    "have the question as the radio legend" in new ViewSetup {
+      doc.legend(1) mustBe Some(ExpectedContent.legend)
     }
 
     "have yes/no radio options" in new ViewSetup {

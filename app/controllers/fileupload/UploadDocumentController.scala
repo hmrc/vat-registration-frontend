@@ -20,12 +20,13 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
-import models.api.VAT5L
+import models.api.{ExtraIdentityEvidence, ExtraTransactorIdentityEvidence, VAT5L}
 import play.api.mvc.{Action, AnyContent}
+import play.twirl.api.Html
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.UploadDocumentHintBuilder
-import views.html.fileupload.{UploadDocument, UploadDocumentNewJourney}
+import views.html.fileupload.{UploadDocument, UploadDocumentNewJourney, UploadIdentityEvidence}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class UploadDocumentController @Inject()(view: UploadDocument,
                                          viewNewAttachmentJourney: UploadDocumentNewJourney,
+                                         viewIdentityEvidence: UploadIdentityEvidence,
                                          upscanService: UpscanService,
                                          attachmentsService: AttachmentsService,
                                          uploadDocumentHint: UploadDocumentHintBuilder,
@@ -44,22 +46,33 @@ class UploadDocumentController @Inject()(view: UploadDocument,
                                           baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with FeatureToggleSupport {
 
+  private val extraIdentityEvidenceRequired = 2
+
   def show(): Action[AnyContent] = isAuthenticatedWithProfile {
     implicit request =>
       implicit profile =>
         attachmentsService.getIncompleteAttachments(profile.registrationId).flatMap {
           case Nil =>
             Future.successful(Redirect(controllers.routes.TaskListController.show.url))
-          case list =>
+          case incompleteAttachments @ attachmentType :: _ =>
             val successRedirectUrl =
-              if (isEnabled(VrsNewAttachmentJourney) && list.head == VAT5L) routes.UploadingVat5LDocumentController.show.url
+              if (isEnabled(VrsNewAttachmentJourney) && attachmentType == VAT5L) routes.UploadingVat5LDocumentController.show.url
               else routes.UploadingDocumentController.show.url
-            upscanService.initiateUpscan(profile.registrationId, list.head, successRedirectUrl = successRedirectUrl).flatMap { upscanResponse =>
-              uploadDocumentHint.build(list.head).map { hintHtml =>
-                val optErrorCode = request.queryString.get("errorCode").flatMap(_.headOption)
-                val uploadView = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else view.apply _
-                Ok(uploadView(upscanResponse, Some(hintHtml), list.head, optErrorCode)).addingToSession("reference" -> upscanResponse.reference)
-            }
+            upscanService.initiateUpscan(profile.registrationId, attachmentType, successRedirectUrl = successRedirectUrl).flatMap { upscanResponse =>
+              val optErrorCode = request.getQueryString("errorCode")
+              val page: Future[Html] = attachmentType match {
+                case ExtraIdentityEvidence | ExtraTransactorIdentityEvidence if isEnabled(VrsNewAttachmentJourney) =>
+                  val uploadedCount = extraIdentityEvidenceRequired - incompleteAttachments.count(_ == attachmentType)
+                  uploadDocumentHint.identityEvidenceName(attachmentType).map { optName =>
+                    viewIdentityEvidence(upscanResponse, optName, uploadedCount, optErrorCode)
+                  }
+                case _ =>
+                  uploadDocumentHint.build(attachmentType).map { hintHtml =>
+                    val uploadView = if (isEnabled(VrsNewAttachmentJourney)) viewNewAttachmentJourney.apply _ else view.apply _
+                    uploadView(upscanResponse, Some(hintHtml), attachmentType, optErrorCode)
+                  }
+              }
+              page.map(Ok(_).addingToSession("reference" -> upscanResponse.reference))
             }
         }
   }

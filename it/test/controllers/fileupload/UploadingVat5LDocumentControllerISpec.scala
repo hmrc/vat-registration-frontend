@@ -109,7 +109,7 @@ class UploadingVat5LDocumentControllerISpec extends ControllerISpec {
         result.header(HeaderNames.LOCATION) mustBe Some(routes.SupportingDocumentsController.show.url)
       }
     }
-    "redirect to the supporting documents upload page when a LandPropertyOtherDocs upload is Ready" in {
+    "redirect to the uploaded supporting documents page when a LandPropertyOtherDocs upload is Ready" in {
       given()
         .user.isAuthorised()
         .upscanApi.fetchUpscanFileDetails(testUpscanDetails(Ready).copy(attachmentType = LandPropertyOtherDocs), reference = testReference)
@@ -118,7 +118,7 @@ class UploadingVat5LDocumentControllerISpec extends ControllerISpec {
 
       whenReady(res) { result =>
         result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.SupportingDocumentUploadController.show.url)
+        result.header(HeaderNames.LOCATION) mustBe Some(routes.UploadedSupportingDocumentsController.show.url)
       }
     }
     "redirect to the VAT1614H page when a Attachment1614a upload is Ready" in {

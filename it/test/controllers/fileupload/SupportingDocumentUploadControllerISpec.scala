@@ -32,7 +32,6 @@ import scala.concurrent.Future
 class SupportingDocumentUploadControllerISpec extends ControllerISpec {
 
   val url: String = routes.SupportingDocumentUploadController.show.url
-  val continueUrl: String = routes.SupportingDocumentUploadController.continue.url
 
   val testReference = "testReference"
   val supportingDocumentsAnswered: Attachments = Attachments(Some(Upload), None, None, Some(true))
@@ -45,7 +44,7 @@ class SupportingDocumentUploadControllerISpec extends ControllerISpec {
   )
 
   s"GET $url" must {
-    "return OK with the upload form and no list when nothing has been uploaded yet" in new Setup {
+    "return OK with the upload form when nothing has been uploaded yet" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
@@ -69,17 +68,15 @@ class SupportingDocumentUploadControllerISpec extends ControllerISpec {
       }
     }
 
-    "return OK listing the uploaded supporting documents, ignoring uploads that never received a file" in new Setup {
+    "return OK with the upload form and no list when documents have already been uploaded, ignoring uploads that never received a file" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
         .upscanApi.upscanInitiate(testReference)
         .upscanApi.storeUpscanReference(testReference, LandPropertyOtherDocs)
-        .upscanApi.fetchAllUpscanDetails(List(
-          supportingDocument("planning.pdf"),
-          supportingDocument("letter.docx"),
-          supportingDocument("never-uploaded", InProgress)
-        ))
+        .upscanApi.fetchAllUpscanDetails(
+          (1 until maxSupportingDocuments).map(index => supportingDocument(s"document-$index")).toList :+ supportingDocument("never-uploaded", InProgress)
+        )
         .registrationApi.getSection[Attachments](Some(supportingDocumentsAnswered))
 
       val response: Future[WSResponse] = buildClient(url).get()
@@ -87,13 +84,13 @@ class SupportingDocumentUploadControllerISpec extends ControllerISpec {
       whenReady(response) { res =>
         res.status mustBe OK
         val doc = Jsoup.parse(res.body)
-        doc.select(".govuk-summary-list__key").eachText() mustBe java.util.List.of("planning.pdf", "letter.docx")
-        doc.select(".govuk-summary-list__actions a").first.attr("href") mustBe routes.RemoveSupportingDocumentController.show("planning.pdf-reference").url
-        doc.select("#file-upload-button").text mustBe "Upload another supporting document"
+        doc.select(".govuk-summary-list__row").size mustBe 0
+        doc.select("input[type=file]").size mustBe 1
+        doc.select("#file-upload-button").text mustBe "Upload"
       }
     }
 
-    s"return OK without the upload form when $maxSupportingDocuments supporting documents have been uploaded" in new Setup {
+    s"redirect to the uploaded supporting documents page when $maxSupportingDocuments supporting documents have been uploaded" in new Setup {
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       given()
         .user.isAuthorised()
@@ -103,10 +100,8 @@ class SupportingDocumentUploadControllerISpec extends ControllerISpec {
       val response: Future[WSResponse] = buildClient(url).get()
 
       whenReady(response) { res =>
-        res.status mustBe OK
-        val doc = Jsoup.parse(res.body)
-        doc.select(".govuk-summary-list__row").size mustBe maxSupportingDocuments
-        doc.select("input[type=file]").size mustBe 0
+        res.status mustBe SEE_OTHER
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadedSupportingDocumentsController.show.url)
         verify(0, postRequestedFor(urlPathEqualTo("/upscan/v2/initiate")))
       }
     }
@@ -168,32 +163,6 @@ class SupportingDocumentUploadControllerISpec extends ControllerISpec {
         res.status mustBe SEE_OTHER
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.AttachmentMethodController.show.url)
       }
-    }
-  }
-
-  s"POST $continueUrl" must {
-    "redirect to the VAT1614A page when at least one supporting document has been uploaded" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-      given()
-        .user.isAuthorised()
-        .upscanApi.fetchAllUpscanDetails(List(supportingDocument("planning.pdf")))
-
-      val res: WSResponse = await(buildClient(continueUrl).post(""))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.VAT1614AController.show.url)
-    }
-
-    "return to the page with the 'Select a file' error when nothing has been uploaded" in new Setup {
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-      given()
-        .user.isAuthorised()
-        .upscanApi.fetchAllUpscanDetails(List(supportingDocument("never-uploaded", InProgress)))
-
-      val res: WSResponse = await(buildClient(continueUrl).post(""))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(s"$url?errorCode=InvalidArgument")
     }
   }
 }

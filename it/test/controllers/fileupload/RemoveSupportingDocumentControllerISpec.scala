@@ -68,7 +68,7 @@ class RemoveSupportingDocumentControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.SupportingDocumentUploadController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadedSupportingDocumentsController.show.url)
       }
     }
   }
@@ -88,7 +88,7 @@ class RemoveSupportingDocumentControllerISpec extends ControllerISpec {
 
       whenReady(response) { res =>
         res.status mustBe SEE_OTHER
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.SupportingDocumentUploadController.show.url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadedSupportingDocumentsController.show.url)
       }
     }
   }
@@ -106,7 +106,7 @@ class RemoveSupportingDocumentControllerISpec extends ControllerISpec {
 
     whenReady(response) { res =>
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.SupportingDocumentUploadController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadedSupportingDocumentsController.show.url)
     }
   }
 

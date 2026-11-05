@@ -31,9 +31,11 @@ class VAT1614HViewSpec extends VatRegViewSpec {
   implicit val doc: Document = Jsoup.parse(view.body)
 
   object ExpectedContent {
-    val heading = "Do you need to upload a VAT1614H form?"
+    val heading = "VAT1614H form"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para1 = "This is to apply for permission to opt to tax land and buildings."
+    val p1 = "Complete and upload this form if you want to opt to tax land or buildings and need HMRC permission."
+    val legend = "Do you need to upload a VAT1614H?"
+    val linkText = "Download and find out more about VAT1614H forms (opens in new tab)"
     val yes = "Yes"
     val no = "No"
     val continue = "Continue"
@@ -52,8 +54,16 @@ class VAT1614HViewSpec extends VatRegViewSpec {
       doc.title mustBe ExpectedContent.title
     }
 
-    "have the correct hint text" in new ViewSetup {
-      doc.hintText mustBe Some(ExpectedContent.para1)
+    "have the correct paragraphs" in new ViewSetup {
+      doc.para(1) mustBe Some(ExpectedContent.p1)
+    }
+
+    "link to the correct guidance" in new ViewSetup {
+      doc.select(s"""main a[href="${appConfig.vat1614HLink}"]""").text mustBe ExpectedContent.linkText
+    }
+
+    "have the question as the radio legend" in new ViewSetup {
+      doc.legend(1) mustBe Some(ExpectedContent.legend)
     }
 
     "have yes/no radio options" in new ViewSetup {

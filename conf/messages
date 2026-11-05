@@ -1977,12 +1977,27 @@ vRSNewAttachmentsJourney.uploadDocument.link.vat1tr               = Download and
 vRSNewAttachmentsJourney.uploadDocument.link.vat1614a             = Download and find out more about VAT1614A forms (opens in a new tab)
 vRSNewAttachmentsJourney.uploadDocument.link.vat1614h             = Download and find out more about VAT1614H forms (opens in a new tab)
 vRSNewAttachmentsJourney.uploadDocument.button                    = Upload
-vRSNewAttachmentsJourney.uploadDocument.button.uploadAnotherSupportingDocument = Upload another supporting document
 vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile       = Choose file
 vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction  = or drop file
 vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen     = No file chosen
 vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone  = Entered drop zone
 vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone     = Left drop zone
+
+# VRS New Attachment Journey - Upload Identity Evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.heading        = Upload {0}’s identity evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.para1          = You need to <strong>upload 2</strong> of the following:
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet1        = your birth certificate
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet2        = a lease or rental agreement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet3        = your work permit or visa
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet4        = a recent utility bill
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet5        = a recent mortgage statement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet6        = a recent bank statement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet7        = a recent credit card statement
+vRSNewAttachmentsJourney.uploadIdentityEvidence.bullet8        = any documents from the Department for Work and Pensions that confirms your entitlement to benefits
+vRSNewAttachmentsJourney.uploadIdentityEvidence.para2          = Your documents should be dated within the last 3 months, where possible.
+vRSNewAttachmentsJourney.uploadIdentityEvidence.uploadedCount  = {0} of 2 files uploaded
+vRSNewAttachmentsJourney.uploadIdentityEvidence.label.first    = First item of evidence
+vRSNewAttachmentsJourney.uploadIdentityEvidence.label.second   = Second item of evidence
 
 # BUSINESS EMAIL PAGE
 businessEmail.heading                                = What is the business email address?
@@ -2031,6 +2046,13 @@ supportingDocuments.p1                                  = Supporting documents a
 supportingDocuments.p2                                  = Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence.
 supportingDocuments.link                                = Find out more about supporting documents for VAT5L (opens in new tab)
 supportingDocuments.h1                                  = Do you want to upload any supporting documents for the VAT5L?
+
+# UPLOADED SUPPORTING DOCUMENTS
+uploadedSupportingDocuments.heading                     = You have added {0} file
+uploadedSupportingDocuments.headingPlural               = You have added {0} files
+uploadedSupportingDocuments.addAnother                  = Do you need to upload another file?
+uploadedSupportingDocuments.limitReached                = You have uploaded the maximum of {0} supporting documents.
+validation.uploadedSupportingDocuments.error            = Select yes if you want to add another file
 validation.supportingDocuments.error                    = Select yes if you have any supporting documents
 
 # VAT1615A
@@ -2042,7 +2064,7 @@ validation.vat1614A.error                               = Select yes if you need
 
 # VAT1615H
 vat1614H.heading                                        = VAT1614H form
-vat1614H.p                                              = Complete and upload this form to notify HMRC of your decision to opt to tax land and or buildings.
+vat1614H.p                                              = Complete and upload this form if you want to opt to tax land or buildings and need HMRC permission.
 vat1614H.link                                           = Download and find out more about VAT1614H forms (opens in new tab)
 vat1614H.h1                                             = Do you need to upload a VAT1614H?
 validation.vat1614H.error                               = Select yes if you need to upload a VAT1614H form

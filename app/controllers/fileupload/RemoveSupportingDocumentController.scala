@@ -55,7 +55,7 @@ class RemoveSupportingDocumentController @Inject()(val authConnector: AuthConnec
                 throw new InternalServerException("Invalid document reference for remove uploaded document page")
             }
         }.recover {
-          case _ => Redirect(routes.SupportingDocumentUploadController.show)
+          case _ => Redirect(routes.UploadedSupportingDocumentsController.show)
         }
   }
 
@@ -72,9 +72,9 @@ class RemoveSupportingDocumentController @Inject()(val authConnector: AuthConnec
                     if (success) {
                       for {
                         _ <- upscanService.deleteUpscanDetails(profile.registrationId, reference)
-                      } yield Redirect(routes.SupportingDocumentUploadController.show)
+                      } yield Redirect(routes.UploadedSupportingDocumentsController.show)
                     } else {
-                      Future.successful(Redirect(routes.SupportingDocumentUploadController.show))
+                      Future.successful(Redirect(routes.UploadedSupportingDocumentsController.show))
                     }
                   }
                 )

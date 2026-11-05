@@ -29,7 +29,7 @@ import viewmodels.UploadedVat5LDocumentRow
 import views.html.fileupload.UploadedVat5LDocuments
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UploadedVat5LDocumentsController @Inject()(view: UploadedVat5LDocuments,
@@ -60,13 +60,7 @@ class UploadedVat5LDocumentsController @Inject()(view: UploadedVat5LDocuments,
 
   val continue: Action[AnyContent] = isAuthenticatedWithProfile { implicit request =>
     implicit profile =>
-      attachmentsService.getIncompleteAttachments(profile.registrationId).map { incompleteAttachments =>
-        if (incompleteAttachments.nonEmpty) {
-          Redirect(routes.UploadDocumentController.show)
-        } else {
-          Redirect(controllers.routes.TaskListController.show.url)
-        }
-      }
+      Future.successful(Redirect(routes.UploadSummaryController.show))
   }
 
   private def vat5LDocumentRows(upscanResponse: Seq[UpscanDetails]): Seq[UploadedVat5LDocumentRow] = {

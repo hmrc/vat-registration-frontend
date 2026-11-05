@@ -58,7 +58,7 @@
             label = Label(
                 content = Text(messages("fileUpload.uploadDocument.label"))
             ),
-            errorMessage = optErrorCode.map(errorCode => ErrorMessage(content = Text(messages(s"fileUpload.error.$errorCode")))),
+            errorMessage = optErrorCode.map(errorCode => ErrorMessage.errorMessageWithDefaultStringsTranslated(content = Text(messages(s"fileUpload.error.$errorCode")))),
             attributes = Map("accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.bmp,.gif,.png,.jpeg,.jpg,.txt")
         ))
 

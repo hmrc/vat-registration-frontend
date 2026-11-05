@@ -64,7 +64,7 @@
         val errorId = s"$id-error"
         val describedBy1 = s"$describedBy $errorId"
         val errorMessageHtml =
-            govukErrorMessage(ErrorMessage(
+            govukErrorMessage(ErrorMessage.errorMessageWithDefaultStringsTranslated(
                 id = Some(errorId),
                 content = Text(messages(errorMessage.message, errorMessage.args:_*))
             ))

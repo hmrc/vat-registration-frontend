@@ -110,30 +110,16 @@ class UploadedVat5LDocumentsControllerISpec extends ControllerISpec {
   }
 
   s"POST $continueUrl" must {
-    "redirect to Upload Document page for identity evidence if it is still outstanding" in new Setup {
+    "redirect to the Upload Summary page" in new Setup {
       given()
         .user.isAuthorised()
-        .attachmentsApi.getIncompleteAttachments(List(PrimaryIdentityEvidence))
 
       insertCurrentProfileIntoDb(currentProfile, sessionString)
 
       val res: WSResponse = await(buildClient(continueUrl).post(""))
 
       res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadDocumentController.show.url)
-    }
-
-    "redirect to Task List page when nothing is outstanding" in new Setup {
-      given()
-        .user.isAuthorised()
-        .attachmentsApi.getIncompleteAttachments(List.empty[AttachmentType])
-
-      insertCurrentProfileIntoDb(currentProfile, sessionString)
-
-      val res: WSResponse = await(buildClient(continueUrl).post(""))
-
-      res.status mustBe SEE_OTHER
-      res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
+      res.header(HeaderNames.LOCATION) mustBe Some(routes.UploadSummaryController.show.url)
     }
   }
 }

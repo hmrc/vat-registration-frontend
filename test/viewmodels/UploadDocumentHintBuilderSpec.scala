@@ -17,8 +17,9 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import models.TransactorDetails
+import models.{ApplicantDetails, TransactorDetails}
 import models.api._
+import org.mockito.Mockito.{reset, verifyNoInteractions}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -196,6 +197,50 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
         await(Builder.build(VAT51)) mustBe expectedHtml(appConfig.vat51Link, "vat51Link")
         await(Builder.build(VAT2)) mustBe expectedHtml(appConfig.vat2Link, "vat2Link")
         await(Builder.build(TaxRepresentativeAuthorisation)) mustBe expectedHtml(appConfig.vat1trLink, "vat1trLink")
+      }
+    }
+  }
+
+  "identityEvidenceName" when {
+    "called with ExtraIdentityEvidence" must {
+      "return the applicant name even when the user is not a transactor" in new Setup {
+        reset(vatRegistrationServiceMock)
+        mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
+
+        await(Builder.identityEvidenceName(ExtraIdentityEvidence)) mustBe Some("testFirstName testLastName")
+        verifyNoInteractions(vatRegistrationServiceMock)
+      }
+
+      "return None if the applicant has no personal details" in new Setup {
+        mockGetApplicantDetails(currentProfile)(ApplicantDetails())
+
+        await(Builder.identityEvidenceName(ExtraIdentityEvidence)) mustBe None
+      }
+    }
+
+    "called with ExtraTransactorIdentityEvidence" must {
+      "return the transactor name, not the applicant name" in new Setup {
+        reset(mockApplicantDetailsService)
+        mockGetTransactorDetails(currentProfile)(validTransactorDetails)
+
+        await(Builder.identityEvidenceName(ExtraTransactorIdentityEvidence)) mustBe validTransactorDetails.personalDetails.map(_.fullName)
+        verifyNoInteractions(mockApplicantDetailsService)
+      }
+
+      "return None if the transactor has no personal details" in new Setup {
+        mockGetTransactorDetails(currentProfile)(TransactorDetails())
+
+        await(Builder.identityEvidenceName(ExtraTransactorIdentityEvidence)) mustBe None
+      }
+    }
+
+    "called with an attachment type that has no named person" must {
+      "return None without looking up applicant or transactor details" in new Setup {
+        reset(mockApplicantDetailsService)
+        reset(mockTransactorDetailsService)
+
+        await(Builder.identityEvidenceName(VAT2)) mustBe None
+        verifyNoInteractions(mockApplicantDetailsService, mockTransactorDetailsService)
       }
     }
   }

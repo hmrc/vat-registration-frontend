@@ -18,7 +18,6 @@
 @import helper.form
 @import models.external.upscan.UpscanResponse
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import viewmodels.DocumentUploadSummaryRow
 @import views.html.components._
 @import views.html.layouts.layout
 
@@ -28,15 +27,11 @@
         h1: h1,
         govukFileUpload: GovukFileUpload,
         govukButton: GovukButton,
-        govukSummaryList: GovukSummaryList,
-        govukTag: GovukTag,
         errorSummary: errorSummary,
-        panelIndent: panelIndent,
-        formWithCSRF: FormWithCSRF,
-        button: button
+        panelIndent: panelIndent
 )
 
-@(uploadedDocuments: Seq[DocumentUploadSummaryRow], optUpscanResponse: Option[UpscanResponse], optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@(upscanResponse: UpscanResponse, optErrorCode: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("vRSNewAttachmentsJourney.uploadDocument.heading.supportingDocuments")))) {
 
@@ -46,68 +41,31 @@
 
     @panelIndent(Html(messages("fileUpload.uploadDocument.hint.fileType")))
 
-    @if(uploadedDocuments.nonEmpty) {
-        @govukSummaryList(SummaryList(
-            classes = "govuk-summary-list--long-key",
-            rows = uploadedDocuments.map { document =>
-                SummaryListRow(
-                    key = Key(content = Text(document.documentName)),
-                    value = Value(content = HtmlContent(
-                        govukTag(Tag(content = Text(messages("uploaded.vat5l.documents.status.uploaded")), classes = "govuk-tag--green"))
-                    )),
-                    actions = Some(Actions(items = Seq(
-                        ActionItem(
-                            href = document.removeAction.url,
-                            content = Text(messages("app.common.remove")),
-                            visuallyHiddenText = Some(document.documentName)
-                        )
-                    )))
-                )
-            }
-        ))
-    }
-
-    @for(upscanResponse <- optUpscanResponse) {
-        @form(action = Call("POST", upscanResponse.href), 'enctype -> "multipart/form-data") {
-            @for(field <- upscanResponse.fields) {
-                <input type="hidden" name="@field._1" value="@field._2"/>
-            }
-
-            @govukFileUpload(FileUpload(
-                name = "file",
-                id = "file-upload-1",
-                label = Label(
-                    content = Text(messages("fileUpload.uploadDocument.label"))
-                ),
-                errorMessage = optErrorCode.map(errorCode => ErrorMessage(content = Text(messages(errorKey(errorCode))))),
-                attributes = Map("accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.bmp,.gif,.png,.jpeg,.jpg,.txt"),
-                javascript = Some(true),
-                chooseFilesButtonText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile")),
-                dropInstructionText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction")),
-                noFileChosenText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen")),
-                enteredDropZoneText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone")),
-                leftDropZoneText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone"))
-            ))
-
-            @if(uploadedDocuments.isEmpty) {
-                @govukButton(Button(
-                    attributes = Map("id" -> "file-upload-button"),
-                    content = Text(messages("vRSNewAttachmentsJourney.uploadDocument.button"))
-                ))
-            } else {
-                @govukButton(Button(
-                    attributes = Map("id" -> "file-upload-button"),
-                    classes = "govuk-button--secondary",
-                    content = Text(messages("vRSNewAttachmentsJourney.uploadDocument.button.uploadAnotherSupportingDocument"))
-                ))
-            }
+    @form(action = Call("POST", upscanResponse.href), 'enctype -> "multipart/form-data") {
+        @for(field <- upscanResponse.fields) {
+            <input type="hidden" name="@field._1" value="@field._2"/>
         }
-    }
 
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        @govukFileUpload(FileUpload(
+            name = "file",
+            id = "file-upload-1",
+            label = Label(
+                content = Text(messages("fileUpload.uploadDocument.label"))
+            ),
+            errorMessage = optErrorCode.map(errorCode => ErrorMessage(content = Text(messages(errorKey(errorCode))))),
+            attributes = Map("accept" -> ".pdf,.doc,.docx,.xls,.xlsx,.bmp,.gif,.png,.jpeg,.jpg,.txt"),
+            javascript = Some(true),
+            chooseFilesButtonText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.chooseFile")),
+            dropInstructionText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.dropInstruction")),
+            noFileChosenText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.noFileChosen")),
+            enteredDropZoneText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.enteredDropZone")),
+            leftDropZoneText = Some(messages("vRSNewAttachmentsJourney.uploadDocument.dropZone.leftDropZone"))
+        ))
 
-    @formWithCSRF(action = controllers.fileupload.routes.SupportingDocumentUploadController.continue) {
-        @button("app.common.continueNoSave", showSaveProgressButton = false)
+        @govukButton(Button(
+            attributes = Map("id" -> "file-upload-button"),
+            content = Text(messages("vRSNewAttachmentsJourney.uploadDocument.button"))
+        ))
     }
 }
 

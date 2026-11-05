@@ -650,9 +650,11 @@ GET         /supporting-documents                                     controller
 POST        /supporting-documents                                     controllers.fileupload.SupportingDocumentsController.submit
 
 GET         /upload-supporting-document                               controllers.fileupload.SupportingDocumentUploadController.show
-POST        /upload-supporting-document                               controllers.fileupload.SupportingDocumentUploadController.continue
 GET         /upload-supporting-document/:reference/remove             controllers.fileupload.RemoveSupportingDocumentController.show(reference: String)
 POST        /upload-supporting-document/:reference/remove             controllers.fileupload.RemoveSupportingDocumentController.submit(reference: String)
+
+GET         /uploaded-supporting-documents                            controllers.fileupload.UploadedSupportingDocumentsController.show
+POST        /uploaded-supporting-documents                            controllers.fileupload.UploadedSupportingDocumentsController.submit
 
 GET          /vat1614a                                                controllers.fileupload.VAT1614AController.show
 POST         /vat1614a                                                controllers.fileupload.VAT1614AController.submit
