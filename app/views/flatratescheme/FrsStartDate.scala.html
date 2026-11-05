@@ -36,7 +36,16 @@
 
 @layout(pageTitle = Some(title(frsStartDateForm, messages("pages.frs.startDate.heading"))), backLink = true) {
 
-    @errorSummary(frsStartDateForm.errors)
+    @errorSummary(frsStartDateForm.errors.map { error =>
+        if (error.key == "frsStartDate") {
+            val datePart = Seq("day", "month", "year").find { part =>
+                frsStartDateForm(s"frsStartDate.$part").value.forall(_.trim.isEmpty)
+            }.getOrElse("day")
+            error.copy(key = s"frsStartDate.$datePart")
+        } else {
+            error
+        }
+    })
 
     @form(action = controllers.flatratescheme.routes.StartDateController.submit) {
         @govukRadios(Radios(
