@@ -21,7 +21,7 @@ import play.api.data.Forms.single
 
 object SupportingDocumentsForm extends RequiredBooleanForm {
 
-  override val errorMsg = "validation.supplySupportingDocuments.error"
+  override val errorMsg = "validation.supportingDocuments.error"
   val value = "value"
 
   val form: Form[Boolean] = Form(

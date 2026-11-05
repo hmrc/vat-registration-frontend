@@ -2052,7 +2052,7 @@ uploadedSupportingDocuments.heading                     = You have added {0} fil
 uploadedSupportingDocuments.headingPlural               = You have added {0} files
 uploadedSupportingDocuments.addAnother                  = Do you need to upload another file?
 uploadedSupportingDocuments.limitReached                = You have uploaded the maximum of {0} supporting documents.
-validation.uploadedSupportingDocuments.error            = Select yes if you want to add another file
+validation.uploadedSupportingDocuments.error            = Select yes if you need to upload another file
 validation.supportingDocuments.error                    = Select yes if you have any supporting documents
 
 # VAT1615A

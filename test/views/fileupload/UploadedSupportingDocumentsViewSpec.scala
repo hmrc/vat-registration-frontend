@@ -41,7 +41,7 @@ class UploadedSupportingDocumentsViewSpec extends VatRegViewSpec {
     val title = s"$heading - Register for VAT - GOV.UK"
     val legend = "Do you need to upload another file?"
     val limitReached = "You have uploaded the maximum of 10 supporting documents."
-    val error = "Select yes if you want to add another file"
+    val error = "Select yes if you need to upload another file"
     val continue = "Continue"
   }
 

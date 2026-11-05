@@ -124,7 +124,7 @@ class UploadedSupportingDocumentsControllerISpec extends ControllerISpec {
       res.status mustBe BAD_REQUEST
       val doc = Jsoup.parse(res.body)
       doc.select(".govuk-summary-list__key").text mustBe "planning.pdf"
-      doc.select(".govuk-error-summary__list").text mustBe "Select yes if you want to add another file"
+      doc.select(".govuk-error-summary__list").text mustBe "Select yes if you need to upload another file"
     }
 
     s"redirect to the VAT1614A page without needing an answer when $maxSupportingDocuments documents have been uploaded" in new Setup {

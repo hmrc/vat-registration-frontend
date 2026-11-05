@@ -21,7 +21,7 @@ import play.api.data.Forms.single
 
 object VAT1614AForm extends RequiredBooleanForm {
 
-  override val errorMsg = "validation.supply1614A.error"
+  override val errorMsg = "validation.vat1614A.error"
   val value = "value"
 
   val form: Form[Boolean] = Form(
