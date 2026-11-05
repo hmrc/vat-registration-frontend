@@ -60,7 +60,8 @@
                     isPageHeading = true,
                     classes = "govuk-fieldset__legend--xl"
                 ))
-            ))
+            )),
+            errorMessage = frsStartDateForm("frsStartDateRadio").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
         ))
 
         @button(messages("app.common.continue"))
