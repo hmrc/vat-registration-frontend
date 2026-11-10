@@ -1998,17 +1998,17 @@ validation.supplySupportingDocuments.error              = Dewiswch ‘Iawn’ os
 # SUPPLY SUPPORTING DOCUMENTS
 supportingDocuments.heading                             = Dogfennau ategol ar gyfer VAT5L
 supportingDocuments.p1                                  = Mae dogfennau ategol yn ddewisol. Fodd bynnag, gall eu hanfon nawr osgoi oedi os gofynnwn amdanynt yn nes ymlaen wrth brosesu’ch cais.
-supportingDocuments.p2                                  = Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence.
+supportingDocuments.p2                                  = Dogfennau ategol ar gyfer VAT5L yw unrhyw ddogfen sy’n ymwneud â thir neu eiddo a all ategu’ch cais, megis caniatâd cynllunio neu ohebiaeth cyfreithiwr.
 supportingDocuments.link                                = Dysgwch ragor am ddogfennau ategol ar gyfer VAT5L (yn agor tab newydd)
 supportingDocuments.h1                                  = A ydych am uwchlwytho unrhyw ddogfennau ategol ar gyfer VAT5L?
 
 # UPLOADED SUPPORTING DOCUMENTS
-uploadedSupportingDocuments.heading                     = You have added {0} file
-uploadedSupportingDocuments.headingPlural               = You have added {0} files
-uploadedSupportingDocuments.addAnother                  = Do you need to upload another file?
-uploadedSupportingDocuments.limitReached                = You have uploaded the maximum of {0} supporting documents.
-validation.uploadedSupportingDocuments.error            = Select yes if you need to upload another file
-validation.supportingDocuments.error                    = Select yes if you have any supporting documents
+uploadedSupportingDocuments.heading                     = Rydych wedi ychwanegu {0} ffeil
+uploadedSupportingDocuments.headingPlural               = Rydych wedi ychwanegu {0} o ffeiliau
+uploadedSupportingDocuments.addAnother                  = A oes angen i chi uwchlwytho ffeil arall?
+uploadedSupportingDocuments.limitReached                = Rydych wedi uwchlwytho’r nifer uchaf o ddogfennau ategol, sef {0}.
+validation.uploadedSupportingDocuments.error            = Dewiswch ‘Iawn’ os oes angen i chi uwchlwytho ffeil arall
+validation.supportingDocuments.error                    = Dewiswch ‘Iawn’ os oes gennych unrhyw wybodaeth ategol
 
 # VAT1615A
 vat1614A.heading                                        = Ffurflen VAT1614A
@@ -2024,23 +2024,23 @@ vat1614H.link                                           = Lawrlwythwch ffurflen 
 vat1614H.h1                                             = A oes angen i chi uwchlwytho VAT1614H?
 validation.vat1614H.error                               = Dewiswch ‘Iawn’ os oes angen i chi uwchlwytho ffurflen VAT1614H
 
-uploaded.vat5l.documents.heading                        = Uploaded VAT5L documents
-uploaded.vat5l.documents.h2                             = Upload more supporting documents
-uploaded.vat5l.documents.details.summary                = Help with supporting documents
+uploaded.vat5l.documents.heading                        = Dogfennau VAT5L sydd wedi’u huwchlwytho
+uploaded.vat5l.documents.h2                             = Uwchlwytho rhagor o ddogfennau ategol
+uploaded.vat5l.documents.details.summary                = Help gyda dogfennau ategol
 uploaded.vat5l.documents.details.p1                     = Mae dogfennau ategol yn ddewisol. Fodd bynnag, gall eu hanfon nawr osgoi oedi os gofynnwn amdanynt yn nes ymlaen wrth brosesu’ch cais.
-uploaded.vat5l.documents.details.p2                     = Supporting documents for the VAT5L are any land or property documents that may support your application such as planning permission or solicitors correspondence.
-uploaded.vat5l.documents.button                         = Upload supporting document
-uploaded.vat5l.documents.table.documentType             = Document type
-uploaded.vat5l.documents.table.fileName                 = File name
+uploaded.vat5l.documents.details.p2                     = Dogfennau ategol ar gyfer VAT5L yw unrhyw ddogfen sy’n ymwneud â thir neu eiddo a all ategu’ch cais, megis caniatâd cynllunio neu ohebiaeth cyfreithiwr.
+uploaded.vat5l.documents.button                         = Uwchlwytho dogfen ategol
+uploaded.vat5l.documents.table.documentType             = Math o ddogfen
+uploaded.vat5l.documents.table.fileName                 = Enw’r ffeil
 uploaded.vat5l.documents.table.status                   = Statws
-uploaded.vat5l.documents.table.actions                  = Actions
+uploaded.vat5l.documents.table.actions                  = Camau gweithredu
 uploaded.vat5l.documents.type.vat5L                     = VAT5L
-uploaded.vat5l.documents.type.supportingDocument        = Supporting document
+uploaded.vat5l.documents.type.supportingDocument        = Dogfen ategol
 uploaded.vat5l.documents.type.vat1614a                  = VAT1614A
 uploaded.vat5l.documents.type.vat1614h                  = VAT1614H
-uploaded.vat5l.documents.status.uploaded                = Uploaded
-uploaded.vat5l.documents.status.uploading               = Uploading
-uploaded.vat5l.documents.status.failed                  = Failed
+uploaded.vat5l.documents.status.uploaded                = Wedi uwchlwytho
+uploaded.vat5l.documents.status.uploading               = Yn uwchlwytho
+uploaded.vat5l.documents.status.failed                  = Wedi methu
 
 
 # Eligibility data
