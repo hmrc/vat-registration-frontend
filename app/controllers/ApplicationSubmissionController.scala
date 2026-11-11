@@ -22,6 +22,8 @@ import services._
 import uk.gov.hmrc.http.InternalServerException
 import views.html.ApplicationSubmissionConfirmation
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +39,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
                                                (implicit appConfig: FrontendAppConfig,
                                                 val executionContext: ExecutionContext,
                                                 baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
 
   private val prefixLength = 3
   private val groupSize = 4
@@ -50,9 +52,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
           attachments <- attachmentsService.getAttachmentList(profile.registrationId)
           attachmentDetails <- attachmentsService.getAttachmentDetails(profile.registrationId)
           acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
-          prefix = acknowledgementRef.take(prefixLength)
-          groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
-          formattedRef = if(appConfig.isNewVRSApplConfirmJourneyEnabled) { groups mkString separator } else { prefix +: groups mkString separator }
+          formattedRef = acknowledgementRef.drop(prefixLength).grouped(groupSize).mkString(separator)
           isTransactor <- vatRegistrationService.isTransactor
 
           optEmail <- if (isTransactor) {
@@ -63,7 +63,7 @@ class ApplicationSubmissionController @Inject()(vatRegistrationService: VatRegis
           eligibilitySubmissionData <- vatRegistrationService.getEligibilitySubmissionData
           email = optEmail.getOrElse(throw new InternalServerException("[ApplicationSubmissionController] missing user email"))
         }
-        yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor, eligibilitySubmissionData.registrationReason, appConfig.isNewVRSApplConfirmJourneyEnabled))
+        yield Ok(applicationSubmissionConfirmationView(formattedRef, attachmentDetails.flatMap(_.method), attachments.nonEmpty, email, isTransactor, eligibilitySubmissionData.registrationReason, isEnabled(VrsNewAttachmentJourney)))
   }
 
   def submit: Action[AnyContent] = isAuthenticated {
