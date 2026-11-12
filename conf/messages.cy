@@ -1525,8 +1525,8 @@ attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}">VAT 50/
 attachments.documentsPost.forms.bullet3.vat5051.text     =  - cofrestru grŵp TAW
 attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}">VAT1TR</a>
 attachments.documentsPost.forms.bullet4.vat1tr.text      =  - person sy’n agored i TAW, ond sydd heb ei sefydlu yn y DU (NETP) sydd am benodi cynrychiolydd treth
-attachments.documentsPost.forms.bullet5.proof            = Dogfennau i brofi pwy yw
-attachments.documentsPost.forms.bullet6.evidence         = Tystiolaeth i brofi pwy yw
+attachments.documentsPost.forms.bullet5.proof            = Eich prawf o hunaniaeth
+attachments.documentsPost.forms.bullet6.evidence         = Eich tystiolaeth hunaniaeth
 
 attachments.documentsPost.identity.head            = Pa ddogfennau adnabod allaf eu darparu?
 attachments.documentsPost.identity.title1          = Dogfennau i brofi pwy ydych
@@ -1572,8 +1572,8 @@ attachments.vat2.documentsPost.title                     = Anfon eich dogfen
 attachments.vat2.documentsPost.para1                     = Ar ôl i chi gyflwyno’ch cais cofrestru ar-lein, mae angen i chi anfon y canlynol atom:
 attachments.vat2.documentsPost.forms.bullet1.vat2.text        = wedi’i chwblhau
 attachments.vat2.documentsPost.forms.bullet1.vat2.link        = VAT2 ffurf
-attachments.vat2.documentsPost.forms.bullet2.identity         = copi o brawf o hunaniaeth
-attachments.vat2.documentsPost.forms.bullet3.evidence         = copïau o dystiolaeth hunaniaeth
+attachments.vat2.documentsPost.forms.bullet2.identity         = copi o’ch prawf hunaniaeth
+attachments.vat2.documentsPost.forms.bullet3.evidence         = copïau o’ch tystiolaeth hunaniaeth
 attachments.vat2.documentsPost.forms.inset.text               = Bydd angen i chi anfon y llythyr eglurhaol a gynhyrchwyd yn awtomatig gan CThEF gyda’ch dogfennau. Dim ond ar ôl i chi gyflwyno’ch cais ar-lein ar gyfer TAW y gallwch argraffu’r llythyr eglurhaol hwn.
 
 # VAT5L DOCUMENTS POST

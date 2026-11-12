@@ -38,8 +38,8 @@ class Vat5LDocumentsPostViewSpec extends VatRegViewSpec {
     val vat5L = "VAT5L form"
     val vat5LText = "completed"
 
-    val proofOfIdentity = "a copy of proof of identity"
-    val identityEvidence = "copies of identity evidence"
+    val proofOfIdentity = "a copy of your proof of identity"
+    val identityEvidence = "copies of your identity evidence"
 
     val landPara2 = "You may also need to send a completed:"
     val vat1614A = "VAT1614A"

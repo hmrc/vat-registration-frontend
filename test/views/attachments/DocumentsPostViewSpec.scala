@@ -41,8 +41,8 @@ class DocumentsPostViewSpec extends VatRegViewSpec {
     val vat5051 = "VAT 50/51 - VAT group registration"
     val vat1TR = "VAT1TR - a non-established taxable person (NETP) looking to appoint a tax representative"
 
-    val proofOfIdentity = "Proof of identity"
-    val identityEvidence = "Identity evidence"
+    val proofOfIdentity = "Your proof of identity"
+    val identityEvidence = "Your identity evidence"
 
     val identityHeading = "What identity documents can I provide?"
     val proofHeading = "Proof of identity"

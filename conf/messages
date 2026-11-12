@@ -1557,8 +1557,8 @@ attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}">VAT 50/
 attachments.documentsPost.forms.bullet3.vat5051.text     =  - VAT group registration
 attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}">VAT1TR</a>
 attachments.documentsPost.forms.bullet4.vat1tr.text      =  - a non-established taxable person (NETP) looking to appoint a tax representative
-attachments.documentsPost.forms.bullet5.proof            = Proof of identity
-attachments.documentsPost.forms.bullet6.evidence         = Identity evidence
+attachments.documentsPost.forms.bullet5.proof            = Your proof of identity
+attachments.documentsPost.forms.bullet6.evidence         = Your identity evidence
 
 attachments.documentsPost.identity.head            = What identity documents can I provide?
 attachments.documentsPost.identity.title1          = Proof of identity
@@ -1604,8 +1604,8 @@ attachments.vat2.documentsPost.title                     = Posting your document
 attachments.vat2.documentsPost.para1                     = After you have submitted your registration application online, you need to post us:
 attachments.vat2.documentsPost.forms.bullet1.vat2.text        = completed
 attachments.vat2.documentsPost.forms.bullet1.vat2.link        = VAT2 form
-attachments.vat2.documentsPost.forms.bullet2.identity         = a copy of proof of identity
-attachments.vat2.documentsPost.forms.bullet3.evidence         = copies of identity evidence
+attachments.vat2.documentsPost.forms.bullet2.identity         = a copy of your proof of identity
+attachments.vat2.documentsPost.forms.bullet3.evidence         = copies of your identity evidence
 attachments.vat2.documentsPost.forms.inset.text               = You also need to send the auto-generated HMRC cover letter with your documents. You can only print this off after you have submitted your online VAT application.
 
 # VAT5L DOCUMENTS POST
@@ -1613,8 +1613,8 @@ attachments.vat5l.documentsPost.title                     = Posting your documen
 attachments.vat5l.documentsPost.para1                     = After you have submitted your registration application online, you need to post us:
 attachments.vat5l.documentsPost.forms.bullet1.vat5.text        = completed
 attachments.vat5l.documentsPost.forms.bullet1.vat5.link        = VAT5L form
-attachments.vat5l.documentsPost.forms.bullet2.identity         = a copy of proof of identity
-attachments.vat5l.documentsPost.forms.bullet3.evidence         = copies of identity evidence
+attachments.vat5l.documentsPost.forms.bullet2.identity         = a copy of your proof of identity
+attachments.vat5l.documentsPost.forms.bullet3.evidence         = copies of your identity evidence
 attachments.vat5l.documentsPost.forms.inset.text               = You also need to send the auto-generated HMRC cover letter with your documents. You can only print this off after you have submitted your online VAT application.
 
 attachments.vat5l.documentsPost.land.para2                    = You may also need to send a completed:

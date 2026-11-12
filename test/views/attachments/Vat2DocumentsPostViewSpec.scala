@@ -37,8 +37,8 @@ class Vat2DocumentsPostViewSpec extends VatRegViewSpec {
     val vat2 = "VAT2"
     val vat2Text = "- partnership details"
 
-    val proofOfIdentity = "Proof of identity"
-    val identityEvidence = "Identity evidence"
+    val proofOfIdentity = "Your proof of identity"
+    val identityEvidence = "Your identity evidence"
 
     val insetText: String =
       "You also need to send the auto-generated HMRC cover letter with your documents. " +
