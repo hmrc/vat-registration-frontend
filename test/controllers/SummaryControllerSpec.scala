@@ -17,10 +17,11 @@
 package controllers
 
 import connectors._
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.CurrentProfile
-import models.api.{Attachment1614a, Attachment1614h}
+import models.api.{Attachment1614a, Attachment1614h, Post}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import play.api.http.Status
@@ -36,6 +37,11 @@ import views.html.Summary
 import scala.concurrent.Future
 
 class SummaryControllerSpec extends ControllerSpec with FutureAssertions with VatRegistrationFixture with MockNonRepudiationService with FeatureToggleSupport {
+
+  override protected def afterEach(): Unit = {
+    super.afterEach()
+    disable(VrsNewAttachmentJourney)
+  }
 
   trait Setup {
     val testSummaryController = new SummaryController(
@@ -114,6 +120,54 @@ class SummaryControllerSpec extends ControllerSpec with FutureAssertions with Va
     "redirect to the confirmation page if the status of the document is in draft" in new Setup {
 
       when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(fullVatSchemeAttachment))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
+        .thenReturn(Future.successful(Success))
+
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+          result.redirectsTo(controllers.routes.ApplicationSubmissionController.show.url)
+      }
+    }
+
+    "redirect to the cover letter preview page when the attachment method is Post and VrsNewAttachmentJourney is enabled" in new Setup {
+      enable(VrsNewAttachmentJourney)
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(
+        fullVatSchemeAttachment.copy(attachments = fullVatSchemeAttachment.attachments.map(_.copy(method = Some(Post))))
+      ))
+
+      when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
+
+      when(mockAttachmentsService.getIncompleteAttachments(any())(any(), any())).thenReturn(Future.successful(List()))
+
+      when(mockVatRegistrationService.submitRegistration()(any(), any(), any(), any()))
+        .thenReturn(Future.successful(Success))
+
+      when(mockSessionService.cache[CurrentProfile](any(), any())(any(), any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+
+      submitAuthorised(testSummaryController.submitRegistration, fakeRequest.withMethod("POST").withFormUrlEncodedBody()) {
+        (result: Future[Result]) =>
+          await(result).header.status mustBe Status.SEE_OTHER
+          result.redirectsTo(controllers.attachments.routes.CoverLetterPreviewController.show.url)
+      }
+    }
+
+    "redirect to the confirmation page when the attachment method is Post and VrsNewAttachmentJourney is disabled" in new Setup {
+      disable(VrsNewAttachmentJourney)
+
+      when(mockVatRegistrationService.getVatScheme(any(), any(), any())).thenReturn(Future.successful(
+        fullVatSchemeAttachment.copy(attachments = fullVatSchemeAttachment.attachments.map(_.copy(method = Some(Post))))
+      ))
 
       when(mockAttachmentsService.getAttachmentList(any())(any(), any())).thenReturn(Future.successful(List(Attachment1614a, Attachment1614h)))
 

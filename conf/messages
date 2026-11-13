@@ -1577,6 +1577,12 @@ fileUpload.summary.TaxRepresentativeAuthorisation               = Tax Representa
 fileUpload.summary.VAT5L                                        = VAT5L
 fileUpload.summary.edit                                         = Edit
 
+# COVER LETTER PREVIEW MESSAGES
+pages.coverLetterPreview.heading                         = Cover letter
+pages.coverLetterPreview.p1                              = You now need to print or download the VAT registration cover letter, so you can post it with your documents.
+pages.coverLetterPreview.p2                              = It’s important because it allows us to match up your online application with your posted documents.
+pages.coverLetterPreview.button                          = Get cover letter
+
 # POSTAL COVER SHEET MESSAGES
 pages.PostalCoverSheet.heading                           = Print cover letter for documents
 pages.PostalCoverSheet.para                              = Print this page and include it with the documents you are sending to HMRC. This will enable us to match your online application to your documents.

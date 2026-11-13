@@ -1532,6 +1532,12 @@ attachments.uploadingDocument.heading.supportingDocuments    = Wrthi’n uwchlwy
 attachments.uploadingDocument.heading.VAT1614A               = Wrthi’n uwchlwytho’r VAT1614A
 attachments.uploadingDocument.heading.VAT1614H               = Wrthi’n uwchlwytho’r VAT1614H
 
+# COVER LETTER PREVIEW MESSAGES
+pages.coverLetterPreview.heading                         = Llythyr Eglurhaol
+pages.coverLetterPreview.p1                              = Nawr, mae angen i chi argraffu neu lawrlwytho’r llythyr eglurhaol ar gyfer cofrestriad TAW, fel y gallwch ei bostio gyda’ch dogfennau.
+pages.coverLetterPreview.p2                              = Mae hyn bwysig oherwydd mae’n golygu y gallwn baru’ch cais ar-lein gyda’r dogfennau rydych wedi’u postio.
+pages.coverLetterPreview.button                          = Cael llythyr eglurhaol
+
 # POSTAL COVER SHEET MESSAGES
 pages.PostalCoverSheet.heading                           = Argraffu llythyr eglurhaol ar gyfer y dogfennau
 pages.PostalCoverSheet.para                              = Argraffwch y dudalen hon a’i chynnwys gyda’r dogfennau rydych yn eu hanfon at CThEM. Bydd hyn yn ein galluogi i baru’ch cais ar-lein â’ch dogfennau.
