@@ -1516,13 +1516,11 @@ vRSNewAttachmentsJourney.multipleDocumentsRequired.identityEvidence.name       =
 
 # POSTAL CONFIRMATION
 attachments.postalConfirmation.title                              = Posting your additional forms and documents
-attachments.postalConfirmation.para                               = Uploading your forms and documents will usually mean we can process your application more quickly
-attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
-attachments.postalConfirmation.para1                              = If we do not receive your forms and documents within a reasonable period of time your application may become void and you will need to start your application again.
+attachments.postalConfirmation.para                               = Uploading, instead of posting, your forms and documents will usually mean we can process your application quicker.
+attachments.postalConfirmation.warning                            = If you still want to post them, you must do this after you have submitted your VAT registration application. Once you have, we will generate the cover letter that must be sent with your forms and documents.
 attachments.postalConfirmation.para2                              = Do you still want to post your additional forms and documents?
-attachments.postalConfirmation.bullet1                            = Yes, I want to post them
+attachments.postalConfirmation.bullet1                            = Yes
 attachments.postalConfirmation.bullet2                            = No, I want to upload them
-attachments.postalConfirmation.warning                            = If you still want to post them, you should do this after you submit your VAT registration application. This is because you need to print off and include an auto-generated HMRC cover letter with your forms and documents.
 attachments.postalConfirmation.noText                             = No, I want to upload them
 
 # POSTAL ERROR
@@ -1547,13 +1545,88 @@ attachments.identityEvidenceRequired.additionalBullet5          = a recent utili
 attachments.identityEvidenceRequired.additionalBullet6          = a birth certificate
 
 # DOCUMENTS POST
-attachments.documentsPost.title                    = We need you to send the documents to the following HMRC address
-attachments.documentsPost.para                     = For us to be able to progress your VAT registration quickly we need you to send these documents as soon as you have submitted the application form.
-attachments.documentsPost.line1                    = VAT Registration Applications
-attachments.documentsPost.line2                    = BT VAT
-attachments.documentsPost.line3                    = HM Revenue and Customs
-attachments.documentsPost.postCode                 = BX9 1WR
-attachments.documentsPost.country                  = United Kingdom
+attachments.documentsPost.title                    = Posting your documents and forms
+attachments.documentsPost.para1                    = You need to post your documents and forms after you have submitted your VAT registration application online.
+
+attachments.uploadingDocument.subheading1                = Forms and identity documents
+attachments.documentsPost.forms.para1                    = Make sure you have all your forms and copies of your identity documents (links open in a new tab):
+attachments.documentsPost.forms.bullet1.vat2.link        = <a href="{0}">VAT2</a>
+attachments.documentsPost.forms.bullet1.vat2.text        =  - partnership details
+attachments.documentsPost.forms.bullet2.vat5l.link       = <a href="{0}">VAT5L</a>
+attachments.documentsPost.forms.bullet2.vat5l.text       =  - land and property supplies (you can also include any supporting documents)
+attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}">VAT 50/51</a>
+attachments.documentsPost.forms.bullet3.vat5051.text     =  - VAT group registration
+attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}">VAT1TR</a>
+attachments.documentsPost.forms.bullet4.vat1tr.text      =  - a non-established taxable person (NETP) looking to appoint a tax representative
+attachments.documentsPost.forms.bullet5.proof            = Your proof of identity
+attachments.documentsPost.forms.bullet6.evidence         = Your identity evidence
+
+attachments.documentsPost.identity.head            = What identity documents can I provide?
+attachments.documentsPost.identity.title1          = Proof of identity
+attachments.documentsPost.identity.para1           = We need a copy of one of the following:
+attachments.documentsPost.identity.bullet1         = your passport
+attachments.documentsPost.identity.bullet2         = your photocard driving licence
+attachments.documentsPost.identity.bullet3         = your national identity card
+attachments.documentsPost.identity.title2          = Other identity documents
+attachments.documentsPost.identity.para2           = We also need copies of any 2 of the following:
+attachments.documentsPost.identity.bullet4         = your birth certificate
+attachments.documentsPost.identity.bullet5         = a lease or rental agreement
+attachments.documentsPost.identity.bullet6         = your work permit or visa
+attachments.documentsPost.identity.bullet7         = a recent utility bill
+attachments.documentsPost.identity.bullet8         = a recent mortgage statement
+attachments.documentsPost.identity.bullet9         = a recent bank statement
+attachments.documentsPost.identity.bullet10        = a recent credit card statement
+attachments.documentsPost.identity.bullet11        = any documents from the Department for Work and Pensions that confirms your entitlement to benefits
+attachments.documentsPost.identity.para3           = Your documents should be dated within the last 3 months, where possible.
+attachments.documentsPost.identity.message         = Do not send original versions of your documents. You only need to send us copies.
+
+attachments.uploadingDocument.subheading2               = If you want to charge VAT on land or buildings
+attachments.documentsPost.land.para1                    = You may also need to send a:
+attachments.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.documentsPost.land.bullet1.vat1614a.text    = - to notify HMRC of your decision to opt to tax land and or buildings
+attachments.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.documentsPost.land.bullet2.vat1614h.text    = - if you want to opt to tax land and or buildings and need HMRC permission
+
+attachments.uploadingDocument.subheading3 = Supporting documents
+attachments.documentsPost.support.para    = You can also send <a href="{0}">supporting documents for your VAT5L</a>. If you send them now, it may reduce delays with your application.
+
+attachments.uploadingDocument.subheading4 = Cover page
+attachments.documentsPost.cover.text      = You need to include the cover page with your documents and forms. You''ll be able to print the page after you submit your application online.
+
+attachments.uploadingDocument.subheading5   = Postal address
+attachments.documentsPost.postal.line1      = VAT Registration Applications
+attachments.documentsPost.postal.line2      = BT VAT
+attachments.documentsPost.postal.line3      = HM Revenue and Customs
+attachments.documentsPost.postal.postCode   = BX9 1WR
+attachments.documentsPost.postal.country    = United Kingdom
+
+# VAT2 DOCUMENTS POST
+attachments.vat2.documentsPost.title                     = Posting your document
+attachments.vat2.documentsPost.para1                     = After you have submitted your registration application online, you need to post us:
+attachments.vat2.documentsPost.forms.bullet1.vat2.text        = completed
+attachments.vat2.documentsPost.forms.bullet1.vat2.link        = VAT2 form
+attachments.vat2.documentsPost.forms.bullet2.identity         = a copy of your proof of identity
+attachments.vat2.documentsPost.forms.bullet3.evidence         = copies of your identity evidence
+attachments.vat2.documentsPost.forms.inset.text               = You also need to send the auto-generated HMRC cover letter with your documents. You can only print this off after you have submitted your online VAT application.
+
+# VAT5L DOCUMENTS POST
+attachments.vat5l.documentsPost.title                     = Posting your document
+attachments.vat5l.documentsPost.para1                     = After you have submitted your registration application online, you need to post us:
+attachments.vat5l.documentsPost.forms.bullet1.vat5.text        = completed
+attachments.vat5l.documentsPost.forms.bullet1.vat5.link        = VAT5L form
+attachments.vat5l.documentsPost.forms.bullet2.identity         = a copy of your proof of identity
+attachments.vat5l.documentsPost.forms.bullet3.evidence         = copies of your identity evidence
+attachments.vat5l.documentsPost.forms.inset.text               = You also need to send the auto-generated HMRC cover letter with your documents. You can only print this off after you have submitted your online VAT application.
+
+attachments.vat5l.documentsPost.land.para2                    = You may also need to send a completed:
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.text    = - to notify HMRC of your decision to opt to tax land or buildings
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.text    = - if you want to opt to tax land or buildings and need HMRC permission
+
+attachments.vat5l.uploadingDocument.subheading3 = Supporting documents
+attachments.vat5l.documentsPost.support.para1   = You can also send any supporting documents for your VAT5L. Supporting documents are optional. However, sending them now may save delays to your application if we decide we need to ask for them later.
+attachments.vat5l.documentsPost.support.link    = Find out more about supporting documents for your VAT5L
 
 # UPLOADING DOCUMENT
 attachments.uploadingDocument.heading              = Uploading the document

@@ -1,0 +1,108 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components._
+
+@this(
+    layout: layouts.layout,
+    h1: components.h1,
+    h2: components.h2,
+    h3: components.h3,
+    p: components.p,
+    details: details,
+    bullets: components.bullets,
+    bulletsHtml: bulletsHtml,
+    identityDocuments: identityDocuments,
+    postalAddress: postalAddress,
+    govukInsetText: GovukInsetText,
+    warningText: components.warningText,
+    panelIndent: components.panelIndent,
+    link: components.link,
+    saveProgressButton: components.saveProgressButton
+)
+
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@layout(pageTitle = Some(titleNoForm(messages("attachments.vat5l.documentsPost.title")))) {
+
+    @h1("attachments.vat5l.documentsPost.title")
+
+    @p { @messages("attachments.vat5l.documentsPost.para1") }
+
+    @bulletsHtml(List(
+        vat5LBlock,
+        identityBlock,
+        evidenceBlock
+    ): _ *)
+
+    @identityDocuments()
+
+    @p { @messages("attachments.vat5l.documentsPost.land.para2") }
+
+    @bulletsHtml(List(
+        vat1614ABlock,
+        vat1614HBlock
+    ): _ *)
+
+    @h2("attachments.vat5l.uploadingDocument.subheading3")
+
+    @p { @messages("attachments.vat5l.documentsPost.support.para1") }
+
+    @link(appConfig.vat5LGuidanceLink, "attachments.vat5l.documentsPost.support.link", isExternal = true)
+
+    @govukInsetText(InsetText(
+        content = HtmlContent(messages("attachments.vat5l.documentsPost.forms.inset.text"))
+    ))
+
+    @postalAddress()
+
+    <div class="govuk-button-group">
+        @link(
+        link = controllers.routes.TaskListController.show.url,
+        messageKey = "app.common.continueNoSave",
+        isButton = true
+        )
+    </div>
+}
+
+@vat2Block = {
+    @Html(messages("attachments.documentsPost.forms.bullet1.vat2.link", appConfig.vat2Link))
+    @messages("attachments.documentsPost.forms.bullet1.vat2.text")
+}
+
+@vat5LBlock = {
+    @Html(messages("attachments.vat5l.documentsPost.forms.bullet1.vat5.link", appConfig.vat5LLink))
+    @messages("attachments.vat5l.documentsPost.forms.bullet1.vat5.text")
+}
+
+@identityBlock = {
+    @messages("attachments.vat5l.documentsPost.forms.bullet2.identity")
+}
+
+@evidenceBlock = {
+    @messages("attachments.vat5l.documentsPost.forms.bullet3.evidence")
+}
+
+@vat1614ABlock = {
+    @Html(messages("attachments.vat5l.documentsPost.land.bullet1.vat1614a.link", appConfig.vat1614ALink))
+    @messages("attachments.vat5l.documentsPost.land.bullet1.vat1614a.text")
+}
+
+@vat1614HBlock = {
+    @Html(messages("attachments.vat5l.documentsPost.land.bullet2.vat1614h.link", appConfig.vat1614HLink))
+    @messages("attachments.vat5l.documentsPost.land.bullet2.vat1614h.text")
+}

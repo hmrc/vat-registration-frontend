@@ -1513,13 +1513,88 @@ attachments.identityEvidenceRequired.additionalBullet5          = bil cyfleustod
 attachments.identityEvidenceRequired.additionalBullet6          = tystysgrif geni
 
 # DOCUMENTS POST
-attachments.documentsPost.title                    = Mae angen i chi anfon y dogfennau i’r cyfeiriad CThEM canlynol
-attachments.documentsPost.para                     = Er mwyn i ni allu bwrw ymlaen yn gyflym â’ch cofrestriad TAW, mae angen i chi anfon y dogfennau hyn atom cyn gynted ag y byddwch wedi cyflwyno’r ffurflen gais.
-attachments.documentsPost.line1                    = Ceisiadau am Gofrestriad TAW / VAT Registration Applications
-attachments.documentsPost.line2                    = BT VAT
-attachments.documentsPost.line3                    = HM Revenue and Customs
-attachments.documentsPost.postCode                 = BX9 1WR
-attachments.documentsPost.country                  = United Kingdom
+attachments.documentsPost.title                    = Anfon eich dogfennau a’ch ffurflenni drwy’r post
+attachments.documentsPost.para1                    = Mae angen i chi anfon eich dogfennau a’ch ffurflenni drwy’r post ar ôl i chi gyflwyno’ch cais i gofrestru ar gyfer TAW ar-lein.
+
+attachments.uploadingDocument.subheading1                = Ffurflenni a dogfennau adnabod
+attachments.documentsPost.forms.para1                    = Gwnewch yn siŵr bod gennych eich holl ffurflenni a chopïau o’ch dogfennau adnabod (cysylltiad yn agor tab newydd):
+attachments.documentsPost.forms.bullet1.vat2.link        = <a href="{0}">VAT2</a>
+attachments.documentsPost.forms.bullet1.vat2.text        =  - manylion y bartneriaeth
+attachments.documentsPost.forms.bullet2.vat5l.link       = <a href="{0}">VAT5L</a>
+attachments.documentsPost.forms.bullet2.vat5l.text       =  - cyflenwadau tir ac eiddo (gallwch hefyd gynnwys unrhyw ddogfennau ategol)
+attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}">VAT 50/51</a>
+attachments.documentsPost.forms.bullet3.vat5051.text     =  - cofrestru grŵp TAW
+attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}">VAT1TR</a>
+attachments.documentsPost.forms.bullet4.vat1tr.text      =  - person sy’n agored i TAW, ond sydd heb ei sefydlu yn y DU (NETP) sydd am benodi cynrychiolydd treth
+attachments.documentsPost.forms.bullet5.proof            = Eich prawf o hunaniaeth
+attachments.documentsPost.forms.bullet6.evidence         = Eich tystiolaeth hunaniaeth
+
+attachments.documentsPost.identity.head            = Pa ddogfennau adnabod allaf eu darparu?
+attachments.documentsPost.identity.title1          = Dogfennau i brofi pwy ydych
+attachments.documentsPost.identity.para1           = Mae angen copi o un o’r canlynol arnom:
+attachments.documentsPost.identity.bullet1         = eich pasbort
+attachments.documentsPost.identity.bullet2         = eich trwydded yrru cerdyn-llun
+attachments.documentsPost.identity.bullet3         = eich cerdyn adnabod cenedlaethol
+attachments.documentsPost.identity.title2          = Dogfennau adnabod eraill
+attachments.documentsPost.identity.para2           = Mae hefyd angen copi o unrhyw 2 o’r canlynol arnom:
+attachments.documentsPost.identity.bullet4         = eich tystysgrif geni
+attachments.documentsPost.identity.bullet5         = cytundeb tenantiaeth neu brydles
+attachments.documentsPost.identity.bullet6         = eich trwydded waith neu’ch fisa
+attachments.documentsPost.identity.bullet7         = bil cyfleustodau diweddar
+attachments.documentsPost.identity.bullet8         = datganiad morgais diweddar
+attachments.documentsPost.identity.bullet9         = cyfriflen banc ddiweddar
+attachments.documentsPost.identity.bullet10        = datganiad cerdyn credyd diweddar
+attachments.documentsPost.identity.bullet11        = unrhyw ddogfennau gan yr Adran Gwaith a Phensiynau sy’n cadarnhau’ch hawl i fudd-daliadau
+attachments.documentsPost.identity.para3           = Dylai’ch dogfennau fod wedi’u dyddio o fewn y 3 mis diwethaf, lle bo hynny’n bosibl.
+attachments.documentsPost.identity.message         = Peidiwch ag anfon fersiynau gwreiddiol eich dogfennau. Bydd anfon copïau yn gwneud y tro.
+
+attachments.uploadingDocument.subheading2               = Os ydych am godi TAW ar dir neu adeiladau
+attachments.documentsPost.land.para1                    = Efallai y bydd angen i chi anfon y canlynol hefyd:
+attachments.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.documentsPost.land.bullet1.vat1614a.text    = - i roi gwybod i CThEF am eich penderfyniad i optio i drethu tir neu adeiladau
+attachments.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.documentsPost.land.bullet2.vat1614h.text    = - os ydych am optio i drethu tir neu adeiladau a bod angen caniatâd CThEF arnoch
+
+attachments.uploadingDocument.subheading3 = Dogfennau ategol
+attachments.documentsPost.support.para    = Gallwch hefyd anfon dogfennau <a href="{0}">ategol ar gyfer eich VAT5L</a>. Gallai anfon y dogfennau hyn nawr leihau oedi wrth brosesu’ch cais.
+
+attachments.uploadingDocument.subheading4 = Tudalen glawr
+attachments.documentsPost.cover.text      = Mae angen i chi hefyd gynnwys tudalen glawr gyda’ch dogfennau a’ch ffurflenni. Byddwch yn gallu argraffu’r dudalen ar ôl i chi gyflwyno’ch cais ar-lein.
+
+attachments.uploadingDocument.subheading5   = Cyfeiriad post
+attachments.documentsPost.postal.line1      = VAT Registration Applications
+attachments.documentsPost.postal.line2      = BT VAT
+attachments.documentsPost.postal.line3      = HM Revenue and Customs
+attachments.documentsPost.postal.postCode   = BX9 1WR
+attachments.documentsPost.postal.country    = United Kingdom
+
+# VAT2 DOCUMENTS POST
+attachments.vat2.documentsPost.title                     = Anfon eich dogfen
+attachments.vat2.documentsPost.para1                     = Ar ôl i chi gyflwyno’ch cais cofrestru ar-lein, mae angen i chi anfon y canlynol atom:
+attachments.vat2.documentsPost.forms.bullet1.vat2.text        = wedi’i chwblhau
+attachments.vat2.documentsPost.forms.bullet1.vat2.link        = VAT2 ffurf
+attachments.vat2.documentsPost.forms.bullet2.identity         = copi o’ch prawf hunaniaeth
+attachments.vat2.documentsPost.forms.bullet3.evidence         = copïau o’ch tystiolaeth hunaniaeth
+attachments.vat2.documentsPost.forms.inset.text               = Bydd angen i chi anfon y llythyr eglurhaol a gynhyrchwyd yn awtomatig gan CThEF gyda’ch dogfennau. Dim ond ar ôl i chi gyflwyno’ch cais ar-lein ar gyfer TAW y gallwch argraffu’r llythyr eglurhaol hwn.
+
+# VAT5L DOCUMENTS POST
+attachments.vat5l.documentsPost.title                     = Anfon eich dogfen
+attachments.vat5l.documentsPost.para1                     = Ar ôl i chi gyflwyno’ch cais cofrestru ar-lein, mae angen i chi anfon y canlynol atom:
+attachments.vat5l.documentsPost.forms.bullet1.vat5.text        = wedi’i chwblhau
+attachments.vat5l.documentsPost.forms.bullet1.vat5.link        = VAT5L ffurf
+attachments.vat5l.documentsPost.forms.bullet2.identity         = copi o brawf o hunaniaeth
+attachments.vat5l.documentsPost.forms.bullet3.evidence         = copïau o dystiolaeth hunaniaeth
+attachments.vat5l.documentsPost.forms.inset.text               = Bydd angen i chi anfon y llythyr eglurhaol a gynhyrchwyd yn awtomatig gan CThEF gyda’ch dogfennau. Dim ond ar ôl i chi gyflwyno’ch cais ar-lein ar gyfer TAW y gallwch argraffu’r llythyr eglurhaol hwn.
+
+attachments.vat5l.documentsPost.land.para2                    = Efallai y bydd angen i chi anfon y canlynol hefyd:
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.text    = - wedi’i gwblhau er mwyn rhoi gwybod i CThEF am eich penderfyniad i optio i drethu tir neu adeiladau
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.text    = - wedi’i gwblhau os ydych am optio i drethu tir neu adeiladau a bod angen caniatâd CThEF arnoch
+
+attachments.vat5l.uploadingDocument.subheading3 = Dogfennau ategol
+attachments.vat5l.documentsPost.support.para1   = Gallwch hefyd anfon unrhyw ddogfennau ategol ar gyfer eich VAT5L. Mae dogfennau ategol yn ddewisol. Fodd bynnag, gall eu hanfon nawr osgoi oedi os gofynnwn amdanynt yn nes ymlaen wrth brosesu’ch cais.
+attachments.vat5l.documentsPost.support.link    = Dysgwch ragor am ddogfennau ategol ar gyfer eich VAT5L
 
 # UPLOADING DOCUMENT
 attachments.uploadingDocument.heading                        = Uwchlwytho’r ddogfen
@@ -2057,3 +2132,12 @@ partnerEmail.link                              = Hysbysiad Preifatrwydd CThEM
 partnerEmail.error.incorrect_format            = Nodwch y cyfeiriad e-bost yn y fformat cywir, fel enw@enghraifft.com
 partnerEmail.error.nothing_entered             = Nodwch y cyfeiriad e-bost
 partnerEmail.error.incorrect_length            = Mae’n rhaid i’r cyfeiriad e-bost fod yn 132 o gymeriadau neu lai
+
+# POSTAL CONFIRMATION
+attachments.postalConfirmation.title                              = Anfon eich dogfennau a’ch ffurflenni ychwanegol drwy’r post
+attachments.postalConfirmation.para                               = Fel arfer, bydd uwchlwytho’ch dogfennau a’ch ffurflenni, yn lle eu hanfon drwy’r post, yn golygu ein bod yn gallu prosesu’ch cais yn gyflymach.
+attachments.postalConfirmation.warning                            = Os ydych am eu hanfon drwy’r post o hyd, bydd yn rhaid i chi wneud hyn ar ôl i chi gyflwyno’ch cais i gofrestru ar gyfer TAW. Unwaith i chi wneud hynny byddwn yn gwneud llythyr eglurhaol, a bydd yn rhaid i chi anfon y llythyr hwn gyda’ch dogfennau a’ch ffurflenni.
+attachments.postalConfirmation.para2                              = A ydych am anfon eich dogfennau a’ch ffurflenni ychwanegol drwy’r post o hyd?
+attachments.postalConfirmation.bullet1                            = Iawn
+attachments.postalConfirmation.bullet2                            = Na, hoffwn eu huwchlwytho
+attachments.postalConfirmation.noText                             = Na, hoffwn eu huwchlwytho

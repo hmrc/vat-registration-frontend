@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,100 @@
 package controllers.attachments
 
 import itutil.ControllerISpec
+import models.api._
+import play.api.http.HeaderNames
 import play.api.test.Helpers._
 
 class DocumentsPostControllerISpec extends ControllerISpec {
 
-  val showUrl: String = routes.DocumentsPostController.show.url
+  val showUrl: String =
+    controllers.attachments.routes.DocumentsPostController.show.url
+
+  val vat2Url: String =
+    controllers.attachments.routes.Vat2DocumentsPostController.show.url
+
+  val vat5LUrl: String =
+    controllers.attachments.routes.Vat5LDocumentsPostController.show.url
+
+  val testVat2Attachments: List[AttachmentType] =
+    List(VAT2)
+
+  val testVat5LAttachments: List[AttachmentType] =
+    List(VAT5L)
+
+  val testBothAttachments: List[AttachmentType] =
+    List(VAT2, VAT5L)
+
+  val testOtherAttachments: List[AttachmentType] =
+    List(IdentityEvidence, TaxRepresentativeAuthorisation, OtherAttachments)
+
+  val testEmptyAttachments: List[AttachmentType] =
+    List.empty
 
   s"GET $showUrl" must {
-    "return an OK" in {
+
+    "redirect to VAT2 documents page when VAT2 is present" in {
       given()
         .user.isAuthorised()
+        .attachmentsApi.getAttachments(testVat2Attachments)
+
+      val res = buildClient(showUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(vat2Url)
+      }
+    }
+
+    "redirect to VAT5L documents page when VAT5L is present" in {
+      given()
+        .user.isAuthorised()
+        .attachmentsApi.getAttachments(testVat5LAttachments)
+
+      val res = buildClient(showUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(vat5LUrl)
+      }
+    }
+
+    "redirect to VAT2 when both VAT2 and VAT5L are present" in {
+      given()
+        .user.isAuthorised()
+        .attachmentsApi.getAttachments(testBothAttachments)
+
+      val res = buildClient(showUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) mustBe Some(vat2Url)
+      }
+    }
+
+    "display the standard documents post page when neither VAT2 nor VAT5L is present" in {
+      given()
+        .user.isAuthorised()
+        .attachmentsApi.getAttachments(testOtherAttachments)
 
       val res = buildClient(showUrl).get()
 
       whenReady(res) { result =>
         result.status mustBe OK
+        result.body must include("Posting your documents and forms")
+      }
+    }
+
+    "display the standard documents post page when the attachment list is empty" in {
+      given()
+        .user.isAuthorised()
+        .attachmentsApi.getAttachments(testEmptyAttachments)
+
+      val res = buildClient(showUrl).get()
+
+      whenReady(res) { result =>
+        result.status mustBe OK
+        result.body must include("Posting your documents and forms")
       }
     }
   }

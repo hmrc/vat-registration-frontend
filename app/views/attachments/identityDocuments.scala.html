@@ -1,0 +1,71 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+
+@this(
+    h3: components.h3,
+    p: components.p,
+    bullets: components.bullets,
+    warningText: components.warningText,
+    details: details
+)
+
+@()(implicit messages: Messages)
+
+@detailsBlock = {
+    @h3("attachments.documentsPost.identity.title1")
+
+    @p {
+        @messages("attachments.documentsPost.identity.para1")
+    }
+
+    @bullets(
+        "attachments.documentsPost.identity.bullet1",
+        "attachments.documentsPost.identity.bullet2",
+        "attachments.documentsPost.identity.bullet3"
+    )
+
+    @h3("attachments.documentsPost.identity.title2")
+
+    @p {
+        @messages("attachments.documentsPost.identity.para2")
+    }
+
+    @bullets(
+        "attachments.documentsPost.identity.bullet4",
+        "attachments.documentsPost.identity.bullet5",
+        "attachments.documentsPost.identity.bullet6",
+        "attachments.documentsPost.identity.bullet7",
+        "attachments.documentsPost.identity.bullet8",
+        "attachments.documentsPost.identity.bullet9",
+        "attachments.documentsPost.identity.bullet10",
+        "attachments.documentsPost.identity.bullet11"
+    )
+
+    @p {
+        @messages("attachments.documentsPost.identity.para3")
+    }
+
+    @warningText {
+        @messages("attachments.documentsPost.identity.message")
+    }
+}
+
+@details(
+    summary = messages("attachments.documentsPost.identity.head"),
+    content = detailsBlock
+)

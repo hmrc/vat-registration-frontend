@@ -438,6 +438,8 @@ POST        /postal-confirmation                                      controller
 
 ## Documents Post Page
 GET         /post-documents                                           controllers.attachments.DocumentsPostController.show
+GET         /post-vat2-documents                                      controllers.attachments.Vat2DocumentsPostController.show
+GET         /post-vat5L-documents                                     controllers.attachments.Vat5LDocumentsPostController.show
 
 ## Documents Post Error
 GET         /post-documents-error                                     controllers.attachments.DocumentsPostErrorController.show
