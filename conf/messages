@@ -784,6 +784,7 @@ pages.application.submission.confirmation.list.software.post.agent.vatGroup     
 pages.application.submission.confirmation.list.software.post.individual          = Do not start using accounting software to manage your VAT records and file returns until VAT registration has been confirmed.
 pages.application.submission.confirmation.list.software.post.individual.vatGroup = A VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
 pages.application.submission.confirmation.list.software.digital.agent               = Do not start using accounting software to manage the business’s VAT records and file returns until VAT registration has been confirmed.
+pages.application.submission.confirmation.list.software.digital.agent.vatGroup      = A VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
 pages.application.submission.confirmation.list.software.digital.individual          = Do not start using accounting software to manage your VAT records and file returns until VAT registration has been confirmed.
 pages.application.submission.confirmation.list.software.digital.individual.vatGroup = A VAT group should not start using accounting software to manage Making Tax Digital for VAT records before VAT registration has been confirmed.
 

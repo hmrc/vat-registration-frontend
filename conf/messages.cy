@@ -784,6 +784,7 @@ pages.application.submission.confirmation.list.software.post.agent.vatGroup     
 pages.application.submission.confirmation.list.software.post.individual          = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli’ch cofnodion TAW na chyflwyno Ffurflenni TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.post.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.digital.agent               = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli cofnodion TAW y busnes na chyflwyno Ffurflenni TAW cyn i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.digital.agent.vatGroup      = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.digital.individual          = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli’ch cofnodion TAW na chyflwyno Ffurflenni TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.digital.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 
