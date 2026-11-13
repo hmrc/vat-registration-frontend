@@ -1253,6 +1253,9 @@ pages.frs.startDate.legend                                = Y dyddiad yr hoffai�
 validation.frs.startDate.invalid                          = Nodwch ddyddiad dilys
 validation.frs.startDate.choice.missing                   = Dewiswch pryd yr hoffai’r busnes ymuno â’r Cynllun Cyfradd Unffurf
 validation.frs.startDate.missing                          = Nodwch y dyddiad yr hoffai’r busnes ymuno â’r Cynllun Cyfradd Unffurf
+validation.frs.startDate.missing.day                      = Mae’n rhaid i’r dyddiad yr hoffai’r busnes ymuno â’r Cynllun Cyfradd Unffurf gynnwys diwrnod
+validation.frs.startDate.missing.month                    = Mae’n rhaid i’r dyddiad yr hoffai’r busnes ymuno â’r Cynllun Cyfradd Unffurf gynnwys mis
+validation.frs.startDate.missing.year                     = Mae’n rhaid i’r dyddiad yr hoffai’r busnes ymuno â’r Cynllun Cyfradd Unffurf gynnwys blwyddyn
 validation.frs.startDate.range.below.vatStartDate         = Nodwch ddyddiad sydd ar neu ar ôl y dyddiad y cofrestrodd y busnes ar gyfer TAW
 validation.frs.startDate.range.after.maxDate              = Mae’n rhaid i’r dyddiad ymuno fod o fewn y tri mis cyntaf ar ôl cofrestru ar gyfer TAW
 

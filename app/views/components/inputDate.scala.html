@@ -27,7 +27,12 @@
   includeDay: Boolean = true,
   attributesDay: Map[String, String] = Map.empty,
   attributesMonth: Map[String, String] = Map.empty,
-  attributesYear: Map[String, String] = Map.empty)(implicit messages: Messages)
+  attributesYear: Map[String, String] = Map.empty,
+  errorFields: Option[Set[String]] = None)(implicit messages: Messages)
+
+@hasError(part: String) = @{
+    errorFields.fold(form(id).hasErrors || form.errors.exists(_.key.isEmpty))(_.contains(part))
+}
 
 @govukDateInput(DateInput(
     fieldset = Some(Fieldset(
@@ -44,7 +49,7 @@
         if (includeDay) {
             Some(InputItem(
                 id = s"$id.day",
-                classes = s"govuk-input--width-2${if(form(id).hasErrors || form.errors.exists(_.key.isEmpty)) " govuk-input--error" else ""}",
+                classes = s"govuk-input--width-2${if(hasError("day")) " govuk-input--error" else ""}",
                 name =  s"$id.day",
                 label = Some(messages("date.day")),
                 value = form(s"$id.day").value,
@@ -56,7 +61,7 @@
     }.toSeq ++ Seq(
         InputItem(
             id = s"$id.month",
-            classes = s"govuk-input--width-2${if(form(id).hasErrors || form.errors.exists(_.key.isEmpty)) " govuk-input--error" else ""}",
+            classes = s"govuk-input--width-2${if(hasError("month")) " govuk-input--error" else ""}",
             name = s"$id.month",
             label = Some(messages("date.month")),
             value = form(s"$id.month").value,
@@ -64,7 +69,7 @@
         ),
         InputItem(
             id = s"$id.year",
-            classes = s"govuk-input--width-4${if(form(id).hasErrors || form.errors.exists(_.key.isEmpty)) " govuk-input--error" else ""}",
+            classes = s"govuk-input--width-4${if(hasError("year")) " govuk-input--error" else ""}",
             name = s"$id.year",
             label = Some(messages("date.year")),
             value = form(s"$id.year").value,

@@ -20,6 +20,7 @@ import forms.FormValidation._
 import models.FRSDateChoice
 import play.api.data.Forms._
 import play.api.data.format.Formatter
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{Form, FormError, Forms}
 import uk.gov.voa.play.form.ConditionalMappings.{isEqual, mandatoryIf}
 
@@ -58,6 +59,18 @@ object FRSStartDateForm {
   private val frsStartDateRadio: String = "frsStartDateRadio"
   private val frsStartDateInput: String = "frsStartDate"
 
+  private val requiredDate: Constraint[(String, String, String)] = Constraint { date =>
+    val parts = Seq("day" -> date._1, "month" -> date._2, "year" -> date._3)
+    if (parts.forall(_._2.trim.isEmpty)) {
+      Invalid(dateEmptyKey)
+    } else {
+      parts.find(_._2.trim.isEmpty) match {
+        case Some((part, _)) => Invalid(s"$dateEmptyKey.$part")
+        case None => Valid
+      }
+    }
+  }
+
   implicit val specificErrorCode: String = "frs.startDate"
 
   implicit def formatter: Formatter[FRSDateChoice.Value] = new Formatter[FRSDateChoice.Value] {
@@ -80,7 +93,7 @@ object FRSStartDateForm {
       frsStartDateInput -> mandatoryIf(
         isEqual(frsStartDateRadio, FRSDateChoice.DifferentDate),
         tuple("day" -> text, "month" -> text, "year" -> text).verifying(stopOnFail(
-          nonEmptyDate(dateEmptyKey),
+          requiredDate,
           validDate(dateInvalidKey),
           withinRange(minDate, maxDate, dateBeforeVatStartDate, dateAfterMaxKey, List(frsStartDateInput))
         )).transform[LocalDate] ({

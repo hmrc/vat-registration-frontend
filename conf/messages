@@ -1254,6 +1254,9 @@ pages.frs.startDate.legend                                = Date the business wa
 validation.frs.startDate.invalid                          = Enter a valid date
 validation.frs.startDate.choice.missing                   = Select when the business wants to join the Flat Rate Scheme
 validation.frs.startDate.missing                          = Enter the date when the business wants to join the Flat Rate Scheme
+validation.frs.startDate.missing.day                      = The date when the business wants to join the Flat Rate Scheme must include a day
+validation.frs.startDate.missing.month                    = The date when the business wants to join the Flat Rate Scheme must include a month
+validation.frs.startDate.missing.year                     = The date when the business wants to join the Flat Rate Scheme must include a year
 validation.frs.startDate.range.below.vatStartDate         = Enter a date that is on or after the date the business’s registered for VAT
 validation.frs.startDate.range.after.maxDate              = The joining date must be within the first three months of VAT registration
 
