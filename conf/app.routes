@@ -454,6 +454,9 @@ GET       /attachment-error/:attachmentType                           controller
 ## Postal Cover Sheet Page
 GET         /postal-cover-sheet                                       controllers.attachments.PostalCoverSheetController.show
 
+## Cover Letter Preview Page
+GET         /cover-letter-preview                                     controllers.attachments.CoverLetterPreviewController.show
+
 ## Northern Ireland Receive Goods Page
 GET         /receive-goods-nip                                        controllers.vatapplication.ReceiveGoodsNipController.show
 POST        /receive-goods-nip                                        controllers.vatapplication.ReceiveGoodsNipController.submit
