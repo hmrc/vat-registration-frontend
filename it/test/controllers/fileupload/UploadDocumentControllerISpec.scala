@@ -16,6 +16,7 @@
 
 package controllers.fileupload
 
+import com.github.tomakehurst.wiremock.client.WireMock.{containing, matchingJsonPath, postRequestedFor, urlPathEqualTo, verify}
 import config.FrontendAppConfig
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import itutil.ControllerISpec
@@ -62,6 +63,33 @@ class UploadDocumentControllerISpec extends ControllerISpec {
       doc.select("h1").text mustBe "Upload a VAT2"
       doc.select(".govuk-drop-zone").size mustBe 0
       doc.select("#file-upload-button").text mustBe "Continue"
+    }
+
+    "send VAT5L uploads to the uploading VAT5L document page when VrsNewAttachmentJourney is enabled" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      verifyDocumentUploadPage(url, VAT5L)
+
+      verify(postRequestedFor(urlPathEqualTo("/upscan/v2/initiate"))
+        .withRequestBody(matchingJsonPath("$.successRedirect", containing(routes.UploadingVat5LDocumentController.show.url))))
+    }
+
+    "send other uploads to the uploading document page when VrsNewAttachmentJourney is enabled" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      verifyDocumentUploadPage(url, VAT2)
+
+      verify(postRequestedFor(urlPathEqualTo("/upscan/v2/initiate"))
+        .withRequestBody(matchingJsonPath("$.successRedirect", containing(routes.UploadingDocumentController.show.url))))
+    }
+
+    "send VAT5L uploads to the uploading document page when VrsNewAttachmentJourney is disabled" in new Setup {
+      disable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      verifyDocumentUploadPage(url, VAT5L)
+
+      verify(postRequestedFor(urlPathEqualTo("/upscan/v2/initiate"))
+        .withRequestBody(matchingJsonPath("$.successRedirect", containing(routes.UploadingDocumentController.show.url))))
     }
 
     "return the new journey page with the VAT2 form link when VrsNewAttachmentJourney is enabled" in new Setup {

@@ -86,11 +86,11 @@ class UploadSummaryControllerISpec extends ControllerISpec {
         res.status mustBe OK
 
         val editLinkFailed = Jsoup.parse(res.body).select("a[href*=register-for-vat/attachment-error]").asScala
-        val editLinkSuccess = Jsoup.parse(res.body).select("a[href*=register-for-vat/attachment-details]").asScala
+        val editLinkVat5L = Jsoup.parse(res.body).select("a[href*=register-for-vat/uploaded-vat5l-documents]").asScala
         val allLinks = Jsoup.parse(res.body).select("a[href*=register-for-vat/file-upload/upload-document]").asScala
 
         editLinkFailed.map(_.childNode(0).toString).toList mustBe List("Edit")
-        editLinkSuccess.map(_.childNode(0).toString).toList mustBe List("Edit")
+        editLinkVat5L.map(_.childNode(0).toString).toList mustBe List("Edit")
 
         allLinks.map(_.childNode(0).toString.replaceAll(" ", "")).toList mustBe Seq(TransactorIdentityEvidence, IdentityEvidence, VAT51, TaxRepresentativeAuthorisation).map(_.toString)
       }

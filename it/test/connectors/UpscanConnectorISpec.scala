@@ -78,7 +78,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
         "minimumFileSize" -> 1,
         "maximumFileSize" -> 10485760)
 
-      val response = await(connector.upscanInitiate()(HeaderCarrier(sessionId = Some(SessionId(sessionString)))))
+      val response = await(connector.upscanInitiate(controllers.fileupload.routes.UploadingDocumentController.show.url, controllers.fileupload.routes.UploadDocumentController.show.url)(HeaderCarrier(sessionId = Some(SessionId(sessionString)))))
 
       verify(postRequestedFor(urlEqualTo("/register-for-vat/test-only/upscan/initiate")).withRequestBody(equalToJson(requestBody.toString)))
       response mustBe testUpscanResponse
@@ -93,7 +93,7 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
         "minimumFileSize" -> 1,
         "maximumFileSize" -> 10485760)
 
-      val response = await(connector.upscanInitiate())
+      val response = await(connector.upscanInitiate(controllers.fileupload.routes.UploadingDocumentController.show.url, controllers.fileupload.routes.UploadDocumentController.show.url))
 
       verify(postRequestedFor(urlEqualTo(upscanInitiateUrl)).withRequestBody(equalToJson(requestBody.toString)))
       response mustBe testUpscanResponse
@@ -102,13 +102,13 @@ class UpscanConnectorISpec extends IntegrationSpecBase with AppAndStubs with ITR
     "return an exception if initiate gives an unexpected response" in {
       stubPost(upscanInitiateUrl, CREATED, testUpscanResponseJson.toString())
 
-      intercept[InternalServerException](await(connector.upscanInitiate()))
+      intercept[InternalServerException](await(connector.upscanInitiate(controllers.fileupload.routes.UploadingDocumentController.show.url, controllers.fileupload.routes.UploadDocumentController.show.url)))
     }
 
     "return an exception if initiate fails" in {
       stubPost(upscanInitiateUrl, INTERNAL_SERVER_ERROR, testUpscanResponseJson.toString())
 
-      intercept[InternalServerException](await(connector.upscanInitiate()))
+      intercept[InternalServerException](await(connector.upscanInitiate(controllers.fileupload.routes.UploadingDocumentController.show.url, controllers.fileupload.routes.UploadDocumentController.show.url)))
     }
   }
 

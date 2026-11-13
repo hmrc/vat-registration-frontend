@@ -20,7 +20,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
-import models.api.{ExtraIdentityEvidence, ExtraTransactorIdentityEvidence}
+import models.api.{ExtraIdentityEvidence, ExtraTransactorIdentityEvidence, VAT5L}
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
@@ -55,7 +55,10 @@ class UploadDocumentController @Inject()(view: UploadDocument,
           case Nil =>
             Future.successful(Redirect(controllers.routes.TaskListController.show.url))
           case incompleteAttachments @ attachmentType :: _ =>
-            upscanService.initiateUpscan(profile.registrationId, attachmentType).flatMap { upscanResponse =>
+            val successRedirectUrl =
+              if (isEnabled(VrsNewAttachmentJourney) && attachmentType == VAT5L) routes.UploadingVat5LDocumentController.show.url
+              else routes.UploadingDocumentController.show.url
+            upscanService.initiateUpscan(profile.registrationId, attachmentType, successRedirectUrl = successRedirectUrl).flatMap { upscanResponse =>
               val optErrorCode = request.getQueryString("errorCode")
               val page: Future[Html] = attachmentType match {
                 case ExtraIdentityEvidence | ExtraTransactorIdentityEvidence if isEnabled(VrsNewAttachmentJourney) =>
