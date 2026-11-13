@@ -325,7 +325,6 @@ class FrontendAppConfig @Inject()(val servicesConfig: ServicesConfig, runModeCon
   lazy val urBannerBaseUrl: String = servicesConfig.getString("urls.urBannerBase")
 
   def isTTMayJunJourneyEnabled: Boolean = isEnabled(SubmitDeadline)
-  def isNewVRSApplConfirmJourneyEnabled: Boolean = isEnabled(NewVRSApplConfirmJourney)
 
   lazy val bankHolidaysApiUrl: String = servicesConfig.getString("bank-holiday-api.url")
   lazy val mongoDbBankHolidayCacheExpireAfterMinutes: Duration = servicesConfig.getInt("mongodb.bankHolidayCache.timeToLiveInMinutes").minutes
