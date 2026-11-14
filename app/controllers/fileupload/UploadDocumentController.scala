@@ -20,13 +20,13 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
-import models.api.{ExtraIdentityEvidence, ExtraTransactorIdentityEvidence}
+import models.api.{ExtraIdentityEvidence, ExtraTransactorIdentityEvidence, PrimaryIdentityEvidence, PrimaryTransactorIdentityEvidence}
 import play.api.mvc.{Action, AnyContent}
 import play.twirl.api.Html
 import services.{AttachmentsService, SessionProfile, SessionService, UpscanService}
 import uk.gov.hmrc.auth.core.AuthConnector
 import viewmodels.UploadDocumentHintBuilder
-import views.html.fileupload.{UploadDocument, UploadDocumentNewJourney, UploadIdentityEvidence}
+import views.html.fileupload.{UploadDocument, UploadDocumentNewJourney, UploadIdentityEvidence, UploadProofOfIdentity}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,6 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UploadDocumentController @Inject()(view: UploadDocument,
                                          viewNewAttachmentJourney: UploadDocumentNewJourney,
                                          viewIdentityEvidence: UploadIdentityEvidence,
+                                         viewProofOfIdentity: UploadProofOfIdentity,
                                          upscanService: UpscanService,
                                          attachmentsService: AttachmentsService,
                                          uploadDocumentHint: UploadDocumentHintBuilder,
@@ -54,14 +55,17 @@ class UploadDocumentController @Inject()(view: UploadDocument,
         attachmentsService.getIncompleteAttachments(profile.registrationId).flatMap {
           case Nil =>
             Future.successful(Redirect(controllers.routes.TaskListController.show.url))
+          case (PrimaryIdentityEvidence | PrimaryTransactorIdentityEvidence) :: _ if isEnabled(VrsNewAttachmentJourney) =>
+            val errorCodeQuery = request.getQueryString("errorCode").map("errorCode" -> Seq(_)).toMap
+            Future.successful(Redirect(routes.UploadDocumentController.showProofOfIdentity.url, errorCodeQuery))
           case incompleteAttachments @ attachmentType :: _ =>
             upscanService.initiateUpscan(profile.registrationId, attachmentType).flatMap { upscanResponse =>
               val optErrorCode = request.getQueryString("errorCode")
               val page: Future[Html] = attachmentType match {
                 case ExtraIdentityEvidence | ExtraTransactorIdentityEvidence if isEnabled(VrsNewAttachmentJourney) =>
                   val uploadedCount = extraIdentityEvidenceRequired - incompleteAttachments.count(_ == attachmentType)
-                  uploadDocumentHint.identityEvidenceName(attachmentType).map { optName =>
-                    viewIdentityEvidence(upscanResponse, optName, uploadedCount, optErrorCode)
+                  uploadDocumentHint.identityEvidencePerson(attachmentType).map { optPerson =>
+                    viewIdentityEvidence(upscanResponse, optPerson.map(_.fullName), uploadedCount, optErrorCode)
                   }
                 case _ =>
                   uploadDocumentHint.build(attachmentType).map { hintHtml =>
@@ -71,6 +75,21 @@ class UploadDocumentController @Inject()(view: UploadDocument,
               }
               page.map(Ok(_).addingToSession("reference" -> upscanResponse.reference))
             }
+        }
+  }
+
+  def showProofOfIdentity(): Action[AnyContent] = isAuthenticatedWithProfile {
+    implicit request =>
+      implicit profile =>
+        attachmentsService.getIncompleteAttachments(profile.registrationId).flatMap {
+          case (attachmentType @ (PrimaryIdentityEvidence | PrimaryTransactorIdentityEvidence)) :: _ if isEnabled(VrsNewAttachmentJourney) =>
+            for {
+              upscanResponse <- upscanService.initiateUpscan(profile.registrationId, attachmentType)
+              optPerson <- uploadDocumentHint.identityEvidencePerson(attachmentType)
+            } yield Ok(viewProofOfIdentity(upscanResponse, optPerson, request.getQueryString("errorCode")))
+              .addingToSession("reference" -> upscanResponse.reference)
+          case _ =>
+            Future.successful(Redirect(routes.UploadDocumentController.show))
         }
   }
 }

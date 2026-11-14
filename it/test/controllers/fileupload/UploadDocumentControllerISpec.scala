@@ -33,6 +33,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
 
   implicit val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   val url: String = controllers.fileupload.routes.UploadDocumentController.show.url
+  val proofOfIdentityUrl: String = controllers.fileupload.routes.UploadDocumentController.showProofOfIdentity.url
 
   val testReference = "testReference"
   implicit val applicantDetailsFormat: Format[ApplicantDetails] = ApplicantDetails.apiFormat(UkCompany)
@@ -44,11 +45,13 @@ class UploadDocumentControllerISpec extends ControllerISpec {
 
   s"GET $url" must {
     "return an OK when there's an incomplete attachment" in new Setup {
+      disable(VrsNewAttachmentJourney)
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       verifyDocumentUploadPage(url)
     }
 
     "return an OK when there's an incomplete attachment and has an errorCode" in new Setup {
+      disable(VrsNewAttachmentJourney)
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       verifyDocumentUploadPage(s"$url?errorCode=EntityTooLarge")
     }
@@ -152,15 +155,86 @@ class UploadDocumentControllerISpec extends ControllerISpec {
       doc.select("p[aria-live=polite]").size mustBe 0
     }
 
-    "return the old style page for primary identity evidence when VrsNewAttachmentJourney is enabled" in new Setup {
+    "return the proof of identity page with the applicant name when VrsNewAttachmentJourney is enabled" in new Setup {
       enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = verifyIdentityEvidencePage(List(PrimaryIdentityEvidence, ExtraIdentityEvidence, ExtraIdentityEvidence), proofOfIdentityUrl) {
+        _.registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+      }
+      val doc = Jsoup.parse(res.body)
+
+      doc.title mustBe "Upload proof of identity - Register for VAT - GOV.UK"
+      doc.select("h1").text mustBe "Upload testFirstName testLastName’s proof of identity"
+      doc.select("main form > p").text mustBe "This must be a copy of either testFirstName testLastName’s passport, driving licence photocard or national identity card."
+      doc.select(".govuk-drop-zone").size mustBe 1
+      doc.select("p[aria-live=polite]").size mustBe 0
+      doc.select("#file-upload-button").text mustBe "Upload"
+    }
+
+    "return the proof of identity page with the transactor name when VrsNewAttachmentJourney is enabled" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = verifyIdentityEvidencePage(List(PrimaryTransactorIdentityEvidence, PrimaryIdentityEvidence), proofOfIdentityUrl) {
+        _.registrationApi.getSection[TransactorDetails](Some(validTransactorDetails.copy(personalDetails = validTransactorDetails.personalDetails.map(_.copy(firstName = "Tara", lastName = "Transactor")))))
+      }
+      val doc = Jsoup.parse(res.body)
+
+      doc.select("h1").text mustBe "Upload Tara Transactor’s proof of identity"
+      doc.select("main form > p").text mustBe "This must be a copy of either Tara Transactor’s passport, driving licence photocard or national identity card."
+    }
+
+    "return the proof of identity page with the nameless heading when the applicant has no details and VrsNewAttachmentJourney is enabled" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = verifyIdentityEvidencePage(List(PrimaryIdentityEvidence), proofOfIdentityUrl)(_.registrationApi.getSection[ApplicantDetails](None))
+      val doc = Jsoup.parse(res.body)
+
+      doc.select("h1").text mustBe "Upload proof of identity"
+      doc.select("main form > p").size mustBe 0
+      doc.select(".govuk-drop-zone").size mustBe 1
+    }
+
+    "show the upscan error on the proof of identity page when VrsNewAttachmentJourney is enabled and there is an errorCode" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = verifyIdentityEvidencePage(List(PrimaryIdentityEvidence), s"$proofOfIdentityUrl?errorCode=EntityTooSmall") {
+        _.registrationApi.getSection[ApplicantDetails](Some(validFullApplicantDetails))
+      }
+      val doc = Jsoup.parse(res.body)
+
+      doc.select(".govuk-error-summary a").text mustBe "The selected file is empty"
+      doc.select(".govuk-error-summary a").attr("href") mustBe "#file-upload-1"
+      doc.select(".govuk-error-message").text mustBe "Error: The selected file is empty"
+    }
+
+    "return the old journey page for primary identity evidence when VrsNewAttachmentJourney is disabled" in new Setup {
+      disable(VrsNewAttachmentJourney)
       insertCurrentProfileIntoDb(currentProfile, sessionString)
       val res: WSResponse = verifyDocumentUploadPage(url, PrimaryIdentityEvidence)
       val doc = Jsoup.parse(res.body)
 
       doc.select("h1").text mustBe "Upload a document"
+      doc.select("main .govuk-inset-text").text must include("This must be a passport, photocard drivers licence or a national identity card.")
       doc.select(".govuk-drop-zone").size mustBe 0
-      doc.select("p[aria-live=polite]").size mustBe 0
+      doc.select("#file-upload-button").text mustBe "Continue"
+    }
+
+    "redirect to the proof of identity page without initiating upscan when proof of identity is next and VrsNewAttachmentJourney is enabled" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = getWithIncomplete(url, List(PrimaryIdentityEvidence, ExtraIdentityEvidence, ExtraIdentityEvidence))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/file-upload/proof-identity")
+    }
+
+    "carry the upscan errorCode, and nothing else, across the redirect to the proof of identity page" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = getWithIncomplete(s"$url?errorCode=EntityTooLarge&errorMessage=ignored", List(PrimaryTransactorIdentityEvidence))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some("/register-for-vat/file-upload/proof-identity?errorCode=EntityTooLarge")
     }
 
     "redirect to task list page when all attachments are complete" in new Setup {
@@ -179,6 +253,46 @@ class UploadDocumentControllerISpec extends ControllerISpec {
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
       }
     }
+  }
+
+  s"GET $proofOfIdentityUrl" must {
+    "redirect to the upload document page when a different attachment is next" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = getWithIncomplete(proofOfIdentityUrl, List(ExtraIdentityEvidence, PrimaryTransactorIdentityEvidence))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(url)
+    }
+
+    "redirect to the upload document page when VrsNewAttachmentJourney is disabled" in new Setup {
+      disable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = getWithIncomplete(proofOfIdentityUrl, List(PrimaryIdentityEvidence))
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(url)
+    }
+
+    "redirect to the upload document page when all attachments are complete" in new Setup {
+      enable(VrsNewAttachmentJourney)
+      insertCurrentProfileIntoDb(currentProfile, sessionString)
+      val res: WSResponse = getWithIncomplete(proofOfIdentityUrl, Nil)
+
+      res.status mustBe SEE_OTHER
+      res.header(HeaderNames.LOCATION) mustBe Some(url)
+    }
+  }
+
+  // Stubs neither upscan nor the registration API, so a response other than a redirect means one of them was called
+  private def getWithIncomplete(requestUrl: String, incomplete: List[AttachmentType]): WSResponse = {
+    given()
+      .user.isAuthorised()
+      .audit.writesAudit()
+      .audit.writesAuditMerged()
+      .attachmentsApi.getIncompleteAttachments(incomplete)
+
+    await(buildClient(requestUrl).get())
   }
 
   private def verifyIdentityEvidencePage(incomplete: List[AttachmentType], requestUrl: String = url)

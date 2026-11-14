@@ -17,7 +17,7 @@
 package viewmodels
 
 import config.FrontendAppConfig
-import models.CurrentProfile
+import models.{CurrentProfile, PersonalDetails}
 import models.api._
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -90,11 +90,13 @@ class UploadDocumentHintBuilder @Inject()(applicantDetailsService: ApplicantDeta
     }
   }
 
-  def identityEvidenceName(attachmentType: AttachmentType)(
+  def identityEvidencePerson(attachmentType: AttachmentType)(
     implicit hc: HeaderCarrier, cp: CurrentProfile, ec: ExecutionContext, request: Request[_]
-  ): Future[Option[String]] = attachmentType match {
-    case ExtraIdentityEvidence => applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
-    case ExtraTransactorIdentityEvidence => transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
+  ): Future[Option[PersonalDetails]] = attachmentType match {
+    case PrimaryIdentityEvidence | ExtraIdentityEvidence =>
+      applicantDetailsService.getApplicantDetails.map(_.personalDetails)
+    case PrimaryTransactorIdentityEvidence | ExtraTransactorIdentityEvidence =>
+      transactorDetailsService.getTransactorDetails.map(_.personalDetails)
     case _ => Future.successful(None)
   }
 

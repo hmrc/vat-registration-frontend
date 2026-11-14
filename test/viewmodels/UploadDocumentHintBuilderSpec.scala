@@ -201,36 +201,41 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
     }
   }
 
-  "identityEvidenceName" when {
-    "called with ExtraIdentityEvidence" must {
-      "return the applicant name even when the user is not a transactor" in new Setup {
-        reset(vatRegistrationServiceMock)
-        mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
+  "identityEvidencePerson" when {
+    "called with an applicant identity evidence type" must {
+      Seq(PrimaryIdentityEvidence, ExtraIdentityEvidence).foreach { attachmentType =>
+        s"return the applicant's personal details for $attachmentType even when the user is not a transactor" in new Setup {
+          reset(vatRegistrationServiceMock)
+          reset(mockTransactorDetailsService)
+          mockGetApplicantDetails(currentProfile)(completeApplicantDetails)
 
-        await(Builder.identityEvidenceName(ExtraIdentityEvidence)) mustBe Some("testFirstName testLastName")
-        verifyNoInteractions(vatRegistrationServiceMock)
-      }
+          await(Builder.identityEvidencePerson(attachmentType)) mustBe Some(testPersonalDetails)
+          verifyNoInteractions(vatRegistrationServiceMock, mockTransactorDetailsService)
+        }
 
-      "return None if the applicant has no personal details" in new Setup {
-        mockGetApplicantDetails(currentProfile)(ApplicantDetails())
+        s"return None for $attachmentType if the applicant has no personal details" in new Setup {
+          mockGetApplicantDetails(currentProfile)(ApplicantDetails())
 
-        await(Builder.identityEvidenceName(ExtraIdentityEvidence)) mustBe None
+          await(Builder.identityEvidencePerson(attachmentType)) mustBe None
+        }
       }
     }
 
-    "called with ExtraTransactorIdentityEvidence" must {
-      "return the transactor name, not the applicant name" in new Setup {
-        reset(mockApplicantDetailsService)
-        mockGetTransactorDetails(currentProfile)(validTransactorDetails)
+    "called with a transactor identity evidence type" must {
+      Seq(PrimaryTransactorIdentityEvidence, ExtraTransactorIdentityEvidence).foreach { attachmentType =>
+        s"return the transactor's personal details for $attachmentType, not the applicant's" in new Setup {
+          reset(mockApplicantDetailsService)
+          mockGetTransactorDetails(currentProfile)(validTransactorDetails)
 
-        await(Builder.identityEvidenceName(ExtraTransactorIdentityEvidence)) mustBe validTransactorDetails.personalDetails.map(_.fullName)
-        verifyNoInteractions(mockApplicantDetailsService)
-      }
+          await(Builder.identityEvidencePerson(attachmentType)) mustBe validTransactorDetails.personalDetails
+          verifyNoInteractions(mockApplicantDetailsService)
+        }
 
-      "return None if the transactor has no personal details" in new Setup {
-        mockGetTransactorDetails(currentProfile)(TransactorDetails())
+        s"return None for $attachmentType if the transactor has no personal details" in new Setup {
+          mockGetTransactorDetails(currentProfile)(TransactorDetails())
 
-        await(Builder.identityEvidenceName(ExtraTransactorIdentityEvidence)) mustBe None
+          await(Builder.identityEvidencePerson(attachmentType)) mustBe None
+        }
       }
     }
 
@@ -239,7 +244,7 @@ class UploadDocumentHintBuilderSpec extends VatRegSpec with MockApplicantDetails
         reset(mockApplicantDetailsService)
         reset(mockTransactorDetailsService)
 
-        await(Builder.identityEvidenceName(VAT2)) mustBe None
+        await(Builder.identityEvidencePerson(VAT2)) mustBe None
         verifyNoInteractions(mockApplicantDetailsService, mockTransactorDetailsService)
       }
     }
