@@ -28,9 +28,9 @@ import play.api.mvc.Request
 @Singleton
 class UpscanService @Inject()(upscanConnector: UpscanConnector)(implicit executionContext: ExecutionContext) {
 
-  def initiateUpscan(regId: String, attachmentType: AttachmentType)(implicit hc: HeaderCarrier, request: Request[_]): Future[UpscanResponse] = {
+  def initiateUpscan(regId: String, attachmentType: AttachmentType, errorRedirectUrl: Option[String] = None)(implicit hc: HeaderCarrier, request: Request[_]): Future[UpscanResponse] = {
     logger.info(s"[UploadDocumentController][show] attempting to initiate upscan. regId $regId")
-    upscanConnector.upscanInitiate().flatMap { response =>
+    upscanConnector.upscanInitiate(errorRedirectUrl).flatMap { response =>
       logger.info(s"[UpscanService][UpscanService] upscan upload initiated. regId $regId upscanRef ${response.reference}")
       upscanConnector.storeUpscanReference(regId, response.reference, attachmentType).map(_ => response)
     }
