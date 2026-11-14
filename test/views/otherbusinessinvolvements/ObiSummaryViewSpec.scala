@@ -69,10 +69,10 @@ class ObiSummaryViewSpec extends VatRegViewSpec with VatRegistrationFixture {
       doc.select("th").text() mustBe testCompanyName
     }
     "have a change link with the correct URL" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedMessages.changeLink, changeLink.url))
+      doc.link(1) mustBe Some(Link(s"${ExpectedMessages.changeLink} $testCompanyName", changeLink.url))
     }
     "have a remove link with the correct URL" in new ViewSetup {
-      doc.link(2) mustBe Some(Link(ExpectedMessages.removeLink, removeLink.url))
+      doc.link(2) mustBe Some(Link(s"${ExpectedMessages.removeLink} $testCompanyName", removeLink.url))
     }
     "have a Yes/No question with the correct content" in new ViewSetup {
       doc.radioGroup(1) mustBe Some(RadioGroup(
