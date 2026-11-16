@@ -18,16 +18,18 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
+import models.api._
 import play.api.mvc.{Action, AnyContent}
-import services.{SessionProfile, SessionService}
+import services.{AttachmentsService, SessionProfile, SessionService}
 import views.html.attachments.DocumentsPost
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class DocumentsPostController @Inject()(val authConnector: AuthClientConnector,
                                         val sessionService: SessionService,
+                                        attachmentsService: AttachmentsService,
                                         documentsPostPage: DocumentsPost)
                                        (implicit appConfig: FrontendAppConfig,
                                         val executionContext: ExecutionContext,
@@ -35,7 +37,19 @@ class DocumentsPostController @Inject()(val authConnector: AuthClientConnector,
   extends BaseController with SessionProfile {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request => _ =>
-      Future.successful(Ok(documentsPostPage()))
+    implicit request => implicit profile =>
+
+      logger.info("[DocumentsPostController][show]")
+
+      attachmentsService.getAttachmentList(profile.registrationId).map {
+        case attachments if attachments.contains(VAT2) =>
+          Redirect(controllers.attachments.routes.Vat2DocumentsPostController.show)
+
+        case attachments if attachments.contains(VAT5L) =>
+          Redirect(controllers.attachments.routes.Vat5LDocumentsPostController.show)
+
+        case _ =>
+          Ok(documentsPostPage())
+      }
   }
 }
