@@ -31,6 +31,18 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
 
   val testEmail = "testEmail@mail.gov.uk"
 
+  val howToRegisterUrl = "https://www.gov.uk/register-for-vat/how-register-for-vat"
+  val togcVatNoticeUrl = "https://www.gov.uk/guidance/transfer-a-business-as-a-going-concern-and-vat-notice-7009"
+
+  def assertNewTabGovukLink(doc: Document, href: String, text: String): Unit = {
+    val links = doc.select(s"a[href=$href]")
+    links.size mustBe 1
+    links.first.text mustBe text
+    links.first.hasClass("govuk-link") mustBe true
+    links.first.attr("target") mustBe "_blank"
+    links.first.attr("rel") mustBe "noreferrer"
+  }
+
   object ExpectedContent {
     val title = "Your application has been submitted - Register for VAT - GOV.UK"
     val heading = "Your application has been submitted"
@@ -43,10 +55,13 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     val heading2 = "What happens next"
     val listItem1 = "We’ve received your application and we will write to you with a decision within 40 working days."
     val listItem1New = "After we receive your documents, we will write to you with a decision on your application in 40 working days."
-    val listItemPost1 = "We have received your online application. So we can process it, post us a cover letter and copies of the required documents. (opens in new tab)."
+    val listItemPost1 = "We have received your online application. So we can process it, post us a cover letter and copies of the required documents."
     val opensInNewTab = "(opens in new tab)"
 
-    val listItemAgentPost  = s"We have received the business’s online application. So we can process it, post us a cover letter and copies of the required documents. $opensInNewTab."
+    val listItemAgentPost  = "We have received the business’s online application. So we can process it, post us a cover letter and copies of the required documents."
+    val postCoverSheetLinkText = s"post us a cover letter and copies of the required documents $opensInNewTab"
+    val listItemPost1WithLink = s"We have received your online application. So we can process it, $postCoverSheetLinkText."
+    val listItemAgentPostWithLink = s"We have received the business’s online application. So we can process it, $postCoverSheetLinkText."
     val listItem1Doc = "After we receive copies of your documents, we’ll write to you with a decision on your application within 40 working days."
     val listItem2 = "You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’."
     val listItem2New = "You should wait until we confirm your VAT registration before you get software to follow the rules for ‘Making Tax Digital for VAT’."
@@ -86,7 +101,6 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     val docPostLinkText3pt = s"post us a cover letter and copies of the required documents $opensInNewTab"
     val docPostText = s"We’ve received your application. So we can process it, $docPostLinkText."
     val docPostText3pt = s"We’ve received your application. So we can process it, $docPostLinkText3pt."
-    val docPostLinkText3ptNew = s"post us a cover letter and copies of the required documents. $opensInNewTab"
     val postCoverSheetLink = "/register-for-vat/postal-cover-sheet"
     val tradeBeforeDigitalVatGroupListItem = "Visit Register for VAT to find out more about ‘Accounting for VAT while you wait for your VAT registration number’."
   }
@@ -95,44 +109,6 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
 
   "Application submission confirmation page" must {
     lazy val view = viewInstance(refNum, None, attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = ForwardLook)
-    implicit lazy val doc: Document = Jsoup.parse(view.body)
-
-    "have the correct title" in {
-      doc.title must include(ExpectedContent.title)
-    }
-
-    "have the correct heading" in new ViewSetup {
-      doc.heading mustBe Some(ExpectedContent.heading)
-    }
-
-    "have the correct subheadings" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.heading2)
-      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
-    }
-
-    "have the correct paragraph" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedContent.emailPara)
-    }
-
-    "have the correct list" in new ViewSetup {
-      doc.orderedList(1) mustBe List(ExpectedContent.listItem1, ExpectedContent.listItem2)
-    }
-
-    "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText)
-    }
-
-    "have the correct link" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.insetLinkText, ExpectedContent.insetLink))
-    }
-
-    "have the correct continue button" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedContent.buttonText)
-    }
-  }
-
-  "New Application submission confirmation page in  " must {
-    lazy val view = viewInstance(refNum, None, attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = ForwardLook, isNewApplConfirmJourneyEnabled = true)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -165,48 +141,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
   }
 
   "Application submission confirmation page with Post attachment method" must {
-    lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook)
-    implicit lazy val doc: Document = Jsoup.parse(view.body)
-
-    "have the correct title" in {
-      doc.title must include(ExpectedContent.title)
-    }
-
-    "have the correct heading" in new ViewSetup {
-      doc.heading mustBe Some(ExpectedContent.heading)
-    }
-
-    "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText)
-    }
-
-    "have the correct subheadings" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.docHeading)
-      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
-      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
-    }
-
-    "have the correct paragraphs" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedContent.emailPara)
-      doc.para(2) mustBe Some(ExpectedContent.docPostText)
-    }
-
-    "have the correct list" in new ViewSetup {
-      doc.orderedList(1) mustBe List(ExpectedContent.listItem1Doc, ExpectedContent.listItem2)
-    }
-
-    "have the correct links" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.docPostLinkText, ExpectedContent.docPostLink))
-      doc.link(2) mustBe Some(Link(ExpectedContent.insetLinkText, ExpectedContent.insetLink))
-    }
-
-    "have the correct continue button" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedContent.buttonText)
-    }
-  }
-
-  "New Application submission confirmation page with Post attachment method" must {
-    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook, isNewApplConfirmJourneyEnabled = true)
+    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -232,11 +167,14 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     }
 
     "have the correct list" in new ViewSetup {
-      doc.para(3) mustBe Some(ExpectedContent.listItemPost1)
+      doc.para(3) mustBe Some(ExpectedContent.listItemPost1WithLink)
     }
 
-    "have the correct link" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.docPostLinkText3ptNew, ExpectedContent.postCoverSheetLink))
+    "link to the postal cover sheet when VrsNewAttachmentJourney is disabled" in new ViewSetup {
+      val links = doc.select(s"a[href=${ExpectedContent.postCoverSheetLink}]")
+      links.size mustBe 1
+      links.first.text mustBe ExpectedContent.postCoverSheetLinkText
+      links.first.attr("target") mustBe "_blank"
     }
 
     "have the correct continue button" in new ViewSetup {
@@ -245,48 +183,7 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
   }
 
   "Application submission confirmation page with Post attachment method for a transactor" must {
-    lazy val view = viewInstance(refNum, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = ForwardLook)
-    implicit lazy val doc: Document = Jsoup.parse(view.body)
-
-    "have the correct title" in {
-      doc.title must include(ExpectedContent.title)
-    }
-
-    "have the correct heading" in new ViewSetup {
-      doc.heading mustBe Some(ExpectedContent.heading)
-    }
-
-    "have the correct subheadings" in new ViewSetup {
-      doc.headingLevel2(1) mustBe Some(ExpectedContent.docHeading)
-      doc.headingLevel2(2) mustBe Some(ExpectedContent.heading2)
-      doc.select(".govuk-panel__body").text() mustBe ExpectedContent.ackRef
-    }
-
-    "have the correct paragraphs" in new ViewSetup {
-      doc.para(1) mustBe Some(ExpectedContent.emailPara)
-      doc.para(2) mustBe Some(ExpectedContent.docPostText3pt)
-    }
-
-    "have the correct list" in new ViewSetup {
-      doc.orderedList(1) mustBe List(ExpectedContent.listItem1Doc, ExpectedContent.listItem23pt)
-    }
-
-    "have the correct inset text" in new ViewSetup {
-      doc.panelIndent(1) mustBe Some(ExpectedContent.insetText3pt)
-    }
-
-    "have the correct links" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.docPostLinkText3pt, ExpectedContent.docPostLink))
-      doc.link(2) mustBe Some(Link(ExpectedContent.insetLinkText3pt, ExpectedContent.insetLink))
-    }
-
-    "have the correct continue button" in new ViewSetup {
-      doc.submitButton mustBe Some(ExpectedContent.buttonText)
-    }
-  }
-
-  "New Application submission confirmation page with Post attachment method for a transactor" must {
-    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = ForwardLook, isNewApplConfirmJourneyEnabled = true)
+    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = ForwardLook)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -312,11 +209,14 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     }
 
     "have the correct list" in new ViewSetup {
-      doc.para(3) mustBe Some(ExpectedContent.listItemAgentPost)
+      doc.para(3) mustBe Some(ExpectedContent.listItemAgentPostWithLink)
     }
 
-    "have the correct link" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.docPostLinkText3ptNew, ExpectedContent.postCoverSheetLink))
+    "link to the postal cover sheet when VrsNewAttachmentJourney is disabled" in new ViewSetup {
+      val links = doc.select(s"a[href=${ExpectedContent.postCoverSheetLink}]")
+      links.size mustBe 1
+      links.first.text mustBe ExpectedContent.postCoverSheetLinkText
+      links.first.attr("target") mustBe "_blank"
     }
 
     "have the correct continue button" in new ViewSetup {
@@ -324,16 +224,19 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     }
   }
 
-  "New confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Post/VATGroup/True" must {
-    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = GroupRegistration, isNewApplConfirmJourneyEnabled = true)
+  "Confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Post/VATGroup/True" must {
+    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = GroupRegistration)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct list" in new ViewSetup {
-      doc.para(3) mustBe Some(ExpectedContent.listItemAgentPost)
+      doc.para(3) mustBe Some(ExpectedContent.listItemAgentPostWithLink)
     }
 
-    "have the correct link" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.docPostLinkText3ptNew, ExpectedContent.postCoverSheetLink))
+    "link to the postal cover sheet when VrsNewAttachmentJourney is disabled" in new ViewSetup {
+      val links = doc.select(s"a[href=${ExpectedContent.postCoverSheetLink}]")
+      links.size mustBe 1
+      links.first.text mustBe ExpectedContent.postCoverSheetLinkText
+      links.first.attr("target") mustBe "_blank"
     }
 
     "have the correct list in whatHappensNext Section" in new ViewSetup {
@@ -347,8 +250,34 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
   }
 
 
-  "New confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Post/VATGroup/False" must {
-    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = GroupRegistration, isNewApplConfirmJourneyEnabled = true)
+  "Confirmation page with Post attachment method when VrsNewAttachmentJourney is enabled" must {
+    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = ForwardLook, isNewAttachmentJourney = true)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the cover letter guidance as plain text" in new ViewSetup {
+      doc.para(3) mustBe Some(ExpectedContent.listItemPost1)
+    }
+
+    "not link to the postal cover sheet" in new ViewSetup {
+      doc.select(s"a[href=${ExpectedContent.postCoverSheetLink}]").isEmpty mustBe true
+    }
+  }
+
+  "Confirmation page with Post attachment method for a transactor when VrsNewAttachmentJourney is enabled" must {
+    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = GroupRegistration, isNewAttachmentJourney = true)
+    implicit lazy val doc: Document = Jsoup.parse(view.body)
+
+    "have the cover letter guidance as plain text" in new ViewSetup {
+      doc.para(3) mustBe Some(ExpectedContent.listItemAgentPost)
+    }
+
+    "not link to the postal cover sheet" in new ViewSetup {
+      doc.select(s"a[href=${ExpectedContent.postCoverSheetLink}]").isEmpty mustBe true
+    }
+  }
+
+  "Confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Post/VATGroup/False" must {
+    lazy val view = viewInstance(refNumNew, Some(Post), attachmentsListExists = true, testEmail, isTransactor = false, registrationReason = GroupRegistration)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct list in whatHappensNext Section" in new ViewSetup {
@@ -358,10 +287,14 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     "have the correct list in TradeBefore Section" in new ViewSetup {
       doc.para(8) mustBe Some(ExpectedContent.tradeBeforeListItemVATGroup)
     }
+
+    "have a styled Register for VAT link opening in a new tab" in new ViewSetup {
+      assertNewTabGovukLink(doc, howToRegisterUrl, "Register for VAT")
+    }
   }
 
-  "New confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Digital/VATGroup/True" must {
-    lazy val view = viewInstance(refNumNew, Some(Upload), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = GroupRegistration, isNewApplConfirmJourneyEnabled = true)
+  "Confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Digital/VATGroup/True" must {
+    lazy val view = viewInstance(refNumNew, Some(Upload), attachmentsListExists = true, testEmail, isTransactor = true, registrationReason = GroupRegistration)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct list in whatHappensNext Section" in new ViewSetup {
@@ -373,8 +306,8 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     }
   }
 
-  "New confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Digital/TOGC/True" must {
-    lazy val view = viewInstance(refNumNew, Some(Upload), attachmentsListExists = false, testEmail, isTransactor = true, registrationReason = TransferOfAGoingConcern, isNewApplConfirmJourneyEnabled = true)
+  "Confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Digital/TOGC/True" must {
+    lazy val view = viewInstance(refNumNew, Some(Upload), attachmentsListExists = false, testEmail, isTransactor = true, registrationReason = TransferOfAGoingConcern)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct list in whatHappensNext Section" in new ViewSetup {
@@ -385,10 +318,18 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
       doc.para(5) mustBe Some(ExpectedContent.tradeBeforeListItem1AgentTogc)
       doc.para(6) mustBe Some(ExpectedContent.tradeBeforeListItem2Togc)
     }
+
+    "have a styled Register for VAT link opening in a new tab" in new ViewSetup {
+      assertNewTabGovukLink(doc, howToRegisterUrl, "Register for VAT")
+    }
+
+    "have a styled TOGC VAT notice link opening in a new tab" in new ViewSetup {
+      assertNewTabGovukLink(doc, togcVatNoticeUrl, "treated as a transfer of a going concern")
+    }
   }
 
-  "New confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Digital/TOGC/False" must {
-    lazy val view = viewInstance(refNumNew, Some(Upload), attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = TransferOfAGoingConcern, isNewApplConfirmJourneyEnabled = true)
+  "Confirmation page with attachment method/VatRegReason/isTransactor(Agent) => Digital/TOGC/False" must {
+    lazy val view = viewInstance(refNumNew, Some(Upload), attachmentsListExists = false, testEmail, isTransactor = false, registrationReason = TransferOfAGoingConcern)
     implicit lazy val doc: Document = Jsoup.parse(view.body)
 
     "have the correct list in whatHappensNext Section" in new ViewSetup {
@@ -398,6 +339,14 @@ class ApplicationSubmissionConfirmationViewSpec extends VatRegViewSpec with Feat
     "have the correct list in TradeBefore Section" in new ViewSetup {
       doc.para(5) mustBe Some(ExpectedContent.tradeBeforeListItem1Togc)
       doc.para(6) mustBe Some(ExpectedContent.tradeBeforeListItem2Togc)
+    }
+
+    "have a styled Register for VAT link opening in a new tab" in new ViewSetup {
+      assertNewTabGovukLink(doc, howToRegisterUrl, "Register for VAT")
+    }
+
+    "have a styled TOGC VAT notice link opening in a new tab" in new ViewSetup {
+      assertNewTabGovukLink(doc, togcVatNoticeUrl, "treated as a transfer of a going concern")
     }
   }
 }
