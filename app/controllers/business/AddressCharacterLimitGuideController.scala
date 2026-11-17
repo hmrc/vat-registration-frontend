@@ -26,7 +26,7 @@ import views.html.business.AddressCharacterLimitGuideView
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import services.VatRegistrationService
-import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust, UkCompany}
+import models.api.{Individual, LtdLiabilityPartnership, NonUkNonEstablished, Partnership, Trust, UkCompany}
 
 @Singleton
 class AddressCharacterLimitGuideController @Inject()(val authConnector: AuthConnector,

@@ -97,7 +97,7 @@ class UploadDocumentNewJourneyViewSpec extends VatRegViewSpec {
       }
 
       "have the drop zone file upload with the correct text" in new ViewSetup {
-        val dropZone = doc.select("main .govuk-drop-zone[data-module=govuk-file-upload]")
+        val dropZone = doc.select("main .govuk-file-upload-wrapper[data-module=govuk-file-upload]")
 
         dropZone.size mustBe 1
         dropZone.attr("data-i18n.choose-files-button") mustBe "Choose file"
@@ -123,7 +123,7 @@ class UploadDocumentNewJourneyViewSpec extends VatRegViewSpec {
     }
 
     "have no drop zone" in new ViewSetup {
-      doc.select("main .govuk-drop-zone").size mustBe 0
+      doc.select("main .govuk-file-upload-wrapper").size mustBe 0
     }
   }
 
@@ -152,7 +152,7 @@ class UploadDocumentNewJourneyViewSpec extends VatRegViewSpec {
     }
 
     "have no drop zone" in new ViewSetup {
-      doc.select("main .govuk-drop-zone").size mustBe 0
+      doc.select("main .govuk-file-upload-wrapper").size mustBe 0
     }
 
     "have a primary action" in new ViewSetup {
@@ -177,7 +177,7 @@ class UploadDocumentNewJourneyViewSpec extends VatRegViewSpec {
     }
 
     "have no drop zone" in new ViewSetup {
-      doc.select("main .govuk-drop-zone").size mustBe 0
+      doc.select("main .govuk-file-upload-wrapper").size mustBe 0
     }
 
     "have a primary action" in new ViewSetup {
@@ -241,7 +241,7 @@ class UploadDocumentNewJourneyViewSpec extends VatRegViewSpec {
       }
 
       "have the Welsh drop zone text from the HMRC design system file upload pattern" in new ViewSetup {
-        val dropZone = doc.select("main .govuk-drop-zone")
+        val dropZone = doc.select("main .govuk-file-upload-wrapper")
 
         dropZone.attr("data-i18n.choose-files-button") mustBe "Dewis ffeil"
         dropZone.attr("data-i18n.drop-instruction") mustBe "neu ollwng ffeil"
