@@ -42,16 +42,19 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
 
   private val testOnlyUpscanCallbackUrl = "TEST_UPSCAN_CALLBACK"
   private val testOnlyUpscanSuccessUrl = "TEST_UPSCAN_SUCCESS"
+  private val testOnlyUpscanErrorUrl = "TEST_UPSCAN_ERROR"
 
   def upscanInitiate(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val callbackUrl = (request.body \ "callbackUrl").as[String]
     val successUrl = (request.body \ "successRedirect").as[String]
+    val errorUrl = (request.body \ "errorRedirect").as[String]
 
     implicit val hc = HeaderCarrierConverter.fromRequest(request)
 
     for {
       _ <- sessionService.cache(testOnlyUpscanCallbackUrl, callbackUrl)
       _ <- sessionService.cache(testOnlyUpscanSuccessUrl, successUrl)
+      _ <- sessionService.cache(testOnlyUpscanErrorUrl, errorUrl)
       reference = UUID.randomUUID()
     } yield Ok(Json.obj(
       "reference" -> reference,
@@ -63,14 +66,23 @@ class UpscanStubController @Inject()(val authConnector: AuthConnector,
   }
 
   def uploadResponse(reference: String): Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
-    for {
-      optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
-      optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)
-      callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved from session"))
-      successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("Success URL couldn't be retrieved from session"))
-      unfinishedUpscan <- upscanConnector.fetchUpscanFileDetails(profile.registrationId, reference)
-      _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl, reference, unfinishedUpscan.attachmentType)
-    } yield Redirect(successUrl)
+    val fileSelected = request.body.asMultipartFormData.flatMap(_.file("file")).exists(_.filename.nonEmpty)
+
+    if (!fileSelected) {
+      sessionService.fetchAndGet[String](testOnlyUpscanErrorUrl).map { optErrorUrl =>
+        val errorUrl = optErrorUrl.getOrElse(throw new InternalServerException("Error URL couldn't be retrieved from session"))
+        Redirect(errorUrl, Map("errorCode" -> Seq("InvalidArgument")))
+      }
+    } else {
+      for {
+        optCallbackUrl <- sessionService.fetchAndGet[String](testOnlyUpscanCallbackUrl)
+        optSuccessUrl <- sessionService.fetchAndGet[String](testOnlyUpscanSuccessUrl)
+        callbackUrl = optCallbackUrl.getOrElse(throw new InternalServerException("Callback URL couldn't be retrieved from session"))
+        successUrl = optSuccessUrl.getOrElse(throw new InternalServerException("Success URL couldn't be retrieved from session"))
+        unfinishedUpscan <- upscanConnector.fetchUpscanFileDetails(profile.registrationId, reference)
+        _ <- upscanCallbackConnector.postUpscanResponse(callbackUrl, reference, unfinishedUpscan.attachmentType)
+      } yield Redirect(successUrl)
+    }
   }
 
 }

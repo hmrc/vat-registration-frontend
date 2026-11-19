@@ -52,7 +52,11 @@ class UploadOptionToTaxDocumentController @Inject()(view: UploadDocument,
 
           for {
             _ <- upscanService.deleteUpscanDetailsByType(profile.registrationId, attachmentType)
-            upscanResponse <- upscanService.initiateUpscan(profile.registrationId, attachmentType)
+            upscanResponse <- upscanService.initiateUpscan(
+              profile.registrationId,
+              attachmentType,
+              errorRedirectUrl = Some(s"${appConfig.hostAbsoluteUrl}${routes.UploadOptionToTaxDocumentController.show.url}")
+            )
             hintHtml <- uploadDocumentHint.build(attachmentType)
           } yield {
             val optErrorCode = request.queryString.get("errorCode").flatMap(_.headOption)
