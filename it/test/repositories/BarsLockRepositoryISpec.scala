@@ -18,6 +18,7 @@ package repositories
 
 import config.FrontendAppConfig
 import org.mockito.Mockito.when
+import org.scalatest.concurrent.IntegrationPatience
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar.mock
@@ -27,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class BarsLockRepositoryISpec extends AnyWordSpec with Matchers with CleanMongoCollectionSupport {
+class BarsLockRepositoryISpec extends AnyWordSpec with Matchers with CleanMongoCollectionSupport with IntegrationPatience {
 
   private val testRegistrationId    = "test-registration-id"
   private val anotherRegistrationId = "another-registration-id"
@@ -35,6 +36,8 @@ class BarsLockRepositoryISpec extends AnyWordSpec with Matchers with CleanMongoC
   private val mockAppConfig: FrontendAppConfig   = mock[FrontendAppConfig]
   private val mockServicesConfig: ServicesConfig = mock[ServicesConfig]
   when(mockAppConfig.servicesConfig).thenReturn(mockServicesConfig)
+
+  when(mockAppConfig.ttlLockSeconds).thenReturn(86400)
 
   protected val repository: BarsLockRepository =
     new BarsLockRepository(mongoComponent, mockAppConfig)

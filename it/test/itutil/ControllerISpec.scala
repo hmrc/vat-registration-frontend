@@ -20,8 +20,16 @@ import featuretoggle.FeatureToggleSupport
 import helpers.RequestsFinder
 import itFixtures.ITRegistrationFixtures
 import org.scalatest.TestSuite
+import models.CurrentProfile
+import org.mongodb.scala.model.Filters
 import org.scalatest.concurrent.ScalaFutures
+import play.api.libs.json.Json
+import repositories.SessionRepository
 import support.AppAndStubs
+import uk.gov.hmrc.http.cache.client.CacheMap
+
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 trait ControllerISpec extends IntegrationSpecBase with TestSuite
   with AppAndStubs
@@ -29,5 +37,13 @@ trait ControllerISpec extends IntegrationSpecBase with TestSuite
   with RequestsFinder
   with ITRegistrationFixtures
   with FeatureToggleSupport {
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    val sessionRepository = app.injector.instanceOf[SessionRepository]
+    val timeout = 5.seconds
+    Await.result(sessionRepository.collection.deleteMany(Filters.empty()).toFuture(), timeout)
+    Await.result(sessionRepository.upsert(CacheMap(sessionString, Map("CurrentProfile" -> Json.toJson[CurrentProfile](currentProfile)))), timeout)
+  }
 
 }

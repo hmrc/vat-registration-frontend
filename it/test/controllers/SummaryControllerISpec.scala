@@ -17,9 +17,10 @@
 package controllers
 
 import connectors.RegistrationApiConnector.nrsSubmissionPayloadKey
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import itutil.ControllerISpec
 import models.ApiKey
-import models.api.{Attachment1614a, Attachment1614h}
+import models.api.{Attachment1614a, Attachment1614h, Post}
 import org.jsoup.Jsoup
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
@@ -28,6 +29,11 @@ import play.api.test.Helpers._
 import scala.concurrent.Future
 
 class SummaryControllerISpec extends ControllerISpec {
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    disable(VrsNewAttachmentJourney)
+  }
 
   "GET Summary page" should {
     "display the summary page correctly" in new Setup {
@@ -85,6 +91,60 @@ class SummaryControllerISpec extends ControllerISpec {
         given()
           .user.isAuthorised()
           .registrationApi.getRegistration(fullVatSchemeAttachment)
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", OK)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show.url)
+        }
+      }
+    }
+
+    "redirect to the cover letter preview page" when {
+      "the submission succeeds, the attachment method is Post and VrsNewAttachmentJourney is enabled" in new Setup {
+        enable(VrsNewAttachmentJourney)
+
+        given()
+          .user.isAuthorised()
+          .registrationApi.getRegistration(
+            fullVatSchemeAttachment.copy(attachments = fullVatSchemeAttachment.attachments.map(_.copy(method = Some(Post))))
+          )
+          .attachmentsApi.getAttachments(attachments = List(
+            Attachment1614a,
+            Attachment1614h
+          ))
+          .attachmentsApi.getIncompleteAttachments(attachments = List.empty)
+          .vatRegistration.submit(s"/vatreg/${fullVatSchemeAttachment.registrationId}/submit-registration", OK)
+
+        insertCurrentProfileIntoDb(currentProfileIncorp, sessionString)
+
+        val response: Future[WSResponse] = buildClient("/check-confirm-answers").post(Map("" -> Seq("")))
+
+        whenReady(response) { res =>
+          res.status mustBe SEE_OTHER
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.CoverLetterPreviewController.show.url)
+        }
+      }
+    }
+
+    "redirect to the confirmation page instead of the cover letter preview page" when {
+      "the submission succeeds, the attachment method is Post and VrsNewAttachmentJourney is disabled" in new Setup {
+        disable(VrsNewAttachmentJourney)
+
+        given()
+          .user.isAuthorised()
+          .registrationApi.getRegistration(
+            fullVatSchemeAttachment.copy(attachments = fullVatSchemeAttachment.attachments.map(_.copy(method = Some(Post))))
+          )
           .attachmentsApi.getAttachments(attachments = List(
             Attachment1614a,
             Attachment1614h

@@ -21,7 +21,10 @@ import common.enums.VatRegStatus
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import connectors._
 import controllers.BaseController
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 import models.CurrentProfile
+import models.api.Post
 import play.api.mvc._
 import services._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -45,7 +48,8 @@ class SummaryController @Inject() (val sessionService: SessionService,
     baseControllerComponents: BaseControllerComponents)
     extends BaseController
     with SessionProfile
-    with ApplicativeSyntax {
+    with ApplicativeSyntax
+    with FeatureToggleSupport {
 
   def show: Action[AnyContent] = isAuthenticatedWithProfile { implicit request => implicit profile =>
     vrs.getVatScheme.flatMap { vatScheme =>
@@ -74,7 +78,7 @@ class SummaryController @Inject() (val sessionService: SessionService,
           for {
             _        <- sessionService.cache[CurrentProfile]("CurrentProfile", profile.copy(vatRegistrationStatus = VatRegStatus.locked))
             response <- vrs.submitRegistration()
-            result   <- submissionRedirectLocation(response)
+            result   <- submissionRedirectLocation(response, isPostal = vatScheme.attachments.flatMap(_.method).contains(Post))
           } yield result
         } else {
           infoLog(
@@ -87,13 +91,19 @@ class SummaryController @Inject() (val sessionService: SessionService,
   }
 
   private def submissionRedirectLocation(
-      response: DESResponse)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]): Future[Result] =
+      response: DESResponse, isPostal: Boolean)(implicit hc: HeaderCarrier, currentProfile: CurrentProfile, request: Request[_]): Future[Result] =
     response match {
       case Success =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.submitted)).map { _ =>
-          infoLog(
-            s"[SummaryController][submissionRedirectLocation][Success] - The application was successfully submitted, redirecting to the application submitted page")
-          Redirect(controllers.routes.ApplicationSubmissionController.show)
+          if (isPostal && isEnabled(VrsNewAttachmentJourney)) {
+            infoLog(
+              s"[SummaryController][submissionRedirectLocation][Success] - The application was successfully submitted, redirecting to the cover letter preview page")
+            Redirect(controllers.attachments.routes.CoverLetterPreviewController.show)
+          } else {
+            infoLog(
+              s"[SummaryController][submissionRedirectLocation][Success] - The application was successfully submitted, redirecting to the application submitted page")
+            Redirect(controllers.routes.ApplicationSubmissionController.show)
+          }
         }
       case SubmissionInProgress =>
         sessionService.cache[CurrentProfile]("CurrentProfile", currentProfile.copy(vatRegistrationStatus = VatRegStatus.locked)).map { _ =>
