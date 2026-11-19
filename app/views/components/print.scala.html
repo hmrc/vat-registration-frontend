@@ -19,7 +19,7 @@
 
 @this()
 
-@(msg: String)(implicit messages: Messages, appConfig: FrontendAppConfig, request: Request[_])
+@(msg: String, classes: String = "govuk-button")(implicit messages: Messages, appConfig: FrontendAppConfig, request: Request[_])
 
-<div id="print-button" data-content="@{messages(msg)}"></div>
+<div id="print-button" data-content="@{messages(msg)}" data-classes="@classes"></div>
 <script @{CSPNonce.attr} src="@{controllers.routes.Assets.versioned("javascripts/print.js")}"></script>

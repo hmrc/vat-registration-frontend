@@ -54,7 +54,7 @@ class CoverLetterPreviewViewSpec extends VatRegViewSpec {
 
     "have a Get cover letter button linking to the application submission page" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedContent.button)
-      doc.select("a.govuk-button").attr("href") mustBe controllers.routes.ApplicationSubmissionController.show.url
+      doc.select("a.govuk-button").attr("href") mustBe controllers.attachments.routes.PostalCoverSheetController.show.url
     }
   }
 }

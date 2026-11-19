@@ -18,15 +18,22 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import play.api.mvc.{Action, AnyContent}
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
+import forms.CoverLetterPrintedForm
+import models.CurrentProfile
+import play.api.data.Form
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.twirl.api.Html
 import services._
-import views.html.attachments.PostalCoverSheet
+import views.html.attachments.{PostalCoverSheet, PostalCoverSheetNewJourney}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PostalCoverSheetController @Inject()(view: PostalCoverSheet,
+                                           viewNewJourney: PostalCoverSheetNewJourney,
                                            val authConnector: AuthClientConnector,
                                            val sessionService: SessionService,
                                            attachmentsService: AttachmentsService,
@@ -36,32 +43,83 @@ class PostalCoverSheetController @Inject()(view: PostalCoverSheet,
                                           )(implicit appConfig: FrontendAppConfig,
                                             val executionContext: ExecutionContext,
                                             baseControllerComponents: BaseControllerComponents)
-  extends BaseController with SessionProfile {
+  extends BaseController with SessionProfile with FeatureToggleSupport {
 
   private val prefixLength = 3
   private val groupSize = 4
   private val separator = " "
+  private val coverLetterConfirmedKey = "coverLetterConfirmed"
 
   val show: Action[AnyContent] = isAuthenticatedAndSubmitted {
     implicit request =>
       implicit profile =>
-        for {
-          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
-          acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
-          prefix = acknowledgementRef.take(prefixLength)
-          groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
-          formattedRef = prefix +: groups mkString separator
-          isTransactor <- vatRegistrationService.isTransactor
-          applicantName <- if (isTransactor) {
-            applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
-          } else {
-            Future.successful(None)
+        whenCoverLetterNotConfirmed {
+          renderPage(CoverLetterPrintedForm()).map(Ok(_))
+        }
+  }
+
+  val submit: Action[AnyContent] = isAuthenticatedAndSubmitted {
+    implicit request =>
+      implicit profile =>
+        if (isEnabled(VrsNewAttachmentJourney)) {
+          whenCoverLetterNotConfirmed {
+            CoverLetterPrintedForm().bindFromRequest().fold(
+              formWithErrors => {
+                infoLog("[PostalCoverSheetController][submit] - Cover letter printed checkbox not ticked")
+                renderPage(formWithErrors).map(BadRequest(_))
+              },
+              _ =>
+                sessionService.cache[Boolean](coverLetterConfirmedKey, true).map { _ =>
+                  infoLog("[PostalCoverSheetController][submit] - Cover letter confirmed as printed or saved, redirecting to the application submitted page")
+                  Redirect(controllers.routes.ApplicationSubmissionController.show)
+                }
+            )
           }
-          transactorName <- if (isTransactor) {
-            transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
-          } else {
-            Future.successful(None)
-          }
-        } yield Ok(view(formattedRef, attachments, applicantName, transactorName))
+        } else {
+          Future.successful(Redirect(routes.PostalCoverSheetController.show))
+        }
+  }
+
+  private def whenCoverLetterNotConfirmed(f: => Future[Result])(implicit request: Request[_]): Future[Result] =
+    if (isEnabled(VrsNewAttachmentJourney)) {
+      sessionService.fetchAndGet[Boolean](coverLetterConfirmedKey).flatMap {
+        case Some(true) =>
+          infoLog("[PostalCoverSheetController] - Cover letter already confirmed, redirecting to the application submitted page")
+          Future.successful(Redirect(controllers.routes.ApplicationSubmissionController.show))
+        case _ =>
+          f
+      }
+    } else {
+      f
+    }
+
+  private def renderPage(printedForm: Form[Boolean])(implicit request: Request[_], profile: CurrentProfile): Future[Html] =
+    for {
+      attachments <- attachmentsService.getAttachmentList(profile.registrationId)
+      acknowledgementRef <- vatRegistrationService.getAckRef(profile.registrationId)
+      formattedRef = formatAckRef(acknowledgementRef)
+      isTransactor <- vatRegistrationService.isTransactor
+      applicantName <- if (isTransactor) {
+        applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
+      } else {
+        Future.successful(None)
+      }
+      transactorName <- if (isTransactor) {
+        transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
+      } else {
+        Future.successful(None)
+      }
+    } yield {
+      if (isEnabled(VrsNewAttachmentJourney)) {
+        viewNewJourney(printedForm, formattedRef, attachments, applicantName, transactorName)
+      } else {
+        view(formattedRef, attachments, applicantName, transactorName)
+      }
+    }
+
+  private def formatAckRef(acknowledgementRef: String): String = {
+    val prefix = acknowledgementRef.take(prefixLength)
+    val groups = acknowledgementRef.drop(prefixLength).grouped(groupSize).toList
+    prefix +: groups mkString separator
   }
 }

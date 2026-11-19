@@ -1,0 +1,159 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import views.html.components.strong
+@import models.api._
+
+@this(
+        layout: layouts.layout,
+        errorSummary: components.errorSummary,
+        h1: components.h1,
+        h2: components.h2,
+        p: components.p,
+        bullets: components.bullets,
+        panelIndent: components.panelIndent,
+        warningText: components.warningText,
+        print: components.print,
+        button: components.button,
+        formWithCSRF: FormWithCSRF,
+        govukTag: GovukTag,
+        govukCheckboxes: GovukCheckboxes,
+        strong: strong
+)
+
+@(printedForm: Form[Boolean], ackRef: String, attachments: List[AttachmentType], applicantName: Option[String], transactorName: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@identityDocuments(name: Option[String]) = @{
+    name.fold(messages("vRSNewAttachmentsJourney.postalCoverSheet.bp6"))(n => messages("vRSNewAttachmentsJourney.postalCoverSheet.bp6.name", n))
+}
+
+@requiredItems = @{
+    Seq(
+        Some(messages("vRSNewAttachmentsJourney.postalCoverSheet.bp1")),
+        Option.when(attachments.contains(VAT2))(messages("vRSNewAttachmentsJourney.postalCoverSheet.bp2")),
+        Option.when(attachments.contains(VAT5L))(messages("vRSNewAttachmentsJourney.postalCoverSheet.bp3")),
+        Option.when(attachments.contains(VAT51))(messages("vRSNewAttachmentsJourney.postalCoverSheet.bp4")),
+        Option.when(attachments.contains(TaxRepresentativeAuthorisation))(messages("vRSNewAttachmentsJourney.postalCoverSheet.bp5")),
+        Option.when(attachments.contains(IdentityEvidence))(identityDocuments(applicantName)),
+        Option.when(attachments.contains(TransactorIdentityEvidence))(identityDocuments(transactorName))
+    ).flatten
+}
+
+@needsIdentityDocuments = @{
+    attachments.exists(Seq(IdentityEvidence, TransactorIdentityEvidence).contains)
+}
+
+@layout(pageTitle = Some(title(printedForm, messages("vRSNewAttachmentsJourney.postalCoverSheet.heading"))), backLink = true) {
+
+    @errorSummary(printedForm.errors, classes = "govuk-!-display-none-print")
+
+    @h1(messages("vRSNewAttachmentsJourney.postalCoverSheet.heading"))
+
+    <dl class="govuk-summary-list govuk-summary-list--long-key">
+        <div class="govuk-summary-list__row govuk-summary-list__row--no-actions">
+            <dt class="govuk-summary-list__value">
+                @messages("vRSNewAttachmentsJourney.postalCoverSheet.panel1")
+            </dt>
+            <dd class="govuk-summary-list__value">
+                @strong { @govukTag(Tag(content = Text(ackRef), classes = "govuk-!-margin-left-6 govuk-tag govuk-phase-banner__content__tag")) }
+            </dd>
+        </div>
+    </dl>
+
+
+    @panelIndent {
+        @messages("vRSNewAttachmentsJourney.postalCoverSheet.para")
+    }
+
+    @p { @messages("vRSNewAttachmentsJourney.postalCoverSheet.para2") }
+
+    @bullets(requiredItems: _*)
+
+    @if(attachments.contains(VAT5L)) {
+        @p { @messages("vRSNewAttachmentsJourney.postalCoverSheet.para4") }
+
+        @bullets(
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.bp7"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.bp8")
+        )
+    }
+
+    @warningText { @messages("vRSNewAttachmentsJourney.postalCoverSheet.warningText") }
+
+    @if(needsIdentityDocuments) {
+        @h2(messages("vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.heading"))
+        @p { @messages("vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.p") }
+        @bullets(
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp1"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp2"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp3")
+        )
+
+        @h2(messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.heading"))
+        @p { @messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.p1") }
+        @bullets(
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp1"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp2"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp3"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp4"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp5"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp6"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp7"),
+            messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp8")
+        )
+        @p { @messages("vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.p2") }
+    }
+
+    @h2(messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.heading"))
+    @p { @messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p") }
+    @p {
+        @messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p2")<br>
+        @messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p3")<br>
+        @messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p4")<br>
+        @messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p5")<br>
+        @messages("vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p6")
+    }
+
+    <div class="govuk-button-group govuk-!-display-none-print">
+        @print("vRSNewAttachmentsJourney.postalCoverSheet.printOrSave", classes = "govuk-button govuk-button--secondary")
+    </div>
+
+    <div class="govuk-!-display-none-print">
+        @formWithCSRF(action = controllers.attachments.routes.PostalCoverSheetController.submit) {
+            @govukCheckboxes(Checkboxes(
+                name = "value",
+                fieldset = Some(Fieldset(
+                    legend = Some(Legend(
+                        content = Text(messages("vRSNewAttachmentsJourney.postalCoverSheet.printed.heading")),
+                        isPageHeading = false,
+                        classes = "govuk-fieldset__legend--m"
+                    ))
+                )),
+                hint = Some(Hint(content = Text(messages("vRSNewAttachmentsJourney.postalCoverSheet.printed.hint")))),
+                items = Seq(CheckboxItem(
+                    id = Some("value"),
+                    content = Text(messages("vRSNewAttachmentsJourney.postalCoverSheet.printed.label")),
+                    value = "true",
+                    checked = printedForm("value").value.contains("true")
+                )),
+                errorMessage = printedForm.errors.headOption.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
+            ))
+
+            @button("vRSNewAttachmentsJourney.postalCoverSheet.printed.button", showSaveProgressButton = false)
+        }
+    </div>
+}
