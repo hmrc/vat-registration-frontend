@@ -1455,13 +1455,43 @@ attachmentMethodNewJourney.options.post                             = Post docum
 attachmentMethodNewJourney.error.missing                            = Select how you want to send copies of the documents to HMRC
 
 # MULTIPLE DOCUMENTS REQUIRED
-attachments.multipleDocumentsRequired.title                         = You must send us additional documents in order for us to process this VAT application
-attachments.multipleDocumentsRequired.para                          = To enable us to progress your application further, we need the following information and documents from you:
+attachments.multipleDocumentsRequired.title                         = We need documents from you to process your VAT application
+attachments.multipleDocumentsRequired.para                          = Based on your answers, we still need forms from you. Select a form to get more information about each one, and to download them so they can be completed and printed (links open in a new tab):
+attachments.multipleDocumentsRequired.forms.bullet1.vat2.link       = <a href="{0}" target="_blank">VAT2</a>
+attachments.multipleDocumentsRequired.forms.bullet1.vat2.text       =  - partnership details
+attachments.multipleDocumentsRequired.forms.bullet2.vat5l.link      = <a href="{0}" target="_blank">VAT5L</a>
+attachments.multipleDocumentsRequired.forms.bullet2.vat5l.text      =  - land and property supplies (you can also include any supporting documents)
+attachments.multipleDocumentsRequired.forms.bullet3.vat5051.link    = <a href="{0}" target="_blank">VAT 50/51</a>
+attachments.multipleDocumentsRequired.forms.bullet3.vat5051.text    =  - VAT group registration
+attachments.multipleDocumentsRequired.forms.bullet4.vat1tr.link     = <a href="{0}" target="_blank">VAT1TR</a>
+attachments.multipleDocumentsRequired.forms.bullet4.vat1tr.text     =  - a non-established taxable person (NETP) looking to appoint a tax representative
+attachments.multipleDocumentsRequired.forms.bullet5.proof           = 3 documents to confirm your identity
+
+attachments.multipleDocumentsRequired.vat_land.subheading           = If you want to charge VAT on land or buildings
+attachments.multipleDocumentsRequired.vat_land.para                 = You also need to send:
+attachments.multipleDocumentsRequired.land.bullet1.vat1614a.link    = <a href="{0}" target="_blank">VAT1614A</a>
+attachments.multipleDocumentsRequired.land.bullet1.vat1614a.text    = - to notify HMRC of your decision to opt to tax land and or buildings
+attachments.multipleDocumentsRequired.land.bullet2.vat1614h.link    = <a href="{0}" target="_blank">VAT1614H</a>
+attachments.multipleDocumentsRequired.land.bullet2.vat1614h.text    = - if you want to opt to tax land and or buildings and need HMRC permission
+
+attachments.multipleDocumentsRequired.forms.bullet6.evidence        = Your identity evidence
 attachments.multipleDocumentsRequired.identityDetails               = What identity documents can I provide?
 attachments.multipleDocumentsRequired.identityEvidence              = identity documents of you
-attachments.multipleDocumentsRequired.identityEvidence.name         = three documents to confirm {0}’s identity
-attachments.multipleDocumentsRequired.VAT2                          = a completed
-attachments.multipleDocumentsRequired.VAT2.link                     = VAT2 form
+
+attachments.vat2DocumentsRequired.para                              = Based on your answers, you need to:
+attachments.vat2DocumentsRequired.forms.bullet1.proof               = provide 3 documents to confirm your identity
+attachments.vat2DocumentsRequired.forms.bullet2.vat2.text           = complete and send us a VAT2 form to tell us about your partnership details
+attachments.vat2DocumentsRequired.vat2.para                         = Open <a href="{0}" target="_blank">the VAT2 page (opens in a new tab)</a> for more information about the form, and to download it so it can be completed and printed.
+
+attachments.vat5LDocumentsRequired.para1                            = Based on your answers, we still need forms from you. Select a form to get more information about each one, and to download them so they can be completed and printed (links open in a new tab)
+attachments.vat5LDocumentsRequired.para2                            = You need to send us:
+attachments.vat5LDocumentsRequired.forms.bullet1.proof              = 3 documents to confirm your identity
+attachments.vat5LDocumentsRequired.forms.bullet2.vat5l              = a completed <a href="{0}" target="_blank">VAT5L form</a> to tell us about your land and properties supplies (you can also include any supporting documents)
+attachments.vat5LDocumentsRequired.land.heading                     = If you want to charge VAT on land or buildings
+attachments.vat5LDocumentsRequired.para3                            = You also need to send:
+
+attachments.multipleDocumentsRequired.VAT2                          = partnership details
+attachments.multipleDocumentsRequired.VAT2.link                     = VAT2
 attachments.multipleDocumentsRequired.VAT2.end                      =
 attachments.multipleDocumentsRequired.VAT51.para1                   = a completed
 attachments.multipleDocumentsRequired.VAT51.link                    = VAT 50/51 form
@@ -1528,13 +1558,13 @@ attachments.documentsPost.para1                    = You need to post your docum
 
 attachments.uploadingDocument.subheading1                = Forms and identity documents
 attachments.documentsPost.forms.para1                    = Make sure you have all your forms and copies of your identity documents (links open in a new tab):
-attachments.documentsPost.forms.bullet1.vat2.link        = <a href="{0}">VAT2</a>
+attachments.documentsPost.forms.bullet1.vat2.link        = <a href="{0}" target="_blank">VAT2</a>
 attachments.documentsPost.forms.bullet1.vat2.text        =  - partnership details
-attachments.documentsPost.forms.bullet2.vat5l.link       = <a href="{0}">VAT5L</a>
+attachments.documentsPost.forms.bullet2.vat5l.link       = <a href="{0}" target="_blank">VAT5L</a>
 attachments.documentsPost.forms.bullet2.vat5l.text       =  - land and property supplies (you can also include any supporting documents)
-attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}">VAT 50/51</a>
+attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}" target="_blank">VAT 50/51</a>
 attachments.documentsPost.forms.bullet3.vat5051.text     =  - VAT group registration
-attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}">VAT1TR</a>
+attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}" target="_blank">VAT1TR</a>
 attachments.documentsPost.forms.bullet4.vat1tr.text      =  - a non-established taxable person (NETP) looking to appoint a tax representative
 attachments.documentsPost.forms.bullet5.proof            = Your proof of identity
 attachments.documentsPost.forms.bullet6.evidence         = Your identity evidence
@@ -1560,13 +1590,13 @@ attachments.documentsPost.identity.message         = Do not send original versio
 
 attachments.uploadingDocument.subheading2               = If you want to charge VAT on land or buildings
 attachments.documentsPost.land.para1                    = You may also need to send a:
-attachments.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}" target="_blank">VAT1614A</a>
 attachments.documentsPost.land.bullet1.vat1614a.text    = - to notify HMRC of your decision to opt to tax land and or buildings
-attachments.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}" target="_blank">VAT1614H</a>
 attachments.documentsPost.land.bullet2.vat1614h.text    = - if you want to opt to tax land and or buildings and need HMRC permission
 
 attachments.uploadingDocument.subheading3 = Supporting documents
-attachments.documentsPost.support.para    = You can also send <a href="{0}">supporting documents for your VAT5L</a>. If you send them now, it may reduce delays with your application.
+attachments.documentsPost.support.para    = You can also send <a href="{0}" target="_blank">supporting documents for your VAT5L</a>. If you send them now, it may reduce delays with your application.
 
 attachments.uploadingDocument.subheading4 = Cover page
 attachments.documentsPost.cover.text      = You need to include the cover page with your documents and forms. You''ll be able to print the page after you submit your application online.
@@ -1597,9 +1627,9 @@ attachments.vat5l.documentsPost.forms.bullet3.evidence         = copies of your 
 attachments.vat5l.documentsPost.forms.inset.text               = You also need to send the auto-generated HMRC cover letter with your documents. You can only print this off after you have submitted your online VAT application.
 
 attachments.vat5l.documentsPost.land.para2                    = You may also need to send a completed:
-attachments.vat5l.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}" target="_blank">VAT1614A</a>
 attachments.vat5l.documentsPost.land.bullet1.vat1614a.text    = - to notify HMRC of your decision to opt to tax land or buildings
-attachments.vat5l.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}" target="_blank">VAT1614H</a>
 attachments.vat5l.documentsPost.land.bullet2.vat1614h.text    = - if you want to opt to tax land or buildings and need HMRC permission
 
 attachments.vat5l.uploadingDocument.subheading3 = Supporting documents

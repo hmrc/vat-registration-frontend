@@ -46,18 +46,12 @@ class DocumentsRequiredController @Inject()(val authConnector: AuthClientConnect
               Redirect(controllers.routes.TaskListController.show)
             case list if isTransactor && list.forall(List(IdentityEvidence, TransactorIdentityEvidence).contains(_)) =>
               Redirect(routes.TransactorIdentityEvidenceRequiredController.show)
-            case list if list.size > 1 =>
-              Redirect(routes.MultipleDocumentsRequiredController.show)
-            case List(IdentityEvidence) =>
-              Redirect(routes.IdentityEvidenceRequiredController.show)
             case List(VAT2) =>
-              Redirect(routes.Vat2RequiredController.show)
-            case List(VAT51) =>
-              Redirect(routes.Vat51RequiredController.show)
+              Redirect(routes.Vat2DocumentsRequiredController.show)
             case List(VAT5L) =>
-              Redirect(routes.Vat5LRequiredController.show)
-            case List(TaxRepresentativeAuthorisation) =>
-              Redirect(routes.Vat1TRRequiredController.show)
+              Redirect(routes.Vat5LDocumentsRequiredController.show)
+            case _ =>
+              Redirect(routes.MultipleDocumentsRequiredController.show)
           }
         } yield redirect
   }

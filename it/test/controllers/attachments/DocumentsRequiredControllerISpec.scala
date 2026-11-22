@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,177 +26,106 @@ class DocumentsRequiredControllerISpec extends ControllerISpec {
   val resolveUrl: String = routes.DocumentsRequiredController.resolve.url
   val submitUrl: String = routes.DocumentsRequiredController.submit.url
 
+  private def stubDependencies(
+                                attachments: List[AttachmentType],
+                                isTransactor: Boolean = false
+                              ): Unit =
+    given()
+      .user.isAuthorised()
+      .registrationApi.getSection[EligibilitySubmissionData](
+        Some(testEligibilitySubmissionData.copy(isTransactor = isTransactor))
+      )
+      .attachmentsApi.getAttachments(attachments)
+
+  private def assertRedirect(expectedUrl: String): Unit =
+    whenReady(buildClient(resolveUrl).get()) { response =>
+      response.status mustBe SEE_OTHER
+      response.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
+    }
+
   s"GET $resolveUrl" must {
 
-    "return a redirect to documents required page when identity evidence is required" in {
-      given()
-        .user.isAuthorised()
-        .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to TaskList when there are no attachments" in {
+      stubDependencies(Nil)
 
-      val res = buildClient(resolveUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.IdentityEvidenceRequiredController.show.url)
-      }
+      assertRedirect(controllers.routes.TaskListController.show.url)
     }
 
-    "return a redirect to VAT2 required page when VAT2 is required" in {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getAttachments(List[AttachmentType](VAT2))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to TransactorIdentityEvidenceRequired when the user is a transactor with IdentityEvidence" in {
+      stubDependencies(
+        List(IdentityEvidence),
+        isTransactor = true
+      )
 
-      val res = buildClient(resolveUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.Vat2RequiredController.show.url)
-      }
+      assertRedirect(routes.TransactorIdentityEvidenceRequiredController.show.url)
     }
 
-    "return a redirect to VAT51 required page when VAT51 is required" in {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getAttachments(List[AttachmentType](VAT51))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to TransactorIdentityEvidenceRequired when the user is a transactor with TransactorIdentityEvidence" in {
+      stubDependencies(
+        List(TransactorIdentityEvidence),
+        isTransactor = true
+      )
 
-      val res = buildClient(resolveUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.Vat51RequiredController.show.url)
-      }
+      assertRedirect(routes.TransactorIdentityEvidenceRequiredController.show.url)
     }
 
-    "return a redirect to VAT5L required page when VAT5L is required" in {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getAttachments(List[AttachmentType](VAT5L))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to TransactorIdentityEvidenceRequired when the user is a transactor with both identity documents" in {
+      stubDependencies(
+        List(IdentityEvidence, TransactorIdentityEvidence),
+        isTransactor = true
+      )
 
-      val res = buildClient(resolveUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.Vat5LRequiredController.show.url)
-      }
+      assertRedirect(routes.TransactorIdentityEvidenceRequiredController.show.url)
     }
 
-    "return a redirect to VAT1TR required page when VAT1TR is required" in {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getAttachments(List[AttachmentType](TaxRepresentativeAuthorisation))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to MultipleDocumentsRequired when the user is not a transactor with IdentityEvidence" in {
+      stubDependencies(List(IdentityEvidence))
 
-      val res = buildClient(resolveUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.Vat1TRRequiredController.show.url)
-      }
+      assertRedirect(routes.MultipleDocumentsRequiredController.show.url)
     }
 
-    "return a redirect to multiple documents required page when multiple attachments are required" in {
-      given()
-        .user.isAuthorised()
-        .audit.writesAudit()
-        .audit.writesAuditMerged()
-        .attachmentsApi.getAttachments(List[AttachmentType](VAT5L, VAT2))
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to Vat2DocumentsRequired when VAT2 is the only required attachment" in {
+      stubDependencies(List(VAT2))
 
-      val res = buildClient(resolveUrl).get()
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.MultipleDocumentsRequiredController.show.url)
-      }
+      assertRedirect(routes.Vat2DocumentsRequiredController.show.url)
     }
 
-    "return a redirect to Transactor Identity Evidence Required" when {
-      "the user is a Transactor and transactor details are unverified" in {
-        given()
-          .user.isAuthorised()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .attachmentsApi.getAttachments(List[AttachmentType](TransactorIdentityEvidence))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
+    "redirect to Vat5LDocumentsRequired when VAT5L is the only required attachment" in {
+      stubDependencies(List(VAT5L))
 
-        val res = buildClient(resolveUrl).get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.TransactorIdentityEvidenceRequiredController.show.url)
-        }
-      }
-
-      "the user is a Transactor and applicant details are unverified" in {
-        given()
-          .user.isAuthorised()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .attachmentsApi.getAttachments(List[AttachmentType](IdentityEvidence))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-        val res = buildClient(resolveUrl).get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.TransactorIdentityEvidenceRequiredController.show.url)
-        }
-      }
-
-      "the user is a Transactor and transactor with applicant details are unverified" in {
-        given()
-          .user.isAuthorised()
-          .audit.writesAudit()
-          .audit.writesAuditMerged()
-          .attachmentsApi.getAttachments(List[AttachmentType](TransactorIdentityEvidence, IdentityEvidence))
-          .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData.copy(isTransactor = true)))
-
-        val res = buildClient(resolveUrl).get()
-
-        whenReady(res) { result =>
-          result.status mustBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) mustBe Some(controllers.attachments.routes.TransactorIdentityEvidenceRequiredController.show.url)
-        }
-      }
+      assertRedirect(routes.Vat5LDocumentsRequiredController.show.url)
     }
 
-    "return a redirect to task list page when no attachments are given" in {
-      given()
-        .user.isAuthorised()
-        .attachmentsApi.getAttachments(List[AttachmentType]())
-        .registrationApi.getSection[EligibilitySubmissionData](Some(testEligibilitySubmissionData))
+    "redirect to MultipleDocumentsRequired when VAT2 and VAT5L are required" in {
+      stubDependencies(List(VAT2, VAT5L))
 
-      val res = buildClient(resolveUrl).get()
+      assertRedirect(routes.MultipleDocumentsRequiredController.show.url)
+    }
 
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.TaskListController.show.url)
-      }
+    "redirect to MultipleDocumentsRequired when VAT51 is required" in {
+      stubDependencies(List(VAT51))
+
+      assertRedirect(routes.MultipleDocumentsRequiredController.show.url)
+    }
+
+    "redirect to MultipleDocumentsRequired when TaxRepresentativeAuthorisation is required" in {
+      stubDependencies(List(TaxRepresentativeAuthorisation))
+
+      assertRedirect(routes.MultipleDocumentsRequiredController.show.url)
     }
   }
 
-  s"POST $submitUrl" when {
-    "redirect to the AttachmentMethod page" in {
+  s"POST $submitUrl" must {
+
+    "redirect to AttachmentMethod" in {
       given()
         .user.isAuthorised()
 
-      val res = buildClient(submitUrl).post("")
-
-      whenReady(res) { result =>
-        result.status mustBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) mustBe Some(routes.AttachmentMethodController.show.url)
+      whenReady(buildClient(submitUrl).post("")) { response =>
+        response.status mustBe SEE_OTHER
+        response.header(HeaderNames.LOCATION) mustBe Some(
+          routes.AttachmentMethodController.show.url
+        )
       }
     }
   }

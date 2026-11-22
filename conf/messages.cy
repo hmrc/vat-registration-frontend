@@ -1448,13 +1448,43 @@ attachmentMethod.options.post                             = Postio copïau at CT
 attachmentMethod.error.missing                            = Dewiswch sut yr hoffech anfon copïau o’r dogfennau at CThEM
 
 # MULTIPLE DOCUMENTS REQUIRED
-attachments.multipleDocumentsRequired.title                         = Mae’n rhaid i chi anfon dogfennau ychwanegol atom er mwyn i ni brosesu’r cais TAW hwn
-attachments.multipleDocumentsRequired.para                          = Er mwyn ein galluogi i fwrw ymlaen â’ch cais, mae angen i ni gael yr wybodaeth a’r dogfennau canlynol gennych:
+attachments.multipleDocumentsRequired.title                         = Mae angen rhagor o ddogfennau arnom er mwyn i ni allu prosesu eich cais TAW
+attachments.multipleDocumentsRequired.para                          = Yn seiliedig ar eich atebion, mae angen i chi anfon ffurflenni atom o hyd. Dewiswch ffurflen i gael rhagor o wybodaeth am bob un, ac ewch ati i’w lawrlwytho fel y gellir ei llenwi a’i hargraffu (mae cysylltiadau’n agor tab newydd):
+attachments.multipleDocumentsRequired.forms.bullet1.vat2.link       = <a href="{0}" target="_blank">VAT2</a>
+attachments.multipleDocumentsRequired.forms.bullet1.vat2.text       =  - manylion y bartneriaeth
+attachments.multipleDocumentsRequired.forms.bullet2.vat5l.link      = <a href="{0}" target="_blank">VAT5L</a>
+attachments.multipleDocumentsRequired.forms.bullet2.vat5l.text      =  - cyflenwadau tir ac eiddo (gallwch hefyd gynnwys unrhyw ddogfennau ategol)
+attachments.multipleDocumentsRequired.forms.bullet3.vat5051.link    = <a href="{0}" target="_blank">VAT 50/51</a>
+attachments.multipleDocumentsRequired.forms.bullet3.vat5051.text    =  - cofrestru grŵp TAW
+attachments.multipleDocumentsRequired.forms.bullet4.vat1tr.link     = <a href="{0}" target="_blank">VAT1TR</a>
+attachments.multipleDocumentsRequired.forms.bullet4.vat1tr.text     =  - person sy’n agored i TAW, ond sydd heb ei sefydlu yn y DU (NETP) sydd am benodi cynrychiolydd treth
+attachments.multipleDocumentsRequired.forms.bullet5.proof           = 3 dogfen i gadarnhau eich hunaniaeth
+
+attachments.multipleDocumentsRequired.vat_land.subheading           = Os ydych am godi TAW ar dir neu adeiladau
+attachments.multipleDocumentsRequired.vat_land.para                 = Mae angen i chi anfon y canlynol hefyd:
+attachments.multipleDocumentsRequired.land.bullet1.vat1614a.link    = <a href="{0}" target="_blank">VAT1614A</a>
+attachments.multipleDocumentsRequired.land.bullet1.vat1614a.text    = - i roi gwybod i CThEF am eich penderfyniad i optio i drethu tir neu adeiladau
+attachments.multipleDocumentsRequired.land.bullet2.vat1614h.link    = <a href="{0}" target="_blank">VAT1614H</a>
+attachments.multipleDocumentsRequired.land.bullet2.vat1614h.text    = - os ydych am optio i drethu tir neu adeiladau a bod angen caniatâd CThEF arnoch
+
+attachments.multipleDocumentsRequired.forms.bullet6.evidence        = Eich tystiolaeth hunaniaeth
 attachments.multipleDocumentsRequired.identityDetails               = Pa ddogfennau adnabod allaf eu darparu?
-attachments.multipleDocumentsRequired.identityEvidence              = dogfennau adnabod sy’n ymwneud â chi
-attachments.multipleDocumentsRequired.identityEvidence.name         = tair dogfen i gadarnhau pwy yw {0}
-attachments.multipleDocumentsRequired.VAT2                          =
-attachments.multipleDocumentsRequired.VAT2.link                     = ffurflen VAT2
+attachments.multipleDocumentsRequired.identityEvidence              = eich dogfennau hunaniaeth
+
+attachments.vat2DocumentsRequired.para                              = Yn seiliedig ar eich atebion, mae angen i chi wneud y canlynol:
+attachments.vat2DocumentsRequired.forms.bullet1.proof               = 3 dogfen i gadarnhau eich hunaniaeth
+attachments.vat2DocumentsRequired.forms.bullet2.vat2.text           = llenwi ffurflen VAT2 a’i hanfon atom i roi gwybod i ni am fanylion eich partneriaeth
+attachments.vat2DocumentsRequired.vat2.para                         = Agor <a href="{0}" target="_blank">y dudalen VAT2 (yn agor tab newydd)</a> i gael rhagor o wybodaeth am y ffurflen, ac i’w lawrlwytho fel y gellir ei llenwi a’i hargraffu.
+
+attachments.vat5LDocumentsRequired.para1                            = Yn seiliedig ar eich atebion, mae angen i chi anfon ffurflenni atom o hyd. Dewiswch ffurflen i gael rhagor o wybodaeth am bob un, ac ewch ati i’w lawrlwytho fel y gellir ei llenwi a’i hargraffu (mae cysylltiadau’n agor tab newydd).
+attachments.vat5LDocumentsRequired.para2                            = Bydd angen i chi anfon y canlynol atom:
+attachments.vat5LDocumentsRequired.forms.bullet1.proof              = 3 dogfen i gadarnhau eich hunaniaeth
+attachments.vat5LDocumentsRequired.forms.bullet2.vat5l              = ffurflen <a href="{0}" target="_blank">VAT5L</a> wedi’i llenwi i roi gwybod i ni am eich cyflenwadau tir ac eiddo (gallwch hefyd gynnwys unrhyw ddogfennau ategol)
+attachments.vat5LDocumentsRequired.land.heading                     = Os ydych am godi TAW ar dir neu adeiladau
+attachments.vat5LDocumentsRequired.para3                            = Mae angen i chi anfon y canlynol hefyd:
+
+attachments.multipleDocumentsRequired.VAT2                          = manylion y bartneriaeth
+attachments.multipleDocumentsRequired.VAT2.link                     = VAT2
 attachments.multipleDocumentsRequired.VAT2.end                      = wedi’i chwblhau
 attachments.multipleDocumentsRequired.VAT51.para1                   =
 attachments.multipleDocumentsRequired.VAT51.link                    = ffurflen VAT 50/51
