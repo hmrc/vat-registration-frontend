@@ -59,6 +59,7 @@ tasklist.vatRegistration.registrationDate           = Dyddiad cofrestru
 tasklist.vatRegistration.vatReturns                 = Ffurflenni TAW
 tasklist.vatRegistration.flatRateScheme             = Cynllun Cyfradd Unffurf
 tasklist.attachments.heading                        = Atodiadau
+tasklist.attachments.newAttachmentsJourney.heading  = Dogfennau ychwanegol
 tasklist.attachments.identityDocuments              = Dogfennau adnabod
 tasklist.attachments.additionalForms                = Ffurflenni ychwanegol
 tasklist.attachments.documentsAndForms              = Dogfennau a ffurflenni

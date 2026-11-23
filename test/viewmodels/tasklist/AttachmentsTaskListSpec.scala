@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
+import featuretoggle.FeatureToggleSupport
 import fixtures.VatRegistrationFixture
 import models.api._
 import models.api.vatapplication.{OverseasCompliance, StoringOverseas, VatApplication}
@@ -24,6 +26,7 @@ import models.{ConditionalValue, GroupRegistration, NIPTurnover}
 import org.mockito.ArgumentMatchers.{any, anyString}
 import org.mockito.Mockito.when
 import testHelpers.VatRegSpec
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import services.{AttachmentsService, BusinessService}
@@ -31,9 +34,18 @@ import services.{AttachmentsService, BusinessService}
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture {
+class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends VatRegSpec with VatRegistrationFixture with FeatureToggleSupport {
 
   implicit val fakeRequest: Request[_] = FakeRequest()
+
+  lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val englishMessages: Messages = messagesApi.preferred(Seq(Lang("en")))
+  lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
+
+  override protected def afterEach(): Unit = {
+    super.afterEach()
+    disable(VrsNewAttachmentJourney)
+  }
 
   val vatRegistrationTaskList: VatRegistrationTaskList.type = VatRegistrationTaskList
   val businessService: BusinessService = mockBusinessService
@@ -238,6 +250,45 @@ class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends Vat
 
       row.status mustBe TLCompleted
       row.url mustBe controllers.attachments.routes.DocumentsRequiredController.resolve.url
+    }
+  }
+
+  "The attachments section" when {
+
+    trait SectionSetup extends Setup {
+      val scheme: VatScheme = emptyVatScheme.copy(eligibilitySubmissionData = Some(validEligibilitySubmissionData))
+      when(mockAttachmentsService.getAttachmentList(anyString())(any(), any())).thenReturn(Future.successful(List(IdentityEvidence)))
+      when(mockAttachmentsService.getIncompleteAttachments(anyString())(any(), any())).thenReturn(Future.successful(List.empty))
+
+      val rowBuilder: TaskListRowBuilder = await(section.attachmentsRequiredRow(attatchmentService, businessService)).get
+    }
+
+    "VrsNewAttachmentJourney is enabled" must {
+      "have the 'Additional Documents' heading" in new SectionSetup {
+        enable(VrsNewAttachmentJourney)
+
+        section.build(scheme, rowBuilder)(englishMessages, appConfig).heading mustBe englishMessages("tasklist.attachments.newAttachmentsJourney.heading")
+      }
+
+      "have the Welsh new attachments journey heading" in new SectionSetup {
+        enable(VrsNewAttachmentJourney)
+
+        section.build(scheme, rowBuilder)(welshMessages, appConfig).heading mustBe welshMessages("tasklist.attachments.newAttachmentsJourney.heading")
+      }
+    }
+
+    "VrsNewAttachmentJourney is disabled" must {
+      "have the 'Attachments' heading" in new SectionSetup {
+        disable(VrsNewAttachmentJourney)
+
+        section.build(scheme, rowBuilder)(englishMessages, appConfig).heading mustBe englishMessages("tasklist.attachments.heading")
+      }
+
+      "have the Welsh 'Atodiadau' heading" in new SectionSetup {
+        disable(VrsNewAttachmentJourney)
+
+        section.build(scheme, rowBuilder)(welshMessages, appConfig).heading mustBe welshMessages("tasklist.attachments.heading")
+      }
     }
   }
 }
