@@ -17,6 +17,7 @@
 package viewmodels.tasklist
 
 import config.FrontendAppConfig
+import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import models._
 import models.api._
 import play.api.i18n.Messages
@@ -51,9 +52,9 @@ object AttachmentsTaskList {
       None
     }
 
-  def build(vatScheme: VatScheme, attachmentsRow: TaskListRowBuilder)(implicit messages: Messages): TaskListSection =
+  def build(vatScheme: VatScheme, attachmentsRow: TaskListRowBuilder)(implicit messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
     TaskListSection(
-      heading = messages("tasklist.attachments.heading"),
+      heading = if(appConfig.isEnabled(VrsNewAttachmentJourney)) messages("tasklist.attachments.newAttachmentsJourney.heading") else messages("tasklist.attachments.heading"),
       rows = Seq(attachmentsRow.build(vatScheme))
     )
 
