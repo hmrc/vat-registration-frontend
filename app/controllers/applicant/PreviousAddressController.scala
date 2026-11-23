@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2027 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import config.{BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import controllers.applicant.{routes => applicantRoutes}
 import forms.PreviousAddressForm
-import models.api.{Individual, LtdLiabilityPartnership, NETP, NonUkNonEstablished, Partnership, Trust, UkCompany}
+import models.api.{Individual, LtdLiabilityPartnership, NonUkNonEstablished, Partnership, Trust, UkCompany}
 import play.api.mvc.{Action, AnyContent}
 import services.ApplicantDetailsService._
 import services._

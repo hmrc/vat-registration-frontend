@@ -20,22 +20,22 @@ import config.FrontendAppConfig
 import connectors.ConfigConnector
 import controllers.vatapplication.{routes => vatApplicationRoutes}
 import featuretoggle.FeatureSwitch.TaxableTurnoverJourney
+import featuretoggle.FeatureToggleSupport.isEnabled
 import models._
 import models.api.vatapplication._
-import models.api.{Individual, NETP, NonUkNonEstablished, PartyType, VatScheme}
+import models.api.{Individual, NonUkNonEstablished, PartyType, VatScheme}
 import models.view.SummaryListRowUtils.{optSummaryListRowBoolean, optSummaryListRowSeq, optSummaryListRowString}
 import play.api.i18n.Messages
+import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
 import services.FlatRateService
 import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import uk.gov.hmrc.http.InternalServerException
 import utils.MessageDateFormat
-import featuretoggle.FeatureToggleSupport.isEnabled
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.Request
 
 // scalastyle:off
 @Singleton
@@ -354,13 +354,13 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
     val accountIsProvidedRow = optSummaryListRowBoolean(
       s"$sectionId.companyBankAccount",
       bankAccount.map(_.isProvided),
-      Some(controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show.url)
+      Some(controllers.bankdetails.routes.CanYouProvideBankAccountDetailsController.show().url)
     )
 
     val companyBankAccountDetails = optSummaryListRowSeq(
       s"$sectionId.companyBankAccount.details",
       bankAccount.flatMap(_.details.map(BankAccountDetails.bankSeq)),
-      Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show.url)
+      Some(controllers.bankdetails.routes.UkBankAccountDetailsController.show().url)
     )
 
     val noUKBankAccount = optSummaryListRowString(
@@ -372,7 +372,7 @@ class RegistrationDetailsSummaryBuilder @Inject()(configConnector: ConfigConnect
         case AccountNotInBusinessName => "pages.noUKBankAccount.accountNotInBusinessName"
         case DontWantToProvide => "pages.noUKBankAccount.dontWantToProvide"
       },
-      Some(controllers.bankdetails.routes.NoUKBankAccountController.show.url)
+      Some(controllers.bankdetails.routes.NoUKBankAccountController.show().url)
     )
 
     List(

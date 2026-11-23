@@ -32,10 +32,6 @@
 
 @(postalConfirmationForm: Form[Boolean])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
-@noEORIoption = {
-    @p{ @messages("attachments.postalConfirmation.para1") }
-}
-
 @layout(pageTitle = Some(title(postalConfirmationForm, messages("attachments.postalConfirmation.title")))) {
 
     @errorSummary(postalConfirmationForm.errors)
@@ -45,8 +41,6 @@
     @p{ @messages("attachments.postalConfirmation.para") }
 
     @warningText{ @messages("attachments.postalConfirmation.warning") }
-
-    @govukInsetText(InsetText(content = HtmlContent(noEORIoption)))
 
     @h2(messages("attachments.postalConfirmation.para2"))
 

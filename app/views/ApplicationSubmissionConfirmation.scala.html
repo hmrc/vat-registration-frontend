@@ -28,7 +28,6 @@
         strong: strong,
         formWithCSRF: FormWithCSRF,
         govukPanel: GovukPanel,
-        orderedList: orderedList,
         bulletsList: bullets,
         panelIndent: panelIndent,
         link: link,
@@ -44,7 +43,7 @@
         email: String,
         isTransactor: Boolean,
         registrationReason: RegistrationReason,
-        isNewApplConfirmJourneyEnabled: Boolean = false
+        isNewAttachmentJourney: Boolean = false
 )(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(
@@ -59,35 +58,22 @@
     ))
 
     @** Inset Section for clarity on VAT application number vs. VAT registration number **@
-    @if(isNewApplConfirmJourneyEnabled){
-        @govukInsetText(InsetText(
-            content = HtmlContent(insetTextAboutApplRef)
-        ))
-    }
+    @govukInsetText(InsetText(
+        content = HtmlContent(insetTextAboutApplRef)
+    ))
 
     @** info to email **@
-    @if(isNewApplConfirmJourneyEnabled){
-        @p{@messages("pages.application.submission.confirmation.emailedTo.new", email) }
-    } else {
-        @p{@messages("pages.application.submission.confirmation.emailedTo", email) }
-    }
-
+    @p{@messages("pages.application.submission.confirmation.emailedTo.new", email) }
 
     @** Section: What you must do now  ** --> Only for POST **@
     @if(isAttachmentMethodPost){
         @h2(messages("pages.application.submission.confirmation.doc.heading"))
-        @if(isNewApplConfirmJourneyEnabled){
-            @guidancePostNew
-        } else {
-            @guidancePost
-        }
+        @guidancePostNew
     }
 
     @** Section: Postal address ** --> Only for POST **@
-    @if(isNewApplConfirmJourneyEnabled){
-        @if(isAttachmentMethodPost) {
-            @postalAddressContent
-        }
+    @if(isAttachmentMethodPost) {
+        @postalAddressContent
     }
 
     @** Section: What happens next **@
@@ -95,13 +81,7 @@
     @{whatHappensNextContent}
 
     @** Last-Section: Trading before you are registered for VAT **@
-    @if(isNewApplConfirmJourneyEnabled){
-        @tradingDetail
-    } else {
-        @govukInsetText(InsetText(
-            content = HtmlContent(insetText)
-        ))
-    }
+    @tradingDetail
 
     @form(action = controllers.routes.ApplicationSubmissionController.submit) {
         @button("pages.application.submission.confirmation.button", showSaveProgressButton = false)
@@ -111,15 +91,11 @@
 @** Common Functions **@
 
 @greenPanelContent = {
-    @if(isNewApplConfirmJourneyEnabled){
-        @messages("pages.application.submission.confirmation.applNumber")<br/>@strong(Html(acknowledgementReference))<br/><br/>
-        @if(isTransactor){
-            @messages(s"pages.application.submission.confirmation.info.agent$attachMethod")
-        } else {
-            @messages("pages.application.submission.confirmation.info")
-        }
+    @messages("pages.application.submission.confirmation.applNumber")<br/>@strong(Html(acknowledgementReference))<br/><br/>
+    @if(isTransactor){
+        @messages(s"pages.application.submission.confirmation.info.agent$attachMethod")
     } else {
-        @messages("pages.application.submission.confirmation.reference")<br>@strong(Html(acknowledgementReference))
+        @messages("pages.application.submission.confirmation.info")
     }
 }
 
@@ -130,17 +106,14 @@
 @guidancePostNew = {
     @p{
         @messages(s"pages.application.submission.confirmation.doc.para1$userType")
-        @link(controllers.attachments.routes.PostalCoverSheetController.show.url, "pages.application.submission.confirmation.doc.linkPost.new", isExternal = true).
+        @if(isNewAttachmentJourney) {
+            @messages("pages.application.submission.confirmation.doc.linkPost.new")
+        } else {
+            @link(controllers.attachments.routes.PostalCoverSheetController.show.url, "pages.application.submission.confirmation.doc.linkPost.new.linkText", isExternal = true).
+        }
     }
     @p{
         @messages(s"pages.application.submission.confirmation.doc.para2$userType")
-    }
-}
-
-@guidancePost = {
-    @p {
-        @messages("pages.application.submission.confirmation.doc.para")
-        @link(controllers.attachments.routes.PostalCoverSheetController.show.url, s"pages.application.submission.confirmation.doc.linkPost$opt3pt", isExternal = true).
     }
 }
 
@@ -154,18 +127,8 @@
 }
 
 @whatHappensNextContent = {
-    @if(isNewApplConfirmJourneyEnabled){
-        @p{@messages(s"pages.application.submission.confirmation.list.decisionDoc$attachMethod$userType")}
-        @p{@messages(s"pages.application.submission.confirmation.list.software$attachMethod$userType$vatGroupType")}
-    } else {
-        @if(isAttachmentMethodPost){
-            @orderedList(messages("pages.application.submission.confirmation.list.decisionDoc"),
-                         messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt"))
-        } else {
-            @orderedList(messages("pages.application.submission.confirmation.list.decisionNoDoc"),
-                         messages(s"pages.application.submission.confirmation.list.software$optRegReason$opt3pt"))
-        }
-    }
+    @p{@messages(s"pages.application.submission.confirmation.list.decisionDoc$attachMethod$userType")}
+    @p{@messages(s"pages.application.submission.confirmation.list.software$attachMethod$userType$vatGroupType")}
 }
 
 
@@ -175,7 +138,7 @@
     @if(isTransactor || (!isAttachmentMethodPost & !isTransactor & isVatGroup)){
         @p{@messages("pages.application.submission.confirmation.trading.p1")
             @if(isTogcAppl){
-                @Html(messages("pages.application.submission.confirmation.trading.howToRegisterLink", appConfig.govukHowToRegister))
+                @Html(messages("pages.application.submission.confirmation.trading.howToRegisterLink", howToRegisterLink))
             }
         }
     } else if (!isTransactor){
@@ -183,7 +146,7 @@
             @p{@messages("pages.application.submission.confirmation.trading.p1.post.individual")}
         } else {
             @if(isTogcAppl){
-                @p{@Html(messages("pages.application.submission.confirmation.trading.p1.digital.individual.togc", appConfig.govukHowToRegister))}
+                @p{@Html(messages("pages.application.submission.confirmation.trading.p1.digital.individual.togc", howToRegisterLink))}
             } else {
                 @p{@messages("pages.application.submission.confirmation.trading.p1.digital.individual")}
             }
@@ -191,23 +154,17 @@
     }
     @** p2 logic **@
     @if(isTogcAppl){
-        @p{@Html(messages("pages.application.submission.confirmation.trading.p2.togc", appConfig.govukTogcVatNotice))}
+        @p{@Html(messages("pages.application.submission.confirmation.trading.p2.togc", togcLink))}
     } else {
-        @p{@Html(messages("pages.application.submission.confirmation.trading.howToRegisterLink", appConfig.govukHowToRegister))}
+        @p{@Html(messages("pages.application.submission.confirmation.trading.howToRegisterLink", howToRegisterLink))}
     }
 }
 
-@insetText = {
-    @p {
-        @messages(s"pages.application.submission.confirmation.inset$optRegReason$opt3pt")
-        @link(appConfig.govukHowToRegister, s"pages.application.submission.confirmation.insetLink$optRegReason$opt3pt", isExternal = true).
-    }
-}
+@newTabAttributes = @{ Map("target" -> "_blank", "rel" -> "noreferrer") }
 
+@howToRegisterLink = {@link(appConfig.govukHowToRegister, "pages.application.submission.confirmation.trading.howToRegisterLink.text", attributes = newTabAttributes)}
 
-@opt3pt = @{
-    if(isTransactor) ".3pt" else ""
-}
+@togcLink = {@link(appConfig.govukTogcVatNotice, "pages.application.submission.confirmation.trading.togcLink.text", attributes = newTabAttributes)}
 
 @userType = @{
     if(isTransactor) ".agent" else ".individual"
@@ -226,14 +183,6 @@
 
 @vatGroupType = @{
     registrationReason match {
-        case GroupRegistration => ".vatGroup"
-        case _ => ""
-    }
-}
-
-@optRegReason = @{
-    registrationReason match {
-        case TransferOfAGoingConcern => ".togc"
         case GroupRegistration => ".vatGroup"
         case _ => ""
     }

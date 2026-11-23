@@ -60,7 +60,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
       val doc = Jsoup.parse(res.body)
 
       doc.select("h1").text mustBe "Upload a VAT2"
-      doc.select(".govuk-drop-zone").size mustBe 0
+      doc.select(".govuk-file-upload-wrapper").size mustBe 0
       doc.select("#file-upload-button").text mustBe "Continue"
     }
 
@@ -72,7 +72,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
 
       doc.select("h1").text mustBe "Upload your VAT2 form"
       doc.getElementsByAttributeValue("href", appConfig.vat2Link).size mustBe 1
-      doc.select(".govuk-drop-zone").size mustBe 1
+      doc.select(".govuk-file-upload-wrapper").size mustBe 1
       doc.select("#file-upload-button").text mustBe "Upload"
     }
 
@@ -87,7 +87,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
       doc.select("h1").text mustBe "Upload testFirstName testLastName’s identity evidence"
       doc.select("p[aria-live=polite] strong").text mustBe "0 of 2 files uploaded"
       doc.select("main label.govuk-label").text mustBe "First item of evidence"
-      doc.select(".govuk-drop-zone").size mustBe 1
+      doc.select(".govuk-file-upload-wrapper").size mustBe 1
       doc.select("#file-upload-button").text mustBe "Continue"
     }
 
@@ -148,7 +148,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
 
       doc.select("h1").text mustBe "Upload a document"
       doc.select("main .govuk-inset-text").text must include("This could be a:")
-      doc.select(".govuk-drop-zone").size mustBe 0
+      doc.select(".govuk-file-upload-wrapper").size mustBe 0
       doc.select("p[aria-live=polite]").size mustBe 0
     }
 
@@ -159,7 +159,7 @@ class UploadDocumentControllerISpec extends ControllerISpec {
       val doc = Jsoup.parse(res.body)
 
       doc.select("h1").text mustBe "Upload a document"
-      doc.select(".govuk-drop-zone").size mustBe 0
+      doc.select(".govuk-file-upload-wrapper").size mustBe 0
       doc.select("p[aria-live=polite]").size mustBe 0
     }
 

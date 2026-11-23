@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2027 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
 import forms.vatapplication.AccountingPeriodForm
 import models.api.vatapplication.QuarterlyStagger
-import models.api.{Individual, NETP, NonUkNonEstablished}
+import models.api.{Individual, NonUkNonEstablished}
 import play.api.mvc.{Action, AnyContent}
 import services._
 import views.html.vatapplication.AccountingPeriodView

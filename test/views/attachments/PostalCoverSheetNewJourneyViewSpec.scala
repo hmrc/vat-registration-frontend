@@ -79,7 +79,7 @@ class PostalCoverSheetNewJourneyViewSpec extends VatRegViewSpec {
     val whereToSendHeading = "Where to send your forms"
     val whereToSendPara = "Post all forms and this cover page to:"
     val address = "VAT Registration Applications BT VAT HM Revenue and Customs BX9 1WR United Kingdom"
-    val printOrSave = "Print or save this page as PDF"
+    val printOrSave = "Print or save this page as a PDF"
     val legend = "Have you printed or saved your cover letter?"
     val hint = "You will not be able to access this page again"
     val label = "I have printed or saved my cover letter"

@@ -15,11 +15,20 @@
  *@
 
 @import config.FrontendAppConfig
+@import views.html.components._
 
 @this(
         layout: layouts.layout,
         h1: components.h1,
+        h2: components.h2,
+        h3: components.h3,
         p: components.p,
+        details: details,
+        bullets: components.bullets,
+        bulletsHtml: bulletsHtml,
+        identityDocuments: identityDocuments,
+        postalAddress: postalAddress,
+        warningText: components.warningText,
         panelIndent: components.panelIndent,
         link: components.link,
         saveProgressButton: components.saveProgressButton
@@ -31,14 +40,43 @@
 
     @h1("attachments.documentsPost.title")
 
-    @p { @messages("attachments.documentsPost.para") }
-    @panelIndent {
-        @messages("attachments.documentsPost.line1")<br>
-        @messages("attachments.documentsPost.line2")<br>
-        @messages("attachments.documentsPost.line3")<br>
-        @messages("attachments.documentsPost.postCode")<br>
-        @messages("attachments.documentsPost.country")
+    @p { @messages("attachments.documentsPost.para1") }
+
+    @h2("attachments.uploadingDocument.subheading1")
+
+    @p { @messages("attachments.documentsPost.forms.para1") }
+
+    @bulletsHtml(List(
+        vat2Block,
+        vat5LBlock,
+        vat5051Block,
+        vat1TRBlock,
+        identityBlock,
+        evidenceBlock
+    ): _ *)
+
+    @identityDocuments()
+
+    @h2("attachments.uploadingDocument.subheading2")
+
+    @p { @messages("attachments.documentsPost.land.para1") }
+
+    @bulletsHtml(List(
+        vat1614ABlock,
+        vat1614HBlock
+    ): _ *)
+
+    @h2("attachments.uploadingDocument.subheading3")
+
+    @p {
+        @Html(messages("attachments.documentsPost.support.para", appConfig.vat5LGuidanceLink))
     }
+
+    @h2("attachments.uploadingDocument.subheading4")
+
+    @p { @messages("attachments.documentsPost.cover.text") }
+
+    @postalAddress()
 
     <div class="govuk-button-group">
         @link(
@@ -48,4 +86,42 @@
         )
     </div>
 
+}
+
+@vat2Block = {
+    @Html(messages("attachments.documentsPost.forms.bullet1.vat2.link", appConfig.vat2Link))
+    @messages("attachments.documentsPost.forms.bullet1.vat2.text")
+}
+
+@vat5LBlock = {
+    @Html(messages("attachments.documentsPost.forms.bullet2.vat5l.link", appConfig.vat5LLink))
+    @messages("attachments.documentsPost.forms.bullet2.vat5l.text")
+}
+
+@vat5051Block = {
+    @Html(messages("attachments.documentsPost.forms.bullet3.vat5051.link", appConfig.vat51Link))
+    @messages("attachments.documentsPost.forms.bullet3.vat5051.text")
+}
+
+@vat1TRBlock = {
+    @Html(messages("attachments.documentsPost.forms.bullet4.vat1tr.link", appConfig.vat1trLink))
+    @messages("attachments.documentsPost.forms.bullet4.vat1tr.text")
+}
+
+@identityBlock = {
+    @messages("attachments.documentsPost.forms.bullet5.proof")
+}
+
+@evidenceBlock = {
+    @messages("attachments.documentsPost.forms.bullet6.evidence")
+}
+
+@vat1614ABlock = {
+    @Html(messages("attachments.documentsPost.land.bullet1.vat1614a.link", appConfig.vat1614ALink))
+    @messages("attachments.documentsPost.land.bullet1.vat1614a.text")
+}
+
+@vat1614HBlock = {
+    @Html(messages("attachments.documentsPost.land.bullet2.vat1614h.link", appConfig.vat1614HLink))
+    @messages("attachments.documentsPost.land.bullet2.vat1614h.text")
 }

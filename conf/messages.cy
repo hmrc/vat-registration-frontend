@@ -705,7 +705,6 @@ pages.summary.continue                                      = Cadarnhau a chyflw
 
 # Application Submission Confirmation page
 pages.application.submission.confirmation.heading                   = Mae’ch cais wedi’i gyflwyno
-pages.application.submission.confirmation.reference                 = Eich cyfeirnod
 
 pages.application.submission.confirmation.applNumber                = Rhif y cais TAW:
 pages.application.submission.confirmation.info                      = Bydd angen y rhif hwn arnoch i gael mynediad at eich cyfrif TAW.
@@ -716,26 +715,25 @@ pages.application.submission.confirmation.inset.msg                 = Mae rhif y
 # Trading before - Section
 pages.application.submission.confirmation.heading3                              = Masnachu cyn i chi gofrestru ar gyfer TAW
 pages.application.submission.confirmation.trading.p1                            = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF.
-pages.application.submission.confirmation.trading.howToRegisterLink             = Ewch i’r dudalen <a href="{0}" target="_blank">‘Cofrestru ar gyfer TAW’</a> i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
+pages.application.submission.confirmation.trading.howToRegisterLink             = Ewch i’r dudalen {0} i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
 pages.application.submission.confirmation.trading.p1.post.individual            = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF.
-pages.application.submission.confirmation.trading.p1.digital.individual.togc    = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF. Ewch i’r dudalen <a href="{0}" target="_blank">‘Cofrestru ar gyfer TAW’</a> i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
+pages.application.submission.confirmation.trading.p1.digital.individual.togc    = Ni ellir cynnwys TAW ar anfonebau nes bod gan y busnes rif cofrestru TAW. Er hyn, gellir codi prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol, sydd wedi’i godi ar gyfer TAW, i dalu CThEF. Ewch i’r dudalen {0} i ddysgu mwy ynghylch ‘Rhoi cyfrif am TAW tra byddwch yn aros am eich rhif cofrestru TAW’.
 pages.application.submission.confirmation.trading.p1.digital.individual         = Ni allwch gynnwys TAW ar eich anfonebau hyd nes eich bod yn cael eich rhif cofrestru TAW, ond gallwch godi’ch prisiau i roi cyfrif am y TAW a fydd yn ddyledus. Yna gellir defnyddio’r swm ychwanegol i dalu CThEF.
-pages.application.submission.confirmation.trading.p2.togc                       = Os yw cwmni, neu ran o gwmni, wedi cael ei werthu ac yn cael ei <a href="{0}" target="_blank">drin fel trosglwyddiad o fusnes byw (TOGC)</a> yna, does dim TAW yn daladwy, yn dibynnu ar amodau penodol.
+pages.application.submission.confirmation.trading.howToRegisterLink.text        = ‘Cofrestru ar gyfer TAW’
+pages.application.submission.confirmation.trading.togcLink.text                 = drin fel trosglwyddiad o fusnes byw (TOGC)
+pages.application.submission.confirmation.trading.p2.togc                       = Os yw cwmni, neu ran o gwmni, wedi cael ei werthu ac yn cael ei {0} yna, does dim TAW yn daladwy, yn dibynnu ar amodau penodol.
 
 # Section - "info to mail"
-pages.application.submission.confirmation.emailedTo                 = Rydym wedi anfon e-bost at {0} sy’n cynnwys yr wybodaeth ar y dudalen hon.
 pages.application.submission.confirmation.emailedTo.new             = Mae’r wybodaeth ar y dudalen hon wedi’i anfon at {0}.
 
 # Section - "What you must do now" - as-is
 pages.application.submission.confirmation.doc.heading               = Yr hyn y mae’n rhaid i chi ei wneud nawr
-pages.application.submission.confirmation.doc.para                  = Mae’ch cais wedi dod i law. Er mwyn i ni allu prosesu’r cais,
-pages.application.submission.confirmation.doc.linkPost              = postiwch lythyr eglurhaol a chopïau o’ch dogfennau atom
-pages.application.submission.confirmation.doc.linkPost.3pt          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom
 
 # Section - "What you must do now" - new-Agent/Individual
 pages.application.submission.confirmation.doc.para1.agent           = Rydym wedi cael ffurflen gais ar-lein y busnes. Er mwyn i ni allu prosesu’r cais,
 pages.application.submission.confirmation.doc.para1.individual      = Rydym wedi cael ffurflen gais ar-lein y busnes. Er mwyn i ni allu prosesu’r cais,
 pages.application.submission.confirmation.doc.linkPost.new          = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom.
+pages.application.submission.confirmation.doc.linkPost.new.linkText  = postiwch lythyr eglurhaol a chopïau o’r dogfennau angenrheidiol atom
 pages.application.submission.confirmation.doc.para2.agent           = I osgoi oedi wrth wneud y cais, anfonwch y dogfennau busnes atom gan ddefnyddio’r cyfeiriad post sydd ar y sgrin hon cyn gynted â phosibl.
 pages.application.submission.confirmation.doc.para2.individual      = I osgoi oedi wrth wneud y cais, anfonwch y dogfennau busnes atom gan ddefnyddio’r cyfeiriad post sydd ar y sgrin hon cyn gynted â phosibl.
 
@@ -749,27 +747,7 @@ pages.application.submission.confirmation.postal.p5                 = Deyrnas Un
 
 # Section - "What happens next" - As-is
 pages.application.submission.confirmation.heading2                  = Yr hyn sy’n digwydd nesaf
-pages.application.submission.confirmation.list.decisionDoc          = Ar ôl i ni gael copïau o’ch dogfennau, byddwn yn ysgrifennu atoch gyda phenderfyniad ar eich cais cyn pen 40 diwrnod gwaith.
-pages.application.submission.confirmation.list.decisionNoDoc        = Mae’ch cais wedi dod i law a byddwn yn ysgrifennu atoch gyda phenderfyniad cyn pen 40 diwrnod gwaith.
-pages.application.submission.confirmation.list.software             = Dylech aros nes i ni gadarnhau eich cofrestriad TAW cyn i chi gael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
-pages.application.submission.confirmation.list.software.3pt         = Dylai’r busnes aros nes i’w gofrestriad TAW gael ei gadarnhau cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
-pages.application.submission.confirmation.inset                     = Ni allwch gynnwys TAW ar eich anfonebau hyd nes eich bod yn cael eich rhif TAW. Fodd bynnag, gallwch godi’ch prisiau i roi
-pages.application.submission.confirmation.insetLink                 = cyfrif am y TAW y bydd angen i chi ei thalu i CThEF
-pages.application.submission.confirmation.inset.3pt                 = Ni all y busnes gynnwys TAW ar ei anfonebau hyd nes ei fod yn cael ei rif TAW. Fodd bynnag, gall godi ei brisiau i roi
-pages.application.submission.confirmation.insetLink.3pt             = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
 pages.application.submission.confirmation.button                    = Gorffen
-pages.application.submission.confirmation.list.software.vatGroup        = Dylai’r grŵp TAW aros nes i ni gadarnhau ei gofrestriad TAW cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
-pages.application.submission.confirmation.list.software.vatGroup.3pt    = Dylai’r grŵp TAW aros nes i ni gadarnhau ei gofrestriad TAW cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
-pages.application.submission.confirmation.inset.vatGroup                = Ni all y grŵp TAW gynnwys TAW ar ei anfonebau hyd nes iddo gael ei rif TAW. Fodd bynnag, gall godi ei brisiau i roi
-pages.application.submission.confirmation.inset.vatGroup.3pt            = Ni all y grŵp TAW gynnwys TAW ar ei anfonebau hyd nes iddo gael ei rif TAW. Fodd bynnag, gall godi ei brisiau i roi
-pages.application.submission.confirmation.insetLink.vatGroup            = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
-pages.application.submission.confirmation.insetLink.vatGroup.3pt        = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
-pages.application.submission.confirmation.inset.togc                    = Os ydych yn cael rhif TAW newydd, ni allwch gynnwys TAW ar eich anfonebau hyd nes i chi gael hwn. Fodd bynnag, gallwch godi’ch prisiau i roi
-pages.application.submission.confirmation.inset.togc.3pt                = Os yw’r busnes yn cael rhif TAW newydd, ni all gynnwys TAW ar ei anfonebau hyd nes iddo gael hwn. Fodd bynnag, gall godi ei brisiau i roi
-pages.application.submission.confirmation.insetLink.togc                = cyfrif am y TAW y bydd angen i chi ei thalu i CThEF
-pages.application.submission.confirmation.insetLink.togc.3pt            = cyfrif am y TAW y bydd angen iddo ei thalu i CThEF
-pages.application.submission.confirmation.list.software.togc            = Dylech aros nes i ni gadarnhau eich cofrestriad TAW cyn i chi gael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
-pages.application.submission.confirmation.list.software.togc.3pt        = Dylai’r busnes aros nes i’w gofrestriad TAW gael ei gadarnhau cyn cael meddalwedd i ddilyn rheolau’r cynllun ‘Troi Treth yn Ddigidol ar gyfer TAW’.
 
 # Section - "What happens next" - New
 # Para1
@@ -784,6 +762,7 @@ pages.application.submission.confirmation.list.software.post.agent.vatGroup     
 pages.application.submission.confirmation.list.software.post.individual          = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli’ch cofnodion TAW na chyflwyno Ffurflenni TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.post.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.digital.agent               = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli cofnodion TAW y busnes na chyflwyno Ffurflenni TAW cyn i’r cofrestriad TAW cael ei gadarnhau.
+pages.application.submission.confirmation.list.software.digital.agent.vatGroup      = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.digital.individual          = Ni ddylech ddechrau defnyddio meddalwedd cyfrifyddu i reoli’ch cofnodion TAW na chyflwyno Ffurflenni TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 pages.application.submission.confirmation.list.software.digital.individual.vatGroup = Ni ddylai’r grŵp TAW ddechrau defnyddio meddalwedd cyfrifyddu i reoli ei gynllun Troi Treth yn Ddigidol ar gyfer TAW hyd nes i’r cofrestriad TAW cael ei gadarnhau.
 
@@ -1512,13 +1491,88 @@ attachments.identityEvidenceRequired.additionalBullet5          = bil cyfleustod
 attachments.identityEvidenceRequired.additionalBullet6          = tystysgrif geni
 
 # DOCUMENTS POST
-attachments.documentsPost.title                    = Mae angen i chi anfon y dogfennau i’r cyfeiriad CThEM canlynol
-attachments.documentsPost.para                     = Er mwyn i ni allu bwrw ymlaen yn gyflym â’ch cofrestriad TAW, mae angen i chi anfon y dogfennau hyn atom cyn gynted ag y byddwch wedi cyflwyno’r ffurflen gais.
-attachments.documentsPost.line1                    = Ceisiadau am Gofrestriad TAW / VAT Registration Applications
-attachments.documentsPost.line2                    = BT VAT
-attachments.documentsPost.line3                    = HM Revenue and Customs
-attachments.documentsPost.postCode                 = BX9 1WR
-attachments.documentsPost.country                  = United Kingdom
+attachments.documentsPost.title                    = Anfon eich dogfennau a’ch ffurflenni drwy’r post
+attachments.documentsPost.para1                    = Mae angen i chi anfon eich dogfennau a’ch ffurflenni drwy’r post ar ôl i chi gyflwyno’ch cais i gofrestru ar gyfer TAW ar-lein.
+
+attachments.uploadingDocument.subheading1                = Ffurflenni a dogfennau adnabod
+attachments.documentsPost.forms.para1                    = Gwnewch yn siŵr bod gennych eich holl ffurflenni a chopïau o’ch dogfennau adnabod (cysylltiad yn agor tab newydd):
+attachments.documentsPost.forms.bullet1.vat2.link        = <a href="{0}">VAT2</a>
+attachments.documentsPost.forms.bullet1.vat2.text        =  - manylion y bartneriaeth
+attachments.documentsPost.forms.bullet2.vat5l.link       = <a href="{0}">VAT5L</a>
+attachments.documentsPost.forms.bullet2.vat5l.text       =  - cyflenwadau tir ac eiddo (gallwch hefyd gynnwys unrhyw ddogfennau ategol)
+attachments.documentsPost.forms.bullet3.vat5051.link     = <a href="{0}">VAT 50/51</a>
+attachments.documentsPost.forms.bullet3.vat5051.text     =  - cofrestru grŵp TAW
+attachments.documentsPost.forms.bullet4.vat1tr.link      = <a href="{0}">VAT1TR</a>
+attachments.documentsPost.forms.bullet4.vat1tr.text      =  - person sy’n agored i TAW, ond sydd heb ei sefydlu yn y DU (NETP) sydd am benodi cynrychiolydd treth
+attachments.documentsPost.forms.bullet5.proof            = Eich prawf o hunaniaeth
+attachments.documentsPost.forms.bullet6.evidence         = Eich tystiolaeth hunaniaeth
+
+attachments.documentsPost.identity.head            = Pa ddogfennau adnabod allaf eu darparu?
+attachments.documentsPost.identity.title1          = Dogfennau i brofi pwy ydych
+attachments.documentsPost.identity.para1           = Mae angen copi o un o’r canlynol arnom:
+attachments.documentsPost.identity.bullet1         = eich pasbort
+attachments.documentsPost.identity.bullet2         = eich trwydded yrru cerdyn-llun
+attachments.documentsPost.identity.bullet3         = eich cerdyn adnabod cenedlaethol
+attachments.documentsPost.identity.title2          = Dogfennau adnabod eraill
+attachments.documentsPost.identity.para2           = Mae hefyd angen copi o unrhyw 2 o’r canlynol arnom:
+attachments.documentsPost.identity.bullet4         = eich tystysgrif geni
+attachments.documentsPost.identity.bullet5         = cytundeb tenantiaeth neu brydles
+attachments.documentsPost.identity.bullet6         = eich trwydded waith neu’ch fisa
+attachments.documentsPost.identity.bullet7         = bil cyfleustodau diweddar
+attachments.documentsPost.identity.bullet8         = datganiad morgais diweddar
+attachments.documentsPost.identity.bullet9         = cyfriflen banc ddiweddar
+attachments.documentsPost.identity.bullet10        = datganiad cerdyn credyd diweddar
+attachments.documentsPost.identity.bullet11        = unrhyw ddogfennau gan yr Adran Gwaith a Phensiynau sy’n cadarnhau’ch hawl i fudd-daliadau
+attachments.documentsPost.identity.para3           = Dylai’ch dogfennau fod wedi’u dyddio o fewn y 3 mis diwethaf, lle bo hynny’n bosibl.
+attachments.documentsPost.identity.message         = Peidiwch ag anfon fersiynau gwreiddiol eich dogfennau. Bydd anfon copïau yn gwneud y tro.
+
+attachments.uploadingDocument.subheading2               = Os ydych am godi TAW ar dir neu adeiladau
+attachments.documentsPost.land.para1                    = Efallai y bydd angen i chi anfon y canlynol hefyd:
+attachments.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.documentsPost.land.bullet1.vat1614a.text    = - i roi gwybod i CThEF am eich penderfyniad i optio i drethu tir neu adeiladau
+attachments.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.documentsPost.land.bullet2.vat1614h.text    = - os ydych am optio i drethu tir neu adeiladau a bod angen caniatâd CThEF arnoch
+
+attachments.uploadingDocument.subheading3 = Dogfennau ategol
+attachments.documentsPost.support.para    = Gallwch hefyd anfon dogfennau <a href="{0}">ategol ar gyfer eich VAT5L</a>. Gallai anfon y dogfennau hyn nawr leihau oedi wrth brosesu’ch cais.
+
+attachments.uploadingDocument.subheading4 = Tudalen glawr
+attachments.documentsPost.cover.text      = Mae angen i chi hefyd gynnwys tudalen glawr gyda’ch dogfennau a’ch ffurflenni. Byddwch yn gallu argraffu’r dudalen ar ôl i chi gyflwyno’ch cais ar-lein.
+
+attachments.uploadingDocument.subheading5   = Cyfeiriad post
+attachments.documentsPost.postal.line1      = VAT Registration Applications
+attachments.documentsPost.postal.line2      = BT VAT
+attachments.documentsPost.postal.line3      = HM Revenue and Customs
+attachments.documentsPost.postal.postCode   = BX9 1WR
+attachments.documentsPost.postal.country    = United Kingdom
+
+# VAT2 DOCUMENTS POST
+attachments.vat2.documentsPost.title                     = Anfon eich dogfen
+attachments.vat2.documentsPost.para1                     = Ar ôl i chi gyflwyno’ch cais cofrestru ar-lein, mae angen i chi anfon y canlynol atom:
+attachments.vat2.documentsPost.forms.bullet1.vat2.text        = wedi’i chwblhau
+attachments.vat2.documentsPost.forms.bullet1.vat2.link        = VAT2 ffurf
+attachments.vat2.documentsPost.forms.bullet2.identity         = copi o’ch prawf hunaniaeth
+attachments.vat2.documentsPost.forms.bullet3.evidence         = copïau o’ch tystiolaeth hunaniaeth
+attachments.vat2.documentsPost.forms.inset.text               = Bydd angen i chi anfon y llythyr eglurhaol a gynhyrchwyd yn awtomatig gan CThEF gyda’ch dogfennau. Dim ond ar ôl i chi gyflwyno’ch cais ar-lein ar gyfer TAW y gallwch argraffu’r llythyr eglurhaol hwn.
+
+# VAT5L DOCUMENTS POST
+attachments.vat5l.documentsPost.title                     = Anfon eich dogfen
+attachments.vat5l.documentsPost.para1                     = Ar ôl i chi gyflwyno’ch cais cofrestru ar-lein, mae angen i chi anfon y canlynol atom:
+attachments.vat5l.documentsPost.forms.bullet1.vat5.text        = wedi’i chwblhau
+attachments.vat5l.documentsPost.forms.bullet1.vat5.link        = VAT5L ffurf
+attachments.vat5l.documentsPost.forms.bullet2.identity         = copi o brawf o hunaniaeth
+attachments.vat5l.documentsPost.forms.bullet3.evidence         = copïau o dystiolaeth hunaniaeth
+attachments.vat5l.documentsPost.forms.inset.text               = Bydd angen i chi anfon y llythyr eglurhaol a gynhyrchwyd yn awtomatig gan CThEF gyda’ch dogfennau. Dim ond ar ôl i chi gyflwyno’ch cais ar-lein ar gyfer TAW y gallwch argraffu’r llythyr eglurhaol hwn.
+
+attachments.vat5l.documentsPost.land.para2                    = Efallai y bydd angen i chi anfon y canlynol hefyd:
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.link    = <a href="{0}">VAT1614A</a>
+attachments.vat5l.documentsPost.land.bullet1.vat1614a.text    = - wedi’i gwblhau er mwyn rhoi gwybod i CThEF am eich penderfyniad i optio i drethu tir neu adeiladau
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.link    = <a href="{0}">VAT1614H</a>
+attachments.vat5l.documentsPost.land.bullet2.vat1614h.text    = - wedi’i gwblhau os ydych am optio i drethu tir neu adeiladau a bod angen caniatâd CThEF arnoch
+
+attachments.vat5l.uploadingDocument.subheading3 = Dogfennau ategol
+attachments.vat5l.documentsPost.support.para1   = Gallwch hefyd anfon unrhyw ddogfennau ategol ar gyfer eich VAT5L. Mae dogfennau ategol yn ddewisol. Fodd bynnag, gall eu hanfon nawr osgoi oedi os gofynnwn amdanynt yn nes ymlaen wrth brosesu’ch cais.
+attachments.vat5l.documentsPost.support.link    = Dysgwch ragor am ddogfennau ategol ar gyfer eich VAT5L
 
 # UPLOADING DOCUMENT
 attachments.uploadingDocument.heading                        = Uwchlwytho’r ddogfen
@@ -1539,29 +1593,29 @@ pages.coverLetterPreview.p2                              = Mae hyn bwysig oherwy
 pages.coverLetterPreview.button                          = Cael llythyr eglurhaol
 
 # VRS NEW ATTACHMENT JOURNEY - POSTAL COVER SHEET MESSAGES
-vRSNewAttachmentsJourney.postalCoverSheet.heading                           = VAT registration cover letter
-vRSNewAttachmentsJourney.postalCoverSheet.panel1                            = This is your reference number:
+vRSNewAttachmentsJourney.postalCoverSheet.heading                           = Llythyr eglurhaol ar gyfer cofrestriad TAW
+vRSNewAttachmentsJourney.postalCoverSheet.panel1                            = Dyma’ch cyfeirnod:
 vRSNewAttachmentsJourney.postalCoverSheet.para                              = This is your cover page. You need to print this off and post it with your forms and documents. This will help HMRC match your application with your documents.
 vRSNewAttachmentsJourney.postalCoverSheet.warningText                       = Peidiwch â phostio’r dogfennau gwreiddiol at CThEM gan na allwn eu dychwelyd atoch.
 vRSNewAttachmentsJourney.postalCoverSheet.whatYouMustSend                   = Yr hyn y mae’n rhaid i chi ei bostio atom
-vRSNewAttachmentsJourney.postalCoverSheet.para2                             = To process your VAT application, you need to post us:
-vRSNewAttachmentsJourney.postalCoverSheet.para4                             = If you need to, you should also post:
-vRSNewAttachmentsJourney.postalCoverSheet.bp1                               = this cover letter
+vRSNewAttachmentsJourney.postalCoverSheet.para2                             = Er mwyn i ni allu prosesu’ch cais TAW, bydd angen i chi anfon y canlynol atom drwy’r post:
+vRSNewAttachmentsJourney.postalCoverSheet.para4                             = Dylech hefyd anfon y canlynol drwy’r post, os oes angen i chi wneud hynny:
+vRSNewAttachmentsJourney.postalCoverSheet.bp1                               = y llythyr eglurhaol hwn
 vRSNewAttachmentsJourney.postalCoverSheet.bp2                               = ffurflen VAT2
-vRSNewAttachmentsJourney.postalCoverSheet.bp3                               = VAT5L form (include any supporting documents for this)
+vRSNewAttachmentsJourney.postalCoverSheet.bp3                               = Ffurflen VAT5L (gan gynnwys unrhyw ddogfennau ategol)
 vRSNewAttachmentsJourney.postalCoverSheet.bp4                               = ffurflen VAT 50/51
 vRSNewAttachmentsJourney.postalCoverSheet.bp5                               = ffurflen VAT1TR
 vRSNewAttachmentsJourney.postalCoverSheet.bp6                               = 3 documents to confirm your identity
-vRSNewAttachmentsJourney.postalCoverSheet.bp6.name                          = 3 documents to confirm {0}’s identity
+vRSNewAttachmentsJourney.postalCoverSheet.bp6.name                          = 3 dogfen i gadarnhau pwy yw {0}
 vRSNewAttachmentsJourney.postalCoverSheet.bp7                               = ffurflen VAT1614A wedi’i llenwi
 vRSNewAttachmentsJourney.postalCoverSheet.bp8                               = ffurflen VAT1614H wedi’i llenwi
-vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.heading           = Proof of identity
-vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.p                 = We need a copy of one of the following:
-vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp1               = your passport
-vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp2               = your photocard driving licence
-vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp3               = your national identity card
-vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.heading    = Other identity documents
-vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.p1         = We also need copies of any 2 of the following:
+vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.heading           = Dogfennau i brofi pwy ydych
+vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.p                 = Mae angen copi o un o’r canlynol arnom:
+vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp1               = eich pasbort
+vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp2               = eich trwydded yrru cerdyn-llun
+vRSNewAttachmentsJourney.postalCoverSheet.proofOfIdentity.bp3               = eich cerdyn adnabod cenedlaethol
+vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.heading    = Dogfennau adnabod eraill
+vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.p1         = Mae hefyd angen copi o unrhyw 2 o’r canlynol arnom:
 vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp1        = eich tystysgrif geni
 vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp2        = prydles neu gytundeb rhentu
 vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp3        = eich trwydded waith neu’ch fisa
@@ -1571,19 +1625,19 @@ vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp6        = cy
 vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp7        = datganiad cerdyn credyd diweddar
 vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.bp8        = unrhyw ddogfennau gan yr Adran Gwaith a Phensiynau sy’n cadarnhau’ch hawl i fudd-daliadau
 vRSNewAttachmentsJourney.postalCoverSheet.otherIdentityDocuments.p2         = Dylai’ch dogfennau fod wedi’u dyddio o fewn y 3 mis diwethaf, lle bo hynny’n bosibl.
-vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.heading          = Where to send your forms
+vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.heading          = I ble y dylech anfon eich ffurflenni:
 vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p                = Post all forms and this cover page to:
 vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p2               = Ceisiadau am Gofrestriad TAW/VAT Registration Applications
 vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p3               = BT VAT
 vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p4               = Cyllid a Thollau EF/HM Revenue and Customs
 vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p5               = BX9 1WR
 vRSNewAttachmentsJourney.postalCoverSheet.whereToSendForms.p6               = Deyrnas Unedig
-vRSNewAttachmentsJourney.postalCoverSheet.printOrSave                       = Print or save this page as PDF
-vRSNewAttachmentsJourney.postalCoverSheet.printed.heading                   = Have you printed or saved your cover letter?
-vRSNewAttachmentsJourney.postalCoverSheet.printed.hint                      = You will not be able to access this page again
-vRSNewAttachmentsJourney.postalCoverSheet.printed.label                     = I have printed or saved my cover letter
+vRSNewAttachmentsJourney.postalCoverSheet.printOrSave                       = Argraffu neu gadw’r dudalen hon fel PDF
+vRSNewAttachmentsJourney.postalCoverSheet.printed.heading                   = A ydych wedi argraffu neu gadw’ch llythyr eglurhaol?
+vRSNewAttachmentsJourney.postalCoverSheet.printed.hint                      = Ni fyddwch yn gallu cael mynediad at y dudalen hon eto
+vRSNewAttachmentsJourney.postalCoverSheet.printed.label                     = Rwyf wedi argraffu neu gadw fy llythyr eglurhaol
 vRSNewAttachmentsJourney.postalCoverSheet.printed.button                    = Gorffen
-vRSNewAttachmentsJourney.postalCoverSheet.printed.error.required            = Select if you have printed or saved your cover letter
+vRSNewAttachmentsJourney.postalCoverSheet.printed.error.required            = Defnyddiwch y blwch dewis i roi gwybod i ni os ydych wedi argraffu neu gadw’ch llythyr eglurhaol
 
 # POSTAL COVER SHEET MESSAGES
 pages.PostalCoverSheet.heading                           = Argraffu llythyr eglurhaol ar gyfer y dogfennau
@@ -2109,3 +2163,12 @@ partnerEmail.link                              = Hysbysiad Preifatrwydd CThEM
 partnerEmail.error.incorrect_format            = Nodwch y cyfeiriad e-bost yn y fformat cywir, fel enw@enghraifft.com
 partnerEmail.error.nothing_entered             = Nodwch y cyfeiriad e-bost
 partnerEmail.error.incorrect_length            = Mae’n rhaid i’r cyfeiriad e-bost fod yn 132 o gymeriadau neu lai
+
+# POSTAL CONFIRMATION
+attachments.postalConfirmation.title                              = Anfon eich dogfennau a’ch ffurflenni ychwanegol drwy’r post
+attachments.postalConfirmation.para                               = Fel arfer, bydd uwchlwytho’ch dogfennau a’ch ffurflenni, yn lle eu hanfon drwy’r post, yn golygu ein bod yn gallu prosesu’ch cais yn gyflymach.
+attachments.postalConfirmation.warning                            = Os ydych am eu hanfon drwy’r post o hyd, bydd yn rhaid i chi wneud hyn ar ôl i chi gyflwyno’ch cais i gofrestru ar gyfer TAW. Unwaith i chi wneud hynny byddwn yn gwneud llythyr eglurhaol, a bydd yn rhaid i chi anfon y llythyr hwn gyda’ch dogfennau a’ch ffurflenni.
+attachments.postalConfirmation.para2                              = A ydych am anfon eich dogfennau a’ch ffurflenni ychwanegol drwy’r post o hyd?
+attachments.postalConfirmation.bullet1                            = Iawn
+attachments.postalConfirmation.bullet2                            = Na, hoffwn eu huwchlwytho
+attachments.postalConfirmation.noText                             = Na, hoffwn eu huwchlwytho

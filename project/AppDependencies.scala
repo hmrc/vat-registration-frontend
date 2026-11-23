@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import sbt.*
 
 object AppDependencies {
 
-  private val hmrcMongoVersion = "2.12.0"
+  private val hmrcMongoVersion = "2.14.0"
   private val bootstrapVersion = "10.7.0"
   private val partialsVersion = "9.1.0"
   private val cachingClientVersion = "11.2.0"
   private val formMappingVersion = "2.0.0"
   private val catsVersion = "2.10.0"
   private val playJsonJodaVersion = "3.0.2"
-  private val playHmrcFrontendVersion = "12.32.0"
+  private val playHmrcFrontendVersion = "13.11.0"
 
 
   val compileDependencies: Seq[ModuleID] = Seq(
@@ -44,7 +44,7 @@ object AppDependencies {
 
   val testDependencies: Seq[ModuleID] = Seq(
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-test-play-30"  % hmrcMongoVersion,
-    "org.scalamock"         %% "scalamock"                % "6.0.0",
+    "org.scalamock"         %% "scalamock"                % "7.3.0",
     "com.vladsch.flexmark"  % "flexmark-all"              % "0.64.8",
     "uk.gov.hmrc"           %% "bootstrap-test-play-30"   % bootstrapVersion,
   ).map(_ % Test)
