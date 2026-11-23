@@ -162,7 +162,6 @@ class PostalCoverSheetControllerISpec extends ControllerISpec with ITRegistratio
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show.url)
       }
 
-      // the page can no longer be accessed afterwards
       whenReady(buildClient(url).get()) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.ApplicationSubmissionController.show.url)

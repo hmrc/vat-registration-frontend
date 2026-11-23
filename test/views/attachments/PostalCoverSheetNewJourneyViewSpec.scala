@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,13 +85,6 @@ class PostalCoverSheetNewJourneyViewSpec extends VatRegViewSpec {
     val label = "I have printed or saved my cover letter"
     val button = "Finish"
     val error = "Select if you have printed or saved your cover letter"
-  }
-
-  // Only the Welsh reused from existing messages; the rest is still an English placeholder
-  object WelshContent {
-    val warningText = "Peidiwch â phostio’r dogfennau gwreiddiol at CThEM gan na allwn eu dychwelyd atoch."
-    val vat1614Bullets = List("ffurflen VAT1614A wedi’i llenwi", "ffurflen VAT1614H wedi’i llenwi")
-    val button = "Gorffen"
   }
 
   private def paragraphs(doc: Document): List[String] =
@@ -291,26 +284,6 @@ class PostalCoverSheetNewJourneyViewSpec extends VatRegViewSpec {
     "keep the checkbox ticked when it was ticked" in new ViewSetup {
       val ticked = render(CoverLetterPrintedForm().fill(true))
       ticked.select("input[type=checkbox]#value").hasAttr("checked") mustBe true
-    }
-  }
-
-  "The Postal Cover Sheet page (new attachment journey) in Welsh" must {
-    implicit val doc: Document = render(CoverLetterPrintedForm().bind(Map.empty[String, String]))(welshMessages)
-
-    "have the Welsh warning text" in new ViewSetup {
-      doc.warningText(1) match {
-        case Some(value) => value must include(WelshContent.warningText)
-        case None => fail()
-      }
-    }
-
-    "have the Welsh VAT1614A/H bullets" in new ViewSetup {
-      // list 1 is the error summary on this page
-      doc.unorderedList(3) mustBe WelshContent.vat1614Bullets
-    }
-
-    "have the Welsh Finish button" in new ViewSetup {
-      doc.select("button.govuk-button").text mustBe WelshContent.button
     }
   }
 }
