@@ -277,6 +277,60 @@ class AttachmentsTaskListSpec(implicit appConfig: FrontendAppConfig) extends Vat
       }
     }
 
+    "the attachments row is completed" must {
+
+      def completedScheme(method: AttachmentMethod): VatScheme = validVatScheme.copy(
+        business = Some(validBusiness.copy(
+          hasLandAndProperty = Some(false),
+          otherBusinessInvolvement = Some(false),
+          businessActivities = Some(List(validBusiness.mainBusinessActivity.get))
+        )),
+        vatApplication = Some(completedVatApplicationWithGoodsAndServicesSection.copy(
+          startDate = Some(LocalDate.of(2017, 10, 10))
+        )),
+        flatRateScheme = Some(validFlatRate),
+        attachments = Some(Attachments(Some(method)))
+      )
+
+      "use the 'Send by post' message when the attachment method is post and VrsNewAttachmentJourney is enabled" in new SectionSetup {
+        enable(VrsNewAttachmentJourney)
+
+        val row: TaskListSectionRow = section.build(completedScheme(Post), rowBuilder)(englishMessages, appConfig).rows.head
+
+        row.status mustBe TLCompleted
+        row.completedMessageKey mustBe Some("tasklist.sendByPost")
+      }
+
+      "use the default completed message when the attachment method is post and VrsNewAttachmentJourney is disabled" in new SectionSetup {
+        disable(VrsNewAttachmentJourney)
+
+        val row: TaskListSectionRow = section.build(completedScheme(Post), rowBuilder)(englishMessages, appConfig).rows.head
+
+        row.status mustBe TLCompleted
+        row.completedMessageKey mustBe None
+      }
+
+      "use the default completed message when the attachment method is upload" in new SectionSetup {
+        enable(VrsNewAttachmentJourney)
+
+        val row: TaskListSectionRow = section.build(completedScheme(Upload), rowBuilder)(englishMessages, appConfig).rows.head
+
+        row.status mustBe TLCompleted
+        row.completedMessageKey mustBe None
+      }
+    }
+
+    "the attachments row is not completed and the attachment method is post" must {
+      "use the default message" in new SectionSetup {
+        enable(VrsNewAttachmentJourney)
+
+        val row: TaskListSectionRow = section.build(scheme.copy(attachments = Some(Attachments(Some(Post)))), rowBuilder)(englishMessages, appConfig).rows.head
+
+        row.status mustBe TLCannotStart
+        row.completedMessageKey mustBe None
+      }
+    }
+
     "VrsNewAttachmentJourney is disabled" must {
       "have the 'Attachments' heading" in new SectionSetup {
         disable(VrsNewAttachmentJourney)

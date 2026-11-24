@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,16 @@ class TaskListViewSpec extends VatRegViewSpec {
     "render all sections" in new ViewSetup {
       sectionMustExist(1)(s"1. ${ExpectedMessages.section1.heading}", List(s"${ExpectedMessages.section1.row1} Completed", s"${ExpectedMessages.section1.row2} Completed"))
       sectionMustExist(2)(s"2. ${ExpectedMessages.section2.heading}", List(s"${ExpectedMessages.section2.row1} Completed", s"${ExpectedMessages.section2.row2} Completed"))
+    }
+    "render the completed message key in the tag when one is provided" in new ViewSetup {
+      val postDoc: Document = Jsoup.parse(view(
+        TaskListSection(
+          heading = ExpectedMessages.section1.heading,
+          rows = List(row1.copy(completedMessageKey = Some("tasklist.sendByPost")))
+        )
+      ).body)
+
+      sectionMustExist(1)(s"1. ${ExpectedMessages.section1.heading}", List(s"${ExpectedMessages.section1.row1} Send by post"))(postDoc)
     }
     "have a banner message when TTMayJunJourney is Enabled" in new ViewSetup {
       appConfig.setValue(SubmitDeadline, "true")

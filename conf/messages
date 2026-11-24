@@ -31,6 +31,7 @@ tasklist.button                                     = Check answers and submit
 tasklist.applicationIncomplete                      = Application incomplete
 tasklist.counter                                    = You have completed {0} of {1} sections.
 tasklist.complete                                   = Completed
+tasklist.sendByPost                                 = Send by post
 tasklist.notStarted                                 = Not started
 tasklist.cannotStartYet                             = Cannot start yet
 tasklist.inProgress                                 = In progress

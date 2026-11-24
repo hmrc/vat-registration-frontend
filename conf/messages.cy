@@ -31,6 +31,7 @@ tasklist.button                                     = Gwirio atebion a chyflwyno
 tasklist.applicationIncomplete                      = Cais heb ei gwblhau
 tasklist.counter                                    = Rydych wedi cwblhau {0} o {1} adran.
 tasklist.complete                                   = Wedi cwblhau
+tasklist.sendByPost                                 = Anfon drwy’r post
 tasklist.notStarted                                 = Heb ddechrau
 tasklist.cannotStartYet                             = Methu dechrau eto
 tasklist.inProgress                                 = Ar waith
