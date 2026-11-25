@@ -26,7 +26,7 @@ import uk.gov.hmrc.crypto.SymmetricCryptoFactory
 class BankAccountDetailsSessionFormatSpec extends AnyWordSpec with Matchers {
 
   private val testEncryptionKey = "MTIzNDU2Nzg5MDEyMzQ1Ng=="
-  private val encrypter         = SymmetricCryptoFactory.aesCryptoFromConfig(
+  private val encrypter         = SymmetricCryptoFactory.aesGcmCryptoFromConfig(
     baseConfigKey = "json.encryption",
     config = com.typesafe.config.ConfigFactory.parseString(
       s"""json.encryption.key="$testEncryptionKey""""
@@ -90,7 +90,7 @@ class BankAccountDetailsSessionFormatSpec extends AnyWordSpec with Matchers {
       val json = Json.toJson(details)
 
       val differentKey       = "ZGlmZmVyZW50a2V5MTIzNA=="
-      val differentEncrypter = SymmetricCryptoFactory.aesCryptoFromConfig(
+      val differentEncrypter = SymmetricCryptoFactory.aesGcmCryptoFromConfig(
         baseConfigKey = "json.encryption",
         config = com.typesafe.config.ConfigFactory.parseString(
           s"""json.encryption.key="$differentKey""""
