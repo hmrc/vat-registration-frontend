@@ -20,17 +20,19 @@
 @this(
         layout: layouts.layout,
         h1: components.h1,
+        h2: components.h2,
         p: components.p,
         link: components.link,
         bullets: components.bullets,
         bulletsHtml: components.bulletsHtml,
+        identityDocuments: identityDocuments,
         details: components.details,
         form: FormWithCSRF,
         button: components.button,
         strong: components.strong
 )
 
-@(attachments: List[AttachmentType], applicantName: Option[String], transactorName: Option[String])(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
 
 @layout(pageTitle = Some(titleNoForm(messages("attachments.multipleDocumentsRequired.title")))) {
 
@@ -38,117 +40,66 @@
 
     @p { @messages("attachments.multipleDocumentsRequired.para") }
 
-    @bulletsHtml(
-        attachments.map {
-            case VAT2 => vat2Block
-            case VAT51 => vat51Block
-            case IdentityEvidence => Html(applicantName.fold(messages("attachments.multipleDocumentsRequired.identityEvidence"))(name => messages("attachments.multipleDocumentsRequired.identityEvidence.name", name)))
-            case TransactorIdentityEvidence => Html(transactorName.map(name => messages("attachments.multipleDocumentsRequired.identityEvidence.name", name)))
-            case VAT5L => vat5LBlock
-            case TaxRepresentativeAuthorisation => vat1TRBlock
-            case attachment => Html(messages(s"attachments.multipleDocumentsRequired.${AttachmentType.map(attachment)}"))
-        }
-        ::: attachments.map{
-            case VAT5L => vat1614Block
-            case _ => HtmlFormat.empty
-        }.filter(!_.equals(HtmlFormat.empty))
-        ::: attachments.map{
-            case VAT5L => supportingDocsBlock
-            case _ => HtmlFormat.empty
-        }.filter(!_.equals(HtmlFormat.empty)): _*
-    )
 
-    @if(attachments.contains(IdentityEvidence)) {
-        @details(messages("attachments.multipleDocumentsRequired.identityDetails"), identityDetailsBlock)
-    }
+    @bulletsHtml(List(
+        vat2Block,
+        vat5LBlock,
+        vat5051Block,
+        vat1TRBlock,
+        identityBlock
+    ): _ *)
+
+    @h2("attachments.multipleDocumentsRequired.vat_land.subheading")
+
+    @p { @messages("attachments.multipleDocumentsRequired.vat_land.para") }
+
+    @bulletsHtml(List(
+        vat1614ABlock,
+        vat1614HBlock
+    ): _ *)
+
+    @identityDocuments()
 
     @form(controllers.attachments.routes.DocumentsRequiredController.submit) {
         @button("app.common.continueNoSave", showSaveProgressButton = false)
     }
-
 }
 
-@identityDetailsBlock = {
-    @p {
-        @messages("attachments.identityEvidenceRequired.evidence.start")
-        @strong{ @messages("attachments.identityEvidenceRequired.evidence.bold") }
-        @messages(s"attachments.identityEvidenceRequired.evidence.end")
-    }
-    @bullets(
-        "attachments.identityEvidenceRequired.bullet1",
-        "attachments.identityEvidenceRequired.bullet2",
-        "attachments.identityEvidenceRequired.bullet3"
-    )
-
-    @p {
-        @messages("attachments.identityEvidenceRequired.additionalEvidence.start")
-        @strong { @messages("attachments.identityEvidenceRequired.additionalEvidence.bold") }
-        @messages("attachments.identityEvidenceRequired.additionalEvidence.end")
-    }
-    @bullets(
-        "attachments.identityEvidenceRequired.additionalBullet1",
-        "attachments.identityEvidenceRequired.additionalBullet2",
-        "attachments.identityEvidenceRequired.additionalBullet3",
-        "attachments.identityEvidenceRequired.additionalBullet4",
-        "attachments.identityEvidenceRequired.additionalBullet5",
-        "attachments.identityEvidenceRequired.additionalBullet6"
-    )
-}
 
 @vat2Block = {
-    @messages("attachments.multipleDocumentsRequired.VAT2")
-    @link(appConfig.vat2Link, "attachments.multipleDocumentsRequired.VAT2.link", isExternal = true)
-    @messages("attachments.multipleDocumentsRequired.VAT2.end")
-}
-
-@vat51Block = {
-    @messages("attachments.multipleDocumentsRequired.VAT51.para1")
-    @link(
-        link = appConfig.vat51Link,
-        messageKey = messages("attachments.multipleDocumentsRequired.VAT51.link"),
-        isExternal = true,
-        isButton = false
-    )
-    @messages("attachments.multipleDocumentsRequired.VAT51.para2")
+    @Html(messages("attachments.multipleDocumentsRequired.forms.bullet1.vat2.link", appConfig.vat2Link))
+    @messages("attachments.multipleDocumentsRequired.forms.bullet1.vat2.text")
 }
 
 @vat5LBlock = {
-    @messages("attachments.multipleDocumentsRequired.VAT5L.para1")
-    @link(
-        link = appConfig.vat5LLink,
-        messageKey = messages("attachments.multipleDocumentsRequired.VAT5L.link"),
-        isExternal = true
-    )
-    @messages("attachments.multipleDocumentsRequired.VAT5L.para2")
+    @Html(messages("attachments.multipleDocumentsRequired.forms.bullet2.vat5l.link", appConfig.vat5LGuidanceLink))
+    @messages("attachments.multipleDocumentsRequired.forms.bullet2.vat5l.text")
 }
 
-@vat1614Block = {
-    @messages("attachments.multipleDocumentsRequired.VAT1614.para1")
-    @link(
-        link = appConfig.vat1614ALink,
-        messageKey = messages("attachments.multipleDocumentsRequired.VAT1614A.link"),
-        isExternal = true
-    )
-    @messages("attachments.multipleDocumentsRequired.VAT1614.para2")
-    @link(
-        link = appConfig.vat1614HLink,
-        messageKey = messages("attachments.multipleDocumentsRequired.VAT1614H.link"),
-        isExternal = true
-    )
-    @messages("attachments.multipleDocumentsRequired.VAT1614.para3")
-}
-
-@supportingDocsBlock = {
-    @messages("attachments.multipleDocumentsRequired.supportingDocs.para1")
+@vat5051Block = {
+    @Html(messages("attachments.multipleDocumentsRequired.forms.bullet3.vat5051.link", appConfig.vat51Link))
+    @messages("attachments.multipleDocumentsRequired.forms.bullet3.vat5051.text")
 }
 
 @vat1TRBlock = {
-    @messages("attachments.multipleDocumentsRequired.VAT1TR.para1")
-    @link(
-        link = appConfig.vat1trLink,
-        messageKey = messages("attachments.multipleDocumentsRequired.VAT1TR.link"),
-        isExternal = true,
-        isButton = false
-    )
-    @messages("attachments.multipleDocumentsRequired.VAT1TR.para2")
+    @Html(messages("attachments.multipleDocumentsRequired.forms.bullet4.vat1tr.link", appConfig.vat1trLink))
+    @messages("attachments.multipleDocumentsRequired.forms.bullet4.vat1tr.text")
+}
+
+@identityBlock = {
+    @messages("attachments.multipleDocumentsRequired.forms.bullet5.proof")
+}
+
+@evidenceBlock = {
+    @messages("attachments.multipleDocumentsRequired.forms.bullet6.evidence")
+}
+
+@vat1614ABlock = {
+    @Html(messages("attachments.multipleDocumentsRequired.land.bullet1.vat1614a.link", appConfig.vat1614ALink))
+    @messages("attachments.multipleDocumentsRequired.land.bullet1.vat1614a.text")
+}
+
+@vat1614HBlock = {
+    @Html(messages("attachments.multipleDocumentsRequired.land.bullet2.vat1614h.link", appConfig.vat1614HLink))
+    @messages("attachments.multipleDocumentsRequired.land.bullet2.vat1614h.text")
 }

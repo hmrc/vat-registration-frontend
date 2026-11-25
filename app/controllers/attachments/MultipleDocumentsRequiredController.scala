@@ -18,11 +18,10 @@ package controllers.attachments
 
 import config.{AuthClientConnector, BaseControllerComponents, FrontendAppConfig}
 import controllers.BaseController
-import featuretoggle.FeatureSwitch.VrsNewAttachmentJourney
 import featuretoggle.FeatureToggleSupport
 import play.api.mvc.{Action, AnyContent}
 import services._
-import views.html.attachments.{AdditionalDocuments, MultipleDocumentsRequired}
+import views.html.attachments.MultipleDocumentsRequired
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,40 +29,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class MultipleDocumentsRequiredController @Inject()(val authConnector: AuthClientConnector,
                                                     val sessionService: SessionService,
-                                                    attachmentsService: AttachmentsService,
-                                                    vatRegistrationService: VatRegistrationService,
-                                                    applicantDetailsService: ApplicantDetailsService,
-                                                    transactorDetailsService: TransactorDetailsService,
-                                                    multipleDocumentsRequiredPage: MultipleDocumentsRequired,
-                                                    addtionalDocumentsPage: AdditionalDocuments)
+                                                    multipleDocumentsRequiredPage: MultipleDocumentsRequired)
                                                    (implicit appConfig: FrontendAppConfig,
                                                     val executionContext: ExecutionContext,
                                                     baseControllerComponents: BaseControllerComponents)
   extends BaseController with SessionProfile with FeatureToggleSupport {
 
   val show: Action[AnyContent] = isAuthenticatedWithProfile {
-    implicit request =>
-      implicit profile =>
-        for {
-          attachments <- attachmentsService.getAttachmentList(profile.registrationId)
-          isTransactor <- vatRegistrationService.isTransactor
-          applicantName <- if (isTransactor) {
-            applicantDetailsService.getApplicantDetails.map(_.personalDetails.map(_.fullName))
-          } else {
-            Future.successful(None)
-          }
-          transactorName <- if (isTransactor) {
-            transactorDetailsService.getTransactorDetails.map(_.personalDetails.map(_.fullName))
-          } else {
-            Future.successful(None)
-          }
-        } yield {
-          Ok(
-          if (isEnabled(VrsNewAttachmentJourney)) { addtionalDocumentsPage(attachments, applicantName, transactorName) }
-          else { multipleDocumentsRequiredPage(attachments, applicantName, transactorName) }
-        )
-        }
-
+    implicit request => _ =>
+      Future.successful(Ok(multipleDocumentsRequiredPage()))
   }
-
 }

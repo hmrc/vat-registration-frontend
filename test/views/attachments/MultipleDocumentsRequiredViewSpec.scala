@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package views.attachments
 
-import models.api._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.VatRegViewSpec
@@ -25,129 +24,102 @@ import views.html.attachments.MultipleDocumentsRequired
 class MultipleDocumentsRequiredViewSpec extends VatRegViewSpec {
 
   val view: MultipleDocumentsRequired = app.injector.instanceOf[MultipleDocumentsRequired]
+  implicit val doc: Document = Jsoup.parse(view().body)
 
   object ExpectedContent {
-    val heading = "You must send us additional documents in order for us to process this VAT application"
+    val heading = "We need documents from you to process your VAT application"
     val title = s"$heading - Register for VAT - GOV.UK"
-    val para = "To enable us to progress your application further, we need the following information and documents from you:"
-    val bullet1 = "identity documents of you"
-    def bullet1Named(name: String) = s"three documents to confirm $name’s identity"
-    val linkText = "VAT2 form (opens in new tab)"
-    val bullet2 = s"a completed $linkText"
-    val vat5LBullet = "a completed VAT5L form (opens in new tab) with details of the land and property supplies the business is making"
-    val vat1614Bullet = "a VAT1614A (opens in new tab) or VAT1614H form (opens in new tab) if you have decided to, or want to opt to tax land or buildings"
-    val supportingDocsBullet = "any supporting documents"
+
+    val para =
+      "Based on your answers, we still need forms from you. Select a form to get more information about each one, and to download them so they can be completed and printed (links open in a new tab):"
+
+    val vat2 = "VAT2 - partnership details"
+
+    val vat5L =
+      "VAT5L - land and property supplies (you can also include any supporting documents)"
+
+    val vat5051 = "VAT 50/51 - VAT group registration"
+
+    val vat1TR =
+      "VAT1TR - a non-established taxable person (NETP) looking to appoint a tax representative"
+
+    val proofOfIdentity = "3 documents to confirm your identity"
+
+    val landHeading = "If you want to charge VAT on land or buildings"
+
+    val landPara = "You also need to send:"
+
+    val vat1614A =
+      "VAT1614A - to notify HMRC of your decision to opt to tax land and or buildings"
+
+    val vat1614H =
+      "VAT1614H - if you want to opt to tax land and or buildings and need HMRC permission"
+
+    val identityHeading = "What identity documents can I provide?"
+
     val continue = "Continue"
-    val transactorName = "Transactor Name"
-    val applicantName = "Applicant Name"
-    val vat1TRBullet = "a completed VAT1TR form (opens in new tab) with details of your chosen UK tax representative."
   }
 
-  object IdentityDetails {
-    val summary = "What identity documents can I provide?"
-    val content: String = "We need one document to verify your identity. The document must have a government issued photo, for example: " +
-      "a passport " +
-      "a photocard driving licence " +
-      "a national identity card " +
-      "We need two additional pieces of evidence which can be copies of: " +
-      "a mortgage statement " +
-      "a lease or rental agreement " +
-      "a work permit or Visa " +
-      "any correspondence from the Department for Work and Pensions confirming entitlement to benefits " +
-      "a recent utility bill " +
-      "a birth certificate"
-  }
+  "Multiple documents required page" must {
 
-  "The Multiple Documents Required page" must {
-    implicit val doc: Document = Jsoup.parse(view(List(IdentityEvidence, VAT2), None, None).body)
-
-    "have a back link in new Setup" in new ViewSetup {
-      doc.hasBackLink mustBe true
-    }
-
-    "have the correct heading" in new ViewSetup {
+    "have the correct heading and title" in new ViewSetup {
       doc.heading mustBe Some(ExpectedContent.heading)
-    }
-
-    "have the correct title" in new ViewSetup {
       doc.title mustBe ExpectedContent.title
     }
 
-    "have the correct text" in new ViewSetup {
+    "have the correct introductory text" in new ViewSetup {
       doc.para(1) mustBe Some(ExpectedContent.para)
     }
 
-    "have the correct bullet list" in new ViewSetup {
-      doc.unorderedList(1) mustBe List(
-        ExpectedContent.bullet1,
-        ExpectedContent.bullet2
+    "display all required forms and identity information" in new ViewSetup {
+      val pageText: String = doc.text()
+
+      pageText must include(ExpectedContent.vat2)
+      pageText must include(ExpectedContent.vat5L)
+      pageText must include(ExpectedContent.vat5051)
+      pageText must include(ExpectedContent.vat1TR)
+      pageText must include(ExpectedContent.proofOfIdentity)
+    }
+
+    "display the land and buildings section" in new ViewSetup {
+      val pageText: String = doc.text()
+
+      doc.select("h2").text() must include(ExpectedContent.landHeading)
+
+      pageText must include(ExpectedContent.landPara)
+      pageText must include(ExpectedContent.vat1614A)
+      pageText must include(ExpectedContent.vat1614H)
+    }
+
+    "display the identity documents details section" in new ViewSetup {
+      doc.text() must include(ExpectedContent.identityHeading)
+    }
+
+    "display all required document links with the correct URLs" in new ViewSetup {
+      val expectedLinks = Seq(
+        "VAT2" -> appConfig.vat2Link,
+        "VAT5L" -> appConfig.vat5LGuidanceLink,
+        "VAT 50/51" -> appConfig.vat51Link,
+        "VAT1TR" -> appConfig.vat1trLink,
+        "VAT1614A" -> appConfig.vat1614ALink,
+        "VAT1614H" -> appConfig.vat1614HLink
       )
-    }
 
-    "not show the vat5L bullet point when attachment list does not contain VAT5L" in new ViewSetup {
-      override val doc: Document = Jsoup.parse(view(List(IdentityEvidence), None, None).body)
+      expectedLinks.foreach { case (linkText, expectedUrl) =>
+        val link = doc.select(s"a:containsOwn($linkText)")
 
-      doc.unorderedList(1) mustNot contain(ExpectedContent.vat5LBullet)
-    }
-
-    "show the vat5L bullet point when attachment list does contain VAT5L" in new ViewSetup {
-      override val doc: Document = Jsoup.parse(view(List(VAT5L), None, None).body)
-
-      doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
-    }
-
-    "show the vat5L, vat1614 and supporting docs bullet points when attachment list contains VAT5L" in new ViewSetup {
-      override val doc: Document = Jsoup.parse(view(List(VAT5L), None, None).body)
-
-      doc.unorderedList(1) must contain(ExpectedContent.vat5LBullet)
-      doc.unorderedList(1) must contain(ExpectedContent.vat1614Bullet)
-      doc.unorderedList(1) must contain(ExpectedContent.supportingDocsBullet)
-    }
-
-    "show the vat1TR bullet point when attachment list does contain vat1TR" in new ViewSetup {
-      override val doc: Document = Jsoup.parse(view(List(TaxRepresentativeAuthorisation), None, None).body)
-
-      doc.unorderedList(1) must contain(ExpectedContent.vat1TRBullet)
-    }
-
-    "have the correct bullet list for the transactor flow" when {
-      "transactor is unverified" in new ViewSetup {
-        override val doc: Document = Jsoup.parse(view(List(TransactorIdentityEvidence), None, Some(ExpectedContent.transactorName)).body)
-
-        doc.unorderedList(1) mustBe List(
-          ExpectedContent.bullet1Named(ExpectedContent.transactorName)
-        )
+        link.size() mustBe 1
+        link.attr("href") mustBe expectedUrl
+        link.attr("target") mustBe "_blank"
       }
-
-      "applicant is unverified" in new ViewSetup {
-        override val doc: Document = Jsoup.parse(view(List(IdentityEvidence), Some(ExpectedContent.applicantName), None).body)
-
-        doc.unorderedList(1) mustBe List(
-          ExpectedContent.bullet1Named(ExpectedContent.applicantName)
-        )
-      }
-
-      "both are unverified" in new ViewSetup {
-        override val doc: Document = Jsoup.parse(view(List(IdentityEvidence, TransactorIdentityEvidence), Some(ExpectedContent.applicantName), Some(ExpectedContent.transactorName)).body)
-
-        doc.unorderedList(1) mustBe List(
-          ExpectedContent.bullet1Named(ExpectedContent.applicantName),
-          ExpectedContent.bullet1Named(ExpectedContent.transactorName)
-        )
-      }
-    }
-
-    "have the correct link" in new ViewSetup {
-      doc.link(1) mustBe Some(Link(ExpectedContent.linkText, appConfig.vat2Link))
-    }
-
-    "have a details block" in new ViewSetup {
-      doc.details mustBe Some(Details(IdentityDetails.summary, IdentityDetails.content))
     }
 
     "have a primary action" in new ViewSetup {
       doc.submitButton mustBe Some(ExpectedContent.continue)
     }
-  }
 
+    "not display the save progress button" in new ViewSetup {
+      doc.text() must not include "Save and come back later"
+    }
+  }
 }

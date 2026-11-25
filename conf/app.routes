@@ -429,6 +429,8 @@ GET         /vat51-required                                           controller
 GET         /vat5L-required                                           controllers.attachments.Vat5LRequiredController.show
 GET         /vat2-required                                            controllers.attachments.Vat2RequiredController.show
 GET         /multiple-documents-required                              controllers.attachments.MultipleDocumentsRequiredController.show
+GET         /vat2-documents-required                                  controllers.attachments.Vat2DocumentsRequiredController.show
+GET         /vat5L-documents-required                                 controllers.attachments.Vat5LDocumentsRequiredController.show
 GET         /vat1TR-required                                          controllers.attachments.Vat1TRRequiredController.show
 POST        /documents-required                                       controllers.attachments.DocumentsRequiredController.submit
 
