@@ -34,7 +34,7 @@
 
     <ul class="app-task-list__items">
     @for(row <- section.rows) {
-        @taskListRow(messages(row.messageKey), row.url, row.tagId, row.status)
+        @taskListRow(messages(row.messageKey), row.url, row.tagId, row.status, completedMessageKey = row.completedMessageKey)
     }
     </ul>
 }

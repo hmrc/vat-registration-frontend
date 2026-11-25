@@ -52,11 +52,17 @@ object AttachmentsTaskList {
       None
     }
 
-  def build(vatScheme: VatScheme, attachmentsRow: TaskListRowBuilder)(implicit messages: Messages, appConfig: FrontendAppConfig): TaskListSection =
+  def build(vatScheme: VatScheme, attachmentsRow: TaskListRowBuilder)(implicit messages: Messages, appConfig: FrontendAppConfig): TaskListSection = {
+    val row        = attachmentsRow.build(vatScheme)
+    val sentByPost = appConfig.isEnabled(VrsNewAttachmentJourney) &&
+      row.status == TLCompleted &&
+      vatScheme.attachments.flatMap(_.method).contains(Post)
+
     TaskListSection(
       heading = if(appConfig.isEnabled(VrsNewAttachmentJourney)) messages("tasklist.attachments.newAttachmentsJourney.heading") else messages("tasklist.attachments.heading"),
-      rows = Seq(attachmentsRow.build(vatScheme))
+      rows = Seq(if (sentByPost) row.copy(completedMessageKey = Some("tasklist.sendByPost")) else row)
     )
+  }
 
   private def resolveMessageKey(attachments: List[AttachmentType]): String = {
     val documentsKey = "tasklist.attachments.identityDocuments"

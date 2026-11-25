@@ -34,7 +34,8 @@ case class TaskListSection(heading: String, rows: Seq[TaskListSectionRow]) {
 object TaskListSections {
 
 
-  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])(implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Seq[TaskListSection] = List(
+  def sections(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])
+              (implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Seq[TaskListSection] = List(
     Some(RegistrationReasonTaskList.build(vatScheme)),
     if (vatScheme.eligibilitySubmissionData.exists(_.isTransactor)) Some(AboutYouTransactorTaskList.build(vatScheme)) else None,
     Some(VerifyBusinessTaskList.build(vatScheme)),
@@ -43,6 +44,7 @@ object TaskListSections {
     Some(VatRegistrationTaskList.build(vatScheme, businessService)),
     attachmentsRequiredRow.map(AttachmentsTaskList.build(vatScheme, _))
   ).flatten
+
   def allComplete(vatScheme: VatScheme, businessService: BusinessService, attachmentsRequiredRow: Option[TaskListRowBuilder])
                  (implicit messagesApi: Messages, appConfig: FrontendAppConfig, profile: CurrentProfile, hc: HeaderCarrier, ec: ExecutionContext, request: Request[_]): Boolean =
     sections(vatScheme, businessService, attachmentsRequiredRow).forall{x =>x.isComplete}
@@ -52,7 +54,8 @@ case class TaskListSectionRow(messageKey: String,
                               url: String,
                               tagId: String,
                               status: TaskListState,
-                              canEdit: Boolean = false)
+                              canEdit: Boolean = false,
+                              completedMessageKey: Option[String] = None)
 
 sealed trait TaskListState
 

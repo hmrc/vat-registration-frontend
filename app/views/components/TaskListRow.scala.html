@@ -24,7 +24,7 @@
         govukTag: GovukTag
 )
 
-@(message: String, url: String, tagId: String, status: TaskListState, canEdit: Boolean = false)(implicit request: Request[_], messages: Messages)
+@(message: String, url: String, tagId: String, status: TaskListState, canEdit: Boolean = false, completedMessageKey: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
 <li class="app-task-list__item">
     <table class="app-task-list__row">
@@ -55,7 +55,7 @@
                         case TLInProgress =>
                             govukTag(Tag(Text(messages("tasklist.inProgress")), classes = "app-task-list__task-completed govuk-tag--blue no-wrap", attributes = Map("id" -> tagId)))
                         case TLCompleted =>
-                            govukTag(Tag(Text(messages("tasklist.complete")), classes = "app-task-list__task-completed no-wrap", attributes = Map("id" -> tagId)))
+                            govukTag(Tag(Text(messages(completedMessageKey.getOrElse("tasklist.complete"))), classes = "app-task-list__task-completed no-wrap", attributes = Map("id" -> tagId)))
                         case `TLFailed` =>
                             govukTag(Tag(Text(messages("tasklist.failed")), classes = "app-task-list__task-completed govuk-tag--red no-wrap", attributes = Map("id" -> tagId)))
                     }
