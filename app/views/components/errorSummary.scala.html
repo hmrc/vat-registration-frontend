@@ -18,7 +18,7 @@
     govukErrorSummary: GovukErrorSummary
 )
 
-@(errors: Seq[FormError], errorFieldSuffix: Option[String] = None, errorId: Option[String] = None)(implicit messages: Messages)
+@(errors: Seq[FormError], errorFieldSuffix: Option[String] = None, errorId: Option[String] = None, classes: String = "")(implicit messages: Messages)
 
     @if(errors.nonEmpty) {
         @defining(errors.map { error =>
@@ -36,7 +36,8 @@
         }) { errorLinks =>
             @govukErrorSummary(ErrorSummary(
                 errorList = errorLinks,
-                title = Text(messages("app.common.errorSummaryLabel"))
+                title = Text(messages("app.common.errorSummaryLabel")),
+                classes = classes
             ))
         }
     }

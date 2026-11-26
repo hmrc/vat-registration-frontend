@@ -6,6 +6,12 @@ $govuk-suppressed-warnings: (libsass, legacy-organisation-colours);
 @import "lib/hmrc-frontend/hmrc/all";
 @import "accessible-autocomplete";
 
+@include govuk-media-query($media-type: print) {
+  .hmrc-sign-out-nav {
+    display: none;
+  }
+}
+
 .app-reference-number {
   display: block;
   font-weight: bold;

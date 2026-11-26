@@ -457,6 +457,7 @@ GET       /attachment-error/:attachmentType                           controller
 
 ## Postal Cover Sheet Page
 GET         /postal-cover-sheet                                       controllers.attachments.PostalCoverSheetController.show
+POST        /postal-cover-sheet                                       controllers.attachments.PostalCoverSheetController.submit
 
 ## Cover Letter Preview Page
 GET         /cover-letter-preview                                     controllers.attachments.CoverLetterPreviewController.show
