@@ -58,6 +58,10 @@ class Vat2DocumentsPostViewSpec extends VatRegViewSpec {
       doc.title must include(ExpectedContent.title)
     }
 
+    "have the correct page heading" in {
+      doc.select("h1").text mustBe ExpectedContent.title
+    }
+
     "display the introductory paragraph" in {
       doc.text() must include(ExpectedContent.para1)
     }
