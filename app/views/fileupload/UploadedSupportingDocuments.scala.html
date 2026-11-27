@@ -1,0 +1,83 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import controllers.fileupload.SupportingDocumentUploadController.maxSupportingDocuments
+@import play.api.data.Form
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import viewmodels.DocumentUploadSummaryRow
+
+@this(
+        layout: layouts.layout,
+        h1: components.h1,
+        p: components.p,
+        errorSummary: components.errorSummary,
+        govukSummaryList: GovukSummaryList,
+        govukTag: GovukTag,
+        formWithCSRF: FormWithCSRF,
+        yesNoRadio: components.yesNoRadio,
+        button: components.button
+)
+
+@(form: Form[Boolean], uploadedDocuments: Seq[DocumentUploadSummaryRow], canAddAnother: Boolean)(implicit request: Request[_], messages: Messages, appConfig: FrontendAppConfig)
+
+@headingMessage = @{
+    if(uploadedDocuments.size == 1) messages("uploadedSupportingDocuments.heading", uploadedDocuments.size)
+    else messages("uploadedSupportingDocuments.headingPlural", uploadedDocuments.size)
+}
+
+@layout(pageTitle = Some(title(form, headingMessage)), backLink = false) {
+
+    @errorSummary(form.errors)
+
+    @h1(headingMessage)
+
+    @govukSummaryList(SummaryList(
+        classes = "govuk-summary-list--long-key",
+        rows = uploadedDocuments.map { document =>
+            SummaryListRow(
+                key = Key(content = Text(document.documentName), classes = "govuk-!-font-weight-regular"),
+                value = Value(content = HtmlContent(
+                    govukTag(Tag(content = Text(messages("uploaded.vat5l.documents.status.uploaded")), classes = "govuk-tag--green"))
+                )),
+                actions = Some(Actions(items = Seq(
+                    ActionItem(
+                        href = document.removeAction.url,
+                        content = Text(messages("app.common.remove")),
+                        visuallyHiddenText = Some(document.documentName)
+                    )
+                )))
+            )
+        }
+    ))
+
+    @formWithCSRF(action = controllers.fileupload.routes.UploadedSupportingDocumentsController.submit) {
+        @if(canAddAnother) {
+            @yesNoRadio(
+                classes = "govuk-fieldset__legend--m",
+                form = form,
+                headingKey = messages("uploadedSupportingDocuments.addAnother"),
+                isPageHeading = false
+            )
+        } else {
+            @p {
+                @messages("uploadedSupportingDocuments.limitReached", maxSupportingDocuments)
+            }
+        }
+
+        @button(messages("app.common.continueNoSave"), showSaveProgressButton = false)
+    }
+}

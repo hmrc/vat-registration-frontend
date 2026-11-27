@@ -36,12 +36,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class UpscanConnector @Inject()(httpClient: HttpClientV2, appConfig: FrontendAppConfig)
                                (implicit executionContext: ExecutionContext) extends FeatureToggleSupport {
 
-  def upscanInitiate()(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
+  def upscanInitiate(successRedirectUrl: String, errorRedirectUrl: String)(implicit hc: HeaderCarrier): Future[UpscanResponse] = {
     lazy val url = appConfig.setupUpscanJourneyUrl
     lazy val body = Json.obj(
       "callbackUrl" -> appConfig.storeUpscanCallbackUrl,
-      "successRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadingDocumentController.show.url}",
-      "errorRedirect" -> s"${appConfig.hostAbsoluteUrl}${controllers.fileupload.routes.UploadDocumentController.show.url}",
+      "successRedirect" -> s"${appConfig.hostAbsoluteUrl}$successRedirectUrl",
+      "errorRedirect" -> s"${appConfig.hostAbsoluteUrl}$errorRedirectUrl",
       "minimumFileSize" -> 1,
       "maximumFileSize" -> 10485760
     )
